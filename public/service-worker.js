@@ -1,11 +1,15 @@
-// Service Worker con mejor sistema de depuración para solucionar el problema de compartir archivos desde WhatsApp
+// Service Worker con protección contra bucles de procesamiento
+// Esta versión evita que el mismo archivo se procese múltiples veces
 
 // Almacén temporal para archivos compartidos
 const sharedFiles = new Map();
 
-// Función de utilidad para depuración
+// Control para evitar procesamiento duplicado
+const processedRequests = new Set();
+
+// Función para depuración
 const debug = (message, data) => {
-  const logMessage = `[SW Debug] ${message}`;
+  const logMessage = `[SW] ${message}`;
   if (data) {
     console.log(logMessage, data);
   } else {
@@ -13,153 +17,154 @@ const debug = (message, data) => {
   }
 };
 
-// Instalación del Service Worker
 self.addEventListener('install', event => {
-  debug('Service Worker instalado');
+  debug('Instalado');
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
-  debug('Service Worker activado');
-  // Asegurar que el service worker tome el control de todas las páginas
+  debug('Activado');
   event.waitUntil(clients.claim());
-  debug('clients.claim() ejecutado');
 });
 
 // Interceptar solicitudes de compartir
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  debug('Fetch interceptado', { url: url.pathname, method: event.request.method });
   
-  // Este es el punto crítico: verificar si es una solicitud de compartir
+  // Verificar si es una solicitud de compartir
   if (url.pathname === '/share-target' && event.request.method === 'POST') {
-    debug('Solicitud de compartir detectada');
+    // Generar un ID único para esta solicitud basado en la URL y timestamp
+    const requestId = `${url.pathname}-${Date.now()}`;
+    
+    // Verificar si ya hemos procesado esta solicitud recientemente (en los últimos 5 segundos)
+    const recentRequests = Array.from(processedRequests)
+      .filter(id => id.startsWith(url.pathname) && 
+              Date.now() - parseInt(id.split('-')[1]) < 5000);
+              
+    if (recentRequests.length > 0) {
+      debug('Solicitud duplicada detectada, ignorando', requestId);
+      event.respondWith(Response.redirect('/?error=duplicado'));
+      return;
+    }
+    
+    // Marcar esta solicitud como procesada
+    processedRequests.add(requestId);
+    
+    // Limpiar solicitudes antiguas (más de 10 segundos)
+    for (const id of processedRequests) {
+      if (Date.now() - parseInt(id.split('-')[1]) > 10000) {
+        processedRequests.delete(id);
+      }
+    }
+    
+    debug('Procesando solicitud de compartir', requestId);
     
     event.respondWith((async () => {
       try {
-        debug('Procesando solicitud de compartir');
-        // Intentar extraer el FormData
+        // Extraer el FormData
         const formData = await event.request.formData();
-        debug('FormData extraído');
         
-        // Verificar qué campos contiene el FormData
+        // Verificar qué contiene el FormData
         const formDataEntries = [];
         for (const pair of formData.entries()) {
-          formDataEntries.push(`${pair[0]}: ${typeof pair[1]} (${pair[1] instanceof File ? 'File: ' + pair[1].name : pair[1]})`);
+          formDataEntries.push(`${pair[0]}: ${typeof pair[1]}`);
         }
-        debug('Contenido de FormData', formDataEntries);
+        debug('FormData', formDataEntries);
         
-        // Intentar obtener el archivo ZIP
-        const file = formData.get('zipFile');
+        // Buscar el archivo ZIP
+        let file = formData.get('zipFile');
         
-        if (file && file instanceof File) {
-          debug('Archivo encontrado', { name: file.name, type: file.type, size: file.size });
-          
-          // Almacenar el archivo con un ID único
-          const shareId = Date.now().toString();
-          sharedFiles.set(shareId, file);
-          debug('Archivo almacenado con ID', shareId);
-          
-          // Buscar todos los clientes (ventanas/pestañas) asociados a este origen
-          const allClients = await clients.matchAll({ type: 'window' });
-          debug('Clientes encontrados', allClients.length);
-          
-          if (allClients.length > 0) {
-            // Enviar el archivo directamente a todos los clientes
-            allClients.forEach(client => {
-              debug('Enviando archivo a cliente', client.id);
-              client.postMessage({
-                type: 'SHARED_FILE',
-                file: file,
-                shareId: shareId
-              });
-            });
-            
-            // Intentar abrir una ventana si no hay ninguna abierta
-            if (allClients.length === 0) {
-              debug('No hay clientes, intentando abrir uno nuevo');
-              const newClient = await clients.openWindow('/');
-              if (newClient) {
-                debug('Nuevo cliente abierto');
-              }
-            }
-            
-            // Redirigir al cliente principal
-            return Response.redirect('/?shared=' + shareId);
-          } else {
-            debug('No se encontraron clientes, redirigiendo a la página principal');
-            return Response.redirect('/?shared=' + shareId);
-          }
-        } else {
-          debug('Archivo no encontrado en FormData');
-          // Si no encontramos el archivo bajo "zipFile", intentar buscar en otros campos
-          let foundFile = null;
+        // Si no encontramos el archivo como 'zipFile', buscar en otros campos
+        if (!file || !(file instanceof File)) {
           for (const [key, value] of formData.entries()) {
             if (value instanceof File) {
-              debug('Archivo encontrado en campo alternativo', { field: key, file: value.name });
-              foundFile = value;
+              debug('Archivo encontrado en campo alternativo', key);
+              file = value;
               break;
             }
           }
+        }
+        
+        if (file && file instanceof File) {
+          debug('Archivo procesado correctamente', {
+            name: file.name,
+            type: file.type,
+            size: file.size
+          });
           
-          if (foundFile) {
-            // Procesarlo como si fuera el archivo correcto
-            const shareId = Date.now().toString();
-            sharedFiles.set(shareId, foundFile);
-            
-            const allClients = await clients.matchAll();
-            allClients.forEach(client => {
-              client.postMessage({
-                type: 'SHARED_FILE',
-                file: foundFile,
-                shareId: shareId
-              });
+          // Generar ID único para el archivo
+          const shareId = `file-${Date.now()}`;
+          sharedFiles.set(shareId, file);
+          
+          // Obtener todos los clientes
+          const allClients = await clients.matchAll({ type: 'window' });
+          debug('Clientes encontrados', allClients.length);
+          
+          // Enviar el archivo a todos los clientes activos
+          for (const client of allClients) {
+            client.postMessage({
+              type: 'SHARED_FILE',
+              file: file,
+              shareId: shareId,
+              timestamp: Date.now()
             });
-            
-            return Response.redirect('/?shared=' + shareId);
           }
+          
+          // Redirigir a la página principal con el ID del archivo
+          // Usar URL con parámetros únicos para evitar bucles por caché
+          return Response.redirect(`/?shared=${shareId}&t=${Date.now()}`);
+        } else {
+          debug('No se encontró ningún archivo');
+          return Response.redirect('/?error=no-file');
         }
       } catch (error) {
-        debug('Error procesando solicitud de compartir', error.toString());
+        debug('Error procesando solicitud', error.toString());
+        return Response.redirect('/?error=process');
       }
-      
-      // Si hay algún problema, redirigir con error
-      return Response.redirect('/?error=share-failed');
     })());
   }
 });
 
 // Escuchar mensajes de la aplicación
 self.addEventListener('message', event => {
-  debug('Mensaje recibido', event.data);
+  const data = event.data;
   
-  if (event.data && event.data.type === 'GET_SHARED_FILE') {
-    const shareId = event.data.shareId;
-    debug('Solicitud de archivo compartido', shareId);
-    
-    const file = sharedFiles.get(shareId);
-    
-    if (file) {
-      debug('Archivo encontrado, enviando al cliente');
-      event.source.postMessage({
-        type: 'SHARED_FILE',
-        file: file,
-        shareId: shareId
-      });
+  if (!data || !data.type) return;
+  
+  switch (data.type) {
+    case 'GET_SHARED_FILE':
+      const shareId = data.shareId;
+      const file = sharedFiles.get(shareId);
       
-      // Opcional: eliminar el archivo después de enviarlo
-      // sharedFiles.delete(shareId);
-    } else {
-      debug('Archivo no encontrado para el ID solicitado');
-      event.source.postMessage({
-        type: 'SHARED_FILE_ERROR',
-        error: 'Archivo no encontrado'
-      });
-    }
-  } else if (event.data && event.data.type === 'PING') {
-    debug('Ping recibido, respondiendo con pong');
-    event.source.postMessage({
-      type: 'PONG'
-    });
+      if (file) {
+        debug('Enviando archivo solicitado', shareId);
+        event.source.postMessage({
+          type: 'SHARED_FILE',
+          file: file,
+          shareId: shareId,
+          timestamp: Date.now()
+        });
+        
+        // Limpiar después de enviar
+        sharedFiles.delete(shareId);
+      } else {
+        debug('Archivo no encontrado', shareId);
+        event.source.postMessage({
+          type: 'SHARED_FILE_ERROR',
+          error: 'Archivo no encontrado o ya procesado'
+        });
+      }
+      break;
+      
+    case 'PING':
+      event.source.postMessage({ type: 'PONG' });
+      break;
+      
+    case 'CLEAR_SHARED_FILES':
+      debug('Limpiando archivos compartidos');
+      sharedFiles.clear();
+      processedRequests.clear();
+      event.source.postMessage({ type: 'CLEARED' });
+      break;
   }
-});
+});v
