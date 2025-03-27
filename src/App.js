@@ -9,8 +9,17 @@ function App() {
   const [zipFile, setZipFile] = useState(null);
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
 
+  //const API_URL = 'http://127.0.0.1:5000';
+
+  const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+
+
+  //const API_URL = process.env.NODE_ENV === 'production' 
+ // ? window.location.origin 
+  //: '';
+
   // URL del backend
-  const API_URL = process.env.REACT_APP_API_URL || window.location.origin;
+ // const API_URL = process.env.REACT_APP_API_URL || window.location.origin;
 
   // Función para mostrar mensajes de depuración
   const logDebug = (message, data) => {
@@ -111,6 +120,9 @@ function App() {
     
     // Enviar el archivo al servidor
     const response = await fetch(`${API_URL}/api/extract`, {
+
+
+
       method: 'POST',
       body: formData,
     });
