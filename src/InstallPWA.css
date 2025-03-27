@@ -1,0 +1,54 @@
+.install-pwa-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+  }
+  
+  .install-pwa-button {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .install-pwa-button:hover {
+    background-color: #2b6bc3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .install-pwa-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .install-icon {
+    margin-right: 8px;
+    font-size: 20px;
+  }
+  
+  /* Media queries para adaptarlo a dispositivos móviles */
+  @media (max-width: 768px) {
+    .install-pwa-container {
+      bottom: 15px;
+    }
+    
+    .install-pwa-button {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+    
+    .install-icon {
+      font-size: 18px;
+    }
+  }

@@ -1,14 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import InstallPWA from './InstallPWA';
 
 function App() {
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [zipFile, setZipFile] = useState(null);
+  const [sharedFiles, setSharedFiles] = useState([]);
 
   // URL del backend
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+  // Detectar archivos compartidos desde WhatsApp u otras apps
+  useEffect(() => {
+    // Registrar event listener para Web Share Target API
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('DOMContentLoaded', async () => {
+        try {
+          // Verificar si la app fue abierta por un compartir POST
+          const urlParams = new URLSearchParams(window.location.search);
+          
+          if (urlParams.has('share-target')) {
+            // En el caso de POST, el archivo estará en FormData
+            // El service worker se encargará de interceptar el POST y redirigir a la app principal
+            const formData = await navigator.serviceWorker.ready.then(registration => {
+              return registration.active.postMessage({ type: 'GET_SHARED_FILE' });
+            });
+            
+            // El archivo será devuelto por el service worker a través de un evento de mensaje
+            navigator.serviceWorker.addEventListener('message', event => {
+              if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
+                handleSharedFile(event.data.file);
+              }
+            });
+          }
+        } catch (err) {
+          console.error('Error al procesar archivo compartido:', err);
+          setError(`Error al procesar el archivo compartido: ${err.message}`);
+        }
+      });
+    }
+  }, []);
+
+  // Manejar archivos recibidos a través de la Web Share Target API
+  const handleSharedFile = async (file) => {
+    if (!file) return;
+    
+    if (file.type !== 'application/zip' && !file.name.endsWith('.zip')) {
+      setError('Por favor, comparte un archivo ZIP válido');
+      return;
+    }
+
+    setError('');
+    setIsLoading(true);
+    setZipFile(file);
+    
+    try {
+      // Procesar el archivo compartido
+      await processZipFile(file);
+    } catch (err) {
+      console.error('Error al procesar archivo compartido:', err);
+      setError(`Error al procesar el archivo compartido: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Procesar el archivo ZIP
+  const processZipFile = async (file) => {
+    // Crear un objeto FormData para enviar el archivo al backend
+    const formData = new FormData();
+    formData.append('zipFile', file);
+    
+    // Enviar el archivo al servidor
+    const response = await fetch(`${API_URL}/api/extract`, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error en el servidor');
+    }
+    
+    const result = await response.json();
+    
+    // Procesar los archivos obtenidos del backend
+    const extractedFiles = result.files.map(file => ({
+      name: file.name,
+      size: file.size,
+      path: file.path,
+      operationId: result.operation_id
+    }));
+    
+    setFiles(extractedFiles);
+  };
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -24,33 +111,7 @@ function App() {
     setZipFile(file);
     
     try {
-      // Crear un objeto FormData para enviar el archivo al backend
-      const formData = new FormData();
-      formData.append('zipFile', file);
-      
-      // Enviar el archivo al servidor
-      const response = await fetch(`${API_URL}/api/extract`, {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Error en el servidor');
-      }
-      
-      const result = await response.json();
-      
-      // Procesar los archivos obtenidos del backend
-      const extractedFiles = result.files.map(file => ({
-        name: file.name,
-        size: file.size,
-        path: file.path,
-        operationId: result.operation_id
-      }));
-      
-      setFiles(extractedFiles);
-      
+      await processZipFile(file);
     } catch (err) {
       console.error('Error al procesar:', err);
       setError(`Error al procesar el archivo: ${err.message}`);
@@ -86,7 +147,7 @@ function App() {
             />
             <div className="file-upload-text">
               <span>Haz clic para subir un archivo ZIP</span>
-              <span className="file-upload-subtext">o arrastra y suelta</span>
+              <span className="file-upload-subtext">o comparte directamente desde WhatsApp</span>
             </div>
           </label>
         </div>
@@ -137,6 +198,9 @@ function App() {
             </table>
           </div>
         )}
+        
+        {/* Componente de instalación de PWA */}
+        <InstallPWA />
       </main>
     </div>
   );
