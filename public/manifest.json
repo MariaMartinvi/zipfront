@@ -21,19 +21,6 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshot-mobile.png",
-      "sizes": "360x740",
-      "type": "image/png"
-    },
-    {
-      "src": "/screenshot-desktop.png",
-      "sizes": "1280x800",
-      "type": "image/png",
-      "form_factor": "wide"
-    }
-  ],
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -50,7 +37,7 @@
       "files": [
         {
           "name": "zipFile",
-          "accept": [".zip", "application/zip", "application/x-zip", "application/x-zip-compressed"]
+          "accept": ["application/zip", "application/x-zip-compressed", "application/octet-stream", "*/*"]
         }
       ]
     }

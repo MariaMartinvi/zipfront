@@ -8,46 +8,95 @@ function App() {
   const [error, setError] = useState('');
   const [zipFile, setZipFile] = useState(null);
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
+  const [debugMessages, setDebugMessages] = useState([]);
 
-  // URL del backend, asegúrate de que esté configurada correctamente
+  // URL del backend
   const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
 
-  // Detectar archivos compartidos desde WhatsApp u otras apps
+  // Función para el logging (visible en modo desarrollo)
+  const addDebugMessage = (message) => {
+    console.log('[App Debug]', message);
+    setDebugMessages(prev => [...prev, { time: new Date().toISOString(), message }]);
+  };
+
+  // Efecto para manejar compartir archivos
   useEffect(() => {
-    // Verificar si se ha compartido un archivo
+    // Verificar parámetros en la URL
     const urlParams = new URLSearchParams(window.location.search);
     const isShared = urlParams.has('shared');
     const hasError = urlParams.has('error');
+    const shareId = urlParams.get('shared');
     
     if (hasError) {
-      setError('Hubo un problema al procesar el archivo compartido');
+      setError('Hubo un problema al procesar el archivo compartido. Por favor, intenta de nuevo.');
+      addDebugMessage('Error detectado en parámetros URL');
+      return;
     }
     
     if (isShared) {
-      console.log('Archivo compartido detectado en URL');
+      addDebugMessage(`Parámetro 'shared' detectado en URL: ${shareId}`);
       setIsProcessingSharedFile(true);
+      
+      // Solicitar el archivo compartido si tenemos un ID
+      if (shareId && navigator.serviceWorker.controller) {
+        addDebugMessage('Solicitando archivo compartido al Service Worker');
+        navigator.serviceWorker.controller.postMessage({
+          type: 'GET_SHARED_FILE',
+          shareId: shareId
+        });
+      }
     }
     
-    // Escuchar mensajes del service worker
-    const handleMessage = (event) => {
+    // Función para manejar los mensajes del Service Worker
+    const handleServiceWorkerMessage = (event) => {
+      addDebugMessage(`Mensaje recibido: ${event.data?.type}`);
+      
       if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
-        console.log('Archivo recibido del service worker:', event.data.file.name);
+        addDebugMessage(`Archivo recibido: ${event.data.file.name}`);
         handleSharedFile(event.data.file);
+      } else if (event.data && event.data.type === 'SHARED_FILE_ERROR') {
+        setError(`Error al recibir archivo: ${event.data.error || 'Error desconocido'}`);
+        setIsProcessingSharedFile(false);
+      } else if (event.data && event.data.type === 'PONG') {
+        addDebugMessage('Service Worker está activo (respuesta PONG)');
       }
     };
     
-    // Registrar el listener
-    navigator.serviceWorker.addEventListener('message', handleMessage);
+    // Registrar el listener para mensajes del Service Worker
+    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
     
-    // Limpiar al desmontar
+    // Verificar si el Service Worker está activo
+    if (navigator.serviceWorker.controller) {
+      addDebugMessage('Service Worker detectado, enviando PING');
+      navigator.serviceWorker.controller.postMessage({ type: 'PING' });
+    } else {
+      addDebugMessage('Service Worker no detectado');
+    }
+    
+    // Si estamos esperando un archivo compartido, establecer un timeout
+    if (isProcessingSharedFile) {
+      const timeout = setTimeout(() => {
+        if (isProcessingSharedFile) {
+          addDebugMessage('Timeout esperando archivo compartido');
+          setError('No se pudo recibir el archivo compartido a tiempo. Por favor, intenta de nuevo.');
+          setIsProcessingSharedFile(false);
+        }
+      }, 10000); // 10 segundos
+      
+      return () => {
+        clearTimeout(timeout);
+        navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
+      };
+    }
+    
     return () => {
-      navigator.serviceWorker.removeEventListener('message', handleMessage);
+      navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
     };
-  }, []);
+  }, [isProcessingSharedFile]);
 
   // Manejar archivos recibidos del service worker
   const handleSharedFile = async (file) => {
-    console.log('Procesando archivo compartido:', file.name, 'Tipo:', file.type);
+    addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
     
     if (!file) {
       setError('No se pudo recibir el archivo');
@@ -62,6 +111,7 @@ function App() {
                       file.name.toLowerCase().endsWith('.zip');
     
     if (!isZipFile) {
+      addDebugMessage(`Archivo no es ZIP: ${file.type}`);
       setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
       setIsProcessingSharedFile(false);
       return;
@@ -75,7 +125,7 @@ function App() {
       // Procesar el archivo
       await processZipFile(file);
     } catch (err) {
-      console.error('Error al procesar archivo compartido:', err);
+      addDebugMessage(`Error procesando archivo: ${err.message}`);
       setError(`Error al procesar el archivo: ${err.message}`);
     } finally {
       setIsLoading(false);
@@ -83,26 +133,36 @@ function App() {
     }
   };
 
-  // Función para procesar el archivo ZIP
+  // Procesar el archivo ZIP
   const processZipFile = async (file) => {
-    console.log('Enviando archivo ZIP al backend:', file.name);
+    addDebugMessage(`Enviando archivo al backend: ${file.name}`);
     
     const formData = new FormData();
     formData.append('zipFile', file);
     
     try {
+      // Mostrar la URL a la que se está enviando la solicitud
+      addDebugMessage(`URL de API: ${API_URL}/api/extract`);
+      
       const response = await fetch(`${API_URL}/api/extract`, {
         method: 'POST',
         body: formData,
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Error en el servidor');
+        const errorText = await response.text();
+        addDebugMessage(`Error en respuesta del servidor: ${response.status}, ${errorText}`);
+        
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error || `Error ${response.status}`);
+        } catch (jsonError) {
+          throw new Error(`Error del servidor: ${response.status}`);
+        }
       }
       
       const result = await response.json();
-      console.log('Respuesta del backend:', result);
+      addDebugMessage(`Respuesta exitosa: ${result.files?.length || 0} archivos`);
       
       const extractedFiles = result.files.map(file => ({
         name: file.name,
@@ -113,7 +173,7 @@ function App() {
       
       setFiles(extractedFiles);
     } catch (error) {
-      console.error('Error procesando ZIP:', error);
+      addDebugMessage(`Error procesando ZIP: ${error.message}`);
       throw error;
     }
   };
@@ -155,6 +215,14 @@ function App() {
     }
   };
 
+  // Reiniciar la aplicación (para debugging)
+  const handleReset = () => {
+    setIsProcessingSharedFile(false);
+    setError('');
+    setIsLoading(false);
+    setDebugMessages([]);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -165,6 +233,12 @@ function App() {
           <div className="loading-indicator">
             <div className="spinner"></div>
             <p>Recibiendo archivo compartido...</p>
+            <button 
+              onClick={handleReset}
+              style={{ marginTop: '20px', padding: '8px 16px' }}
+            >
+              Cancelar
+            </button>
           </div>
         ) : (
           <div className="file-upload-container">
@@ -227,6 +301,18 @@ function App() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        
+        {/* Mostrar mensajes de depuración en modo desarrollo */}
+        {process.env.NODE_ENV === 'development' && debugMessages.length > 0 && (
+          <div style={{ marginTop: '20px', textAlign: 'left', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '5px', maxHeight: '200px', overflow: 'auto' }}>
+            <h3>Mensajes de depuración:</h3>
+            <ul style={{ fontSize: '12px', padding: '0 0 0 20px' }}>
+              {debugMessages.map((msg, i) => (
+                <li key={i}>{msg.time}: {msg.message}</li>
+              ))}
+            </ul>
           </div>
         )}
         
