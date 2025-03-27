@@ -1,73 +1,78 @@
-// Service Worker simplificado para compartir archivos ZIP
-// Versión optimizada para evitar problemas de precacheo
+// El problema principal es asegurar que se detecte correctamente la solicitud de compartir
 
-// Variables para almacenar temporalmente el archivo compartido
+// Almacén temporal para archivos compartidos
 const sharedFiles = new Map();
 
-// Log para diagnosticar la instalación del service worker
+// Log para diagnóstico
 self.addEventListener('install', event => {
-  console.log('Service Worker: Instalado');
-  self.skipWaiting(); // Asegurar que el nuevo service worker tome el control inmediatamente
+  console.log('Service Worker instalado');
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
-  console.log('Service Worker: Activado');
-  // Asegurar que el service worker tome el control de todas las páginas
+  console.log('Service Worker activado');
   event.waitUntil(clients.claim());
 });
 
-// Gestionar solicitudes de archivos compartidos mediante POST
-self.addEventListener('fetch', (event) => {
+// Interceptar peticiones POST para compartir archivos
+self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   
-  // Interceptar solicitudes POST para Web Share Target
-  if (url.searchParams.has('share-target') && event.request.method === 'POST') {
-    console.log('Service Worker: Interceptando un intento de compartir archivo');
+  // Verificar si es una solicitud de compartir (debemos verificar el pathname exacto)
+  if (url.pathname === '/share-target' && event.request.method === 'POST') {
+    console.log('Interceptando solicitud de compartir archivo');
     
-    // Prevenir el comportamiento por defecto
     event.respondWith((async () => {
       try {
-        // Extraer el FormData y guardar el archivo
+        // Intentar extraer el archivo del FormData
         const formData = await event.request.formData();
+        console.log('FormData recibido, buscando zipFile');
+        
+        // Verificar si hay un archivo en zipFile (el nombre definido en manifest.json)
         const file = formData.get('zipFile');
         
         if (file) {
-          // Generar un ID único para este archivo compartido
-          const shareId = Date.now().toString();
+          console.log('Archivo recibido:', file.name, 'Tipo:', file.type);
           
-          // Guardar el archivo con su ID
+          // Generar ID único para este archivo
+          const shareId = Date.now().toString();
           sharedFiles.set(shareId, file);
           
-          // Notificar a todas las ventanas del cliente que hay un archivo compartido
-          const allClients = await clients.matchAll();
-          allClients.forEach(client => {
+          // Notificar a todos los clientes sobre el archivo compartido
+          const clients = await self.clients.matchAll();
+          for (const client of clients) {
             client.postMessage({
-              type: 'SHARED_FILE_AVAILABLE',
-              shareId: shareId
+              type: 'SHARED_FILE',
+              file: file
             });
-          });
+          }
           
-          // Redirigir a la aplicación principal con el parámetro shareId
-          return Response.redirect(`/?share-target=true&shareId=${shareId}`);
+          // Redirigir a la página principal con el ID del archivo
+          return Response.redirect('/?shared=' + shareId);
+        } else {
+          console.error('No se encontró archivo en el FormData');
+          // Buscar qué hay en el FormData para diagnóstico
+          for (const pair of formData.entries()) {
+            console.log('FormData contiene:', pair[0], 'con valor tipo:', typeof pair[1]);
+          }
         }
       } catch (error) {
-        console.error('Service Worker: Error procesando el archivo compartido:', error);
+        console.error('Error al procesar solicitud de compartir:', error);
       }
       
-      return Response.redirect('/');
+      // Si hay algún error, redirigir a la página principal con indicador de error
+      return Response.redirect('/?error=compartir');
     })());
   }
 });
 
-// Escuchar mensajes desde la aplicación principal
-self.addEventListener('message', (event) => {
-  // Si la aplicación solicita un archivo compartido específico
-  if (event.data && event.data.type === 'GET_SHARED_FILE' && event.data.shareId) {
+// Escuchar mensajes de la aplicación
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'GET_SHARED_FILE') {
     const shareId = event.data.shareId;
     const file = sharedFiles.get(shareId);
     
     if (file) {
-      // Enviar el archivo al cliente que lo solicitó
       event.source.postMessage({
         type: 'SHARED_FILE',
         file: file

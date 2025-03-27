@@ -27,7 +27,6 @@
       "sizes": "360x740",
       "type": "image/png"
     },
-  
     {
       "src": "/screenshot-desktop.png",
       "sizes": "1280x800",
@@ -48,13 +47,10 @@
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url",
       "files": [
         {
           "name": "zipFile",
-          "accept": [".zip", "application/zip", "application/x-zip", "application/x-zip-compressed", "*/*"]
+          "accept": [".zip", "application/zip", "application/x-zip", "application/x-zip-compressed"]
         }
       ]
     }

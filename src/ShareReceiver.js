@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import InstallPWA from './InstallPWA';
+import ShareReceiver from './ShareReceiver';
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -9,88 +10,22 @@ function App() {
   const [zipFile, setZipFile] = useState(null);
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
 
-  // URL del backend, asegúrate de que esté configurada correctamente
   const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
 
-  // Detectar archivos compartidos desde WhatsApp u otras apps
-  useEffect(() => {
-    // Verificar si se ha compartido un archivo
-    const urlParams = new URLSearchParams(window.location.search);
-    const isShared = urlParams.has('shared');
-    const hasError = urlParams.has('error');
-    
-    if (hasError) {
-      setError('Hubo un problema al procesar el archivo compartido');
-    }
-    
-    if (isShared) {
-      console.log('Archivo compartido detectado en URL');
-      setIsProcessingSharedFile(true);
-    }
-    
-    // Escuchar mensajes del service worker
-    const handleMessage = (event) => {
-      if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
-        console.log('Archivo recibido del service worker:', event.data.file.name);
-        handleSharedFile(event.data.file);
-      }
-    };
-    
-    // Registrar el listener
-    navigator.serviceWorker.addEventListener('message', handleMessage);
-    
-    // Limpiar al desmontar
-    return () => {
-      navigator.serviceWorker.removeEventListener('message', handleMessage);
-    };
-  }, []);
-
-  // Manejar archivos recibidos del service worker
-  const handleSharedFile = async (file) => {
-    console.log('Procesando archivo compartido:', file.name, 'Tipo:', file.type);
-    
-    if (!file) {
-      setError('No se pudo recibir el archivo');
-      setIsProcessingSharedFile(false);
-      return;
-    }
-    
-    // Verificar que sea un archivo ZIP
-    const isZipFile = file.type === 'application/zip' || 
-                      file.type === 'application/x-zip' ||
-                      file.type === 'application/x-zip-compressed' ||
-                      file.name.toLowerCase().endsWith('.zip');
-    
-    if (!isZipFile) {
-      setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
-      setIsProcessingSharedFile(false);
-      return;
-    }
-    
-    setError('');
-    setIsLoading(true);
-    setZipFile(file);
-    
-    try {
-      // Procesar el archivo
-      await processZipFile(file);
-    } catch (err) {
-      console.error('Error al procesar archivo compartido:', err);
-      setError(`Error al procesar el archivo: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-      setIsProcessingSharedFile(false);
-    }
+  // Función para mostrar mensajes de depuración
+  const logDebug = (message, data) => {
+    console.log(`[DEBUG] ${message}`, data || '');
   };
 
-  // Función para procesar el archivo ZIP
+  // Procesar el archivo ZIP enviándolo al backend
   const processZipFile = async (file) => {
-    console.log('Enviando archivo ZIP al backend:', file.name);
-    
+    logDebug('Enviando archivo ZIP al backend:', file.name);
+    // Crear un objeto FormData para enviar el archivo al backend
     const formData = new FormData();
     formData.append('zipFile', file);
     
     try {
+      // Enviar el archivo al servidor
       const response = await fetch(`${API_URL}/api/extract`, {
         method: 'POST',
         body: formData,
@@ -102,8 +37,9 @@ function App() {
       }
       
       const result = await response.json();
-      console.log('Respuesta del backend:', result);
+      logDebug('Respuesta del backend:', result);
       
+      // Procesar los archivos obtenidos del backend
       const extractedFiles = result.files.map(file => ({
         name: file.name,
         size: file.size,
@@ -113,12 +49,49 @@ function App() {
       
       setFiles(extractedFiles);
     } catch (error) {
-      console.error('Error procesando ZIP:', error);
-      throw error;
+      logDebug('Error al procesar ZIP:', error);
+      throw error; // Re-lanzar el error para manejarlo en el componente que llama
     }
   };
 
-  // Manejar la carga manual de archivos
+  // Callback para manejar archivos compartidos (usado por ShareReceiver)
+  const handleSharedFile = useCallback(async (file) => {
+    logDebug('Procesando archivo compartido:', file.name);
+    if (!file) return;
+    
+    // Verificar que sea un archivo ZIP - mejorado para manejar diferentes tipos MIME
+    const isZipFile = file.type === 'application/zip' || 
+                      file.type === 'application/x-zip' || 
+                      file.type === 'application/x-zip-compressed' ||
+                      file.name.toLowerCase().endsWith('.zip');
+                      
+    if (!isZipFile) {
+      setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
+      return;
+    }
+
+    setError('');
+    setIsLoading(true);
+    setZipFile(file);
+    
+    try {
+      await processZipFile(file);
+    } catch (err) {
+      logDebug('Error al procesar archivo compartido:', err.message);
+      setError(`Error al procesar el archivo compartido: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+      setIsProcessingSharedFile(false);
+    }
+  }, []);
+
+  // Callback para manejar errores de compartir (usado por ShareReceiver)
+  const handleShareError = useCallback((errorMessage) => {
+    setError(errorMessage);
+    setIsProcessingSharedFile(false);
+  }, []);
+
+  // Manejar el evento de carga de archivos desde el input
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -127,7 +100,7 @@ function App() {
       setError('Por favor, sube un archivo ZIP válido');
       return;
     }
-    
+
     setError('');
     setIsLoading(true);
     setZipFile(file);
@@ -142,7 +115,7 @@ function App() {
     }
   };
 
-  // Función para descargar un archivo
+  // Función para descargar un archivo específico
   const downloadFile = (file) => {
     window.location.href = `${API_URL}/api/download/${file.operationId}/${encodeURIComponent(file.path)}`;
   };
@@ -155,8 +128,22 @@ function App() {
     }
   };
 
+  // Verificar si se está compartiendo un archivo (para mostrar el spinner)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('share-target') && urlParams.has('shareId')) {
+      setIsProcessingSharedFile(true);
+    }
+  }, []);
+
   return (
     <div className="App">
+      {/* Componente invisible para manejar archivos compartidos */}
+      <ShareReceiver 
+        onShareReceived={handleSharedFile} 
+        onShareError={handleShareError} 
+      />
+      
       <header className="App-header">
         <h1>Extractor de archivos ZIP</h1>
       </header>
