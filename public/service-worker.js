@@ -1,81 +1,53 @@
-// Este es un service worker para la PWA
+// Este es un archivo plantilla que será procesado por workbox-cli
+// No modifiques directamente el archivo service-worker.js en la carpeta build
 
-const CACHE_NAME = 'zip-extractor-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/static/js/main.chunk.js',
-  '/static/js/0.chunk.js',
-  '/static/js/bundle.js',
-  '/manifest.json',
-  '/favicon.ico',
-  '/logo192.png',
-  '/logo512.png'
-];
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.3/workbox-sw.js');
 
-// Instalación del Service Worker
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
-      })
-  );
+// Inicializar workbox
+workbox.setConfig({
+  debug: false
 });
 
-// Activación del Service Worker
-self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
+// IMPORTANTE: Esta línea es donde Workbox inyectará el manifiesto
+// No la elimines o modifiques ya que es necesaria para el proceso de inyección
+workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
 
-// Manejo de peticiones fetch
-self.addEventListener('fetch', (event) => {
-  // Si es una solicitud a la API, no intentamos cachearla
-  if (event.request.url.includes('/api/')) {
-    return;
-  }
+// Configurar estrategias de caché personalizadas
+// Caché para imágenes
+workbox.routing.registerRoute(
+  /\.(?:png|jpg|jpeg|svg|gif)$/,
+  new workbox.strategies.CacheFirst({
+    cacheName: 'images',
+    plugins: [
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 días
+      }),
+    ],
+  })
+);
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Si encontramos una coincidencia en la caché, la devolvemos
-        if (response) {
-          return response;
-        }
-        
-        // Si no hay coincidencia, buscamos en la red
-        return fetch(event.request).then(
-          (response) => {
-            // Si la respuesta no es válida, devolvemos la respuesta original
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+// Caché para peticiones API
+workbox.routing.registerRoute(
+  /^https?:.*\/api\//,
+  new workbox.strategies.NetworkFirst({
+    cacheName: 'api-cache',
+    plugins: [
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 5 * 60, // 5 minutos
+      }),
+    ],
+  })
+);
 
-            // Clonamos la respuesta para almacenarla en caché
-            var responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        );
-      })
-  );
-});
+// Caché para navegación (HTML)
+workbox.routing.registerRoute(
+  /\/$/,
+  new workbox.strategies.NetworkFirst({
+    cacheName: 'html-cache',
+  })
+);
 
 // Variables para almacenar el archivo compartido
 let sharedFile = null;
@@ -88,16 +60,20 @@ self.addEventListener('fetch', (event) => {
   if (url.searchParams.has('share-target') && event.request.method === 'POST') {
     // Prevenir el comportamiento por defecto
     event.respondWith((async () => {
-      // Extraer el FormData y guardar el archivo
-      const formData = await event.request.formData();
-      const file = formData.get('zipFile');
-      
-      if (file) {
-        // Guardar el archivo compartido para su posterior uso
-        sharedFile = file;
+      try {
+        // Extraer el FormData y guardar el archivo
+        const formData = await event.request.formData();
+        const file = formData.get('zipFile');
         
-        // Redirigir a la aplicación principal con un parámetro de consulta
-        return Response.redirect('/?share-target=true');
+        if (file) {
+          // Guardar el archivo compartido para su posterior uso
+          sharedFile = file;
+          
+          // Redirigir a la aplicación principal con un parámetro de consulta
+          return Response.redirect('/?share-target=true');
+        }
+      } catch (error) {
+        console.error('Error procesando el archivo compartido:', error);
       }
       
       return Response.redirect('/');

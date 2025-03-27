@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: zip-extractor-pwa
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: max-age=31536000
+      - path: /service-worker.js
+        name: Cache-Control
+        value: max-age=0
+      - path: /service-worker.js
+        name: Content-Type
+        value: application/javascript
+      - path: /manifest.json
+        name: Content-Type
+        value: application/manifest+json
