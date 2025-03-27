@@ -7,48 +7,82 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [zipFile, setZipFile] = useState(null);
-  const [sharedFiles, setSharedFiles] = useState([]);
+  const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
 
   // URL del backend
   const API_URL = process.env.REACT_APP_API_URL || window.location.origin;
 
+  // Función para mostrar mensajes de depuración
+  const logDebug = (message, data) => {
+    console.log(`[DEBUG] ${message}`, data || '');
+  };
+
   // Detectar archivos compartidos desde WhatsApp u otras apps
   useEffect(() => {
-    // Registrar event listener para Web Share Target API
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('DOMContentLoaded', async () => {
-        try {
-          // Verificar si la app fue abierta por un compartir POST
-          const urlParams = new URLSearchParams(window.location.search);
-          
-          if (urlParams.has('share-target')) {
-            // En el caso de POST, el archivo estará en FormData
-            // El service worker se encargará de interceptar el POST y redirigir a la app principal
-            const formData = await navigator.serviceWorker.ready.then(registration => {
-              return registration.active.postMessage({ type: 'GET_SHARED_FILE' });
-            });
-            
-            // El archivo será devuelto por el service worker a través de un evento de mensaje
-            navigator.serviceWorker.addEventListener('message', event => {
-              if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
-                handleSharedFile(event.data.file);
-              }
-            });
-          }
-        } catch (err) {
-          console.error('Error al procesar archivo compartido:', err);
-          setError(`Error al procesar el archivo compartido: ${err.message}`);
+    // Verificar si la app fue abierta por compartir
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSharedFile = urlParams.has('share-target');
+    const shareId = urlParams.get('shareId');
+
+    if (isSharedFile && shareId) {
+      logDebug('Detectada solicitud de archivo compartido con ID:', shareId);
+      setIsProcessingSharedFile(true);
+      
+      // Escuchar el evento de mensaje del Service Worker
+      const messageHandler = (event) => {
+        if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
+          logDebug('Archivo recibido del Service Worker:', event.data.file.name);
+          handleSharedFile(event.data.file);
+          navigator.serviceWorker.removeEventListener('message', messageHandler);
         }
-      });
+      };
+      
+      // Registrar el listener para mensajes
+      navigator.serviceWorker.addEventListener('message', messageHandler);
+      
+      // Comprobar si hay un service worker activo
+      if (navigator.serviceWorker.controller) {
+        // Solicitar el archivo compartido
+        logDebug('Solicitando archivo compartido al Service Worker');
+        navigator.serviceWorker.controller.postMessage({
+          type: 'GET_SHARED_FILE',
+          shareId: shareId
+        });
+      } else {
+        logDebug('No hay Service Worker controlando esta página');
+        setError('No se pudo procesar el archivo compartido. Por favor, intenta de nuevo.');
+        setIsProcessingSharedFile(false);
+      }
+      
+      return () => {
+        // Limpiar el listener al desmontar
+        navigator.serviceWorker.removeEventListener('message', messageHandler);
+      };
     }
+    
+    // Escuchar notificaciones de nuevos archivos compartidos
+    const fileAvailableHandler = (event) => {
+      if (event.data && event.data.type === 'SHARED_FILE_AVAILABLE') {
+        logDebug('Notificación de nuevo archivo compartido:', event.data.shareId);
+        window.location.href = `/?share-target=true&shareId=${event.data.shareId}`;
+      }
+    };
+    
+    navigator.serviceWorker.addEventListener('message', fileAvailableHandler);
+    
+    return () => {
+      navigator.serviceWorker.removeEventListener('message', fileAvailableHandler);
+    };
   }, []);
 
   // Manejar archivos recibidos a través de la Web Share Target API
   const handleSharedFile = async (file) => {
+    logDebug('Procesando archivo compartido:', file.name);
     if (!file) return;
     
     if (file.type !== 'application/zip' && !file.name.endsWith('.zip')) {
       setError('Por favor, comparte un archivo ZIP válido');
+      setIsProcessingSharedFile(false);
       return;
     }
 
@@ -60,15 +94,17 @@ function App() {
       // Procesar el archivo compartido
       await processZipFile(file);
     } catch (err) {
-      console.error('Error al procesar archivo compartido:', err);
+      logDebug('Error al procesar archivo compartido:', err.message);
       setError(`Error al procesar el archivo compartido: ${err.message}`);
     } finally {
       setIsLoading(false);
+      setIsProcessingSharedFile(false);
     }
   };
 
   // Procesar el archivo ZIP
   const processZipFile = async (file) => {
+    logDebug('Enviando archivo ZIP al backend');
     // Crear un objeto FormData para enviar el archivo al backend
     const formData = new FormData();
     formData.append('zipFile', file);
@@ -85,6 +121,7 @@ function App() {
     }
     
     const result = await response.json();
+    logDebug('Respuesta del backend:', result);
     
     // Procesar los archivos obtenidos del backend
     const extractedFiles = result.files.map(file => ({
@@ -137,20 +174,27 @@ function App() {
         <h1>Extractor de archivos ZIP</h1>
       </header>
       <main className="App-main">
-        <div className="file-upload-container">
-          <label className="file-upload-label">
-            <input 
-              type="file" 
-              className="file-upload-input" 
-              accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" 
-              onChange={handleFileUpload} 
-            />
-            <div className="file-upload-text">
-              <span>Haz clic para subir un archivo ZIP</span>
-              <span className="file-upload-subtext">o comparte directamente desde WhatsApp</span>
-            </div>
-          </label>
-        </div>
+        {isProcessingSharedFile ? (
+          <div className="loading-indicator">
+            <div className="spinner"></div>
+            <p>Recibiendo archivo compartido...</p>
+          </div>
+        ) : (
+          <div className="file-upload-container">
+            <label className="file-upload-label">
+              <input 
+                type="file" 
+                className="file-upload-input" 
+                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" 
+                onChange={handleFileUpload} 
+              />
+              <div className="file-upload-text">
+                <span>Haz clic para subir un archivo ZIP</span>
+                <span className="file-upload-subtext">o comparte directamente desde WhatsApp</span>
+              </div>
+            </label>
+          </div>
+        )}
 
         {error && (
           <div className="error-message">

@@ -4,7 +4,6 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
-
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
@@ -13,5 +12,5 @@ root.render(
   </React.StrictMode>
 );
 
-// Registrar el service worker
+// Registrar el service worker usando la implementación personalizada
 serviceWorkerRegistration.register();

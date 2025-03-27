@@ -8,9 +8,7 @@ const InstallPWA = () => {
 
   useEffect(() => {
     const handler = (e) => {
-      // Prevenir que Chrome 67 y anteriores cierren automáticamente el prompt
-      e.preventDefault();
-      // Guardar el evento para usarlo más tarde
+      // Guarda el evento sin llamar a preventDefault
       setPromptInstall(e);
       setSupportsPWA(true);
     };
@@ -29,6 +27,7 @@ const InstallPWA = () => {
     if (!promptInstall) {
       return;
     }
+    
     // Mostrar el prompt de instalación
     promptInstall.prompt();
     
