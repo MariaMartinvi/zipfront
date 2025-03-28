@@ -9,6 +9,8 @@ function App() {
   const [zipFile, setZipFile] = useState(null);
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
   const [debugMessages, setDebugMessages] = useState([]);
+  const [chatGptResponse, setChatGptResponse] = useState("");
+  const [showChatGptResponse, setShowChatGptResponse] = useState(false);
   // Tracking para evitar procesamiento duplicado
   const processedShareIds = useRef(new Set());
   const isProcessingRef = useRef(false);
@@ -226,11 +228,22 @@ function App() {
       const result = await response.json();
       addDebugMessage(`Respuesta exitosa: ${result.files?.length || 0} archivos`);
       
+      // Manejar la respuesta de ChatGPT si existe
+      if (result.chatgpt_response) {
+        addDebugMessage('Respuesta de ChatGPT recibida');
+        setChatGptResponse(result.chatgpt_response);
+        setShowChatGptResponse(true);
+      } else {
+        setChatGptResponse("");
+        setShowChatGptResponse(false);
+      }
+      
       const extractedFiles = result.files.map(file => ({
         name: file.name,
         size: file.size,
         path: file.path,
-        operationId: result.operation_id
+        operationId: result.operation_id,
+        hasText: file.has_text
       }));
       
       setFiles(extractedFiles);
@@ -285,12 +298,14 @@ function App() {
     setIsLoading(false);
     setDebugMessages([]);
     processedShareIds.current.clear();
+    setChatGptResponse("");
+    setShowChatGptResponse(false);
   };
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Extractor de archivos ZIP</h1>
+        <h1>Extractor de archivos ZIP con análisis de ChatGPT</h1>
       </header>
       <main className="App-main">
         {isProcessingSharedFile ? (
@@ -330,7 +345,19 @@ function App() {
         {isLoading && (
           <div className="loading-indicator">
             <div className="spinner"></div>
-            <p>Descomprimiendo archivo...</p>
+            <p>Descomprimiendo archivo y analizando contenido...</p>
+          </div>
+        )}
+
+        {/* Mostrar la respuesta de ChatGPT si está disponible */}
+        {showChatGptResponse && chatGptResponse && (
+          <div className="chatgpt-response">
+            <h2>Análisis de ChatGPT</h2>
+            <div className="response-content">
+              {chatGptResponse.split('\n').map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </div>
           </div>
         )}
 
@@ -348,6 +375,7 @@ function App() {
                 <tr>
                   <th>Nombre</th>
                   <th>Tamaño</th>
+                  <th>Tipo</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -356,6 +384,7 @@ function App() {
                   <tr key={index}>
                     <td>{file.name}</td>
                     <td>{(file.size / 1024).toFixed(2)} KB</td>
+                    <td>{file.hasText ? 'Texto' : 'Binario'}</td>
                     <td>
                       <button onClick={() => downloadFile(file)} className="download-button">
                         Descargar
