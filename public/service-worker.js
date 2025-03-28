@@ -1,10 +1,8 @@
 // Service Worker mejorado para compartir archivos desde WhatsApp
-// Soluciona el problema de bucle y de no aparecer la web al compartir
+// Soluciona el problema de "Not allowed to open a window"
 
 // Almacén temporal para archivos compartidos
 const sharedFiles = new Map();
-// Registro para evitar procesar múltiples veces la misma solicitud
-const processedRequests = new Set();
 
 // Función de utilidad para depuración
 const debug = (message, data) => {
@@ -79,7 +77,7 @@ self.addEventListener('fetch', event => {
           const allClients = await clients.matchAll({ type: 'window' });
           debug(`Clientes encontrados: ${allClients.length}`);
           
-          // Si hay ventanas existentes
+          // Si hay ventanas existentes, usarlas en lugar de abrir una nueva
           if (allClients.length > 0) {
             // Encontrar la ventana más adecuada (preferiblemente la raíz)
             const targetClient = allClients.find(client => 
@@ -87,7 +85,7 @@ self.addEventListener('fetch', event => {
               new URL(client.url).pathname === '/index.html'
             ) || allClients[0];
             
-            debug('Enviando archivo al cliente', targetClient.id);
+            debug('Enviando archivo al cliente existente', targetClient.id);
             
             // Notificar a la ventana sobre el archivo compartido
             targetClient.postMessage({
@@ -96,26 +94,17 @@ self.addEventListener('fetch', event => {
               shareId: shareId
             });
             
-            // Enfocar la ventana existente
-            targetClient.focus();
-            return Response.redirect('/?shared=' + shareId);
-          } else {
-            // Si no hay ventanas abiertas, crear una nueva
-            debug('No hay clientes abiertos, abriendo nueva ventana');
-            // Importante: Primero abrir la ventana, luego enviar el mensaje
-            const clientUrl = '/?shared=' + shareId;
-            const client = await clients.openWindow(clientUrl);
+            // Enfocar la ventana existente y navegar a la página con el parámetro
+            await targetClient.navigate('/?shared=' + shareId);
+            await targetClient.focus();
             
-            if (!client) {
-              debug('No se pudo abrir una nueva ventana');
-              // Fallback a redirección normal
-              return Response.redirect(clientUrl);
-            }
-            
-            debug('Nueva ventana abierta correctamente');
-            return new Response('Redirigiendo a la aplicación...', {
-              headers: { 'Content-Type': 'text/html' }
+            return new Response('Procesando archivo...', {
+              headers: { 'Content-Type': 'text/plain' }
             });
+          } else {
+            // Si no hay ventanas, simplemente redirigir
+            debug('No hay clientes abiertos, usando redirección normal');
+            return Response.redirect('/?shared=' + shareId);
           }
         } else {
           debug('No se encontró ningún archivo en la solicitud');
