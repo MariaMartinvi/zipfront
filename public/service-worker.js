@@ -1,4 +1,5 @@
-// Service Worker con mejor sistema de depuración para solucionar el problema de compartir archivos desde WhatsApp
+// Service Worker mejorado para compartir archivos desde WhatsApp
+// Soluciona el problema de bucle y de no aparecer la web al compartir
 
 // Almacén temporal para archivos compartidos
 const sharedFiles = new Map();
@@ -33,34 +34,16 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   debug('Fetch interceptado', { url: url.pathname, method: event.request.method });
   
-  // Este es el punto crítico: verificar si es una solicitud de compartir
+  // Verificar si es una solicitud de compartir
   if (url.pathname === '/share-target' && event.request.method === 'POST') {
-    debug('Solicitud de compartir detectada');
-    
-    // Generar un ID único basado en la URL y timestamp
-    const requestId = `${url.toString()}-${Date.now()}`;
-    
-    // Verificar si ya procesamos esta solicitud (evita procesamiento duplicado)
-    if (processedRequests.has(requestId)) {
-      debug('Solicitud ya procesada, ignorando', requestId);
-      event.respondWith(new Response('Already processed', { status: 200 }));
-      return;
-    }
-    
-    // Marcar esta solicitud como procesada
-    processedRequests.add(requestId);
-    
-    // Establecer un tiempo de vida para las solicitudes procesadas (limpieza automática)
-    setTimeout(() => {
-      processedRequests.delete(requestId);
-    }, 30000); // 30 segundos
+    debug('Solicitud de compartir desde WhatsApp detectada');
     
     event.respondWith((async () => {
       try {
         debug('Procesando solicitud de compartir');
         // Intentar extraer el FormData
         const formData = await event.request.formData();
-        debug('FormData extraído');
+        debug('FormData extraído correctamente');
         
         // Verificar qué campos contiene el FormData
         const formDataEntries = [];
@@ -70,7 +53,19 @@ self.addEventListener('fetch', event => {
         debug('Contenido de FormData', formDataEntries);
         
         // Intentar obtener el archivo ZIP
-        const file = formData.get('zipFile');
+        let file = formData.get('zipFile');
+        
+        // Si no está en zipFile, buscar en todos los campos
+        if (!file || !(file instanceof File)) {
+          debug('Archivo no encontrado en campo zipFile, buscando en todos los campos');
+          for (const [key, value] of formData.entries()) {
+            if (value instanceof File) {
+              debug(`Archivo encontrado en campo: ${key}`);
+              file = value;
+              break;
+            }
+          }
+        }
         
         if (file && file instanceof File) {
           debug('Archivo encontrado', { name: file.name, type: file.type, size: file.size });
@@ -80,74 +75,57 @@ self.addEventListener('fetch', event => {
           sharedFiles.set(shareId, file);
           debug('Archivo almacenado con ID', shareId);
           
-          // Buscar solo la ventana principal para evitar duplicados
+          // Buscar ventanas existentes
           const allClients = await clients.matchAll({ type: 'window' });
-          debug('Clientes encontrados', allClients.length);
+          debug(`Clientes encontrados: ${allClients.length}`);
           
-          // Solo enviar el archivo a UNA ventana (la primera disponible)
+          // Si hay ventanas existentes
           if (allClients.length > 0) {
-            const mainClient = allClients[0];
-            debug('Enviando archivo únicamente al cliente principal', mainClient.id);
+            // Encontrar la ventana más adecuada (preferiblemente la raíz)
+            const targetClient = allClients.find(client => 
+              new URL(client.url).pathname === '/' || 
+              new URL(client.url).pathname === '/index.html'
+            ) || allClients[0];
             
-            mainClient.postMessage({
+            debug('Enviando archivo al cliente', targetClient.id);
+            
+            // Notificar a la ventana sobre el archivo compartido
+            targetClient.postMessage({
               type: 'SHARED_FILE',
               file: file,
               shareId: shareId
             });
             
-            // Redirigir al cliente principal
+            // Enfocar la ventana existente
+            targetClient.focus();
             return Response.redirect('/?shared=' + shareId);
           } else {
-            debug('No se encontraron clientes, abriendo uno nuevo');
-            const newClient = await clients.openWindow('/?shared=' + shareId);
+            // Si no hay ventanas abiertas, crear una nueva
+            debug('No hay clientes abiertos, abriendo nueva ventana');
+            // Importante: Primero abrir la ventana, luego enviar el mensaje
+            const clientUrl = '/?shared=' + shareId;
+            const client = await clients.openWindow(clientUrl);
             
-            // Si no pudimos abrir el cliente, simplemente redirigir
-            if (!newClient) {
-              debug('No se pudo abrir cliente, redirigiendo a la página principal');
-              return Response.redirect('/?shared=' + shareId);
+            if (!client) {
+              debug('No se pudo abrir una nueva ventana');
+              // Fallback a redirección normal
+              return Response.redirect(clientUrl);
             }
             
-            return new Response('Redirecting...', {
-              headers: { 'Refresh': '0; url=/?shared=' + shareId }
+            debug('Nueva ventana abierta correctamente');
+            return new Response('Redirigiendo a la aplicación...', {
+              headers: { 'Content-Type': 'text/html' }
             });
           }
         } else {
-          debug('Archivo no encontrado en FormData');
-          // Si no encontramos el archivo bajo "zipFile", intentar buscar en otros campos
-          let foundFile = null;
-          for (const [key, value] of formData.entries()) {
-            if (value instanceof File) {
-              debug('Archivo encontrado en campo alternativo', { field: key, file: value.name });
-              foundFile = value;
-              break;
-            }
-          }
-          
-          if (foundFile) {
-            // Procesarlo como si fuera el archivo correcto
-            const shareId = Date.now().toString();
-            sharedFiles.set(shareId, foundFile);
-            
-            // Solo notificar a la ventana principal
-            const allClients = await clients.matchAll({ type: 'window' });
-            if (allClients.length > 0) {
-              const mainClient = allClients[0];
-              mainClient.postMessage({
-                type: 'SHARED_FILE',
-                file: foundFile,
-                shareId: shareId
-              });
-            }
-            
-            return Response.redirect('/?shared=' + shareId);
-          }
+          debug('No se encontró ningún archivo en la solicitud');
+          return Response.redirect('/?error=no-file-found');
         }
       } catch (error) {
         debug('Error procesando solicitud de compartir', error.toString());
+        // En caso de error, redirigir con información de error
+        return Response.redirect('/?error=share-failed&reason=' + encodeURIComponent(error.message));
       }
-      
-      // Si hay algún problema, redirigir con error
-      return Response.redirect('/?error=share-failed');
     })());
   }
 });
@@ -170,8 +148,12 @@ self.addEventListener('message', event => {
         shareId: shareId
       });
       
-      // Eliminar el archivo después de enviarlo para evitar procesar múltiples veces
-      sharedFiles.delete(shareId);
+      // Mantener el archivo por un tiempo adicional por si hay recargas
+      setTimeout(() => {
+        // Eliminar el archivo después de un tiempo para liberar memoria
+        sharedFiles.delete(shareId);
+        debug('Archivo eliminado de la memoria después del timeout', shareId);
+      }, 30000); // 30 segundos
     } else {
       debug('Archivo no encontrado para el ID solicitado');
       event.source.postMessage({

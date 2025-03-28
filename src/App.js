@@ -22,68 +22,48 @@ function App() {
     setDebugMessages(prev => [...prev, { time: new Date().toISOString(), message }]);
   };
 
-  // Limpiar la URL para evitar recargas duplicadas
+  // Efecto para manejar compartir archivos y configurar Service Worker
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('shared') || urlParams.has('error')) {
-      // Después de procesar los parámetros, limpiar la URL para evitar duplicados
-      window.history.replaceState({}, document.title, window.location.pathname);
+    // Configurar el Service Worker si está disponible
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const registration = await navigator.serviceWorker.register('/service-worker.js');
+          addDebugMessage('Service Worker registrado correctamente');
+          
+          // Comprobar si el Service Worker está activo
+          if (navigator.serviceWorker.controller) {
+            addDebugMessage('Service Worker está controlando la página');
+          } else {
+            addDebugMessage('Service Worker registrado pero aún no controla la página');
+            // Recargar la página para activar el Service Worker si es necesario
+            if (window.location.search.includes('shared=')) {
+              window.location.reload();
+            }
+          }
+        } catch (error) {
+          addDebugMessage(`Error al registrar Service Worker: ${error.message}`);
+        }
+      });
     }
-  }, []);
 
-  // Efecto para manejar compartir archivos
-  useEffect(() => {
-    // Verificar parámetros en la URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const isShared = urlParams.has('shared');
-    const hasError = urlParams.has('error');
-    const shareId = urlParams.get('shared');
-    
-    if (hasError) {
-      setError('Hubo un problema al procesar el archivo compartido. Por favor, intenta de nuevo.');
-      addDebugMessage('Error detectado en parámetros URL');
-      return;
-    }
-    
-    if (isShared && shareId) {
-      // Evitar procesar el mismo ID más de una vez
-      if (processedShareIds.current.has(shareId)) {
-        addDebugMessage(`ShareID ${shareId} ya fue procesado, ignorando`);
-        return;
-      }
-      
-      // Evitar procesamiento concurrente
-      if (isProcessingRef.current) {
-        addDebugMessage('Ya hay un procesamiento en curso, ignorando');
-        return;
-      }
-      
-      addDebugMessage(`Parámetro 'shared' detectado en URL: ${shareId}`);
-      setIsProcessingSharedFile(true);
-      isProcessingRef.current = true;
-      
-      // Marcar este ID como procesado
-      processedShareIds.current.add(shareId);
-      
-      // Solicitar el archivo compartido si tenemos un ID
-      if (navigator.serviceWorker.controller) {
-        addDebugMessage('Solicitando archivo compartido al Service Worker');
-        navigator.serviceWorker.controller.postMessage({
-          type: 'GET_SHARED_FILE',
-          shareId: shareId
-        });
-      }
-      
-      // Limpiar URL después de procesar
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    
     // Función para manejar los mensajes del Service Worker
     const handleServiceWorkerMessage = (event) => {
-      addDebugMessage(`Mensaje recibido: ${event.data?.type}`);
+      addDebugMessage(`Mensaje recibido del Service Worker: ${event.data?.type}`);
       
       if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
-        addDebugMessage(`Archivo recibido: ${event.data.file.name}`);
+        addDebugMessage(`Archivo recibido del Service Worker: ${event.data.file.name}`);
+        
+        // Evitar procesamiento duplicado
+        if (event.data.shareId && processedShareIds.current.has(event.data.shareId)) {
+          addDebugMessage(`ShareID ${event.data.shareId} ya procesado, ignorando`);
+          return;
+        }
+        
+        if (event.data.shareId) {
+          processedShareIds.current.add(event.data.shareId);
+        }
+        
         handleSharedFile(event.data.file);
       } else if (event.data && event.data.type === 'SHARED_FILE_ERROR') {
         setError(`Error al recibir archivo: ${event.data.error || 'Error desconocido'}`);
@@ -97,35 +77,81 @@ function App() {
     // Registrar el listener para mensajes del Service Worker
     navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
     
-    // Verificar si el Service Worker está activo
-    if (navigator.serviceWorker.controller) {
-      addDebugMessage('Service Worker detectado, enviando PING');
-      navigator.serviceWorker.controller.postMessage({ type: 'PING' });
-    } else {
-      addDebugMessage('Service Worker no detectado');
-    }
-    
-    // Si estamos esperando un archivo compartido, establecer un timeout
-    if (isProcessingSharedFile) {
-      const timeout = setTimeout(() => {
-        if (isProcessingSharedFile) {
-          addDebugMessage('Timeout esperando archivo compartido');
-          setError('No se pudo recibir el archivo compartido a tiempo. Por favor, intenta de nuevo.');
-          setIsProcessingSharedFile(false);
-          isProcessingRef.current = false;
-        }
-      }, 10000); // 10 segundos
-      
-      return () => {
-        clearTimeout(timeout);
-        navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
-      };
-    }
-    
     return () => {
       navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
     };
-  }, [isProcessingSharedFile]);
+  }, []);
+
+  // Efecto para procesar parámetros de URL
+  useEffect(() => {
+    // Verificar parámetros en la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const isShared = urlParams.has('shared');
+    const hasError = urlParams.has('error');
+    const shareId = urlParams.get('shared');
+    const errorReason = urlParams.get('reason');
+    
+    if (hasError) {
+      const errorMessage = errorReason 
+        ? `Error: ${decodeURIComponent(errorReason)}`
+        : 'Hubo un problema al procesar el archivo compartido. Por favor, intenta de nuevo.';
+      
+      setError(errorMessage);
+      addDebugMessage(`Error detectado en parámetros URL: ${errorMessage}`);
+      
+      // Limpiar URL después de procesar el error
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+    
+    if (isShared && shareId) {
+      // Evitar procesar el mismo ID más de una vez
+      if (processedShareIds.current.has(shareId)) {
+        addDebugMessage(`ShareID ${shareId} ya fue procesado, ignorando`);
+        
+        // Limpiar URL después de verificar duplicado
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+      
+      // Evitar procesamiento concurrente
+      if (isProcessingRef.current) {
+        addDebugMessage('Ya hay un procesamiento en curso, ignorando');
+        return;
+      }
+      
+      addDebugMessage(`Parámetro 'shared' detectado en URL: ${shareId}`);
+      setIsProcessingSharedFile(true);
+      isProcessingRef.current = true;
+      
+      // Solicitar el archivo compartido si tenemos un ID y el Service Worker está activo
+      if (navigator.serviceWorker.controller) {
+        addDebugMessage('Solicitando archivo compartido al Service Worker');
+        navigator.serviceWorker.controller.postMessage({
+          type: 'GET_SHARED_FILE',
+          shareId: shareId
+        });
+        
+        // Configurar un timeout por si no recibimos respuesta
+        setTimeout(() => {
+          if (isProcessingRef.current) {
+            addDebugMessage('Timeout esperando archivo compartido');
+            setError('No se pudo recibir el archivo compartido. Por favor, intenta de nuevo.');
+            setIsProcessingSharedFile(false);
+            isProcessingRef.current = false;
+          }
+        }, 10000); // 10 segundos
+      } else {
+        addDebugMessage('Service Worker no está controlando la página, no se puede solicitar el archivo');
+        setError('El Service Worker no está listo. Por favor, recarga la página e intenta de nuevo.');
+        setIsProcessingSharedFile(false);
+        isProcessingRef.current = false;
+      }
+      
+      // Limpiar URL después de procesar
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   // Manejar archivos recibidos del service worker
   const handleSharedFile = async (file) => {
