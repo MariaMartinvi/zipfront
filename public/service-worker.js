@@ -167,4 +167,4 @@ self.addEventListener('message', event => {
       event.source.postMessage({ type: 'CLEARED' });
       break;
   }
-});v
+});
