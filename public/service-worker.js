@@ -2,6 +2,8 @@
 
 // Almacén temporal para archivos compartidos
 const sharedFiles = new Map();
+// Registro para evitar procesar múltiples veces la misma solicitud
+const processedRequests = new Set();
 
 // Función de utilidad para depuración
 const debug = (message, data) => {
@@ -35,6 +37,24 @@ self.addEventListener('fetch', event => {
   if (url.pathname === '/share-target' && event.request.method === 'POST') {
     debug('Solicitud de compartir detectada');
     
+    // Generar un ID único basado en la URL y timestamp
+    const requestId = `${url.toString()}-${Date.now()}`;
+    
+    // Verificar si ya procesamos esta solicitud (evita procesamiento duplicado)
+    if (processedRequests.has(requestId)) {
+      debug('Solicitud ya procesada, ignorando', requestId);
+      event.respondWith(new Response('Already processed', { status: 200 }));
+      return;
+    }
+    
+    // Marcar esta solicitud como procesada
+    processedRequests.add(requestId);
+    
+    // Establecer un tiempo de vida para las solicitudes procesadas (limpieza automática)
+    setTimeout(() => {
+      processedRequests.delete(requestId);
+    }, 30000); // 30 segundos
+    
     event.respondWith((async () => {
       try {
         debug('Procesando solicitud de compartir');
@@ -60,35 +80,36 @@ self.addEventListener('fetch', event => {
           sharedFiles.set(shareId, file);
           debug('Archivo almacenado con ID', shareId);
           
-          // Buscar todos los clientes (ventanas/pestañas) asociados a este origen
+          // Buscar solo la ventana principal para evitar duplicados
           const allClients = await clients.matchAll({ type: 'window' });
           debug('Clientes encontrados', allClients.length);
           
+          // Solo enviar el archivo a UNA ventana (la primera disponible)
           if (allClients.length > 0) {
-            // Enviar el archivo directamente a todos los clientes
-            allClients.forEach(client => {
-              debug('Enviando archivo a cliente', client.id);
-              client.postMessage({
-                type: 'SHARED_FILE',
-                file: file,
-                shareId: shareId
-              });
-            });
+            const mainClient = allClients[0];
+            debug('Enviando archivo únicamente al cliente principal', mainClient.id);
             
-            // Intentar abrir una ventana si no hay ninguna abierta
-            if (allClients.length === 0) {
-              debug('No hay clientes, intentando abrir uno nuevo');
-              const newClient = await clients.openWindow('/');
-              if (newClient) {
-                debug('Nuevo cliente abierto');
-              }
-            }
+            mainClient.postMessage({
+              type: 'SHARED_FILE',
+              file: file,
+              shareId: shareId
+            });
             
             // Redirigir al cliente principal
             return Response.redirect('/?shared=' + shareId);
           } else {
-            debug('No se encontraron clientes, redirigiendo a la página principal');
-            return Response.redirect('/?shared=' + shareId);
+            debug('No se encontraron clientes, abriendo uno nuevo');
+            const newClient = await clients.openWindow('/?shared=' + shareId);
+            
+            // Si no pudimos abrir el cliente, simplemente redirigir
+            if (!newClient) {
+              debug('No se pudo abrir cliente, redirigiendo a la página principal');
+              return Response.redirect('/?shared=' + shareId);
+            }
+            
+            return new Response('Redirecting...', {
+              headers: { 'Refresh': '0; url=/?shared=' + shareId }
+            });
           }
         } else {
           debug('Archivo no encontrado en FormData');
@@ -107,14 +128,16 @@ self.addEventListener('fetch', event => {
             const shareId = Date.now().toString();
             sharedFiles.set(shareId, foundFile);
             
-            const allClients = await clients.matchAll();
-            allClients.forEach(client => {
-              client.postMessage({
+            // Solo notificar a la ventana principal
+            const allClients = await clients.matchAll({ type: 'window' });
+            if (allClients.length > 0) {
+              const mainClient = allClients[0];
+              mainClient.postMessage({
                 type: 'SHARED_FILE',
                 file: foundFile,
                 shareId: shareId
               });
-            });
+            }
             
             return Response.redirect('/?shared=' + shareId);
           }
@@ -147,8 +170,8 @@ self.addEventListener('message', event => {
         shareId: shareId
       });
       
-      // Opcional: eliminar el archivo después de enviarlo
-      // sharedFiles.delete(shareId);
+      // Eliminar el archivo después de enviarlo para evitar procesar múltiples veces
+      sharedFiles.delete(shareId);
     } else {
       debug('Archivo no encontrado para el ID solicitado');
       event.source.postMessage({

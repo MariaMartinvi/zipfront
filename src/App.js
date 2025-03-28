@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import InstallPWA from './InstallPWA';
 
@@ -9,6 +9,9 @@ function App() {
   const [zipFile, setZipFile] = useState(null);
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
   const [debugMessages, setDebugMessages] = useState([]);
+  // Tracking para evitar procesamiento duplicado
+  const processedShareIds = useRef(new Set());
+  const isProcessingRef = useRef(false);
 
   // URL del backend
   const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
@@ -18,6 +21,15 @@ function App() {
     console.log('[App Debug]', message);
     setDebugMessages(prev => [...prev, { time: new Date().toISOString(), message }]);
   };
+
+  // Limpiar la URL para evitar recargas duplicadas
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('shared') || urlParams.has('error')) {
+      // Después de procesar los parámetros, limpiar la URL para evitar duplicados
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   // Efecto para manejar compartir archivos
   useEffect(() => {
@@ -33,18 +45,37 @@ function App() {
       return;
     }
     
-    if (isShared) {
+    if (isShared && shareId) {
+      // Evitar procesar el mismo ID más de una vez
+      if (processedShareIds.current.has(shareId)) {
+        addDebugMessage(`ShareID ${shareId} ya fue procesado, ignorando`);
+        return;
+      }
+      
+      // Evitar procesamiento concurrente
+      if (isProcessingRef.current) {
+        addDebugMessage('Ya hay un procesamiento en curso, ignorando');
+        return;
+      }
+      
       addDebugMessage(`Parámetro 'shared' detectado en URL: ${shareId}`);
       setIsProcessingSharedFile(true);
+      isProcessingRef.current = true;
+      
+      // Marcar este ID como procesado
+      processedShareIds.current.add(shareId);
       
       // Solicitar el archivo compartido si tenemos un ID
-      if (shareId && navigator.serviceWorker.controller) {
+      if (navigator.serviceWorker.controller) {
         addDebugMessage('Solicitando archivo compartido al Service Worker');
         navigator.serviceWorker.controller.postMessage({
           type: 'GET_SHARED_FILE',
           shareId: shareId
         });
       }
+      
+      // Limpiar URL después de procesar
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
     
     // Función para manejar los mensajes del Service Worker
@@ -57,6 +88,7 @@ function App() {
       } else if (event.data && event.data.type === 'SHARED_FILE_ERROR') {
         setError(`Error al recibir archivo: ${event.data.error || 'Error desconocido'}`);
         setIsProcessingSharedFile(false);
+        isProcessingRef.current = false;
       } else if (event.data && event.data.type === 'PONG') {
         addDebugMessage('Service Worker está activo (respuesta PONG)');
       }
@@ -80,6 +112,7 @@ function App() {
           addDebugMessage('Timeout esperando archivo compartido');
           setError('No se pudo recibir el archivo compartido a tiempo. Por favor, intenta de nuevo.');
           setIsProcessingSharedFile(false);
+          isProcessingRef.current = false;
         }
       }, 10000); // 10 segundos
       
@@ -101,6 +134,7 @@ function App() {
     if (!file) {
       setError('No se pudo recibir el archivo');
       setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
       return;
     }
     
@@ -114,6 +148,7 @@ function App() {
       addDebugMessage(`Archivo no es ZIP: ${file.type}`);
       setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
       setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
       return;
     }
     
@@ -130,6 +165,7 @@ function App() {
     } finally {
       setIsLoading(false);
       setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
     }
   };
 
@@ -218,9 +254,11 @@ function App() {
   // Reiniciar la aplicación (para debugging)
   const handleReset = () => {
     setIsProcessingSharedFile(false);
+    isProcessingRef.current = false;
     setError('');
     setIsLoading(false);
     setDebugMessages([]);
+    processedShareIds.current.clear();
   };
 
   return (
