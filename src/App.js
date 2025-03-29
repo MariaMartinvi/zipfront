@@ -142,7 +142,7 @@ function App() {
             setIsProcessingSharedFile(false);
             isProcessingRef.current = false;
           }
-        }, 10000); // 10 segundos
+        }, 30000); // 10 segundos
       } else {
         addDebugMessage('Service Worker no está controlando la página, no se puede solicitar el archivo');
         setError('El Service Worker no está listo. Por favor, recarga la página e intenta de nuevo.');
