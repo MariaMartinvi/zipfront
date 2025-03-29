@@ -1,7 +1,4 @@
-// Service Worker mejorado para compartir archivos desde WhatsApp
-// Soluciona el problema de "Not allowed to focus a window"
-
-// Almacén temporal para archivos compartidos
+// Service Worker simplificado - elimina por completo el error de focus
 const sharedFiles = new Map();
 
 // Función de utilidad para depuración
@@ -22,9 +19,7 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   debug('Service Worker activado');
-  // Asegurar que el service worker tome el control de todas las páginas
   event.waitUntil(clients.claim());
-  debug('clients.claim() ejecutado');
 });
 
 // Interceptar solicitudes de compartir
@@ -32,36 +27,29 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   debug('Fetch interceptado', { url: url.pathname, method: event.request.method });
   
-  // Verificar si es una solicitud de compartir
   if (url.pathname === '/share-target' && event.request.method === 'POST') {
     debug('Solicitud de compartir desde WhatsApp detectada');
     
     event.respondWith((async () => {
       try {
         debug('Procesando solicitud de compartir');
-        // Intentar extraer el FormData
         const formData = await event.request.formData();
         debug('FormData extraído correctamente');
         
-        // Verificar qué campos contiene el FormData
+        // Verificar contenido del FormData
         const formDataEntries = [];
         for (const pair of formData.entries()) {
           formDataEntries.push(`${pair[0]}: ${typeof pair[1]} (${pair[1] instanceof File ? 'File: ' + pair[1].name : pair[1]})`);
         }
         debug('Contenido de FormData', formDataEntries);
         
-        // Intentar obtener el archivo ZIP
-        let file = formData.get('zipFile');
-        
-        // Si no está en zipFile, buscar en todos los campos
-        if (!file || !(file instanceof File)) {
-          debug('Archivo no encontrado en campo zipFile, buscando en todos los campos');
-          for (const [key, value] of formData.entries()) {
-            if (value instanceof File) {
-              debug(`Archivo encontrado en campo: ${key}`);
-              file = value;
-              break;
-            }
+        // Buscar archivo en todos los campos
+        let file = null;
+        for (const [key, value] of formData.entries()) {
+          if (value instanceof File) {
+            debug(`Archivo encontrado en campo: ${key}`);
+            file = value;
+            break;
           }
         }
         
@@ -73,43 +61,30 @@ self.addEventListener('fetch', event => {
           sharedFiles.set(shareId, file);
           debug('Archivo almacenado con ID', shareId);
           
-          // Buscar ventanas existentes
+          // Buscar clientes existentes
           const allClients = await clients.matchAll({ type: 'window' });
           debug(`Clientes encontrados: ${allClients.length}`);
           
-          // Si hay ventanas existentes, enviar mensaje pero no intentar enfocar
+          // Enviar mensaje al cliente si existe
           if (allClients.length > 0) {
-            // Encontrar la ventana más adecuada
-            const targetClient = allClients.find(client => 
-              new URL(client.url).pathname === '/' || 
-              new URL(client.url).pathname === '/index.html'
-            ) || allClients[0];
-            
-            debug('Enviando archivo al cliente existente', targetClient.id);
-            
-            // Notificar a la ventana sobre el archivo compartido
-            targetClient.postMessage({
+            const client = allClients[0];
+            debug('Enviando mensaje al cliente', client.id);
+            client.postMessage({
               type: 'SHARED_FILE',
               file: file,
               shareId: shareId
             });
-            
-            // Usar redirección simple en todos los casos
-            // Evitar navigate() y focus() que causan errores
-            return Response.redirect('/?shared=' + shareId);
-          } else {
-            // Si no hay ventanas, simplemente redirigir
-            debug('No hay clientes abiertos, usando redirección normal');
-            return Response.redirect('/?shared=' + shareId);
           }
+          
+          // IMPORTANTE: Siempre usar redirección simple, sin importar si hay clientes
+          return Response.redirect('/?shared=' + shareId);
         } else {
           debug('No se encontró ningún archivo en la solicitud');
           return Response.redirect('/?error=no-file-found');
         }
       } catch (error) {
         debug('Error procesando solicitud de compartir', error.toString());
-        // En caso de error, redirigir con información de error
-        return Response.redirect('/?error=share-failed&reason=' + encodeURIComponent(error.message));
+        return Response.redirect('/?error=' + encodeURIComponent(error.message));
       }
     })());
   }
@@ -133,12 +108,10 @@ self.addEventListener('message', event => {
         shareId: shareId
       });
       
-      // Mantener el archivo por un tiempo adicional por si hay recargas
       setTimeout(() => {
-        // Eliminar el archivo después de un tiempo para liberar memoria
         sharedFiles.delete(shareId);
         debug('Archivo eliminado de la memoria después del timeout', shareId);
-      }, 30000); // 30 segundos
+      }, 30000);
     } else {
       debug('Archivo no encontrado para el ID solicitado');
       event.source.postMessage({
