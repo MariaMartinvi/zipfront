@@ -1,13 +1,47 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 
+// Componente principal
 function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>Visor de Archivos Compartidos</h1>
+        <p>Recibe archivos compartidos desde WhatsApp u otras aplicaciones</p>
+      </header>
+
+      <Routes>
+        <Route path="/" element={<FileViewer />} />
+        <Route path="/share-target" element={<ShareTarget />} />
+      </Routes>
+    </div>
+  );
+}
+
+// Componente para manejar archivos compartidos
+function ShareTarget() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Procesamos datos compartidos y redirigimos a la página principal
+    console.log('Archivo compartido detectado a través de Share Target API');
+    // Nota: En una implementación real, procesaríamos los archivos aquí
+    navigate('/', { replace: true });
+  }, [navigate]);
+
+  return <p className="status-message">Procesando archivo compartido...</p>;
+}
+
+// Componente principal para visualizar archivos
+function FileViewer() {
   const [file, setFile] = useState(null);
   const [fileInfo, setFileInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Función para subir el archivo al backend (convertida a useCallback)
+  // Función para subir el archivo al backend
   const handleUpload = useCallback(async (fileToUpload) => {
     if (!fileToUpload) return;
     
@@ -40,18 +74,6 @@ function App() {
     }
   }, []);
 
-  // Efecto para manejar archivos compartidos desde otras apps (como WhatsApp)
-  useEffect(() => {
-    // Verificamos si venimos de una acción de compartir
-    const url = new URL(window.location.href);
-    if (url.pathname === '/share-target' && window.location.search) {
-      // Aquí procesaríamos los datos compartidos - en una implementación real
-      console.log('Archivo compartido detectado a través de Share Target API');
-      // Redirigir a la página principal
-      window.history.replaceState({}, '', '/');
-    }
-  }, []); 
-
   // Función para manejar la selección de archivo manual
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -76,53 +98,46 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Visor de Archivos Compartidos</h1>
-        <p>Recibe archivos compartidos desde WhatsApp u otras aplicaciones</p>
-      </header>
+    <main className="App-main">
+      <div className="upload-section">
+        <label className="file-input-label">
+          Seleccionar archivo
+          <input 
+            type="file" 
+            onChange={handleFileChange} 
+            className="file-input"
+          />
+        </label>
+        <p className="or-text">o comparte un archivo desde WhatsApp</p>
+      </div>
 
-      <main className="App-main">
-        <div className="upload-section">
-          <label className="file-input-label">
-            Seleccionar archivo
-            <input 
-              type="file" 
-              onChange={handleFileChange} 
-              className="file-input"
-            />
-          </label>
-          <p className="or-text">o comparte un archivo desde WhatsApp</p>
-        </div>
+      {loading && <p className="status-message">Cargando archivo...</p>}
+      
+      {error && <p className="error-message">Error: {error}</p>}
 
-        {loading && <p className="status-message">Cargando archivo...</p>}
-        
-        {error && <p className="error-message">Error: {error}</p>}
-
-        {fileInfo && (
-          <div className="file-info-container">
-            <h2>Información del archivo</h2>
-            <div className="file-details">
-              <p><strong>Nombre original:</strong> {fileInfo.originalName}</p>
-              <p><strong>Tipo:</strong> {fileInfo.type}</p>
-              <p><strong>Tamaño:</strong> {formatFileSize(fileInfo.size)}</p>
-              <p><strong>Fecha de subida:</strong> {formatDate(fileInfo.uploadDate)}</p>
-            </div>
-
-            {fileInfo.type && fileInfo.type.startsWith('image/') && (
-              <div className="file-preview">
-                <h3>Vista previa</h3>
-                <img 
-                  src={`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/uploads/${fileInfo.name}`} 
-                  alt="Vista previa" 
-                  className="preview-image"
-                />
-              </div>
-            )}
+      {fileInfo && (
+        <div className="file-info-container">
+          <h2>Información del archivo</h2>
+          <div className="file-details">
+            <p><strong>Nombre original:</strong> {fileInfo.originalName}</p>
+            <p><strong>Tipo:</strong> {fileInfo.type}</p>
+            <p><strong>Tamaño:</strong> {formatFileSize(fileInfo.size)}</p>
+            <p><strong>Fecha de subida:</strong> {formatDate(fileInfo.uploadDate)}</p>
           </div>
-        )}
-      </main>
-    </div>
+
+          {fileInfo.type && fileInfo.type.startsWith('image/') && (
+            <div className="file-preview">
+              <h3>Vista previa</h3>
+              <img 
+                src={`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/uploads/${fileInfo.name}`}
+                alt="Vista previa" 
+                className="preview-image"
+              />
+            </div>
+          )}
+        </div>
+      )}
+    </main>
   );
 }
 
