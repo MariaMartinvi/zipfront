@@ -156,4 +156,3 @@ self.addEventListener('message', event => {
       type: 'PONG'
     });
   }
-});
