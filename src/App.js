@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import './App.css';
 import InstallPWA from './InstallPWA';
 
@@ -7,202 +8,71 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [zipFile, setZipFile] = useState(null);
-  const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
-  const [debugMessages, setDebugMessages] = useState([]);
   const [chatGptResponse, setChatGptResponse] = useState("");
   const [showChatGptResponse, setShowChatGptResponse] = useState(false);
-  // Tracking para evitar procesamiento duplicado
-  const processedShareIds = useRef(new Set());
-  const isProcessingRef = useRef(false);
-
+  const location = useLocation();
+  
   // URL del backend
   const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
 
-  // Función para el logging (visible en modo desarrollo)
+  // Función para el logging
   const addDebugMessage = (message) => {
     console.log('[App Debug]', message);
-    setDebugMessages(prev => [...prev, { time: new Date().toISOString(), message }]);
   };
 
-  // Efecto para manejar compartir archivos y configurar Service Worker
+  // Efecto para procesar archivo de sessionStorage si viene de la página de confirmación
   useEffect(() => {
-    // Configurar el Service Worker si está disponible
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          const registration = await navigator.serviceWorker.register('/service-worker.js');
-          addDebugMessage('Service Worker registrado correctamente');
-          
-          // Comprobar si el Service Worker está activo
-          if (navigator.serviceWorker.controller) {
-            addDebugMessage('Service Worker está controlando la página');
-          } else {
-            addDebugMessage('Service Worker registrado pero aún no controla la página');
-            // Recargar la página para activar el Service Worker si es necesario
-            if (window.location.search.includes('shared=')) {
-              window.location.reload();
-            }
-          }
-        } catch (error) {
-          addDebugMessage(`Error al registrar Service Worker: ${error.message}`);
-        }
-      });
-    }
-
-    // Función para manejar los mensajes del Service Worker
-    const handleServiceWorkerMessage = (event) => {
-      addDebugMessage(`Mensaje recibido del Service Worker: ${event.data?.type}`);
+    const checkForProcessFlag = async () => {
+      const params = new URLSearchParams(location.search);
+      const shouldProcess = params.get('process') === 'true';
       
-      if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
-        addDebugMessage(`Archivo recibido del Service Worker: ${event.data.file.name}`);
+      if (shouldProcess) {
+        // Limpiar la URL para evitar reprocesamiento
+        window.history.replaceState({}, document.title, '/');
         
-        // Evitar procesamiento duplicado
-        if (event.data.shareId && processedShareIds.current.has(event.data.shareId)) {
-          addDebugMessage(`ShareID ${event.data.shareId} ya procesado, ignorando`);
-          return;
+        // Obtener datos del archivo de sessionStorage
+        const fileUrl = sessionStorage.getItem('sharedFileUrl');
+        const fileName = sessionStorage.getItem('sharedFileName');
+        const fileType = sessionStorage.getItem('sharedFileType');
+        const fileSize = sessionStorage.getItem('sharedFileSize');
+        
+        if (fileUrl && fileName) {
+          try {
+            addDebugMessage(`Procesando archivo desde sessionStorage: ${fileName}`);
+            
+            // Convertir la URL del objeto a un Blob
+            const response = await fetch(fileUrl);
+            const blob = await response.blob();
+            
+            // Crear un objeto File
+            const file = new File([blob], fileName, { type: fileType || 'application/octet-stream' });
+            
+            // Procesar el archivo
+            handleSharedFile(file);
+            
+            // Limpiar sessionStorage
+            sessionStorage.removeItem('sharedFileUrl');
+            sessionStorage.removeItem('sharedFileName');
+            sessionStorage.removeItem('sharedFileType');
+            sessionStorage.removeItem('sharedFileSize');
+            
+          } catch (err) {
+            console.error('Error al procesar archivo de sessionStorage:', err);
+            setError('Error al procesar el archivo compartido');
+          }
         }
-        
-        if (event.data.shareId) {
-          processedShareIds.current.add(event.data.shareId);
-        }
-        
-        handleSharedFile(event.data.file);
-      } else if (event.data && event.data.type === 'SHARED_FILE_ERROR') {
-        setError(`Error al recibir archivo: ${event.data.error || 'Error desconocido'}`);
-        setIsProcessingSharedFile(false);
-        isProcessingRef.current = false;
-      } else if (event.data && event.data.type === 'PONG') {
-        addDebugMessage('Service Worker está activo (respuesta PONG)');
       }
     };
     
-    // Registrar el listener para mensajes del Service Worker
-    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
-    
-    return () => {
-      navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
-    };
-  }, []);
+    checkForProcessFlag();
+  }, [location.search]);
 
-  // Efecto para procesar parámetros de URL
-  useEffect(() => {
-    // Verificar parámetros en la URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const isShared = urlParams.has('shared');
-    const hasError = urlParams.has('error');
-    const shareId = urlParams.get('shared');
-    const errorReason = urlParams.get('reason');
-    
-    if (hasError) {
-      const errorMessage = errorReason 
-        ? `Error: ${decodeURIComponent(errorReason)}`
-        : 'Hubo un problema al procesar el archivo compartido. Por favor, intenta de nuevo.';
-      
-      setError(errorMessage);
-      addDebugMessage(`Error detectado en parámetros URL: ${errorMessage}`);
-      
-      // Limpiar URL después de procesar el error
-      window.history.replaceState({}, document.title, window.location.pathname);
-      return;
-    }
-    
-    if (isShared && shareId) {
-      // Evitar procesar el mismo ID más de una vez
-      if (processedShareIds.current.has(shareId)) {
-        addDebugMessage(`ShareID ${shareId} ya fue procesado, ignorando`);
-        
-        // Limpiar URL después de verificar duplicado
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return;
-      }
-      
-      // Evitar procesamiento concurrente
-      if (isProcessingRef.current) {
-        addDebugMessage('Ya hay un procesamiento en curso, ignorando');
-        return;
-      }
-      
-      addDebugMessage(`Parámetro 'shared' detectado en URL: ${shareId}`);
-      setIsProcessingSharedFile(true);
-      isProcessingRef.current = true;
-      
-      // Solicitar el archivo compartido si tenemos un ID y el Service Worker está activo
-      if (navigator.serviceWorker.controller) {
-        addDebugMessage('Solicitando archivo compartido al Service Worker');
-        navigator.serviceWorker.controller.postMessage({
-          type: 'GET_SHARED_FILE',
-          shareId: shareId
-        });
-        
-        // Configurar un timeout por si no recibimos respuesta
-        setTimeout(() => {
-          if (isProcessingRef.current) {
-            addDebugMessage('Timeout esperando archivo compartido');
-            setError('No se pudo recibir el archivo compartido. Por favor, intenta de nuevo.');
-            setIsProcessingSharedFile(false);
-            isProcessingRef.current = false;
-          }
-        }, 10000); // 10 segundos
-      } else {
-        addDebugMessage('Service Worker no está controlando la página, no se puede solicitar el archivo');
-        setError('El Service Worker no está listo. Por favor, recarga la página e intenta de nuevo.');
-        setIsProcessingSharedFile(false);
-        isProcessingRef.current = false;
-      }
-      
-      // Limpiar URL después de procesar
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
-
-  // Manejar archivos recibidos del service worker
+  // Manejar archivos compartidos
   const handleSharedFile = async (file) => {
-    addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
+    addDebugMessage(`Procesando archivo: ${file.name}, tipo: ${file.type}`);
     
     if (!file) {
       setError('No se pudo recibir el archivo');
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
-      return;
-    }
-    
-    // Verificación más flexible para archivos ZIP
-    const isZipFile = 
-      // Por tipo MIME
-      file.type === 'application/zip' || 
-      file.type === 'application/x-zip' ||
-      file.type === 'application/x-zip-compressed' ||
-      file.type === 'application/octet-stream' ||
-      // Por nombre de archivo
-      file.name.toLowerCase().endsWith('.zip');
-    
-    if (!isZipFile) {
-      addDebugMessage(`Archivo no es ZIP: ${file.type}, nombre: ${file.name}`);
-      
-      // Si el nombre sugiere que es un ZIP pero el tipo está mal
-      if (file.name.toLowerCase().includes('zip')) {
-        addDebugMessage('El nombre sugiere que es un ZIP pero el tipo es incorrecto, intentando procesar de todos modos');
-        
-        // Intentar procesar a pesar del tipo incorrecto
-        try {
-          setError('');
-          setIsLoading(true);
-          setZipFile(file);
-          await processZipFile(file);
-        } catch (err) {
-          addDebugMessage(`Error procesando archivo con tipo incorrecto: ${err.message}`);
-          setError(`Error al procesar el archivo: ${err.message}`);
-        } finally {
-          setIsLoading(false);
-          setIsProcessingSharedFile(false);
-          isProcessingRef.current = false;
-        }
-        return;
-      }
-      
-      setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
       return;
     }
     
@@ -212,18 +82,17 @@ function App() {
     
     try {
       // Procesar el archivo
-      await processZipFile(file);
+      await processFile(file);
     } catch (err) {
       addDebugMessage(`Error procesando archivo: ${err.message}`);
       setError(`Error al procesar el archivo: ${err.message}`);
     } finally {
       setIsLoading(false);
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
     }
   };
-  // Procesar el archivo ZIP
-  const processZipFile = async (file) => {
+
+  // Procesar el archivo (puede ser ZIP o texto)
+  const processFile = async (file) => {
     addDebugMessage(`Enviando archivo al backend: ${file.name}`);
     
     const formData = new FormData();
@@ -273,7 +142,7 @@ function App() {
       
       setFiles(extractedFiles);
     } catch (error) {
-      addDebugMessage(`Error procesando ZIP: ${error.message}`);
+      addDebugMessage(`Error procesando archivo: ${error.message}`);
       throw error;
     }
   };
@@ -283,23 +152,7 @@ function App() {
     const file = event.target.files[0];
     if (!file) return;
     
-    if (file.type !== 'application/zip' && !file.name.endsWith('.zip')) {
-      setError('Por favor, sube un archivo ZIP válido');
-      return;
-    }
-    
-    setError('');
-    setIsLoading(true);
-    setZipFile(file);
-    
-    try {
-      await processZipFile(file);
-    } catch (err) {
-      console.error('Error al procesar:', err);
-      setError(`Error al procesar el archivo: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
+    handleSharedFile(file);
   };
 
   // Función para descargar un archivo
@@ -315,46 +168,22 @@ function App() {
     }
   };
 
-  // Reiniciar la aplicación (para debugging)
-  const handleReset = () => {
-    setIsProcessingSharedFile(false);
-    isProcessingRef.current = false;
-    setError('');
-    setIsLoading(false);
-    setDebugMessages([]);
-    processedShareIds.current.clear();
-    setChatGptResponse("");
-    setShowChatGptResponse(false);
-  };
-
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Extractor de archivos ZIP con análisis de ChatGPT</h1>
+        <h1>Extractor de archivos con análisis de ChatGPT</h1>
       </header>
       <main className="App-main">
-        {isProcessingSharedFile ? (
-          <div className="loading-indicator">
-            <div className="spinner"></div>
-            <p>Recibiendo archivo compartido...</p>
-            <button 
-              onClick={handleReset}
-              style={{ marginTop: '20px', padding: '8px 16px' }}
-            >
-              Cancelar
-            </button>
-          </div>
-        ) : (
+        {!isLoading && files.length === 0 && (
           <div className="file-upload-container">
             <label className="file-upload-label">
               <input 
                 type="file" 
                 className="file-upload-input" 
-                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" 
                 onChange={handleFileUpload} 
               />
               <div className="file-upload-text">
-                <span>Haz clic para subir un archivo ZIP</span>
+                <span>Haz clic para subir un archivo</span>
                 <span className="file-upload-subtext">o comparte directamente desde WhatsApp</span>
               </div>
             </label>
@@ -370,7 +199,7 @@ function App() {
         {isLoading && (
           <div className="loading-indicator">
             <div className="spinner"></div>
-            <p>Descomprimiendo archivo y analizando contenido...</p>
+            <p>Analizando archivo...</p>
           </div>
         )}
 
@@ -390,9 +219,11 @@ function App() {
           <div className="files-container">
             <div className="files-header">
               <h2>Archivos extraídos</h2>
-              <button onClick={downloadAll} className="download-all-button">
-                Descargar todos
-              </button>
+              {files.length > 1 && (
+                <button onClick={downloadAll} className="download-all-button">
+                  Descargar todos
+                </button>
+              )}
             </div>
 
             <table className="files-table">
@@ -419,18 +250,6 @@ function App() {
                 ))}
               </tbody>
             </table>
-          </div>
-        )}
-        
-        {/* Mostrar mensajes de depuración en modo desarrollo */}
-        {process.env.NODE_ENV === 'development' && debugMessages.length > 0 && (
-          <div style={{ marginTop: '20px', textAlign: 'left', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '5px', maxHeight: '200px', overflow: 'auto' }}>
-            <h3>Mensajes de depuración:</h3>
-            <ul style={{ fontSize: '12px', padding: '0 0 0 20px' }}>
-              {debugMessages.map((msg, i) => (
-                <li key={i}>{msg.time}: {msg.message}</li>
-              ))}
-            </ul>
           </div>
         )}
         
