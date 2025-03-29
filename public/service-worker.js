@@ -20,7 +20,11 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Cache abierta');
+        // Cachear URLs básicas solamente, no intentar cachear la ruta share-target
         return cache.addAll(urlsToCache);
+      })
+      .catch(error => {
+        console.error('Error cacheando recursos:', error);
       })
   );
 });
@@ -41,54 +45,65 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Estrategia de caché: Cache primero, luego red
+// Manejar las solicitudes de navegación a share-target
 self.addEventListener('fetch', event => {
-  // Ignorar solicitudes a la API del backend
-  if (event.request.url.includes('/api/')) {
-    return;
+  const url = new URL(event.request.url);
+  
+  // Manejar específicamente la ruta share-target
+  if (url.pathname === '/share-target') {
+    // Si es POST (posiblemente compartiendo un archivo)
+    if (event.request.method === 'POST') {
+      event.respondWith(
+        (async () => {
+          try {
+            // Redireccionar a la página principal
+            return Response.redirect('/', 303);
+          } catch (error) {
+            console.error('Error manejando compartido:', error);
+            return new Response('Error procesando el archivo compartido', {
+              status: 500
+            });
+          }
+        })()
+      );
+      return;
+    } else {
+      // Si es GET (navegación normal a share-target)
+      event.respondWith(
+        caches.match('/index.html')
+          .then(response => {
+            return response || fetch('/index.html');
+          })
+      );
+      return;
+    }
   }
 
-  // Manejar el compartir archivos desde otras apps
-  if (event.request.url.endsWith('/share-target') && event.request.method === 'POST') {
-    event.respondWith(
-      (async () => {
-        const formData = await event.request.formData();
-        const file = formData.get('file');
-        
-        // Redireccionar a la página principal con el archivo en el estado
-        // (en una app real, guardaríamos el archivo en IndexedDB y lo leeríamos en el componente)
-        return Response.redirect('/', 303);
-      })()
-    );
-    return;
-  }
-
+  // Para otras solicitudes, aplicar estrategia cache-first
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Devolver desde la caché si está disponible
+        // Devolver desde caché si está disponible
         if (response) {
           return response;
         }
-        
-        // Si no está en caché, buscar en la red
-        return fetch(event.request)
-          .then(response => {
-            // Comprobar si recibimos una respuesta válida
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clonar la respuesta para guardarla en caché
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          });
+        // Si no, obtener de la red
+        return fetch(event.request).catch(error => {
+          console.error('Error fetching:', error);
+          // Si es una página de navegación, devolver la página principal
+          if (event.request.mode === 'navigate') {
+            return caches.match('/index.html');
+          }
+          // De lo contrario, dejar que el error se propague
+          throw error;
+        });
       })
   );
+});
+
+// Manejar mensajes (para depuración)
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
