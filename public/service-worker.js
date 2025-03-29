@@ -1,5 +1,5 @@
-// Service Worker mejorado para compartir archivos desde WhatsApp
-// Mejora la detección de archivos ZIP independientemente del tipo MIME
+// Service Worker optimizado para WhatsApp
+// Acepta cualquier tipo de archivo y lo trata como ZIP
 
 // Almacén temporal para archivos compartidos
 const sharedFiles = new Map();
@@ -12,40 +12,6 @@ const debug = (message, data) => {
   } else {
     console.log(logMessage);
   }
-};
-
-// Función para verificar si un archivo es un ZIP, independientemente del tipo MIME
-const isProbablyZipFile = (file) => {
-  // Verificar por nombre de archivo
-  if (file.name && file.name.toLowerCase().endsWith('.zip')) {
-    return true;
-  }
-  
-  // Verificar por tipo MIME (incluso si no es exacto)
-  const zipMimeTypes = [
-    'application/zip', 
-    'application/x-zip', 
-    'application/x-zip-compressed',
-    'application/octet-stream'  // Muchos archivos binarios vienen como octet-stream
-  ];
-  
-  if (file.type && zipMimeTypes.includes(file.type.toLowerCase())) {
-    return true;
-  }
-  
-  // Si el nombre tiene indicadores de ZIP pero está mal tipificado
-  if (file.name && (
-    file.name.toLowerCase().includes('.zip') || 
-    file.name.toLowerCase().includes('zip')
-  )) {
-    debug('Archivo con nombre que sugiere ZIP pero tipo incorrecto', {
-      name: file.name,
-      type: file.type
-    });
-    return true;
-  }
-  
-  return false;
 };
 
 // Instalación del Service Worker
@@ -77,105 +43,95 @@ self.addEventListener('fetch', event => {
         const formData = await event.request.formData();
         debug('FormData extraído correctamente');
         
-        // Verificar qué campos contiene el FormData
+        // Registrar todos los campos y valores para depuración
         const formDataEntries = [];
         for (const pair of formData.entries()) {
           formDataEntries.push(`${pair[0]}: ${typeof pair[1]} (${pair[1] instanceof File ? 'File: ' + pair[1].name + ', tipo: ' + pair[1].type : pair[1]})`);
         }
         debug('Contenido de FormData', formDataEntries);
         
-        // Intentar obtener el archivo ZIP
-        let file = formData.get('zipFile');
-        
-        // Si no está en zipFile, buscar en todos los campos
-        if (!file || !(file instanceof File)) {
-          debug('Archivo no encontrado en campo zipFile, buscando en todos los campos');
-          for (const [key, value] of formData.entries()) {
-            if (value instanceof File) {
-              debug(`Archivo encontrado en campo: ${key}, tipo: ${value.type}, nombre: ${value.name}`);
-              file = value;
-              break;
-            }
+        // Buscar cualquier archivo, no solo ZIPs
+        let file = null;
+        for (const [key, value] of formData.entries()) {
+          if (value instanceof File) {
+            debug(`Archivo encontrado en campo: ${key}, tipo: ${value.type}, nombre: ${value.name}`);
+            file = value;
+            break;
           }
         }
         
-        if (file && file instanceof File) {
-          debug('Archivo encontrado', { name: file.name, type: file.type, size: file.size });
-          
-          // Verificar si parece un ZIP aunque no tenga el tipo correcto
-          if (!isProbablyZipFile(file)) {
-            debug('El archivo no parece ser un ZIP', { name: file.name, type: file.type });
-            return Response.redirect('/?error=not-zip-file');
-          }
-          
-          // Crear un nuevo File con tipo MIME corregido si es necesario
-          if (file.type !== 'application/zip') {
-            debug('Corrigiendo tipo MIME del archivo', { oldType: file.type, newType: 'application/zip' });
-            
-            // Leer el archivo original
-            const arrayBuffer = await file.arrayBuffer();
-            
-            // Crear un nuevo File con el tipo MIME correcto
-            // Añadir extensión .zip si no la tiene
-            let correctedName = file.name;
-            if (!correctedName.toLowerCase().endsWith('.zip')) {
-              correctedName += '.zip';
-            }
-            
-            file = new File([arrayBuffer], correctedName, { 
-              type: 'application/zip',
-              lastModified: file.lastModified
-            });
-            
-            debug('Archivo con tipo corregido', { name: file.name, type: file.type });
-          }
-          
-          // Almacenar el archivo con un ID único
-          const shareId = Date.now().toString();
-          sharedFiles.set(shareId, file);
-          debug('Archivo almacenado con ID', shareId);
-          
-          // Buscar ventanas existentes
-          const allClients = await clients.matchAll({ type: 'window' });
-          debug(`Clientes encontrados: ${allClients.length}`);
-          
-          // Si hay ventanas existentes, usarlas en lugar de abrir una nueva
-          if (allClients.length > 0) {
-            // Encontrar la ventana más adecuada (preferiblemente la raíz)
-            const targetClient = allClients.find(client => 
-              new URL(client.url).pathname === '/' || 
-              new URL(client.url).pathname === '/index.html'
-            ) || allClients[0];
-            
-            debug('Enviando archivo al cliente existente', targetClient.id);
-            
-            // Notificar a la ventana sobre el archivo compartido
-            targetClient.postMessage({
-              type: 'SHARED_FILE',
-              file: file,
-              shareId: shareId
-            });
-            
-            // Solo navegamos a la URL con el parámetro shared, sin intentar enfocar
-            try {
-              await targetClient.navigate('/?shared=' + shareId);
-              debug('Navegación exitosa');
-            } catch (navigateError) {
-              debug('Error en navegación, usando redirección', navigateError.toString());
-              return Response.redirect('/?shared=' + shareId);
-            }
-            
-            return new Response('Procesando archivo...', {
-              headers: { 'Content-Type': 'text/plain' }
-            });
-          } else {
-            // Si no hay ventanas, simplemente redirigir
-            debug('No hay clientes abiertos, usando redirección normal');
-            return Response.redirect('/?shared=' + shareId);
-          }
-        } else {
+        if (!file) {
           debug('No se encontró ningún archivo en la solicitud');
           return Response.redirect('/?error=no-file-found');
+        }
+        
+        debug('Archivo encontrado', { name: file.name, type: file.type, size: file.size });
+        
+        // Convertir cualquier archivo a ZIP (WhatsApp puede cambiar el tipo)
+        // Crear un nuevo archivo con tipo ZIP forzado
+        let newFileName = file.name;
+        if (!newFileName.toLowerCase().endsWith('.zip')) {
+          newFileName += '.zip';
+        }
+        
+        // Leer el contenido del archivo
+        const arrayBuffer = await file.arrayBuffer();
+        
+        // Crear un nuevo File con tipo ZIP
+        const zipFile = new File([arrayBuffer], newFileName, { 
+          type: 'application/zip',
+          lastModified: file.lastModified
+        });
+        
+        debug('Archivo convertido a ZIP', { 
+          originalName: file.name, 
+          newName: zipFile.name, 
+          originalType: file.type,
+          newType: zipFile.type
+        });
+        
+        // Almacenar el archivo con un ID único
+        const shareId = Date.now().toString();
+        sharedFiles.set(shareId, zipFile);
+        debug('Archivo almacenado con ID', shareId);
+        
+        // Buscar ventanas existentes
+        const allClients = await clients.matchAll({ type: 'window' });
+        debug(`Clientes encontrados: ${allClients.length}`);
+        
+        // Si hay ventanas existentes, usarlas en lugar de abrir una nueva
+        if (allClients.length > 0) {
+          // Encontrar la ventana más adecuada (preferiblemente la raíz)
+          const targetClient = allClients.find(client => 
+            new URL(client.url).pathname === '/' || 
+            new URL(client.url).pathname === '/index.html'
+          ) || allClients[0];
+          
+          debug('Enviando archivo al cliente existente', targetClient.id);
+          
+          // Notificar a la ventana sobre el archivo compartido
+          targetClient.postMessage({
+            type: 'SHARED_FILE',
+            file: zipFile,
+            shareId: shareId
+          });
+          
+          // Solo navegamos a la URL con el parámetro shared, sin intentar enfocar
+          try {
+            await targetClient.navigate('/?shared=' + shareId);
+            debug('Navegación exitosa');
+          } catch (navigateError) {
+            debug('Error en navegación, usando redirección', navigateError.toString());
+            return Response.redirect('/?shared=' + shareId);
+          }
+          
+          return new Response('Procesando archivo...', {
+            headers: { 'Content-Type': 'text/plain' }
+          });
+        } else {
+          // Si no hay ventanas, simplemente redirigir
+          debug('No hay clientes abiertos, usando redirección normal');
+          return Response.redirect('/?shared=' + shareId);
         }
       } catch (error) {
         debug('Error procesando solicitud de compartir', error.toString());
