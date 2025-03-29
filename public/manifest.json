@@ -1,7 +1,6 @@
-
 {
-  "short_name": "ZipExtractor",
-  "name": "Extractor de archivos con ChatGPT",
+  "short_name": "Visor Archivos",
+  "name": "Visor de Archivos Compartidos",
   "icons": [
     {
       "src": "favicon.ico",
@@ -21,21 +20,22 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#10a37f",
+  "theme_color": "#282c34",
   "background_color": "#ffffff",
   "share_target": {
-    
-   "action": "/share-received.html",
-  "method": "POST",
-  "enctype": "multipart/form-data",
-  "params": {
-    "files": [
-      {
-        "name": "file",
-        "accept": ["*/*"]
-      }
-    ]
+    "action": "/share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["*/*"]
+        }
+      ]
     }
   }
 }
-
