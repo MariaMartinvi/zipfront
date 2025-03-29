@@ -1,112 +1,357 @@
+/* App.css - Enhanced styling for ZIP file extractor app */
+
+:root {
+  --primary-color: #4a6fa5;
+  --primary-dark: #385888;
+  --secondary-color: #47b384;
+  --secondary-dark: #3a9a6f;
+  --light-bg: #f9f9fb;
+  --border-color: #e0e0e6;
+  --text-color: #333344;
+  --text-light: #666677;
+  --error-color: #e74c3c;
+  --success-color: #2ecc71;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--light-bg);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
 .App {
-  text-align: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .App-header {
-  background-color: #282c34;
-  padding: 20px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
   color: white;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow);
 }
 
 .App-header h1 {
-  margin: 0 0 10px 0;
-}
-
-.App-header p {
+  font-size: 1.8rem;
+  font-weight: 600;
   margin: 0;
-  opacity: 0.8;
 }
 
 .App-main {
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  max-width: 1200px;
+  width: 92%;
+  margin: 2rem auto;
+  padding: 1rem;
 }
 
-.upload-section {
-  margin: 20px 0;
-  padding: 20px;
-  border: 2px dashed #ccc;
-  border-radius: 8px;
-  background-color: #fff;
+/* File upload container */
+.file-upload-container {
+  margin: 2rem 0;
+  text-align: center;
 }
 
-.file-input-label {
-  display: inline-block;
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 4px;
+.file-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 200px;
+  border: 2px dashed var(--primary-color);
+  border-radius: 12px;
+  background-color: white;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
+  transition: var(--transition);
+  padding: 2rem;
 }
 
-.file-input-label:hover {
-  background-color: #45a049;
+.file-upload-label:hover {
+  background-color: rgba(74, 111, 165, 0.05);
+  border-color: var(--primary-dark);
 }
 
-.file-input {
+.file-upload-input {
   display: none;
 }
 
-.or-text {
-  margin: 15px 0;
-  color: #666;
+.file-upload-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.status-message {
-  color: #0066cc;
-  font-weight: bold;
+.file-upload-text span:first-child {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--primary-color);
 }
 
+.file-upload-subtext {
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+/* Loading indicator */
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(74, 111, 165, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error message */
 .error-message {
-  color: #cc0000;
-  font-weight: bold;
-}
-
-.file-info-container {
-  margin-top: 30px;
-  text-align: left;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.file-details {
-  margin-bottom: 20px;
-}
-
-.file-preview {
-  margin-top: 20px;
-}
-
-.preview-image {
-  max-width: 100%;
-  max-height: 300px;
-  border: 1px solid #ddd;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-left: 4px solid var(--error-color);
+  padding: 1rem;
+  margin: 1rem 0;
   border-radius: 4px;
-  padding: 5px;
 }
 
-@media (max-width: 600px) {
-  .App {
-    padding: 10px;
+.error-message p {
+  color: var(--error-color);
+  margin: 0;
+}
+
+/* ChatGPT Response */
+.chatgpt-response {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+.chatgpt-response h2 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.response-content {
+  line-height: 1.7;
+}
+
+.response-content p {
+  margin-bottom: 0.75rem;
+}
+
+/* Files container */
+.files-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+.files-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.files-header h2 {
+  color: var(--primary-color);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.download-all-button {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.download-all-button:hover {
+  background-color: var(--secondary-dark);
+}
+
+/* Files table */
+.files-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.files-table th {
+  text-align: left;
+  padding: 0.75rem;
+  background-color: rgba(74, 111, 165, 0.1);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.files-table th:first-child {
+  border-top-left-radius: 6px;
+}
+
+.files-table th:last-child {
+  border-top-right-radius: 6px;
+  text-align: center;
+}
+
+.files-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  word-break: break-word;
+}
+
+.files-table tr:last-child td {
+  border-bottom: none;
+}
+
+.files-table td:last-child {
+  text-align: center;
+}
+
+.download-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+}
+
+.download-button:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .App-header h1 {
+    font-size: 1.5rem;
   }
   
-  .App-header {
-    padding: 15px;
+  .files-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
   
-  .App-main {
-    padding: 15px;
+  .files-table {
+    display: block;
+    overflow-x: auto;
   }
+  
+  .file-upload-label {
+    height: 160px;
+  }
+}
+
+/* Debug messages container */
+.debug-container {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.debug-container h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.debug-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.debug-container li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #ebebeb;
+}
+
+/* Install PWA component styling */
+.install-pwa {
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.install-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+  margin-top: 0.5rem;
+}
+
+.install-button:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Cancel button */
+button.cancel-button {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 1rem;
+}
+
+button.cancel-button:hover {
+  background-color: #7f8c8d;
 }
