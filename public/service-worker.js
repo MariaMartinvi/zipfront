@@ -1,5 +1,5 @@
 // Service Worker mejorado para compartir archivos desde WhatsApp
-// Soluciona el problema de "Not allowed to open a window"
+// Soluciona el problema de "Not allowed to focus a window"
 
 // Almacén temporal para archivos compartidos
 const sharedFiles = new Map();
@@ -77,9 +77,9 @@ self.addEventListener('fetch', event => {
           const allClients = await clients.matchAll({ type: 'window' });
           debug(`Clientes encontrados: ${allClients.length}`);
           
-          // Si hay ventanas existentes, usarlas en lugar de abrir una nueva
+          // Si hay ventanas existentes, enviar mensaje pero no intentar enfocar
           if (allClients.length > 0) {
-            // Encontrar la ventana más adecuada (preferiblemente la raíz)
+            // Encontrar la ventana más adecuada
             const targetClient = allClients.find(client => 
               new URL(client.url).pathname === '/' || 
               new URL(client.url).pathname === '/index.html'
@@ -94,13 +94,9 @@ self.addEventListener('fetch', event => {
               shareId: shareId
             });
             
-            // Enfocar la ventana existente y navegar a la página con el parámetro
-            await targetClient.navigate('/?shared=' + shareId);
-            await targetClient.focus();
-            
-            return new Response('Procesando archivo...', {
-              headers: { 'Content-Type': 'text/plain' }
-            });
+            // Usar redirección simple en todos los casos
+            // Evitar navigate() y focus() que causan errores
+            return Response.redirect('/?shared=' + shareId);
           } else {
             // Si no hay ventanas, simplemente redirigir
             debug('No hay clientes abiertos, usando redirección normal');
@@ -156,3 +152,4 @@ self.addEventListener('message', event => {
       type: 'PONG'
     });
   }
+});
