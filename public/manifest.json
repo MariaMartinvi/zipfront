@@ -24,19 +24,17 @@
   "theme_color": "#10a37f",
   "background_color": "#ffffff",
   "share_target": {
-    "action": "/share-target",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url",
-      "files": [
-        {
-          "name": "zipFile",
-          "accept": ["*/*"]
-        }
-      ]
+    
+   "action": "/share-received.html",
+  "method": "POST",
+  "enctype": "multipart/form-data",
+  "params": {
+    "files": [
+      {
+        "name": "file",
+        "accept": ["*/*"]
+      }
+    ]
     }
   }
 }
