@@ -166,14 +166,40 @@ function App() {
       return;
     }
     
-    // Verificar que sea un archivo ZIP
-    const isZipFile = file.type === 'application/zip' || 
-                      file.type === 'application/x-zip' ||
-                      file.type === 'application/x-zip-compressed' ||
-                      file.name.toLowerCase().endsWith('.zip');
+    // Verificación más flexible para archivos ZIP
+    const isZipFile = 
+      // Por tipo MIME
+      file.type === 'application/zip' || 
+      file.type === 'application/x-zip' ||
+      file.type === 'application/x-zip-compressed' ||
+      file.type === 'application/octet-stream' ||
+      // Por nombre de archivo
+      file.name.toLowerCase().endsWith('.zip');
     
     if (!isZipFile) {
-      addDebugMessage(`Archivo no es ZIP: ${file.type}`);
+      addDebugMessage(`Archivo no es ZIP: ${file.type}, nombre: ${file.name}`);
+      
+      // Si el nombre sugiere que es un ZIP pero el tipo está mal
+      if (file.name.toLowerCase().includes('zip')) {
+        addDebugMessage('El nombre sugiere que es un ZIP pero el tipo es incorrecto, intentando procesar de todos modos');
+        
+        // Intentar procesar a pesar del tipo incorrecto
+        try {
+          setError('');
+          setIsLoading(true);
+          setZipFile(file);
+          await processZipFile(file);
+        } catch (err) {
+          addDebugMessage(`Error procesando archivo con tipo incorrecto: ${err.message}`);
+          setError(`Error al procesar el archivo: ${err.message}`);
+        } finally {
+          setIsLoading(false);
+          setIsProcessingSharedFile(false);
+          isProcessingRef.current = false;
+        }
+        return;
+      }
+      
       setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
       setIsProcessingSharedFile(false);
       isProcessingRef.current = false;
@@ -196,7 +222,6 @@ function App() {
       isProcessingRef.current = false;
     }
   };
-
   // Procesar el archivo ZIP
   const processZipFile = async (file) => {
     addDebugMessage(`Enviando archivo al backend: ${file.name}`);
