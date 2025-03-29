@@ -1,260 +1,157 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import './App.css';
-import InstallPWA from './InstallPWA';
 
 function App() {
-  const [files, setFiles] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [zipFile, setZipFile] = useState(null);
-  const [chatGptResponse, setChatGptResponse] = useState("");
-  const [showChatGptResponse, setShowChatGptResponse] = useState(false);
-  const location = useLocation();
-  
-  // URL del backend
-  const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+  const [diagnosticInfo, setDiagnosticInfo] = useState(null);
+  const [error, setError] = useState(null);
+  const [showRawData, setShowRawData] = useState(false);
 
-  // Función para el logging
-  const addDebugMessage = (message) => {
-    console.log('[App Debug]', message);
-  };
-
-  // Efecto para procesar archivo de sessionStorage si viene de la página de confirmación
   useEffect(() => {
-    const checkForProcessFlag = async () => {
-      const params = new URLSearchParams(location.search);
-      const shouldProcess = params.get('process') === 'true';
-      
-      if (shouldProcess) {
-        // Limpiar la URL para evitar reprocesamiento
-        window.history.replaceState({}, document.title, '/');
-        
-        // Obtener datos del archivo de sessionStorage
-        const fileUrl = sessionStorage.getItem('sharedFileUrl');
-        const fileName = sessionStorage.getItem('sharedFileName');
-        const fileType = sessionStorage.getItem('sharedFileType');
-        const fileSize = sessionStorage.getItem('sharedFileSize');
-        
-        if (fileUrl && fileName) {
-          try {
-            addDebugMessage(`Procesando archivo desde sessionStorage: ${fileName}`);
-            
-            // Convertir la URL del objeto a un Blob
-            const response = await fetch(fileUrl);
-            const blob = await response.blob();
-            
-            // Crear un objeto File
-            const file = new File([blob], fileName, { type: fileType || 'application/octet-stream' });
-            
-            // Procesar el archivo
-            handleSharedFile(file);
-            
-            // Limpiar sessionStorage
-            sessionStorage.removeItem('sharedFileUrl');
-            sessionStorage.removeItem('sharedFileName');
-            sessionStorage.removeItem('sharedFileType');
-            sessionStorage.removeItem('sharedFileSize');
-            
-          } catch (err) {
-            console.error('Error al procesar archivo de sessionStorage:', err);
-            setError('Error al procesar el archivo compartido');
-          }
+    // Verificar parámetros en la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasDiagnostics = urlParams.has('diagnostics');
+    const hasError = urlParams.has('error');
+    
+    if (hasDiagnostics) {
+      try {
+        const diagnosticsData = localStorage.getItem('shareTargetDiagnostics');
+        if (diagnosticsData) {
+          setDiagnosticInfo(JSON.parse(diagnosticsData));
         }
+      } catch (err) {
+        console.error('Error al procesar diagnósticos:', err);
+        setError(`Error al procesar diagnósticos: ${err.message}`);
       }
-    };
-    
-    checkForProcessFlag();
-  }, [location.search]);
-
-  // Manejar archivos compartidos
-  const handleSharedFile = async (file) => {
-    addDebugMessage(`Procesando archivo: ${file.name}, tipo: ${file.type}`);
-    
-    if (!file) {
-      setError('No se pudo recibir el archivo');
-      return;
     }
     
-    setError('');
-    setIsLoading(true);
-    setZipFile(file);
-    
-    try {
-      // Procesar el archivo
-      await processFile(file);
-    } catch (err) {
-      addDebugMessage(`Error procesando archivo: ${err.message}`);
-      setError(`Error al procesar el archivo: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Procesar el archivo (puede ser ZIP o texto)
-  const processFile = async (file) => {
-    addDebugMessage(`Enviando archivo al backend: ${file.name}`);
-    
-    const formData = new FormData();
-    formData.append('zipFile', file);
-    
-    try {
-      // Mostrar la URL a la que se está enviando la solicitud
-      addDebugMessage(`URL de API: ${API_URL}/api/extract`);
-      
-      const response = await fetch(`${API_URL}/api/extract`, {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        addDebugMessage(`Error en respuesta del servidor: ${response.status}, ${errorText}`);
-        
-        try {
-          const errorData = JSON.parse(errorText);
-          throw new Error(errorData.error || `Error ${response.status}`);
-        } catch (jsonError) {
-          throw new Error(`Error del servidor: ${response.status}`);
+    if (hasError) {
+      try {
+        const errorData = localStorage.getItem('shareTargetError');
+        if (errorData) {
+          setError(JSON.parse(errorData));
+        } else {
+          setError({ message: 'Error desconocido al procesar la solicitud de compartir' });
         }
+      } catch (err) {
+        setError({ message: `Error al procesar datos de error: ${err.message}` });
       }
-      
-      const result = await response.json();
-      addDebugMessage(`Respuesta exitosa: ${result.files?.length || 0} archivos`);
-      
-      // Manejar la respuesta de ChatGPT si existe
-      if (result.chatgpt_response) {
-        addDebugMessage('Respuesta de ChatGPT recibida');
-        setChatGptResponse(result.chatgpt_response);
-        setShowChatGptResponse(true);
-      } else {
-        setChatGptResponse("");
-        setShowChatGptResponse(false);
-      }
-      
-      const extractedFiles = result.files.map(file => ({
-        name: file.name,
-        size: file.size,
-        path: file.path,
-        operationId: result.operation_id,
-        hasText: file.has_text
-      }));
-      
-      setFiles(extractedFiles);
-    } catch (error) {
-      addDebugMessage(`Error procesando archivo: ${error.message}`);
-      throw error;
     }
-  };
-
-  // Manejar la carga manual de archivos
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
     
-    handleSharedFile(file);
-  };
-
-  // Función para descargar un archivo
-  const downloadFile = (file) => {
-    window.location.href = `${API_URL}/api/download/${file.operationId}/${encodeURIComponent(file.path)}`;
-  };
-
-  // Función para descargar todos los archivos
-  const downloadAll = () => {
-    if (files.length > 0) {
-      const operationId = files[0].operationId;
-      window.location.href = `${API_URL}/api/download-all/${operationId}`;
+    // Limpiar URL
+    if (hasDiagnostics || hasError) {
+      window.history.replaceState({}, document.title, '/');
     }
+  }, []);
+
+  // Formatear datos para mostrarlos de forma amigable
+  const formatDate = (timestamp) => {
+    return new Date(timestamp).toLocaleString();
+  };
+  
+  const toggleRawData = () => {
+    setShowRawData(!showRawData);
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Extractor de archivos con análisis de ChatGPT</h1>
+    <div className="diagnostic-app">
+      <header>
+        <h1>Diagnostico de Archivos Compartidos</h1>
       </header>
-      <main className="App-main">
-        {!isLoading && files.length === 0 && (
-          <div className="file-upload-container">
-            <label className="file-upload-label">
-              <input 
-                type="file" 
-                className="file-upload-input" 
-                onChange={handleFileUpload} 
-              />
-              <div className="file-upload-text">
-                <span>Haz clic para subir un archivo</span>
-                <span className="file-upload-subtext">o comparte directamente desde WhatsApp</span>
-              </div>
-            </label>
-          </div>
-        )}
-
+      <main>
         {error && (
-          <div className="error-message">
-            <p>{error}</p>
-          </div>
-        )}
-
-        {isLoading && (
-          <div className="loading-indicator">
-            <div className="spinner"></div>
-            <p>Analizando archivo...</p>
-          </div>
-        )}
-
-        {/* Mostrar la respuesta de ChatGPT si está disponible */}
-        {showChatGptResponse && chatGptResponse && (
-          <div className="chatgpt-response">
-            <h2>Análisis de ChatGPT</h2>
-            <div className="response-content">
-              {chatGptResponse.split('\n').map((line, i) => (
-                <p key={i}>{line}</p>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {files.length > 0 && (
-          <div className="files-container">
-            <div className="files-header">
-              <h2>Archivos extraídos</h2>
-              {files.length > 1 && (
-                <button onClick={downloadAll} className="download-all-button">
-                  Descargar todos
-                </button>
+          <div className="error-panel">
+            <h2>Error Detectado</h2>
+            <div className="error-details">
+              {error.timestamp && <p><strong>Hora:</strong> {formatDate(error.timestamp)}</p>}
+              <p><strong>Mensaje:</strong> {error.error || error.message}</p>
+              {error.stack && (
+                <div>
+                  <p><strong>Stack:</strong></p>
+                  <pre>{error.stack}</pre>
+                </div>
               )}
             </div>
-
-            <table className="files-table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Tamaño</th>
-                  <th>Tipo</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {files.map((file, index) => (
-                  <tr key={index}>
-                    <td>{file.name}</td>
-                    <td>{(file.size / 1024).toFixed(2)} KB</td>
-                    <td>{file.hasText ? 'Texto' : 'Binario'}</td>
-                    <td>
-                      <button onClick={() => downloadFile(file)} className="download-button">
-                        Descargar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         )}
         
-        {/* Componente de instalación de PWA */}
-        <InstallPWA />
+        {diagnosticInfo && (
+          <div className="diagnostic-panel">
+            <h2>Información de Diagnóstico</h2>
+            <p><strong>Hora:</strong> {formatDate(diagnosticInfo.timestamp)}</p>
+            
+            <div className="section">
+              <h3>Información de la Solicitud</h3>
+              <p><strong>URL:</strong> {diagnosticInfo.url}</p>
+              <p><strong>Método:</strong> {diagnosticInfo.method}</p>
+            </div>
+            
+            <div className="section">
+              <h3>Headers de la Solicitud</h3>
+              <div className="headers-list">
+                {Object.entries(diagnosticInfo.headers).map(([key, value]) => (
+                  <div key={key} className="header-item">
+                    <strong>{key}:</strong> {value}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="section">
+              <h3>Datos del Formulario</h3>
+              {diagnosticInfo.formDataDetails.map((item, index) => (
+                <div key={index} className="form-data-item">
+                  <h4>Campo: {item.fieldName}</h4>
+                  <p><strong>Tipo:</strong> {item.type}</p>
+                  
+                  {item.type === 'File' ? (
+                    <div className="file-details">
+                      <p><strong>Nombre:</strong> {item.fileName}</p>
+                      <p><strong>Tipo MIME:</strong> {item.fileType}</p>
+                      <p><strong>Tamaño:</strong> {(item.fileSize / 1024).toFixed(2)} KB</p>
+                      <p><strong>Última modificación:</strong> {formatDate(item.lastModified)}</p>
+                      
+                      {item.contentPreviewHex && (
+                        <div className="file-preview">
+                          <p><strong>Vista previa (Hex):</strong></p>
+                          <pre className="hex-preview">{item.contentPreviewHex}</pre>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-details">
+                      <p><strong>Longitud:</strong> {item.length} caracteres</p>
+                      <div className="text-preview">
+                        <pre>{item.value}</pre>
+                        {item.length > 1000 && <span className="truncated">... (contenido truncado)</span>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <div className="raw-data-toggle">
+              <button onClick={toggleRawData}>
+                {showRawData ? 'Ocultar Datos Crudos' : 'Mostrar Datos Crudos'}
+              </button>
+              
+              {showRawData && (
+                <div className="raw-data">
+                  <h3>Datos Crudos (JSON)</h3>
+                  <pre>{JSON.stringify(diagnosticInfo, null, 2)}</pre>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {!diagnosticInfo && !error && (
+          <div className="welcome-message">
+            <h2>Bienvenido a la Herramienta de Diagnóstico</h2>
+            <p>Esta aplicación está diseñada para ayudar a diagnosticar problemas al compartir archivos desde WhatsApp u otras aplicaciones.</p>
+            <p>Para comenzar, comparte un archivo con esta aplicación desde WhatsApp u otra aplicación.</p>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -1,157 +1,162 @@
-/* Agregar estos estilos a tu archivo App.css */
-
-/* Estilos para la respuesta de ChatGPT */
-.chatgpt-response {
-  margin: 20px 0;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+/* Estilos para la herramienta de diagnóstico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.chatgpt-response h2 {
-  color: #10a37f;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.response-content {
-  font-size: 16px;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   line-height: 1.6;
   color: #333;
-  white-space: pre-wrap;
+  background-color: #f8f9fa;
 }
 
-.response-content p {
-  margin-bottom: 10px;
+.diagnostic-app {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.response-content code {
-  background-color: #f0f0f0;
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-family: monospace;
+header {
+  background-color: #10a37f;
+  color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  text-align: center;
 }
 
-.response-content pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
-  margin: 15px 0;
+h1, h2, h3, h4 {
+  margin-bottom: 15px;
 }
 
-/* Mejoras en la tabla de archivos */
-.files-table {
-  width: 100%;
-  border-collapse: collapse;
+main {
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.section {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.error-panel {
+  background-color: #ffebee;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.diagnostic-panel {
+  margin-bottom: 20px;
+}
+
+.headers-list {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 6px;
   margin-top: 10px;
 }
 
-.files-table th {
+.header-item {
+  padding: 5px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header-item:last-child {
+  border-bottom: none;
+}
+
+.form-data-item {
+  background-color: #f8f9fa;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #10a37f;
+}
+
+.file-details, .text-details {
+  margin-top: 10px;
+}
+
+.file-preview, .text-preview {
+  margin-top: 10px;
   background-color: #f0f0f0;
   padding: 10px;
-  text-align: left;
-  font-weight: bold;
-  border-bottom: 2px solid #ddd;
-}
-
-.files-table td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.files-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.files-table tr:hover {
-  background-color: #f0f0f0;
-}
-
-/* Estilo para archivos de texto vs binarios */
-.files-table .text-file {
-  color: #10a37f;
-}
-
-.files-table .binary-file {
-  color: #666;
-}
-
-/* Mejorar el estilo de los botones */
-.download-button {
-  background-color: #4a90e2;
-  color: white;
-  border: none;
-  padding: 8px 12px;
   border-radius: 4px;
-  cursor: pointer;
+  overflow-x: auto;
+}
+
+.hex-preview {
+  font-family: monospace;
+  white-space: pre-wrap;
   font-size: 14px;
-  transition: background-color 0.3s;
+  line-height: 1.5;
 }
 
-.download-button:hover {
-  background-color: #357bd8;
+.text-preview pre {
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 14px;
 }
 
-.download-all-button {
+.truncated {
+  color: #999;
+  font-style: italic;
+}
+
+.raw-data-toggle {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.raw-data-toggle button {
   background-color: #10a37f;
   color: white;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
+  font-size: 16px;
 }
 
-.download-all-button:hover {
+.raw-data-toggle button:hover {
   background-color: #0d8c6d;
 }
 
-/* Mejorar el indicador de carga */
-.loading-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 30px 0;
+.raw-data {
+  margin-top: 20px;
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 6px;
 }
 
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border-left-color: #10a37f;
-  animation: spin 1s linear infinite;
-  margin-bottom: 15px;
+.raw-data pre {
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 14px;
+  overflow-x: auto;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Título de la aplicación */
-.App-header h1 {
-  color: #333;
-  margin-bottom: 30px;
+.welcome-message {
   text-align: center;
-  font-size: 28px;
+  padding: 40px 20px;
 }
 
-/* Contenedor principal */
-.App-main {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
+.welcome-message h2 {
+  color: #10a37f;
+  margin-bottom: 20px;
+}
+
+.welcome-message p {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 15px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
