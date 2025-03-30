@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import InstallPWA from './InstallPWA';
-import ChatAnalysisComponent from './ChatAnalysisComponent'; // analisis datos 
- // Asegúrate de que la ruta sea correcta
+import Chatgptresultados from './Chatgptresultados';
+import ChatAnalysisComponent from './ChatAnalysisComponent';
+import WhatsappInstructions from './WhatsappInstructions'; // Importamos el nuevo componente
 
 function App() {
   const [operationId, setOperationId] = useState(null);
@@ -18,7 +19,7 @@ function App() {
   // Tracking para evitar procesamiento duplicado
   const processedShareIds = useRef(new Set());
   const isProcessingRef = useRef(false);
-  const [showAnalysis, setShowAnalysis] = useState(false); // analisis datos
+  const [showAnalysis, setShowAnalysis] = useState(false);
 
   // URL del backend
   const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
@@ -29,7 +30,7 @@ function App() {
       setOperationId(data.operation_id);
       setShowAnalysis(true);
     }
-  }; // analisis datos
+  };
 
   // Función para el logging (visible en modo desarrollo)
   const addDebugMessage = (message) => {
@@ -155,7 +156,7 @@ function App() {
             setIsProcessingSharedFile(false);
             isProcessingRef.current = false;
           }
-        }, 30000); // 10 segundos
+        }, 30000); // 30 segundos
       } else {
         addDebugMessage('Service Worker no está controlando la página, no se puede solicitar el archivo');
         setError('El Service Worker no está listo. Por favor, recarga la página e intenta de nuevo.');
@@ -290,22 +291,9 @@ function App() {
       await processZipFile(file);
     } catch (err) {
       console.error('Error al procesar:', err);
-      setError(`Error al procesar el archivo: ${err.message}.Inténtalo más tarde.`);
+      setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // Función para descargar un archivo
-  const downloadFile = (file) => {
-    window.location.href = `${API_URL}/api/download/${file.operationId}/${encodeURIComponent(file.path)}`;
-  };
-
-  // Función para descargar todos los archivos
-  const downloadAll = () => {
-    if (files.length > 0) {
-      const operationId = files[0].operationId;
-      window.location.href = `${API_URL}/api/download-all/${operationId}`;
     }
   };
 
@@ -324,7 +312,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Extractor de archivos ZIP con análisis de ChatGPT</h1>
+        <h1>Analizador de Conversaciones</h1>
       </header>
       <main className="App-main">
         {isProcessingSharedFile ? (
@@ -333,37 +321,31 @@ function App() {
             <p>Recibiendo archivo compartido...</p>
             <button 
               onClick={handleReset}
-              style={{ marginTop: '20px', padding: '8px 16px' }}
+              className="cancel-button"
             >
               Cancelar
             </button>
           </div>
         ) : (
-          <div className="file-upload-container">
-            <div className="instrucciones">
-              Comparte tu archivo directamente desde Whatsapp. 
+          <div className="upload-section">
+            {/* Carrusel de instrucciones de WhatsApp separado del botón */}
+            <WhatsappInstructions />
+            
+            <div className="file-upload-container">
+              <label className="file-upload-label">
+                <input 
+                  type="file" 
+                  className="file-upload-input" 
+                  accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" 
+                  onChange={handleFileUpload} 
+                />
+                <div className="file-upload-text">
+                  <span className="upload-icon">📂</span>
+                  <span>Sube un archivo ZIP</span>
+                  <span className="file-upload-subtext">o comparte directamente desde WhatsApp siguiendo los pasos anteriores</span>
+                </div>
+              </label>
             </div>
-            <label className="file-upload-label">
-              <input 
-                type="file" 
-                className="file-upload-input" 
-                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" 
-                onChange={handleFileUpload} 
-              />
-              <div className="file-upload-text">
-                <span>Haz clic para subir un archivo ZIP</span>
-                <span className="file-upload-subtext">o comparte directamente desde WhatsApp
-                <lu> 
-                  <li>Instala la aplicación</li>
-                  <li>Ve a tu grupo de whatsapp.</li>
-                  <li>Dale a los tres puntitos de la esquina</li>
-                  <li>Dale a más</li>
-                  <li>Dale a Exportar chat </li>
-                  <li>Elige esta aplicación </li>
-                 </lu>
-                </span>
-              </div>
-            </label>
           </div>
         )}
 
@@ -382,72 +364,19 @@ function App() {
 
         {/* Mostrar la respuesta de ChatGPT si está disponible */}
         {showChatGptResponse && chatGptResponse && (
-          <div className="chatgpt-response">
-            <h2>Análisis de ChatGPT</h2>
-            <div className="response-content">
-              {chatGptResponse.split('\n').map((line, i) => (
-                <p key={i}>{line}</p>
-              ))}
-            </div>
+          <div className="chat-analysis-section">
+            <h2>Análisis Psicológico</h2>
+            <Chatgptresultados chatGptResponse={chatGptResponse} />
           </div>
         )}
 
-        {files.length > 0 && (
-          <div className="files-container">
-            <div className="files-header">
-              <h2>Archivos extraídos</h2>
-              <button onClick={downloadAll} className="download-all-button">
-                Descargar todos
-              </button>
-            </div>
-
-            <table className="files-table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Tamaño</th>
-                  <th>Tipo</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {files.map((file, index) => (
-                  <tr key={index}>
-                    <td>{file.name}</td>
-                    <td>{(file.size / 1024).toFixed(2)} KB</td>
-                    <td>{file.hasText ? 'Texto' : 'Binario'}</td>
-                    <td>
-                      <button onClick={() => downloadFile(file)} className="download-button">
-                        Descargar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-        
-        {/* Mostrar mensajes de depuración en modo desarrollo */}
-        {process.env.NODE_ENV === 'development' && debugMessages.length > 0 && (
-          <div style={{ marginTop: '20px', textAlign: 'left', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '5px', maxHeight: '200px', overflow: 'auto' }}>
-            <h3>Mensajes de depuración:</h3>
-            <ul style={{ fontSize: '12px', padding: '0 0 0 20px' }}>
-              {debugMessages.map((msg, i) => (
-                <li key={i}>{msg.time}: {msg.message}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Mostrar el componente de análisis si hay una operación válida */} 
+        {/* Mostrar el componente de análisis estadístico si hay una operación válida */} 
         {showAnalysis && (
           <div className="analysis-container">
-           <h2>Análisis de Conversación</h2>
-        {/*Analis datos */} 
+            <h2>Análisis Estadístico</h2>
             <ChatAnalysisComponent operationId={operationId} /> 
-           </div>
-          )}
+          </div>
+        )}
 
         {/* Componente de instalación de PWA */}
         <InstallPWA />

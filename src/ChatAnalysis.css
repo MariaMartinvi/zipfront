@@ -1,0 +1,282 @@
+
+/* ChatAnalysis.css */
+.chat-analysis-component {
+    font-family: 'Arial', sans-serif;
+    max-width: 900px;
+    margin: 0 auto 30px;
+    color: #333;
+  }
+  
+  .analysis-results {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  /* Estilos para el resumen */
+  .analysis-summary-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  .analysis-summary-card h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: #1a1a1a;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+  }
+  
+  .summary-stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .stat-item {
+    text-align: center;
+    padding: 12px;
+    min-width: 100px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: transform 0.2s;
+  }
+  
+  .stat-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 4px;
+  }
+  
+  .stat-label {
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  /* Estilos para el conteo de remitentes */
+  .sender-counts-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  .sender-counts-card h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: #1a1a1a;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+  }
+  
+  .sender-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .sender-bar-container {
+    margin-bottom: 5px;
+  }
+  
+  .sender-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  
+  .sender-name {
+    font-weight: 500;
+    font-size: 14px;
+  }
+  
+  .sender-message-count {
+    color: #6c757d;
+    font-size: 14px;
+  }
+  
+  .progress-bar-bg {
+    height: 24px;
+    width: 100%;
+    background-color: #f1f3f5;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 1s ease;
+  }
+  
+  .percentage-label {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Estilos para ejemplos de mensajes */
+  .message-examples-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  .message-examples-card h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: #1a1a1a;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+  }
+  
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  
+  .sender-example-card {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 16px;
+    border-top: 4px solid #4285F4;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+  }
+  
+  .sender-example-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sender-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    position: absolute;
+    top: -20px;
+    left: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .sender-example-card h4 {
+    margin-top: 20px;
+    margin-bottom: 12px;
+    color: #2c3e50;
+    font-size: 16px;
+    padding-left: 5px;
+  }
+  
+  .message-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .message-list li {
+    margin-bottom: 8px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .message-quote {
+    color: #4285F4;
+    font-size: 18px;
+    font-weight: bold;
+    vertical-align: -2px;
+    margin: 0 2px;
+  }
+  
+  /* Estilos para indicador de carga */
+  .loading-indicator {
+    text-align: center;
+    padding: 30px;
+  }
+  
+  .spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #4285F4;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Estilos para mensajes de error */
+  .error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+    border-left: 4px solid #ef5350;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .examples-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .summary-stats {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stat-item {
+      width: 100%;
+      max-width: 250px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .chat-analysis-component {
+      padding: 0 10px;
+    }
+    
+    .sender-info {
+      flex-direction: column;
+    }
+    
+    .percentage-label {
+      display: none;
+    }
+  }
