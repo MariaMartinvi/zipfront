@@ -1,4 +1,4 @@
-WhatsappInstructions.css */
+
 
 .whatsapp-instructions {
   max-width: 800px;
@@ -83,9 +83,9 @@ WhatsappInstructions.css */
   max-width: 80%;
 }
 
-/* Botones de navegación */
+
 .carousel-button {
-  background-color: #25D366; /* Color principal de WhatsApp */
+  background-color: #25D366;
   color: white;
   border: none;
   border-radius: 50%;
@@ -103,7 +103,7 @@ WhatsappInstructions.css */
 }
 
 .carousel-button:hover {
-  background-color: #128C7E; /* Color más oscuro al hover */
+  background-color: #128C7E; 
 }
 
 .carousel-button:focus {
@@ -111,7 +111,7 @@ WhatsappInstructions.css */
   box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.3);
 }
 
-/* Indicadores de slide */
+
 .carousel-indicators {
   display: flex;
   justify-content: center;
