@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import InstallPWA from './InstallPWA';
+import ChatAnalysisComponent from './ChatAnalysisComponent'; // analisis datos 
+ // Asegúrate de que la ruta sea correcta
 
 function App() {
+  const [operationId, setOperationId] = useState(null);
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  
   const [error, setError] = useState('');
   const [zipFile, setZipFile] = useState(null);
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
@@ -14,9 +18,18 @@ function App() {
   // Tracking para evitar procesamiento duplicado
   const processedShareIds = useRef(new Set());
   const isProcessingRef = useRef(false);
+  const [showAnalysis, setShowAnalysis] = useState(false); // analisis datos
 
   // URL del backend
   const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+
+  // Función para el manejo de extracción de ZIP
+  const handleZipExtraction = (data) => {
+    if (data.operation_id) {
+      setOperationId(data.operation_id);
+      setShowAnalysis(true);
+    }
+  }; // analisis datos
 
   // Función para el logging (visible en modo desarrollo)
   const addDebugMessage = (message) => {
@@ -188,8 +201,8 @@ function App() {
       // Procesar el archivo
       await processZipFile(file);
     } catch (err) {
-      addDebugMessage(`Error procesando archivo: ${err.message}`);
-      setError(`Error al procesar el archivo: ${err.message}`);
+      addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
+      setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
     } finally {
       setIsLoading(false);
       setIsProcessingSharedFile(false);
@@ -247,8 +260,14 @@ function App() {
       }));
       
       setFiles(extractedFiles);
+      
+      // Establecer el operation_id para el análisis
+      if (result.operation_id) {
+        setOperationId(result.operation_id);
+        setShowAnalysis(true);
+      }
     } catch (error) {
-      addDebugMessage(`Error procesando ZIP: ${error.message}`);
+      addDebugMessage(`Error procesando ZIP: ${error.message}. Inténtalo más tarde.`);
       throw error;
     }
   };
@@ -271,7 +290,7 @@ function App() {
       await processZipFile(file);
     } catch (err) {
       console.error('Error al procesar:', err);
-      setError(`Error al procesar el archivo: ${err.message}`);
+      setError(`Error al procesar el archivo: ${err.message}.Inténtalo más tarde.`);
     } finally {
       setIsLoading(false);
     }
@@ -321,6 +340,9 @@ function App() {
           </div>
         ) : (
           <div className="file-upload-container">
+            <div className="instrucciones">
+              Comparte tu archivo directamente desde Whatsapp. 
+            </div>
             <label className="file-upload-label">
               <input 
                 type="file" 
@@ -330,7 +352,16 @@ function App() {
               />
               <div className="file-upload-text">
                 <span>Haz clic para subir un archivo ZIP</span>
-                <span className="file-upload-subtext">o comparte directamente desde WhatsApp</span>
+                <span className="file-upload-subtext">o comparte directamente desde WhatsApp
+                <lu> 
+                  <li>Instala la aplicación</li>
+                  <li>Ve a tu grupo de whatsapp.</li>
+                  <li>Dale a los tres puntitos de la esquina</li>
+                  <li>Dale a más</li>
+                  <li>Dale a Exportar chat </li>
+                  <li>Elige esta aplicación </li>
+                 </lu>
+                </span>
               </div>
             </label>
           </div>
@@ -408,12 +439,21 @@ function App() {
             </ul>
           </div>
         )}
-        
+
+        {/* Mostrar el componente de análisis si hay una operación válida */} 
+        {showAnalysis && (
+          <div className="analysis-container">
+           <h2>Análisis de Conversación</h2>
+        {/*Analis datos */} 
+            <ChatAnalysisComponent operationId={operationId} /> 
+           </div>
+          )}
+
         {/* Componente de instalación de PWA */}
         <InstallPWA />
       </main>
     </div>
   );
-}
+} 
 
 export default App;
