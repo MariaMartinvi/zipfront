@@ -4,9 +4,10 @@ import './WhatsappInstructions.css';
 // Componente para las instrucciones de WhatsApp en formato carrusel
 function WhatsappInstructions() {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [platform, setPlatform] = useState('android'); // 'android' o 'ios'
 
-  // Lista de pasos con título, descripción e ícono
-  const steps = [
+  // Lista de pasos para Android
+  const androidSteps = [
     {
       title: "Instala la aplicación",
       description: "Asegúrate de tener esta app instalada en tu dispositivo",
@@ -39,10 +40,69 @@ function WhatsappInstructions() {
     }
   ];
 
+  // Lista de pasos para iOS
+  const iosSteps = [
+    {
+      title: "Instala la App",
+      description: "Asegúrate de tener esta app instalada en tu iPhone",
+      icon: "📱"
+    },
+    {
+      title: "Abre tu chat de WhatsApp",
+      description: "Ve al grupo o conversación que deseas exportar",
+      icon: "💬"
+    },
+    {
+      title: "Toca el nombre del chat",
+      description: "En la parte superior del chat, toca el nombre para ver los detalles",
+      icon: "👆"
+    },
+    {
+      title: "Desplázate al final",
+      description: "En la información del chat, desplázate hasta el final de la pantalla",
+      icon: "⬇️"
+    },
+    {
+      title: "Exporta el chat",
+      description: "Toca 'Exportar chat' en las opciones disponibles",
+      icon: "📤"
+    },
+    {
+      title: "Selecciona Sin medios",
+      description: "Elige la opción 'Sin medios' para exportar solo los mensajes",
+      icon: "📝"
+    },
+    {
+      title: "Guarda en archivos",
+      description: "Toca 'Guardar en archivos' para guardar en tu iPhone",
+      icon: "💾"
+    },
+    {
+      title: "Guarda localmente",
+      description: "Selecciona 'En mi iPhone' y toca guardar",
+      icon: "📂"
+    },
+    {
+      title: "Abre nuestra web",
+      description: "Abre esta aplicación y selecciona el archivo guardado",
+      icon: "✓"
+    }
+  ];
+
+  // Seleccionar los pasos según la plataforma
+  const steps = platform === 'android' ? androidSteps : iosSteps;
+
+  // Cambiar de plataforma
+  const togglePlatform = (newPlatform) => {
+    setPlatform(newPlatform);
+    setActiveSlide(0); // Reiniciar a la primera diapositiva al cambiar de plataforma
+  };
+
   // Cambiar automáticamente de slide cada 5 segundos
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveSlide((prevSlide) => (prevSlide + 1) % steps.length);
+
     }, 5000);
     
     return () => clearInterval(interval);
@@ -66,6 +126,21 @@ function WhatsappInstructions() {
   return (
     <div className="whatsapp-instructions">
       <h2>Cómo compartir un chat desde WhatsApp</h2>
+      
+      <div className="platform-selector">
+        <button 
+          className={`platform-button ${platform === 'android' ? 'active' : ''}`}
+          onClick={() => togglePlatform('android')}
+        >
+          Android
+        </button>
+        <button 
+          className={`platform-button ${platform === 'ios' ? 'active' : ''}`}
+          onClick={() => togglePlatform('ios')}
+        >
+          iOS
+        </button>
+      </div>
       
       <div className="carousel-container">
         <button className="carousel-button prev" onClick={prevSlide} aria-label="Anterior">

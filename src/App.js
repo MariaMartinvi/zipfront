@@ -1,29 +1,125 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
+import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import Chatgptresultados from './Chatgptresultados';
 import ChatAnalysisComponent from './ChatAnalysisComponent';
-import WhatsappInstructions from './WhatsappInstructions'; // Importamos el nuevo componente
+import WhatsappInstructions from './WhatsappInstructions';
+import AnalisisPrimerChat from './Analisis_primer_chat';
+import AnalisisInfluencer from './Analisis_influencer';
+import AnalisisEmojis from './Analisis_emojis';
+import AnalisisTop from './Analisis_top';
+import { AuthContainer, Login, Register, PasswordReset } from './AuthComponents';
+import SubscriptionPlans from './SubscriptionPlans';
+import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat } from './firebase_auth';
+import Header from './Header';
+import Footer from './Footer';
+import UserPlanBanner from './UserPlanBanner';
+import SimplePaymentSuccess from './SimplePaymentSuccess';
+import PaymentSuccessBanner from './PaymentSuccessBanner';
+import { useAuth } from './AuthContext';
+import AuthDebug from './AuthDebug'; // Optional for debugging
+import { deleteFiles, uploadFile, getMistralResponse } from './fileService';
+
+
+// LoginPage component with useNavigate hook
+function LoginPage() {
+  const navigate = useNavigate();
+  return <Login onLoginSuccess={() => navigate('/')} />;
+}
+
+// RegisterPage component with useNavigate hook
+function RegisterPage() {
+  const navigate = useNavigate();
+  return <Register onRegisterSuccess={() => navigate('/')} />;
+}
+
+// HomePage component - you can define this or use your existing code
+function HomePage() {
+  // Your homepage component logic
+  return (
+    <div>
+      {/* Your homepage content */}
+    </div>
+  );
+}
+
+// Wrapper component for SubscriptionPlans to access location data
+function PlansWithLocationCheck({ user }) {
+  const location = useLocation();
+  return (
+    <SubscriptionPlans 
+      userId={user?.uid} 
+      paymentSuccess={location.search.includes('payment_success=true')} 
+    />
+  );
+}
 
 function App() {
   const [operationId, setOperationId] = useState(null);
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
   const [error, setError] = useState('');
   const [zipFile, setZipFile] = useState(null);
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
   const [debugMessages, setDebugMessages] = useState([]);
   const [chatGptResponse, setChatGptResponse] = useState("");
   const [showChatGptResponse, setShowChatGptResponse] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [isFetchingMistral, setIsFetchingMistral] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [filesDeleted, setFilesDeleted] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  // Get user-related state from AuthContext instead of managing locally
+  const { user, userProfile, setUserProfile, isAuthLoading } = useAuth();
+  
   // Tracking para evitar procesamiento duplicado
   const processedShareIds = useRef(new Set());
   const isProcessingRef = useRef(false);
-  const [showAnalysis, setShowAnalysis] = useState(false);
 
   // URL del backend
   const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
 
+  // Función para el logging (visible en modo desarrollo)
+  const addDebugMessage = (message) => {
+    console.log('[App Debug]', message);
+    setDebugMessages(prev => [...prev, { time: new Date().toISOString(), message }]);
+  };
+  
+  useEffect(() => {
+    // Check URL for payment_success parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('payment_success') === 'true') {
+      // Show success message
+      setShowPaymentSuccess(true);
+      
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // This useEffect is not needed anymore as authentication state is managed by AuthContext
+  // useEffect(() => {
+  //   const checkAuthState = async () => {
+  //     try {
+  //       const currentUser = await getCurrentUser();
+  //       setUser(currentUser);
+  //       if (currentUser) {
+  //         const userProfile = await getUserProfile(currentUser.uid);
+  //         setUserProfile(userProfile);
+  //       }
+  //     } catch (error) {
+  //       console.error('Auth check failed:', error);
+  //     } finally {
+  //       setIsAuthLoading(false);
+  //     }
+  //   };
+  // 
+  //   checkAuthState();
+  // }, []);
+  
   // Función para el manejo de extracción de ZIP
   const handleZipExtraction = (data) => {
     if (data.operation_id) {
@@ -32,11 +128,86 @@ function App() {
     }
   };
 
-  // Función para el logging (visible en modo desarrollo)
-  const addDebugMessage = (message) => {
-    console.log('[App Debug]', message);
-    setDebugMessages(prev => [...prev, { time: new Date().toISOString(), message }]);
-  };
+  // Function to poll for Mistral response
+  // Function to poll for Mistral response
+const fetchMistralResponse = async () => {
+  if (!operationId || isFetchingMistral) return;
+  
+  setIsFetchingMistral(true);
+  
+  try {
+    let attempts = 0;
+    const maxAttempts = 10; // Try 10 times with delay in between
+    
+    const checkResponse = async () => {
+      attempts++;
+      
+      try {
+        const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
+        
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.ready && data.response) {
+          addDebugMessage('Respuesta de Mistral recibida');
+          setChatGptResponse(data.response);
+          setShowChatGptResponse(true);
+          
+          // Eliminar archivos automáticamente una vez recibida la respuesta
+          addDebugMessage('Intentando eliminar archivos automáticamente');
+          try {
+            const deleteResponse = await fetch(`${API_URL}/api/delete-files/${operationId}`, {
+              method: 'DELETE',
+            });
+            
+            if (deleteResponse.ok) {
+              addDebugMessage('Archivos eliminados automáticamente después del análisis');
+            } else {
+              const deleteData = await deleteResponse.json();
+              addDebugMessage(`No se pudieron eliminar los archivos automáticamente: ${deleteData.error || 'Error desconocido'}`);
+            }
+          } catch (deleteError) {
+            addDebugMessage(`Error al eliminar archivos: ${deleteError.message}`);
+          }
+          
+          setIsFetchingMistral(false);
+          return true;
+        }
+        
+        if (attempts >= maxAttempts) {
+          addDebugMessage('Máximo de intentos alcanzado esperando por Mistral');
+          setIsFetchingMistral(false);
+          return false;
+        }
+        
+        // Wait and try again
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
+        return await checkResponse();
+      } catch (error) {
+        addDebugMessage(`Error al obtener respuesta de Mistral: ${error.message}`);
+        setIsFetchingMistral(false);
+        return false;
+      }
+    };
+    
+    // Start checking
+    await checkResponse();
+  } catch (error) {
+    addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
+    setIsFetchingMistral(false);
+  }
+};
+      
+      
+  // Start polling for Mistral response when we have an operationId
+  useEffect(() => {
+    if (operationId && !chatGptResponse) {
+      fetchMistralResponse();
+    }
+  }, [operationId]);
 
   // Efecto para manejar compartir archivos y configurar Service Worker
   useEffect(() => {
@@ -169,6 +340,29 @@ function App() {
     }
   }, []);
 
+  // Check if user can upload a chat based on their subscription plan
+  const checkUploadEligibility = async () => {
+    if (!user) {
+      setError('Debes iniciar sesión para analizar conversaciones.');
+      return false;
+    }
+    
+    try {
+      const canUpload = await canUploadChat(user.uid);
+      
+      if (!canUpload) {
+        setShowUpgradeModal(true);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error checking upload eligibility:', error);
+      setError('Error al verificar tu plan. Por favor, inténtalo de nuevo.');
+      return false;
+    }
+  };
+
   // Manejar archivos recibidos del service worker
   const handleSharedFile = async (file) => {
     addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
@@ -194,6 +388,14 @@ function App() {
       return;
     }
     
+    // Check if user is logged in and has available uploads
+    const isEligible = await checkUploadEligibility();
+    if (!isEligible) {
+      setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
+      return;
+    }
+    
     setError('');
     setIsLoading(true);
     setZipFile(file);
@@ -201,6 +403,20 @@ function App() {
     try {
       // Procesar el archivo
       await processZipFile(file);
+      
+      // If processing was successful, increment usage counter
+      if (user) {
+        await incrementChatUsage(user.uid);
+        
+        // Update local user profile data
+        if (userProfile) {
+          setUserProfile({
+            ...userProfile,
+            currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+            totalUploads: (userProfile.totalUploads || 0) + 1
+          });
+        }
+      }
     } catch (err) {
       addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
       setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
@@ -222,6 +438,10 @@ function App() {
       // Mostrar la URL a la que se está enviando la solicitud
       addDebugMessage(`URL de API: ${API_URL}/api/extract`);
       
+      // Set operation_id and show analysis sections right after uploading files
+      // but before waiting for the ChatGPT/Mistral response
+      setShowAnalysis(true);
+      
       const response = await fetch(`${API_URL}/api/extract`, {
         method: 'POST',
         body: formData,
@@ -242,14 +462,9 @@ function App() {
       const result = await response.json();
       addDebugMessage(`Respuesta exitosa: ${result.files?.length || 0} archivos`);
       
-      // Manejar la respuesta de ChatGPT si existe
-      if (result.chatgpt_response) {
-        addDebugMessage('Respuesta de ChatGPT recibida');
-        setChatGptResponse(result.chatgpt_response);
-        setShowChatGptResponse(true);
-      } else {
-        setChatGptResponse("");
-        setShowChatGptResponse(false);
+      // Set the operation_id immediately so analysis components can start loading their data
+      if (result.operation_id) {
+        setOperationId(result.operation_id);
       }
       
       const extractedFiles = result.files.map(file => ({
@@ -262,11 +477,17 @@ function App() {
       
       setFiles(extractedFiles);
       
-      // Establecer el operation_id para el análisis
-      if (result.operation_id) {
-        setOperationId(result.operation_id);
-        setShowAnalysis(true);
+      // Handle ChatGPT/Mistral response separately
+      // This will be processed asynchronously after showing the analysis sections
+      if (result.chatgpt_response || result.mistral_response) {
+        addDebugMessage('Respuesta de AI recibida');
+        setChatGptResponse(result.chatgpt_response || result.mistral_response);
+        setShowChatGptResponse(true);
+      } else {
+        setChatGptResponse("");
+        setShowChatGptResponse(false);
       }
+      
     } catch (error) {
       addDebugMessage(`Error procesando ZIP: ${error.message}. Inténtalo más tarde.`);
       throw error;
@@ -283,12 +504,32 @@ function App() {
       return;
     }
     
+    // Check if user is logged in and has available uploads
+    const isEligible = await checkUploadEligibility();
+    if (!isEligible) {
+      return;
+    }
+    
     setError('');
     setIsLoading(true);
     setZipFile(file);
     
     try {
       await processZipFile(file);
+      
+      // If processing was successful, increment usage counter
+      if (user) {
+        await incrementChatUsage(user.uid);
+        
+        // Update local user profile data
+        if (userProfile) {
+          setUserProfile({
+            ...userProfile,
+            currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+            totalUploads: (userProfile.totalUploads || 0) + 1
+          });
+        }
+      }
     } catch (err) {
       console.error('Error al procesar:', err);
       setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
@@ -309,79 +550,198 @@ function App() {
     setShowChatGptResponse(false);
   };
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Analizador de Conversaciones</h1>
-      </header>
-      <main className="App-main">
-        {isProcessingSharedFile ? (
-          <div className="loading-indicator">
-            <div className="spinner"></div>
-            <p>Recibiendo archivo compartido...</p>
-            <button 
-              onClick={handleReset}
-              className="cancel-button"
-            >
-              Cancelar
-            </button>
-          </div>
-        ) : (
-          <div className="upload-section">
-            {/* Carrusel de instrucciones de WhatsApp separado del botón */}
-            <WhatsappInstructions />
-            
-            <div className="file-upload-container">
-              <label className="file-upload-label">
-                <input 
-                  type="file" 
-                  className="file-upload-input" 
-                  accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" 
-                  onChange={handleFileUpload} 
-                />
-                <div className="file-upload-text">
-                  <span className="upload-icon">📂</span>
-                  <span>Sube un archivo ZIP</span>
-                  <span className="file-upload-subtext">o comparte directamente desde WhatsApp siguiendo los pasos anteriores</span>
-                </div>
-              </label>
-            </div>
-          </div>
-        )}
-
-        {error && (
-          <div className="error-message">
-            <p>{error}</p>
-          </div>
-        )}
-
-        {isLoading && (
-          <div className="loading-indicator">
-            <div className="spinner"></div>
-            <p>Descomprimiendo archivo y analizando contenido...</p>
-          </div>
-        )}
-
-        {/* Mostrar la respuesta de ChatGPT si está disponible */}
-        {showChatGptResponse && chatGptResponse && (
-          <div className="chat-analysis-section">
-            <h2>Análisis Psicológico</h2>
-            <Chatgptresultados chatGptResponse={chatGptResponse} />
-          </div>
-        )}
-
-        {/* Mostrar el componente de análisis estadístico si hay una operación válida */} 
-        {showAnalysis && (
-          <div className="analysis-container">
-            <h2>Análisis Estadístico</h2>
-            <ChatAnalysisComponent operationId={operationId} /> 
-          </div>
-        )}
-
-        {/* Componente de instalación de PWA */}
-        <InstallPWA />
-      </main>
+  // Component to render when user needs to upgrade
+  const UpgradeModal = () => (
+    <div className="upgrade-modal">
+      <div className="upgrade-modal-content">
+        <h2>Límite de análisis alcanzado</h2>
+        <p>Has alcanzado el límite de análisis de conversaciones para tu plan actual.</p>
+        <p>Actualiza a un plan superior para continuar analizando tus conversaciones.</p>
+        <div className="upgrade-buttons">
+          <button 
+            className="view-plans-button"
+            onClick={() => window.location.href = '/plans'}
+          >
+            Ver Planes
+          </button>
+          <button 
+            className="close-button"
+            onClick={() => setShowUpgradeModal(false)}
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
     </div>
+  );
+
+  // Main app component UI with routing
+  return (
+    <Router>
+      <div className="App">
+        <Header user={user} />
+        <UserPlanBanner userProfile={userProfile} />
+        <main className="App-main">
+        {showPaymentSuccess && (
+            <PaymentSuccessBanner 
+              show={showPaymentSuccess} 
+              onClose={() => setShowPaymentSuccess(false)}
+            />
+          )}
+          {showUpgradeModal && <UpgradeModal />}
+          
+          <Routes>
+            {/* Home/Upload Page */}
+            <Route 
+              path="/"
+              element={
+                <>
+                  {isProcessingSharedFile ? (
+                    <div className="loading-indicator">
+                      <div className="spinner"></div>
+                      <p>Recibiendo archivo compartido...</p>
+                      <button 
+                        onClick={handleReset}
+                        className="cancel-button"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="upload-section">
+                      {!user ? (
+                        <div className="login-required">
+                          <h2>Inicia sesión para comenzar</h2>
+                          <p>Necesitas iniciar sesión para analizar conversaciones.</p>
+                          <div className="auth-buttons">
+                            <button 
+                              className="login-button"
+                              onClick={() => window.location.href = '/login'}
+                            >
+                              Iniciar Sesión
+                            </button>
+                            <button 
+                              className="register-button"
+                              onClick={() => window.location.href = '/register'}
+                            >
+                              Crear Cuenta
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Carrusel de instrucciones de WhatsApp separado del botón */}
+                          <WhatsappInstructions />
+                          
+                          {/* User subscription status card */}
+                     
+                          
+                          <div className="file-upload-container">
+                            <label className="file-upload-label">
+                              <input 
+                                type="file" 
+                                className="file-upload-input" 
+                                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" 
+                                onChange={handleFileUpload} 
+                              />
+                              <div className="file-upload-text">
+                                <span className="upload-icon">📂</span>
+                                <span>Sube un archivo ZIP</span>
+                                <span className="file-upload-subtext">o comparte directamente desde WhatsApp siguiendo los pasos anteriores</span>
+                              </div>
+                            </label>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {error && (
+                    <div className="error-message">
+                      <p>{error}</p>
+                    </div>
+                  )}
+
+                  {isLoading && (
+                    <div className="loading-indicator">
+                      <div className="spinner"></div>
+                      <p>Descomprimiendo archivo y analizando contenido...</p>
+                    </div>
+                  )}
+
+                  {/* Show analysis components immediately after upload */}
+                  {showAnalysis && operationId && (
+                    <div className="analysis-container">
+                      <h2>Análisis Estadístico</h2>
+                      <div className="analysis-module">
+                        <AnalisisPrimerChat operationId={operationId} />
+                      </div>
+                      {/* Nuevos componentes de análisis */}
+                      <div className="additional-analysis">
+                        <div className="analysis-module">
+                          <AnalisisInfluencer operationId={operationId} />
+                        </div>
+                        <div className="analysis-module">
+                          <AnalisisEmojis operationId={operationId} />
+                        </div>
+                        <div className="analysis-module">
+                          <AnalisisTop operationId={operationId} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Show loading indicator for Mistral/ChatGPT response if it's still being fetched */}
+                  {operationId && isFetchingMistral && (
+                    <div className="chat-analysis-loading">
+                      <h2>Análisis Psicológico</h2>
+                      <div className="loading-indicator">
+                        <div className="spinner"></div>
+                        <p>Generando análisis con IA (esto puede tardar unos minutos)...</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Display ChatGPT/Mistral response when available */}
+                  {showChatGptResponse && chatGptResponse && (
+                    <div className="chat-analysis-section">
+                      <h2>Análisis Psicológico</h2>
+                      <Chatgptresultados chatGptResponse={chatGptResponse} />
+                    </div>
+                  )}
+                </>
+              }
+            />
+            
+            {/* Authentication Routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/reset-password" element={<PasswordReset />} />
+            
+            {/* Subscription Plan Routes - Now correctly passing user prop */}
+            <Route path="/plans" element={
+              <ProtectedRoute>
+                <PlansWithLocationCheck user={user} />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/payment-success" element={
+              <ProtectedRoute>
+                <SimplePaymentSuccess />
+              </ProtectedRoute>
+            } />
+          </Routes>
+          
+          {/* Componente de footer */}
+          <Footer/>
+          {/* Componente de instalación de PWA */}
+          <InstallPWA />
+          
+          {/* Optional: Add AuthDebug component for debugging */}
+          {process.env.NODE_ENV === 'development' && <AuthDebug />}
+        </main>
+      </div>
+    </Router>
   );
 } 
 

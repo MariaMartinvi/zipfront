@@ -1,0 +1,167 @@
+/* Header.css */
+.app-header {
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .logo h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  .nav-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+  }
+  
+  .nav-link {
+    margin-left: 1.5rem;
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-link:hover {
+    color: #4285f4;
+  }
+  
+  .nav-link.sign-up {
+    background-color: #4285f4;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .nav-link.sign-up:hover {
+    background-color: #3367d6;
+  }
+  
+  .user-menu {
+    position: relative;
+    margin-left: 1.5rem;
+  }
+  
+  .user-button {
+    background: none;
+    border: none;
+    color: #4285f4;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 150px;
+    z-index: 1000;
+    margin-top: 0.5rem;
+  }
+  
+  .menu-item {
+    padding: 0.75rem 1rem;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .menu-item:hover {
+    background-color: #f5f7fa;
+  }
+  
+  .mobile-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #555;
+  }
+  
+  .mobile-menu {
+    display: none;
+    padding: 1rem;
+    background-color: white;
+    border-top: 1px solid #eee;
+  }
+  
+  .mobile-nav-link {
+    display: block;
+    padding: 0.75rem 0;
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .mobile-nav-link.mobile-logout {
+    color: #d32f2f;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .mobile-user-info {
+    padding: 0.75rem 0;
+    font-size: 0.9rem;
+    color: #888;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .desktop-nav {
+      display: none;
+    }
+    
+    .mobile-menu-button {
+      display: block;
+    }
+    
+    .mobile-menu {
+      display: block;
+    }
+    
+    .logo h1 {
+      font-size: 1.25rem;
+    }
+  }
