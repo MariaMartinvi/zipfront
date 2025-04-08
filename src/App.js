@@ -44,7 +44,65 @@ function HomePage() {
     </div>
   );
 }
+const analyzeFile = (file) => {
+  console.group("Análisis de archivo desde Google Drive");
+  console.log("Nombre:", file.name);
+  console.log("Tipo MIME:", file.type);
+  console.log("Tamaño:", file.size, "bytes");
+  
+  // Examinar los primeros bytes del archivo
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const arrayBuffer = e.target.result;
+    const byteArray = new Uint8Array(arrayBuffer).slice(0, 30); // Primeros 30 bytes
+    
+    let hexString = "";
+    for (let i = 0; i < byteArray.length; i++) {
+      hexString += byteArray[i].toString(16).padStart(2, '0') + ' ';
+    }
+    
+    console.log("Primeros bytes (hex):", hexString);
+    
+    // Verificar si comienza con la firma ZIP (PK)
+    const isZipSignature = byteArray[0] === 0x50 && byteArray[1] === 0x4B;
+    console.log("¿Firma ZIP válida?", isZipSignature);
+    
+    if (!isZipSignature) {
+      console.log("Buscando firma ZIP en los primeros bytes...");
+      let pkIndex = -1;
+      for (let i = 0; i < byteArray.length - 1; i++) {
+        if (byteArray[i] === 0x50 && byteArray[i+1] === 0x4B) {
+          pkIndex = i;
+          break;
+        }
+      }
+      
+      if (pkIndex >= 0) {
+        console.log(`Firma ZIP encontrada en posición ${pkIndex}`);
+      } else {
+        console.log("No se encontró firma ZIP en los primeros 30 bytes");
+      }
+    }
+    
+    console.groupEnd();
+  };
+  
+  reader.readAsArrayBuffer(file.slice(0, 30));
+  
+  // También crear una versión modificada del archivo para probar
+  return file;
+};
 
+// Modificar handleFileUpload para usar esta función
+const handleFileUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  // Analizar el archivo para depuración
+  analyzeFile(file);
+  
+  // Resto del código original...
+};
 // Wrapper component for SubscriptionPlans to access location data
 function PlansWithLocationCheck({ user }) {
   const location = useLocation();
@@ -543,48 +601,54 @@ const checkUploadEligibility = async () => {
   };
 
   // Manejar la carga manual de archivos
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+  // Reemplaza la función handleFileUpload en App.js con esta versión
+
+const handleFileUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
+  
+  // Verificación más permisiva para archivos de Google Drive
+  // Verificar solo por nombre de archivo, ignorando completamente el MIME type
+  if (!file.name.toLowerCase().endsWith('.zip')) {
+    setError('Por favor, sube un archivo ZIP válido (.zip)');
+    return;
+  }
+  
+  // Check if user is logged in and has available uploads
+  const isEligible = await checkUploadEligibility();
+  if (!isEligible) {
+    return;
+  }
+  
+  setError('');
+  setIsLoading(true);
+  setZipFile(file);
+  
+  try {
+    await processZipFile(file);
     
-    if (file.type !== 'application/zip' && !file.name.endsWith('.zip')) {
-      setError('Por favor, sube un archivo ZIP válido');
-      return;
-    }
-    
-    // Check if user is logged in and has available uploads
-    const isEligible = await checkUploadEligibility();
-    if (!isEligible) {
-      return;
-    }
-    
-    setError('');
-    setIsLoading(true);
-    setZipFile(file);
-    
-    try {
-      await processZipFile(file);
+    // If processing was successful, increment usage counter
+    if (user) {
+      await incrementChatUsage(user.uid);
       
-      // If processing was successful, increment usage counter
-      if (user) {
-        await incrementChatUsage(user.uid);
-        
-        // Update local user profile data
-        if (userProfile) {
-          setUserProfile({
-            ...userProfile,
-            currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-            totalUploads: (userProfile.totalUploads || 0) + 1
-          });
-        }
+      // Update local user profile data
+      if (userProfile) {
+        setUserProfile({
+          ...userProfile,
+          currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+          totalUploads: (userProfile.totalUploads || 0) + 1
+        });
       }
-    } catch (err) {
-      console.error('Error al procesar:', err);
-      setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (err) {
+    console.error('Error al procesar:', err);
+    setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Reiniciar la aplicación (para debugging)
   const handleReset = () => {
