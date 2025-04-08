@@ -28,3 +28,6 @@ services:
       - path: /manifest.json
         name: Content-Type
         value: application/manifest+json
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache
