@@ -342,41 +342,59 @@ const fetchMistralResponse = async () => {
 
   // Check if user can upload a chat based on their subscription plan
 // Reemplaza la función checkUploadEligibility con esta versión
+// Versión más estricta de checkUploadEligibility
 const checkUploadEligibility = async () => {
   console.log("Verificando elegibilidad para cargar - Estado actual del usuario:", user);
   
-  // Si visualmente muestra que estás logueado pero la verificación falla,
-  // confía en lo que se ve y permite la carga
   if (!user) {
-    console.log("No hay usuario en el contexto, pero el usuario se ve logueado visualmente");
-    
-    // Opción 1: Mostrar un mensaje pero permitir la carga de todos modos
-    console.warn("Permitiendo carga aunque no se detecte usuario en el contexto");
-    return true;
-    
-    // Opción 2 (comentada): Intentar recuperar el usuario desde Firebase nuevamente
-    // try {
-    //   const currentUser = await getCurrentUser();
-    //   if (currentUser) {
-    //     console.log("Usuario recuperado desde Firebase:", currentUser);
-    //     return true;
-    //   }
-    // } catch (error) {
-    //   console.error("Error intentando recuperar usuario:", error);
-    // }
-    
-    // setError('Debes iniciar sesión para analizar conversaciones.');
-    // return false;
+    // Intentar recuperar el usuario una vez más desde Firebase
+    try {
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        console.log("Usuario recuperado correctamente desde Firebase:", currentUser);
+        // Actualizar el estado de usuario manualmente
+        // Nota: Esto es un hack temporal. Lo ideal sería que esto ocurra a través de AuthContext
+        window._tempUser = currentUser; // Almacenar en una variable temporal
+        
+        // Intentar recuperar el perfil del usuario
+        try {
+          const profile = await getUserProfile(currentUser.uid);
+          window._tempUserProfile = profile;
+        } catch (profileError) {
+          console.error("Error recuperando perfil de usuario:", profileError);
+        }
+        
+        // Verificar si el usuario puede cargar
+        try {
+          const canUpload = await canUploadChat(currentUser.uid);
+          if (!canUpload) {
+            setShowUpgradeModal(true);
+            return false;
+          }
+          return true;
+        } catch (planError) {
+          console.error("Error verificando plan:", planError);
+          setError("Error verificando tu plan. Por favor, recarga la página.");
+          return false;
+        }
+      } else {
+        // No hay usuario autenticado
+        setError('Debes iniciar sesión para analizar conversaciones.');
+        // Redirigir a la página de login después de un breve retraso
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error verificando autenticación:", error);
+      setError('Error al verificar tu sesión. Por favor, inicia sesión nuevamente.');
+      return false;
+    }
   }
   
-  // Ya se detectó un usuario, verificar elegibilidad de plan
+  // Ya hay un usuario en el contexto, verificar plan
   try {
-    // Verificar si la función canUploadChat existe y es callable
-    if (typeof canUploadChat !== 'function') {
-      console.warn("canUploadChat no es una función, permitiendo carga");
-      return true;
-    }
-    
     const canUpload = await canUploadChat(user.uid);
     
     if (!canUpload) {
@@ -386,10 +404,9 @@ const checkUploadEligibility = async () => {
     
     return true;
   } catch (error) {
-    console.error('Error checking upload eligibility:', error);
-    console.warn("Ignorando error y permitiendo carga de todos modos");
-    // Para evitar bloquear la funcionalidad, permitimos la carga a pesar del error
-    return true;
+    console.error('Error verificando plan de usuario:', error);
+    setError('Error al verificar tu plan. Por favor, inténtalo de nuevo.');
+    return false;
   }
 };
 
