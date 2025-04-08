@@ -22,13 +22,17 @@ import {
 } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDPVTirsyETiEXzHowThPYbM8mQnYKPAWM",
-  authDomain: "wasapeo-c2b6e.firebaseapp.com",
-  projectId: "wasapeo-c2b6e",
-  storageBucket: "wasapeo-c2b6e.firebasestorage.app",
-  messagingSenderId: "736487041326",
-  appId: "1:736487041326:web:993a9bdef2c2cc4f1772bf"
+apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+ authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+ projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+ storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+ messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+ appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
+
+
+
+
 
 console.log("Firebase config:", firebaseConfig);
 
