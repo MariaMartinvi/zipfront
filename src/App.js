@@ -22,7 +22,6 @@ import { useAuth } from './AuthContext';
 import AuthDebug from './AuthDebug'; // Optional for debugging
 import { deleteFiles, uploadFile, getMistralResponse } from './fileService';
 
-
 // LoginPage component with useNavigate hook
 function LoginPage() {
   const navigate = useNavigate();
@@ -44,65 +43,7 @@ function HomePage() {
     </div>
   );
 }
-const analyzeFile = (file) => {
-  console.group("Análisis de archivo desde Google Drive");
-  console.log("Nombre:", file.name);
-  console.log("Tipo MIME:", file.type);
-  console.log("Tamaño:", file.size, "bytes");
-  
-  // Examinar los primeros bytes del archivo
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const arrayBuffer = e.target.result;
-    const byteArray = new Uint8Array(arrayBuffer).slice(0, 30); // Primeros 30 bytes
-    
-    let hexString = "";
-    for (let i = 0; i < byteArray.length; i++) {
-      hexString += byteArray[i].toString(16).padStart(2, '0') + ' ';
-    }
-    
-    console.log("Primeros bytes (hex):", hexString);
-    
-    // Verificar si comienza con la firma ZIP (PK)
-    const isZipSignature = byteArray[0] === 0x50 && byteArray[1] === 0x4B;
-    console.log("¿Firma ZIP válida?", isZipSignature);
-    
-    if (!isZipSignature) {
-      console.log("Buscando firma ZIP en los primeros bytes...");
-      let pkIndex = -1;
-      for (let i = 0; i < byteArray.length - 1; i++) {
-        if (byteArray[i] === 0x50 && byteArray[i+1] === 0x4B) {
-          pkIndex = i;
-          break;
-        }
-      }
-      
-      if (pkIndex >= 0) {
-        console.log(`Firma ZIP encontrada en posición ${pkIndex}`);
-      } else {
-        console.log("No se encontró firma ZIP en los primeros 30 bytes");
-      }
-    }
-    
-    console.groupEnd();
-  };
-  
-  reader.readAsArrayBuffer(file.slice(0, 30));
-  
-  // También crear una versión modificada del archivo para probar
-  return file;
-};
 
-// Modificar handleFileUpload para usar esta función
-const handleFileUpload = async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-  
-  // Analizar el archivo para depuración
-  analyzeFile(file);
-  
-  // Resto del código original...
-};
 // Wrapper component for SubscriptionPlans to access location data
 function PlansWithLocationCheck({ user }) {
   const location = useLocation();
@@ -146,6 +87,323 @@ function App() {
     setDebugMessages(prev => [...prev, { time: new Date().toISOString(), message }]);
   };
   
+  // Moved these functions inside the component to access state properly
+  const analyzeFile = (file) => {
+    console.group("Análisis de archivo desde Google Drive");
+    console.log("Nombre:", file.name);
+    console.log("Tipo MIME:", file.type);
+    console.log("Tamaño:", file.size, "bytes");
+    
+    // Crear una copia del archivo con la extensión corregida si es necesario
+    let processedFile = file;
+    if (file.name.toLowerCase().endsWith('.zip') && 
+        file.type !== 'application/zip' && 
+        file.type !== 'application/x-zip-compressed') {
+      // Crear un nuevo archivo con el tipo MIME correcto
+      processedFile = new File([file], file.name, {
+        type: 'application/zip',
+        lastModified: file.lastModified
+      });
+      console.log("Archivo corregido con MIME type:", processedFile.type);
+    }
+    
+    // Examinar los primeros bytes del archivo si es necesario
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const arrayBuffer = e.target.result;
+      const byteArray = new Uint8Array(arrayBuffer).slice(0, 30); // Primeros 30 bytes
+      
+      let hexString = "";
+      for (let i = 0; i < byteArray.length; i++) {
+        hexString += byteArray[i].toString(16).padStart(2, '0') + ' ';
+      }
+      
+      console.log("Primeros bytes (hex):", hexString);
+      
+      // Verificar si comienza con la firma ZIP (PK)
+      const isZipSignature = byteArray[0] === 0x50 && byteArray[1] === 0x4B;
+      console.log("¿Firma ZIP válida?", isZipSignature);
+      
+      console.groupEnd();
+    };
+    
+    reader.readAsArrayBuffer(file.slice(0, 30));
+    
+    return processedFile;
+  };
+
+  // Check if user can upload a chat based on their subscription plan
+  const checkUploadEligibility = async () => {
+    console.log("Verificando elegibilidad para cargar - Estado actual del usuario:", user);
+    
+    if (!user) {
+      // Intentar recuperar el usuario una vez más desde Firebase
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          console.log("Usuario recuperado correctamente desde Firebase:", currentUser);
+          // Actualizar el estado de usuario manualmente
+          // Nota: Esto es un hack temporal. Lo ideal sería que esto ocurra a través de AuthContext
+          window._tempUser = currentUser; // Almacenar en una variable temporal
+          
+          // Intentar recuperar el perfil del usuario
+          try {
+            const profile = await getUserProfile(currentUser.uid);
+            window._tempUserProfile = profile;
+          } catch (profileError) {
+            console.error("Error recuperando perfil de usuario:", profileError);
+          }
+          
+          // Verificar si el usuario puede cargar
+          try {
+            const canUpload = await canUploadChat(currentUser.uid);
+            if (!canUpload) {
+              setShowUpgradeModal(true);
+              return false;
+            }
+            return true;
+          } catch (planError) {
+            console.error("Error verificando plan:", planError);
+            setError("Error verificando tu plan. Por favor, recarga la página.");
+            return false;
+          }
+        } else {
+          // No hay usuario autenticado
+          setError('Debes iniciar sesión para analizar conversaciones.');
+          // Redirigir a la página de login después de un breve retraso
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 2000);
+          return false;
+        }
+      } catch (error) {
+        console.error("Error verificando autenticación:", error);
+        setError('Error al verificar tu sesión. Por favor, inicia sesión nuevamente.');
+        return false;
+      }
+    }
+    
+    // Ya hay un usuario en el contexto, verificar plan
+    try {
+      const canUpload = await canUploadChat(user.uid);
+      
+      if (!canUpload) {
+        setShowUpgradeModal(true);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error verificando plan de usuario:', error);
+      setError('Error al verificar tu plan. Por favor, inténtalo de nuevo.');
+      return false;
+    }
+  };
+
+  // Procesar el archivo ZIP
+  const processZipFile = async (file) => {
+    addDebugMessage(`Enviando archivo al backend: ${file.name}`);
+    
+    const formData = new FormData();
+    formData.append('zipFile', file);
+    
+    try {
+      // Mostrar la URL a la que se está enviando la solicitud
+      addDebugMessage(`URL de API: ${API_URL}/api/extract`);
+      
+      // Set operation_id and show analysis sections right after uploading files
+      // but before waiting for the ChatGPT/Mistral response
+      setShowAnalysis(true);
+      
+      const response = await fetch(`${API_URL}/api/extract`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        addDebugMessage(`Error en respuesta del servidor: ${response.status}, ${errorText}`);
+        
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error || `Error ${response.status}`);
+        } catch (jsonError) {
+          throw new Error(`Error del servidor: ${response.status}`);
+        }
+      }
+      
+      const result = await response.json();
+      addDebugMessage(`Respuesta exitosa: ${result.files?.length || 0} archivos`);
+      
+      // Set the operation_id immediately so analysis components can start loading their data
+      if (result.operation_id) {
+        setOperationId(result.operation_id);
+      }
+      
+      const extractedFiles = result.files.map(file => ({
+        name: file.name,
+        size: file.size,
+        path: file.path,
+        operationId: result.operation_id,
+        hasText: file.has_text
+      }));
+      
+      setFiles(extractedFiles);
+      
+      // Handle ChatGPT/Mistral response separately
+      // This will be processed asynchronously after showing the analysis sections
+      if (result.chatgpt_response || result.mistral_response) {
+        addDebugMessage('Respuesta de AI recibida');
+        setChatGptResponse(result.chatgpt_response || result.mistral_response);
+        setShowChatGptResponse(true);
+      } else {
+        setChatGptResponse("");
+        setShowChatGptResponse(false);
+      }
+      
+    } catch (error) {
+      addDebugMessage(`Error procesando ZIP: ${error.message}. Inténtalo más tarde.`);
+      throw error;
+    }
+  };
+
+  // Manejar la carga manual de archivos
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
+    
+    // Verificación más permisiva para archivos de Google Drive
+    // Verificar solo por nombre de archivo, ignorando completamente el MIME type
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+      setError('Por favor, sube un archivo ZIP válido (.zip)');
+      return;
+    }
+    
+    // Analyze and process the file if needed
+    const analyzedFile = analyzeFile(file);
+    
+    // Check if user is logged in and has available uploads
+    const isEligible = await checkUploadEligibility();
+    if (!isEligible) {
+      return;
+    }
+    
+    setError('');
+    setIsLoading(true);
+    setZipFile(analyzedFile);
+    
+    try {
+      await processZipFile(analyzedFile);
+      
+      // If processing was successful, increment usage counter
+      if (user) {
+        await incrementChatUsage(user.uid);
+        
+        // Update local user profile data
+        if (userProfile) {
+          setUserProfile({
+            ...userProfile,
+            currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+            totalUploads: (userProfile.totalUploads || 0) + 1
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Error al procesar:', err);
+      setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Manejar archivos recibidos del service worker
+  const handleSharedFile = async (file) => {
+    addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
+    
+    if (!file) {
+      setError('No se pudo recibir el archivo');
+      setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
+      return;
+    }
+    
+    // Verificar que sea un archivo ZIP por nombre en lugar de tipo MIME
+    const isZipFile = file.name.toLowerCase().endsWith('.zip');
+    
+    if (!isZipFile) {
+      addDebugMessage(`Archivo no es ZIP: ${file.type}, nombre: ${file.name}`);
+      setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
+      setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
+      return;
+    }
+    
+    // Analizar y corregir el archivo si es necesario
+    const processedFile = analyzeFile(file);
+    
+    // Ensure we're authenticated by waiting a bit if needed
+    if (!user) {
+      addDebugMessage("Usuario no detectado, esperando 2 segundos para autenticación...");
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+    
+    // Check if user is logged in and has available uploads
+    const isEligible = await checkUploadEligibility();
+    if (!isEligible) {
+      setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
+      return;
+    }
+    
+    setError('');
+    setIsLoading(true);
+    setZipFile(processedFile);
+    
+    try {
+      // Procesar el archivo
+      await processZipFile(processedFile);
+      
+      // If processing was successful, increment usage counter - with retries
+      if (user) {
+        try {
+          await incrementChatUsage(user.uid);
+          
+          // Update local user profile data
+          if (userProfile) {
+            setUserProfile({
+              ...userProfile,
+              currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+              totalUploads: (userProfile.totalUploads || 0) + 1
+            });
+          }
+          addDebugMessage("Contador de uso incrementado correctamente");
+        } catch (usageError) {
+          addDebugMessage(`Error al incrementar contador: ${usageError.message}`);
+          // Try one more time after a delay
+          setTimeout(async () => {
+            try {
+              await incrementChatUsage(user.uid);
+              addDebugMessage("Contador de uso incrementado en segundo intento");
+            } catch (retryError) {
+              addDebugMessage(`Error al incrementar contador (segundo intento): ${retryError.message}`);
+            }
+          }, 3000);
+        }
+      } else {
+        addDebugMessage("No se pudo incrementar contador: usuario no disponible");
+      }
+    } catch (err) {
+      addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
+      setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
+    } finally {
+      setIsLoading(false);
+      setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
+    }
+  };
+  
   useEffect(() => {
     // Check URL for payment_success parameter
     const urlParams = new URLSearchParams(window.location.search);
@@ -158,26 +416,6 @@ function App() {
     }
   }, []);
 
-  // This useEffect is not needed anymore as authentication state is managed by AuthContext
-  // useEffect(() => {
-  //   const checkAuthState = async () => {
-  //     try {
-  //       const currentUser = await getCurrentUser();
-  //       setUser(currentUser);
-  //       if (currentUser) {
-  //         const userProfile = await getUserProfile(currentUser.uid);
-  //         setUserProfile(userProfile);
-  //       }
-  //     } catch (error) {
-  //       console.error('Auth check failed:', error);
-  //     } finally {
-  //       setIsAuthLoading(false);
-  //     }
-  //   };
-  // 
-  //   checkAuthState();
-  // }, []);
-  
   // Función para el manejo de extracción de ZIP
   const handleZipExtraction = (data) => {
     if (data.operation_id) {
@@ -187,85 +425,83 @@ function App() {
   };
 
   // Function to poll for Mistral response
-  // Function to poll for Mistral response
-const fetchMistralResponse = async () => {
-  if (!operationId || isFetchingMistral) return;
-  
-  setIsFetchingMistral(true);
-  
-  try {
-    let attempts = 0;
-    const maxAttempts = 10; // Try 10 times with delay in between
+  const fetchMistralResponse = async () => {
+    if (!operationId || isFetchingMistral) return;
     
-    const checkResponse = async () => {
-      attempts++;
+    setIsFetchingMistral(true);
+    
+    try {
+      let attempts = 0;
+      const maxAttempts = 10; // Try 10 times with delay in between
       
-      try {
-        const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
+      const checkResponse = async () => {
+        attempts++;
         
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.ready && data.response) {
-          addDebugMessage('Respuesta de Mistral recibida');
-          setChatGptResponse(data.response);
-          setShowChatGptResponse(true);
+        try {
+          const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
           
-          // Eliminar archivos automáticamente una vez recibida la respuesta
-          addDebugMessage('Intentando eliminar archivos automáticamente');
-          try {
-            const deleteResponse = await fetch(`${API_URL}/api/delete-files/${operationId}`, {
-              method: 'DELETE',
-            });
-            
-            if (deleteResponse.ok) {
-              addDebugMessage('Archivos eliminados automáticamente después del análisis');
-            } else {
-              const deleteData = await deleteResponse.json();
-              addDebugMessage(`No se pudieron eliminar los archivos automáticamente: ${deleteData.error || 'Error desconocido'}`);
-            }
-          } catch (deleteError) {
-            addDebugMessage(`Error al eliminar archivos: ${deleteError.message}`);
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
           }
           
-          setIsFetchingMistral(false);
-          return true;
-        }
-        
-        if (attempts >= maxAttempts) {
-          addDebugMessage('Máximo de intentos alcanzado esperando por Mistral');
+          const data = await response.json();
+          
+          if (data.ready && data.response) {
+            addDebugMessage('Respuesta de Mistral recibida');
+            setChatGptResponse(data.response);
+            setShowChatGptResponse(true);
+            
+            // Eliminar archivos automáticamente una vez recibida la respuesta
+            addDebugMessage('Intentando eliminar archivos automáticamente');
+            try {
+              const deleteResponse = await fetch(`${API_URL}/api/delete-files/${operationId}`, {
+                method: 'DELETE',
+              });
+              
+              if (deleteResponse.ok) {
+                addDebugMessage('Archivos eliminados automáticamente después del análisis');
+              } else {
+                const deleteData = await deleteResponse.json();
+                addDebugMessage(`No se pudieron eliminar los archivos automáticamente: ${deleteData.error || 'Error desconocido'}`);
+              }
+            } catch (deleteError) {
+              addDebugMessage(`Error al eliminar archivos: ${deleteError.message}`);
+            }
+            
+            setIsFetchingMistral(false);
+            return true;
+          }
+          
+          if (attempts >= maxAttempts) {
+            addDebugMessage('Máximo de intentos alcanzado esperando por Mistral');
+            setIsFetchingMistral(false);
+            return false;
+          }
+          
+          // Wait and try again
+          await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
+          return await checkResponse();
+        } catch (error) {
+          addDebugMessage(`Error al obtener respuesta de Mistral: ${error.message}`);
           setIsFetchingMistral(false);
           return false;
         }
-        
-        // Wait and try again
-        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
-        return await checkResponse();
-      } catch (error) {
-        addDebugMessage(`Error al obtener respuesta de Mistral: ${error.message}`);
-        setIsFetchingMistral(false);
-        return false;
-      }
-    };
-    
-    // Start checking
-    await checkResponse();
-  } catch (error) {
-    addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
-    setIsFetchingMistral(false);
-  }
-};
+      };
       
+      // Start checking
+      await checkResponse();
+    } catch (error) {
+      addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
+      setIsFetchingMistral(false);
+    }
+  };
       
   // Start polling for Mistral response when we have an operationId
   useEffect(() => {
     if (operationId && !chatGptResponse) {
       fetchMistralResponse();
     }
-  }, [operationId]);
+  }, [operationId, chatGptResponse]);
 
   // Efecto para manejar compartir archivos y configurar Service Worker
   useEffect(() => {
@@ -397,258 +633,6 @@ const fetchMistralResponse = async () => {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
-
-  // Check if user can upload a chat based on their subscription plan
-// Reemplaza la función checkUploadEligibility con esta versión
-// Versión más estricta de checkUploadEligibility
-const checkUploadEligibility = async () => {
-  console.log("Verificando elegibilidad para cargar - Estado actual del usuario:", user);
-  
-  if (!user) {
-    // Intentar recuperar el usuario una vez más desde Firebase
-    try {
-      const currentUser = await getCurrentUser();
-      if (currentUser) {
-        console.log("Usuario recuperado correctamente desde Firebase:", currentUser);
-        // Actualizar el estado de usuario manualmente
-        // Nota: Esto es un hack temporal. Lo ideal sería que esto ocurra a través de AuthContext
-        window._tempUser = currentUser; // Almacenar en una variable temporal
-        
-        // Intentar recuperar el perfil del usuario
-        try {
-          const profile = await getUserProfile(currentUser.uid);
-          window._tempUserProfile = profile;
-        } catch (profileError) {
-          console.error("Error recuperando perfil de usuario:", profileError);
-        }
-        
-        // Verificar si el usuario puede cargar
-        try {
-          const canUpload = await canUploadChat(currentUser.uid);
-          if (!canUpload) {
-            setShowUpgradeModal(true);
-            return false;
-          }
-          return true;
-        } catch (planError) {
-          console.error("Error verificando plan:", planError);
-          setError("Error verificando tu plan. Por favor, recarga la página.");
-          return false;
-        }
-      } else {
-        // No hay usuario autenticado
-        setError('Debes iniciar sesión para analizar conversaciones.');
-        // Redirigir a la página de login después de un breve retraso
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 2000);
-        return false;
-      }
-    } catch (error) {
-      console.error("Error verificando autenticación:", error);
-      setError('Error al verificar tu sesión. Por favor, inicia sesión nuevamente.');
-      return false;
-    }
-  }
-  
-  // Ya hay un usuario en el contexto, verificar plan
-  try {
-    const canUpload = await canUploadChat(user.uid);
-    
-    if (!canUpload) {
-      setShowUpgradeModal(true);
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Error verificando plan de usuario:', error);
-    setError('Error al verificar tu plan. Por favor, inténtalo de nuevo.');
-    return false;
-  }
-};
-
-
-  // Manejar archivos recibidos del service worker
-  const handleSharedFile = async (file) => {
-    addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
-    
-    if (!file) {
-      setError('No se pudo recibir el archivo');
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
-      return;
-    }
-    
-    // Verificar que sea un archivo ZIP
-    const isZipFile = file.type === 'application/zip' || 
-                      file.type === 'application/x-zip' ||
-                      file.type === 'application/x-zip-compressed' ||
-                      file.name.toLowerCase().endsWith('.zip');
-    
-    if (!isZipFile) {
-      addDebugMessage(`Archivo no es ZIP: ${file.type}`);
-      setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
-      return;
-    }
-    
-    // Check if user is logged in and has available uploads
-    const isEligible = await checkUploadEligibility();
-    if (!isEligible) {
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
-      return;
-    }
-    
-    setError('');
-    setIsLoading(true);
-    setZipFile(file);
-    
-    try {
-      // Procesar el archivo
-      await processZipFile(file);
-      
-      // If processing was successful, increment usage counter
-      if (user) {
-        await incrementChatUsage(user.uid);
-        
-        // Update local user profile data
-        if (userProfile) {
-          setUserProfile({
-            ...userProfile,
-            currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-            totalUploads: (userProfile.totalUploads || 0) + 1
-          });
-        }
-      }
-    } catch (err) {
-      addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
-      setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
-    } finally {
-      setIsLoading(false);
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
-    }
-  };
-
-  // Procesar el archivo ZIP
-  const processZipFile = async (file) => {
-    addDebugMessage(`Enviando archivo al backend: ${file.name}`);
-    
-    const formData = new FormData();
-    formData.append('zipFile', file);
-    
-    try {
-      // Mostrar la URL a la que se está enviando la solicitud
-      addDebugMessage(`URL de API: ${API_URL}/api/extract`);
-      
-      // Set operation_id and show analysis sections right after uploading files
-      // but before waiting for the ChatGPT/Mistral response
-      setShowAnalysis(true);
-      
-      const response = await fetch(`${API_URL}/api/extract`, {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        addDebugMessage(`Error en respuesta del servidor: ${response.status}, ${errorText}`);
-        
-        try {
-          const errorData = JSON.parse(errorText);
-          throw new Error(errorData.error || `Error ${response.status}`);
-        } catch (jsonError) {
-          throw new Error(`Error del servidor: ${response.status}`);
-        }
-      }
-      
-      const result = await response.json();
-      addDebugMessage(`Respuesta exitosa: ${result.files?.length || 0} archivos`);
-      
-      // Set the operation_id immediately so analysis components can start loading their data
-      if (result.operation_id) {
-        setOperationId(result.operation_id);
-      }
-      
-      const extractedFiles = result.files.map(file => ({
-        name: file.name,
-        size: file.size,
-        path: file.path,
-        operationId: result.operation_id,
-        hasText: file.has_text
-      }));
-      
-      setFiles(extractedFiles);
-      
-      // Handle ChatGPT/Mistral response separately
-      // This will be processed asynchronously after showing the analysis sections
-      if (result.chatgpt_response || result.mistral_response) {
-        addDebugMessage('Respuesta de AI recibida');
-        setChatGptResponse(result.chatgpt_response || result.mistral_response);
-        setShowChatGptResponse(true);
-      } else {
-        setChatGptResponse("");
-        setShowChatGptResponse(false);
-      }
-      
-    } catch (error) {
-      addDebugMessage(`Error procesando ZIP: ${error.message}. Inténtalo más tarde.`);
-      throw error;
-    }
-  };
-
-  // Manejar la carga manual de archivos
-  // Reemplaza la función handleFileUpload en App.js con esta versión
-
-const handleFileUpload = async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-  
-  console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
-  
-  // Verificación más permisiva para archivos de Google Drive
-  // Verificar solo por nombre de archivo, ignorando completamente el MIME type
-  if (!file.name.toLowerCase().endsWith('.zip')) {
-    setError('Por favor, sube un archivo ZIP válido (.zip)');
-    return;
-  }
-  
-  // Check if user is logged in and has available uploads
-  const isEligible = await checkUploadEligibility();
-  if (!isEligible) {
-    return;
-  }
-  
-  setError('');
-  setIsLoading(true);
-  setZipFile(file);
-  
-  try {
-    await processZipFile(file);
-    
-    // If processing was successful, increment usage counter
-    if (user) {
-      await incrementChatUsage(user.uid);
-      
-      // Update local user profile data
-      if (userProfile) {
-        setUserProfile({
-          ...userProfile,
-          currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-          totalUploads: (userProfile.totalUploads || 0) + 1
-        });
-      }
-    }
-  } catch (err) {
-    console.error('Error al procesar:', err);
-    setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
-  } finally {
-    setIsLoading(false);
-  }
-};
 
   // Reiniciar la aplicación (para debugging)
   const handleReset = () => {
