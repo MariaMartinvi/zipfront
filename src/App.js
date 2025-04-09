@@ -202,7 +202,7 @@ function App() {
 
   // Procesar el archivo ZIP
   const processZipFile = async (file) => {
-    addDebugMessage(`Enviando archivo al backend: ${file.name}`);
+    addDebugMessage(`Enviando archivo al backend: ${file.name} (${file.size} bytes) - Tipo: ${file.type}`);
     
     const formData = new FormData();
     formData.append('zipFile', file);
@@ -212,13 +212,23 @@ function App() {
       addDebugMessage(`URL de API: ${API_URL}/api/extract`);
       
       // Set operation_id and show analysis sections right after uploading files
-      // but before waiting for the ChatGPT/Mistral response
       setShowAnalysis(true);
+      
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
       
       const response = await fetch(`${API_URL}/api/extract`, {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json'
+        }
       });
+      
+      // Clear the timeout since we got a response
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -251,7 +261,6 @@ function App() {
       setFiles(extractedFiles);
       
       // Handle ChatGPT/Mistral response separately
-      // This will be processed asynchronously after showing the analysis sections
       if (result.chatgpt_response || result.mistral_response) {
         addDebugMessage('Respuesta de AI recibida');
         setChatGptResponse(result.chatgpt_response || result.mistral_response);
@@ -261,7 +270,14 @@ function App() {
         setShowChatGptResponse(false);
       }
       
+      return result;
     } catch (error) {
+      // Handle abort/timeout errors specifically
+      if (error.name === 'AbortError') {
+        addDebugMessage("La solicitud tardó demasiado tiempo en completarse");
+        throw new Error("La operación tardó demasiado tiempo. Por favor, inténtalo de nuevo más tarde.");
+      }
+      
       addDebugMessage(`Error procesando ZIP: ${error.message}. Inténtalo más tarde.`);
       throw error;
     }
@@ -274,14 +290,13 @@ function App() {
     
     console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
     
-    // Verificación más permisiva para archivos de Google Drive
-    // Verificar solo por nombre de archivo, ignorando completamente el MIME type
+    // Verificación más permisiva para archivos - solo por nombre de archivo
     if (!file.name.toLowerCase().endsWith('.zip')) {
       setError('Por favor, sube un archivo ZIP válido (.zip)');
       return;
     }
     
-    // Analyze and process the file if needed
+    // Analizar y corregir el archivo si es necesario
     const analyzedFile = analyzeFile(file);
     
     // Check if user is logged in and has available uploads
@@ -297,17 +312,40 @@ function App() {
     try {
       await processZipFile(analyzedFile);
       
-      // If processing was successful, increment usage counter
+      // If processing was successful, increment usage counter with retry mechanism
       if (user) {
-        await incrementChatUsage(user.uid);
-        
-        // Update local user profile data
-        if (userProfile) {
-          setUserProfile({
-            ...userProfile,
-            currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-            totalUploads: (userProfile.totalUploads || 0) + 1
-          });
+        try {
+          await incrementChatUsage(user.uid);
+          
+          // Update local user profile data
+          if (userProfile) {
+            setUserProfile({
+              ...userProfile,
+              currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+              totalUploads: (userProfile.totalUploads || 0) + 1
+            });
+          }
+          addDebugMessage("Contador de uso incrementado correctamente");
+        } catch (usageError) {
+          addDebugMessage(`Error al incrementar contador: ${usageError.message}`);
+          // Try one more time after a delay
+          setTimeout(async () => {
+            try {
+              await incrementChatUsage(user.uid);
+              
+              // Update local user profile data
+              if (userProfile) {
+                setUserProfile({
+                  ...userProfile,
+                  currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+                  totalUploads: (userProfile.totalUploads || 0) + 1
+                });
+              }
+              addDebugMessage("Contador de uso incrementado en segundo intento");
+            } catch (retryError) {
+              addDebugMessage(`Error al incrementar contador (segundo intento): ${retryError.message}`);
+            }
+          }, 3000);
         }
       }
     } catch (err) {
@@ -329,29 +367,15 @@ function App() {
       return;
     }
     
-    // Verificar que sea un archivo ZIP por nombre en lugar de tipo MIME
-    const isZipFile = file.name.toLowerCase().endsWith('.zip');
+    // Verificar que sea un archivo ZIP
+    const isZipFile = file.type === 'application/zip' || 
+                      file.type === 'application/x-zip' ||
+                      file.type === 'application/x-zip-compressed' ||
+                      file.name.toLowerCase().endsWith('.zip');
     
     if (!isZipFile) {
-      addDebugMessage(`Archivo no es ZIP: ${file.type}, nombre: ${file.name}`);
+      addDebugMessage(`Archivo no es ZIP: ${file.type}`);
       setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
-      return;
-    }
-    
-    // Analizar y corregir el archivo si es necesario
-    const processedFile = analyzeFile(file);
-    
-    // Ensure we're authenticated by waiting a bit if needed
-    if (!user) {
-      addDebugMessage("Usuario no detectado, esperando 2 segundos para autenticación...");
-      await new Promise(resolve => setTimeout(resolve, 2000));
-    }
-    
-    // Check if user is logged in and has available uploads
-    const isEligible = await checkUploadEligibility();
-    if (!isEligible) {
       setIsProcessingSharedFile(false);
       isProcessingRef.current = false;
       return;
@@ -359,41 +383,11 @@ function App() {
     
     setError('');
     setIsLoading(true);
-    setZipFile(processedFile);
+    setZipFile(file);
     
     try {
       // Procesar el archivo
-      await processZipFile(processedFile);
-      
-      // If processing was successful, increment usage counter - with retries
-      if (user) {
-        try {
-          await incrementChatUsage(user.uid);
-          
-          // Update local user profile data
-          if (userProfile) {
-            setUserProfile({
-              ...userProfile,
-              currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-              totalUploads: (userProfile.totalUploads || 0) + 1
-            });
-          }
-          addDebugMessage("Contador de uso incrementado correctamente");
-        } catch (usageError) {
-          addDebugMessage(`Error al incrementar contador: ${usageError.message}`);
-          // Try one more time after a delay
-          setTimeout(async () => {
-            try {
-              await incrementChatUsage(user.uid);
-              addDebugMessage("Contador de uso incrementado en segundo intento");
-            } catch (retryError) {
-              addDebugMessage(`Error al incrementar contador (segundo intento): ${retryError.message}`);
-            }
-          }, 3000);
-        }
-      } else {
-        addDebugMessage("No se pudo incrementar contador: usuario no disponible");
-      }
+      await processZipFile(file);
     } catch (err) {
       addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
       setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
