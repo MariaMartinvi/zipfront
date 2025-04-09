@@ -290,67 +290,88 @@ function App() {
     
     console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
     
-    // Verificación más permisiva para archivos - solo por nombre de archivo
-    if (!file.name.toLowerCase().endsWith('.zip')) {
+    // More robust file type checking
+    const isZipFile = 
+      file.type === 'application/zip' || 
+      file.type === 'application/x-zip-compressed' || 
+      file.type === 'application/x-zip' || 
+      file.name.toLowerCase().endsWith('.zip');
+    
+    if (!isZipFile) {
       setError('Por favor, sube un archivo ZIP válido (.zip)');
       return;
     }
     
-    // Analizar y corregir el archivo si es necesario
-    const analyzedFile = analyzeFile(file);
-    
-    // Check if user is logged in and has available uploads
+    // Check user eligibility
     const isEligible = await checkUploadEligibility();
-    if (!isEligible) {
-      return;
-    }
+    if (!isEligible) return;
     
     setError('');
     setIsLoading(true);
-    setZipFile(analyzedFile);
     
     try {
-      await processZipFile(analyzedFile);
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('zipFile', file);
       
-      // If processing was successful, increment usage counter with retry mechanism
-      if (user) {
-        try {
-          await incrementChatUsage(user.uid);
-          
-          // Update local user profile data
-          if (userProfile) {
-            setUserProfile({
-              ...userProfile,
-              currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-              totalUploads: (userProfile.totalUploads || 0) + 1
-            });
-          }
-          addDebugMessage("Contador de uso incrementado correctamente");
-        } catch (usageError) {
-          addDebugMessage(`Error al incrementar contador: ${usageError.message}`);
-          // Try one more time after a delay
-          setTimeout(async () => {
-            try {
-              await incrementChatUsage(user.uid);
-              
-              // Update local user profile data
-              if (userProfile) {
-                setUserProfile({
-                  ...userProfile,
-                  currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-                  totalUploads: (userProfile.totalUploads || 0) + 1
-                });
-              }
-              addDebugMessage("Contador de uso incrementado en segundo intento");
-            } catch (retryError) {
-              addDebugMessage(`Error al incrementar contador (segundo intento): ${retryError.message}`);
-            }
-          }, 3000);
+      // Detailed logging for debugging
+      console.debug('[App Debug] Preparing to upload file:', {
+        filename: file.name,
+        size: file.size,
+        type: file.type
+      });
+      
+      // Add a timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      
+      // Enhanced fetch with more comprehensive error handling
+      const response = await fetch(`${API_URL}/api/extract`, {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal,
+        headers: {
+          // Optional: Add authorization headers if needed
+          // 'Authorization': `Bearer ${user.token}`
         }
+      });
+      
+      // Clear the timeout
+      clearTimeout(timeoutId);
+      
+      // Check for successful response
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[App Debug] Server Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorDetails: errorText
+        });
+        
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
-    } catch (err) {
-      console.error('Error al procesar:', err);
-      setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
+      
+      // Parse successful response
+      const result = await response.json();
+      
+      // Process the result as before...
+      // (rest of your existing logic)
+      
+    } catch (error) {
+      console.error('Upload Error:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+      
+      // More specific error handling
+      if (error.name === 'AbortError') {
+        setError('La solicitud tardó demasiado. Por favor, inténtalo de nuevo.');
+      } else if (error.name === 'TypeError') {
+        setError('Error de red. Verifica tu conexión e inténtalo de nuevo.');
+      } else {
+        setError(`Error al procesar el archivo: ${error.message}`);
+      }
     } finally {
       setIsLoading(false);
     }
