@@ -11,6 +11,16 @@ const debug = (message, data) => {
   }
 };
 
+// Función para verificar si un archivo es probablemente un ZIP
+const isLikelyZipFile = (file) => {
+  // Verificar por tipo MIME o extensión
+  return file.type === 'application/zip' || 
+         file.type === 'application/x-zip' || 
+         file.type === 'application/x-zip-compressed' ||
+         file.type === 'application/octet-stream' || // Tipos comunes de Google Drive
+         file.name.toLowerCase().endsWith('.zip');
+};
+
 // Instalación del Service Worker
 self.addEventListener('install', event => {
   debug('Service Worker instalado');
@@ -55,6 +65,12 @@ self.addEventListener('fetch', event => {
         
         if (file && file instanceof File) {
           debug('Archivo encontrado', { name: file.name, type: file.type, size: file.size });
+          
+          // Verificar si probablemente es un ZIP
+          if (!isLikelyZipFile(file)) {
+            debug('El archivo no parece ser un ZIP', { type: file.type, name: file.name });
+            // Aún así lo enviamos, el cliente hará una verificación más exhaustiva
+          }
           
           // Almacenar el archivo con un ID único
           const shareId = Date.now().toString();

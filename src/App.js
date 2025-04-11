@@ -102,7 +102,8 @@ function App() {
     let processedFile = file;
     if (file.name.toLowerCase().endsWith('.zip') && 
         file.type !== 'application/zip' && 
-        file.type !== 'application/x-zip-compressed') {
+        file.type !== 'application/x-zip-compressed' &&
+        file.type !== 'application/octet-stream') { // Añadido octet-stream como tipo aceptado
       // Crear un nuevo archivo con el tipo MIME correcto
       processedFile = new File([file], file.name, {
         type: 'application/zip',
@@ -111,7 +112,7 @@ function App() {
       console.log("Archivo corregido con MIME type:", processedFile.type);
     }
     
-    // Examinar los primeros bytes del archivo si es necesario
+    // Examinar los primeros bytes del archivo para confirmar si es un ZIP
     const reader = new FileReader();
     reader.onload = function(e) {
       const arrayBuffer = e.target.result;
@@ -309,8 +310,14 @@ function App() {
     
     console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
     
-    // Verificación más permisiva para archivos - solo por nombre de archivo
-    if (!file.name.toLowerCase().endsWith('.zip')) {
+    // Verificación más permisiva para archivos - verificar por extensión y tipo
+    const isZipFile = file.type === 'application/zip' || 
+                     file.type === 'application/x-zip' ||
+                     file.type === 'application/x-zip-compressed' ||
+                     file.type === 'application/octet-stream' || // Añadir octet-stream de Google Drive
+                     file.name.toLowerCase().endsWith('.zip');
+    
+    if (!isZipFile) {
       setError('Por favor, sube un archivo ZIP válido (.zip)');
       return;
     }
@@ -386,10 +393,11 @@ function App() {
       return;
     }
     
-    // Verificar que sea un archivo ZIP
+    // Verificación más permisiva para archivos ZIP de Google Drive
     const isZipFile = file.type === 'application/zip' || 
                       file.type === 'application/x-zip' ||
                       file.type === 'application/x-zip-compressed' ||
+                      file.type === 'application/octet-stream' || // Añadir octet-stream de Google Drive
                       file.name.toLowerCase().endsWith('.zip');
     
     if (!isZipFile) {
@@ -400,13 +408,16 @@ function App() {
       return;
     }
     
+    // Analizar y posiblemente corregir el archivo antes de procesarlo
+    const analyzedFile = analyzeFile(file);
+    
     setError('');
     setIsLoading(true);
-    setZipFile(file);
+    setZipFile(analyzedFile); // Usar el archivo analizado/corregido
     
     try {
       // Procesar el archivo
-      await processZipFile(file);
+      await processZipFile(analyzedFile); // Usar el archivo analizado/corregido
     } catch (err) {
       addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
       setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
