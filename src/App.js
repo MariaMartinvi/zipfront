@@ -76,7 +76,7 @@ function App() {
   const [filesDeleted, setFilesDeleted] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   // Get user-related state from AuthContext instead of managing locally
-  const { user, userProfile, setUserProfile, isAuthLoading } = useAuth();
+  const { user, userProfile, setUserProfile, isAuthLoading, setUser } = useAuth();
   
   // Tracking para evitar procesamiento duplicado
   const processedShareIds = useRef(new Set());
@@ -162,6 +162,8 @@ function App() {
         if (currentUser) {
           setUserProfile(currentUser);
           console.log("Usuario recuperado correctamente desde Firebase:", currentUser);
+          if (setUser) setUser(currentUser); // Usar condicional para evitar errores
+
           // Actualizar el estado de usuario manualmente
           // Nota: Esto es un hack temporal. Lo ideal sería que esto ocurra a través de AuthContext
           window._tempUser = currentUser; // Almacenar en una variable temporal
@@ -365,9 +367,15 @@ function App() {
     // Check if user is logged in and has available uploads
     const isEligible = await checkUploadEligibility();
     if (!isEligible) {
+      setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
       return;
     }
     
+    const currentUser = await getCurrentUser();
+    if (currentUser && !user) {
+      setUser(currentUser);
+    }
     setError('');
     setIsLoading(true);
     setZipFile(analyzedFile);
@@ -485,8 +493,9 @@ function App() {
       return;
     }
     const currentUser =  await getCurrentUser();
-    if (currentUser && !user)
-      {setUser(currentUser);}
+    if (currentUser && !user)  {
+    
+        setUser(currentUser);}
     setError('');
     setIsLoading(true);
     setZipFile(analyzedFile); // Usar el archivo analizado/corregido
