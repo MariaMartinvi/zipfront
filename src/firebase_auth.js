@@ -223,12 +223,41 @@ export const canUploadChat = async (userId) => {
 // Increment a user's chat upload count
 export const incrementChatUsage = async (userId) => {
   try {
-    await updateDoc(doc(db, 'users', userId), {
+    console.log(`Incrementando contadores para usuario: ${userId}`);
+    
+    // Verificar que el usuario existe
+    const userRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      console.error(`Error: No se encontró el usuario con ID ${userId}`);
+      throw new Error(`Usuario no encontrado (ID: ${userId})`);
+    }
+    
+    // Obtener valores actuales
+    const userData = userDoc.data();
+    const currentUsage = userData.currentPeriodUsage || 0;
+    const totalUploads = userData.totalUploads || 0;
+    
+    console.log(`Valores actuales - currentPeriodUsage: ${currentUsage}, totalUploads: ${totalUploads}`);
+    
+    // Realizar la actualización con el operador increment
+    await updateDoc(userRef, {
       currentPeriodUsage: increment(1),
-      totalUploads: increment(1)
+      totalUploads: increment(1),
+      lastUploadAt: new Date()
     });
+    
+    console.log(`Contadores incrementados exitosamente para usuario ${userId}`);
+    
+    // Verificar que la actualización fue exitosa
+    const updatedDoc = await getDoc(userRef);
+    if (updatedDoc.exists()) {
+      const updatedData = updatedDoc.data();
+      console.log(`Nuevos valores - currentPeriodUsage: ${updatedData.currentPeriodUsage}, totalUploads: ${updatedData.totalUploads}`);
+    }
   } catch (error) {
-    console.error('Error incrementing chat usage:', error);
+    console.error('Error incrementando chat usage:', error);
     throw error;
   }
 };

@@ -258,7 +258,8 @@ function App() {
         signal: controller.signal,
         headers: {
           'Accept': 'application/json'
-        }
+        },
+        credentials: 'include' // Incluir cookies para autenticación si es necesario
       });
       
       // Clear the timeout since we got a response
@@ -288,6 +289,7 @@ function App() {
           addDebugMessage(`Iniciando análisis Mistral para operación ${result.operation_id}`);
           const mistralResponse = await fetch(`${API_URL}/api/analyze-mistral/${result.operation_id}`, {
             method: 'POST',
+            credentials: 'include' // Incluir cookies para autenticación si es necesario
           });
           
           if (mistralResponse.ok) {
@@ -320,6 +322,8 @@ function App() {
         setShowChatGptResponse(false);
       }
       
+      // Indicar éxito para que la lógica de incremento de contador funcione
+      addDebugMessage('Procesamiento de archivo ZIP completado con éxito');
       return result;
     } catch (error) {
       // Handle abort/timeout errors specifically
@@ -459,14 +463,20 @@ function App() {
     setIsLoading(true);
     setZipFile(analyzedFile); // Usar el archivo analizado/corregido
     
+    let processingSuccess = false;
+    
     try {
       addDebugMessage(`Enviando archivo corregido al backend: ${analyzedFile.name} (${analyzedFile.size} bytes) - Tipo: ${analyzedFile.type}`);
       // Procesar el archivo
       await processZipFile(analyzedFile); // Usar el archivo analizado/corregido
       
+      // Si llegamos aquí, el procesamiento fue exitoso
+      processingSuccess = true;
+      
       // If processing was successful, increment usage counter with retry mechanism
       if (user) {
         try {
+          addDebugMessage(`Incrementando contador para usuario: ${user.uid}`);
           await incrementChatUsage(user.uid);
           
           // Update local user profile data
@@ -476,6 +486,7 @@ function App() {
               currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
               totalUploads: (userProfile.totalUploads || 0) + 1
             });
+            addDebugMessage(`Perfil de usuario actualizado localmente. Nuevo total: ${(userProfile.totalUploads || 0) + 1}`);
           }
           addDebugMessage("Contador de uso incrementado correctamente");
         } catch (usageError) {
@@ -499,6 +510,8 @@ function App() {
             }
           }, 30000);
         }
+      } else {
+        addDebugMessage("No hay usuario autenticado para incrementar contador");
       }
     } catch (err) {
       addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
@@ -512,10 +525,12 @@ function App() {
           // Si llegó aquí, funcionó
           addDebugMessage('Procesamiento del archivo original exitoso');
           setError(''); // Limpiar el error anterior
+          processingSuccess = true;
           
           // Incrementar contador también si el archivo original tuvo éxito
           if (user) {
             try {
+              addDebugMessage(`Incrementando contador (archivo original) para usuario: ${user.uid}`);
               await incrementChatUsage(user.uid);
               if (userProfile) {
                 setUserProfile({
@@ -528,6 +543,8 @@ function App() {
             } catch (usageError) {
               addDebugMessage(`Error al incrementar contador (archivo original): ${usageError.message}`);
             }
+          } else {
+            addDebugMessage("No hay usuario autenticado para incrementar contador (archivo original)");
           }
         } catch (origErr) {
           addDebugMessage(`Error procesando archivo original: ${origErr.message}`);
@@ -538,6 +555,10 @@ function App() {
       setIsLoading(false);
       setIsProcessingSharedFile(false);
       isProcessingRef.current = false;
+      
+      if (processingSuccess) {
+        addDebugMessage("Procesamiento completado con éxito");
+      }
     }
   };
   
