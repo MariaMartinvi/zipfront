@@ -21,6 +21,10 @@ import PaymentSuccessBanner from './PaymentSuccessBanner';
 import { useAuth } from './AuthContext';
 import AuthDebug from './AuthDebug'; // Optional for debugging
 import { deleteFiles, uploadFile, getMistralResponse } from './fileService';
+import Contact from './Paginasextra/Contact';
+import FAQ from './Paginasextra/FAQ';
+import TermsOfService from './Paginasextra/TermsOfService';
+import PrivacyPolicy from './Paginasextra/PrivacyPolicy';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -200,7 +204,6 @@ function App() {
     }
   };
 
-  // Procesar el archivo ZIP
   const processZipFile = async (file) => {
     addDebugMessage(`Enviando archivo al backend: ${file.name} (${file.size} bytes) - Tipo: ${file.type}`);
     
@@ -248,6 +251,22 @@ function App() {
       // Set the operation_id immediately so analysis components can start loading their data
       if (result.operation_id) {
         setOperationId(result.operation_id);
+        
+        // Trigger Mistral analysis after successful file extraction
+        try {
+          addDebugMessage(`Iniciando análisis Mistral para operación ${result.operation_id}`);
+          const mistralResponse = await fetch(`${API_URL}/api/analyze-mistral/${result.operation_id}`, {
+            method: 'POST',
+          });
+          
+          if (mistralResponse.ok) {
+            addDebugMessage(`Análisis Mistral iniciado correctamente para operación ${result.operation_id}`);
+          } else {
+            addDebugMessage(`Error al iniciar análisis Mistral: ${mistralResponse.status}`);
+          }
+        } catch (mistralError) {
+          addDebugMessage(`Error al iniciar análisis Mistral: ${mistralError.message}`);
+        }
       }
       
       const extractedFiles = result.files.map(file => ({
@@ -345,7 +364,7 @@ function App() {
             } catch (retryError) {
               addDebugMessage(`Error al incrementar contador (segundo intento): ${retryError.message}`);
             }
-          }, 3000);
+          }, 30000);
         }
       }
     } catch (err) {
@@ -419,77 +438,114 @@ function App() {
   };
 
   // Function to poll for Mistral response
-  const fetchMistralResponse = async () => {
-    if (!operationId || isFetchingMistral) return;
+  // Function to poll for Mistral response
+const fetchMistralResponse = async () => {
+  if (!operationId || isFetchingMistral) return;
+  
+  setIsFetchingMistral(true);
+  
+  try {
+    let attempts = 0;
+    const maxAttempts = 10; // Try 10 times with delay in between
     
-    setIsFetchingMistral(true);
-    
-    try {
-      let attempts = 0;
-      const maxAttempts = 10; // Try 10 times with delay in between
+    const checkResponse = async () => {
+      attempts++;
       
-      const checkResponse = async () => {
-        attempts++;
+      try {
+        const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
         
-        try {
-          const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.ready && data.response) {
+          addDebugMessage('Respuesta de Mistral recibida');
+          setChatGptResponse(data.response);
+          setShowChatGptResponse(true);
           
-          if (!response.ok) {
-            throw new Error(`Error: ${response.status}`);
-          }
+          // Use the checking and deletion with delay instead of immediate deletion
+          checkAndDeleteFiles(operationId);
           
-          const data = await response.json();
-          
-          if (data.ready && data.response) {
-            addDebugMessage('Respuesta de Mistral recibida');
-            setChatGptResponse(data.response);
-            setShowChatGptResponse(true);
-            
-            // Eliminar archivos automáticamente una vez recibida la respuesta
-            addDebugMessage('Intentando eliminar archivos automáticamente');
-            try {
-              const deleteResponse = await fetch(`${API_URL}/api/delete-files/${operationId}`, {
-                method: 'DELETE',
-              });
-              
-              if (deleteResponse.ok) {
-                addDebugMessage('Archivos eliminados automáticamente después del análisis');
-              } else {
-                const deleteData = await deleteResponse.json();
-                addDebugMessage(`No se pudieron eliminar los archivos automáticamente: ${deleteData.error || 'Error desconocido'}`);
-              }
-            } catch (deleteError) {
-              addDebugMessage(`Error al eliminar archivos: ${deleteError.message}`);
-            }
-            
-            setIsFetchingMistral(false);
-            return true;
-          }
-          
-          if (attempts >= maxAttempts) {
-            addDebugMessage('Máximo de intentos alcanzado esperando por Mistral');
-            setIsFetchingMistral(false);
-            return false;
-          }
-          
-          // Wait and try again
-          await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
-          return await checkResponse();
-        } catch (error) {
-          addDebugMessage(`Error al obtener respuesta de Mistral: ${error.message}`);
+          setIsFetchingMistral(false);
+          return true;
+        }
+        
+        if (attempts >= maxAttempts) {
+          addDebugMessage('Máximo de intentos alcanzado esperando por Mistral');
           setIsFetchingMistral(false);
           return false;
         }
-      };
+        
+        // Wait and try again
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
+        return await checkResponse();
+      } catch (error) {
+        addDebugMessage(`Error al obtener respuesta de Mistral: ${error.message}`);
+        setIsFetchingMistral(false);
+        return false;
+      }
+    };
+    
+    // Start checking
+    await checkResponse();
+  } catch (error) {
+    addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
+    setIsFetchingMistral(false);
+  }
+};
+
+// Add this new function for checking if processing is complete before deleting
+const checkAndDeleteFiles = async (operationId, retries = 5, delay = 10000) => {
+  if (retries <= 0) {
+    addDebugMessage('Máximo de reintentos alcanzado, intentando eliminar archivos de todos modos');
+    tryDeleteFiles(operationId);
+    return;
+  }
+  
+  try {
+    // Check if the response file exists (since you don't have the /api/check-processing endpoint yet)
+    const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
+    
+    if (response.ok) {
+      const data = await response.json();
       
-      // Start checking
-      await checkResponse();
-    } catch (error) {
-      addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
-      setIsFetchingMistral(false);
+      if (data.ready && data.response) {
+        addDebugMessage('Procesamiento confirmado como completo, eliminando archivos en 30 segundos');
+        // Add a delay to ensure any ongoing processes are complete
+        setTimeout(() => tryDeleteFiles(operationId), 30000);
+      } else {
+        addDebugMessage(`Procesamiento no completado todavía, esperando ${delay/1000} segundos...`);
+        setTimeout(() => checkAndDeleteFiles(operationId, retries - 1, delay), delay);
+      }
+    } else {
+      addDebugMessage('Error al verificar estado del procesamiento, intentando eliminar de todos modos');
+      setTimeout(() => tryDeleteFiles(operationId), 30000);
     }
-  };
-      
+  } catch (error) {
+    addDebugMessage(`Error en el proceso de verificación: ${error.message}`);
+    setTimeout(() => checkAndDeleteFiles(operationId, retries - 1, delay), delay);
+  }
+};
+
+const tryDeleteFiles = async (operationId) => {
+  try {
+    addDebugMessage('Intentando eliminar archivos');
+    const deleteResponse = await fetch(`${API_URL}/api/delete-files/${operationId}`, {
+      method: 'DELETE',
+    });
+    
+    if (deleteResponse.ok) {
+      addDebugMessage('Archivos eliminados con éxito');
+    } else {
+      const deleteData = await deleteResponse.json();
+      addDebugMessage(`No se pudieron eliminar los archivos: ${deleteData.error || 'Error desconocido'}`);
+    }
+  } catch (deleteError) {
+    addDebugMessage(`Error al intentar eliminar archivos: ${deleteError.message}`);
+  }
+};
   // Start polling for Mistral response when we have an operationId
   useEffect(() => {
     if (operationId && !chatGptResponse) {
@@ -820,12 +876,18 @@ function App() {
                 <SimplePaymentSuccess />
               </ProtectedRoute>
             } />
+
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          < Route path="/privacy" element={<PrivacyPolicy />} />
           </Routes>
           
           {/* Componente de footer */}
           <Footer/>
           {/* Componente de instalación de PWA */}
           <InstallPWA />
+          
           
           {/* Optional: Add AuthDebug component for debugging */}
           {process.env.NODE_ENV === 'development' && <AuthDebug />}

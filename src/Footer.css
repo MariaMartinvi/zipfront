@@ -1,89 +1,184 @@
-/* Footer.css */
+/* Enhanced Footer Styles */
 .app-footer {
-    background-color: #f5f7fa;
-    color: #333;
-    padding: 3rem 0;
-    border-top: 1px solid #e0e0e0;
-  }
-  
-  .footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-  
+  background-color: #075E54; /* Deep WhatsApp green */
+  color: #ffffff;
+  padding: 4rem 0 2rem;
+  position: relative;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-column h4 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #25D366; /* Bright WhatsApp green */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.footer-column h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background-color: #25D366;
+}
+
+.footer-link {
+  color: #e0e0e0;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.footer-link:hover {
+  color: #25D366;
+  transform: translateX(5px);
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.social-link {
+  color: #ffffff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.social-link:hover {
+  color: #25D366;
+}
+
+.social-link svg {
+  width: 20px;
+  height: 20px;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.footer-bottom a {
+  color: #25D366;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+/* Footer Decorative Elements */
+.footer-wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.footer-wave svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 120px;
+  transform: rotateY(180deg);
+}
+
+.footer-wave .shape-fill {
+  fill: #f5f8fa; /* Background color */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
   .footer-columns {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(2, 1fr);
   }
-  
+}
+
+@media (max-width: 768px) {
+  .footer-columns {
+    grid-template-columns: 1fr;
+  }
+
   .footer-column {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .footer-column h4 {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    color: #4285f4;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-  
-  .footer-link {
-    color: #555;
-    text-decoration: none;
-    margin-bottom: 0.5rem;
-    transition: color 0.2s ease;
-  }
-  
-  .footer-link:hover {
-    color: #4285f4;
-  }
-  
-  .social-links {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .social-link {
-    color: #555;
-    text-decoration: none;
-    margin-bottom: 0.5rem;
-    transition: color 0.2s ease;
-  }
-  
-  .social-link:hover {
-    color: #4285f4;
-  }
-  
-  .footer-bottom {
     text-align: center;
-    padding-top: 2rem;
-    border-top: 1px solid #e0e0e0;
-    color: #777;
-    font-size: 0.9rem;
+    align-items: center;
   }
-  
-  /* Responsive Adjustments */
-  @media (max-width: 768px) {
-    .footer-columns {
-      grid-template-columns: repeat(2, 1fr);
-    }
+
+  .footer-column h4::after {
+    left: 50%;
+    transform: translateX(-50%);
   }
-  
-  @media (max-width: 480px) {
-    .footer-columns {
-      grid-template-columns: 1fr;
-    }
-  
-    .footer-column {
-      text-align: center;
-    }
-  
-    .social-links {
-      align-items: center;
-    }
+
+  .social-links {
+    justify-content: center;
   }
+}
+
+/* Additional Subtle Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.footer-link:hover,
+.social-link:hover {
+  animation: pulse 0.5s ease;
+}
+
+/* Optional: Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .app-footer {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+  }
+
+  .footer-link {
+    color: #bdc3c7;
+  }
+
+  .footer-bottom {
+    color: #95a5a6;
+  }
+}
