@@ -160,6 +160,7 @@ function App() {
       try {
         const currentUser = await getCurrentUser();
         if (currentUser) {
+          setUserProfile(currentUser);
           console.log("Usuario recuperado correctamente desde Firebase:", currentUser);
           // Actualizar el estado de usuario manualmente
           // Nota: Esto es un hack temporal. Lo ideal sería que esto ocurra a través de AuthContext
@@ -477,12 +478,15 @@ function App() {
     // Check if user is logged in and has available uploads
     addDebugMessage('Verificando elegibilidad del usuario para subir');
     const isEligible = await checkUploadEligibility();
+   
     if (!isEligible) {
       setIsProcessingSharedFile(false);
       isProcessingRef.current = false;
       return;
     }
-    
+    const currentUser =  await getCurrentUser();
+    if (currentUser && !user)
+      {setUser(currentUser);}
     setError('');
     setIsLoading(true);
     setZipFile(analyzedFile); // Usar el archivo analizado/corregido
