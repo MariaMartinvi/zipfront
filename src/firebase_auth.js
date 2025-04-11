@@ -223,14 +223,21 @@ export const canUploadChat = async (userId) => {
 // Increment a user's chat upload count
 export const incrementChatUsage = async (userId) => {
   try {
-    console.log(`Incrementando contadores para usuario: ${userId}`);
+    console.log(`[incrementChatUsage] Incrementando contadores para usuario: ${userId}`);
+    
+    if (!userId) {
+      console.error(`[incrementChatUsage] Error: ID de usuario inválido o vacío`);
+      throw new Error('ID de usuario no válido');
+    }
     
     // Verificar que el usuario existe
     const userRef = doc(db, 'users', userId);
+    console.log(`[incrementChatUsage] Obteniendo referencia al documento: users/${userId}`);
+    
     const userDoc = await getDoc(userRef);
     
     if (!userDoc.exists()) {
-      console.error(`Error: No se encontró el usuario con ID ${userId}`);
+      console.error(`[incrementChatUsage] Error: No se encontró el usuario con ID ${userId}`);
       throw new Error(`Usuario no encontrado (ID: ${userId})`);
     }
     
@@ -239,25 +246,48 @@ export const incrementChatUsage = async (userId) => {
     const currentUsage = userData.currentPeriodUsage || 0;
     const totalUploads = userData.totalUploads || 0;
     
-    console.log(`Valores actuales - currentPeriodUsage: ${currentUsage}, totalUploads: ${totalUploads}`);
+    console.log(`[incrementChatUsage] Valores actuales - currentPeriodUsage: ${currentUsage}, totalUploads: ${totalUploads}`);
     
-    // Realizar la actualización con el operador increment
-    await updateDoc(userRef, {
+    // Preparar datos para la actualización
+    const updateData = {
       currentPeriodUsage: increment(1),
       totalUploads: increment(1),
       lastUploadAt: new Date()
-    });
+    };
     
-    console.log(`Contadores incrementados exitosamente para usuario ${userId}`);
+    console.log(`[incrementChatUsage] Enviando actualización a Firestore: ${JSON.stringify(updateData)}`);
+    
+    // Realizar la actualización con manejo de errores explícito
+    try {
+      await updateDoc(userRef, updateData);
+      console.log(`[incrementChatUsage] Operación de actualización enviada correctamente`);
+    } catch (updateError) {
+      console.error(`[incrementChatUsage] Error al actualizar documento:`, updateError);
+      throw new Error(`Error al actualizar contador: ${updateError.message}`);
+    }
     
     // Verificar que la actualización fue exitosa
-    const updatedDoc = await getDoc(userRef);
-    if (updatedDoc.exists()) {
-      const updatedData = updatedDoc.data();
-      console.log(`Nuevos valores - currentPeriodUsage: ${updatedData.currentPeriodUsage}, totalUploads: ${updatedData.totalUploads}`);
+    try {
+      const updatedDoc = await getDoc(userRef);
+      if (updatedDoc.exists()) {
+        const updatedData = updatedDoc.data();
+        console.log(`[incrementChatUsage] Nuevos valores verificados - currentPeriodUsage: ${updatedData.currentPeriodUsage}, totalUploads: ${updatedData.totalUploads}`);
+        
+        // Verificar que los valores realmente aumentaron
+        if (updatedData.currentPeriodUsage <= currentUsage || updatedData.totalUploads <= totalUploads) {
+          console.warn(`[incrementChatUsage] Advertencia: Los contadores no parecen haber aumentado correctamente`);
+        }
+      } else {
+        console.warn(`[incrementChatUsage] Advertencia: No se pudo verificar la actualización`);
+      }
+    } catch (verifyError) {
+      console.warn(`[incrementChatUsage] No se pudo verificar la actualización:`, verifyError);
+      // No lanzar error aquí, ya que la operación principal ya se completó
     }
+    
+    return true;
   } catch (error) {
-    console.error('Error incrementando chat usage:', error);
+    console.error('[incrementChatUsage] Error general:', error);
     throw error;
   }
 };

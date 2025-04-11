@@ -377,38 +377,62 @@ function App() {
       // If processing was successful, increment usage counter with retry mechanism
       if (user) {
         try {
-          await incrementChatUsage(user.uid);
+          addDebugMessage(`Incrementando contador para usuario: ${user.uid} - Método de carga: Manual Upload`);
           
-          // Update local user profile data
-          if (userProfile) {
-            setUserProfile({
-              ...userProfile,
-              currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-              totalUploads: (userProfile.totalUploads || 0) + 1
-            });
+          // Verificar explícitamente que tenemos un usuario válido
+          if (!user.uid) {
+            addDebugMessage(`Error: UID de usuario no válido. Valor: ${JSON.stringify(user)}`);
+            throw new Error('Usuario no tiene UID válido');
           }
-          addDebugMessage("Contador de uso incrementado correctamente");
-        } catch (usageError) {
-          addDebugMessage(`Error al incrementar contador: ${usageError.message}`);
-          // Try one more time after a delay
-          setTimeout(async () => {
+          
+          // Intentar incrementar el contador con reintentos
+          let incrementSuccess = false;
+          let attemptCount = 0;
+          const maxAttempts = 3;
+          
+          while (!incrementSuccess && attemptCount < maxAttempts) {
+            attemptCount++;
             try {
+              addDebugMessage(`Intento ${attemptCount} de incrementar contador para ${user.uid}`);
               await incrementChatUsage(user.uid);
+              incrementSuccess = true;
+              addDebugMessage(`Incremento exitoso en intento ${attemptCount}`);
               
-              // Update local user profile data
+              // Actualizar datos locales del perfil
               if (userProfile) {
+                const newPeriodUsage = (userProfile.currentPeriodUsage || 0) + 1;
+                const newTotalUploads = (userProfile.totalUploads || 0) + 1;
+                
                 setUserProfile({
                   ...userProfile,
-                  currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-                  totalUploads: (userProfile.totalUploads || 0) + 1
+                  currentPeriodUsage: newPeriodUsage,
+                  totalUploads: newTotalUploads
                 });
+                
+                addDebugMessage(`Perfil de usuario actualizado localmente. Nuevos valores: currentPeriodUsage=${newPeriodUsage}, totalUploads=${newTotalUploads}`);
+              } else {
+                addDebugMessage(`Advertencia: userProfile no disponible para actualización local. user=${user.uid}`);
               }
-              addDebugMessage("Contador de uso incrementado en segundo intento");
-            } catch (retryError) {
-              addDebugMessage(`Error al incrementar contador (segundo intento): ${retryError.message}`);
+            } catch (incrementError) {
+              addDebugMessage(`Error en intento ${attemptCount}: ${incrementError.message}`);
+              
+              // Esperar antes de reintentar
+              if (attemptCount < maxAttempts) {
+                const delayMs = attemptCount * 5000; // 5s, 10s, 15s
+                addDebugMessage(`Esperando ${delayMs/1000}s antes del siguiente intento...`);
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+              }
             }
-          }, 30000);
+          }
+          
+          if (!incrementSuccess) {
+            addDebugMessage(`Error: No se pudo incrementar el contador después de ${maxAttempts} intentos`);
+          }
+        } catch (outerError) {
+          addDebugMessage(`Error general al incrementar contador: ${outerError.message}`);
         }
+      } else {
+        addDebugMessage("No hay usuario autenticado para incrementar contador");
       }
     } catch (err) {
       console.error('Error al procesar:', err);
@@ -476,39 +500,59 @@ function App() {
       // If processing was successful, increment usage counter with retry mechanism
       if (user) {
         try {
-          addDebugMessage(`Incrementando contador para usuario: ${user.uid}`);
-          await incrementChatUsage(user.uid);
+          addDebugMessage(`Incrementando contador para usuario: ${user.uid} - Método de carga: WhatsApp Share`);
           
-          // Update local user profile data
-          if (userProfile) {
-            setUserProfile({
-              ...userProfile,
-              currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-              totalUploads: (userProfile.totalUploads || 0) + 1
-            });
-            addDebugMessage(`Perfil de usuario actualizado localmente. Nuevo total: ${(userProfile.totalUploads || 0) + 1}`);
+          // Verificar explícitamente que tenemos un usuario válido
+          if (!user.uid) {
+            addDebugMessage(`Error: UID de usuario no válido. Valor: ${JSON.stringify(user)}`);
+            throw new Error('Usuario no tiene UID válido');
           }
-          addDebugMessage("Contador de uso incrementado correctamente");
-        } catch (usageError) {
-          addDebugMessage(`Error al incrementar contador: ${usageError.message}`);
-          // Try one more time after a delay
-          setTimeout(async () => {
+          
+          // Intentar incrementar el contador con reintentos
+          let incrementSuccess = false;
+          let attemptCount = 0;
+          const maxAttempts = 3;
+          
+          while (!incrementSuccess && attemptCount < maxAttempts) {
+            attemptCount++;
             try {
+              addDebugMessage(`Intento ${attemptCount} de incrementar contador para ${user.uid}`);
               await incrementChatUsage(user.uid);
+              incrementSuccess = true;
+              addDebugMessage(`Incremento exitoso en intento ${attemptCount}`);
               
-              // Update local user profile data
+              // Actualizar datos locales del perfil
               if (userProfile) {
+                const newPeriodUsage = (userProfile.currentPeriodUsage || 0) + 1;
+                const newTotalUploads = (userProfile.totalUploads || 0) + 1;
+                
                 setUserProfile({
                   ...userProfile,
-                  currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-                  totalUploads: (userProfile.totalUploads || 0) + 1
+                  currentPeriodUsage: newPeriodUsage,
+                  totalUploads: newTotalUploads
                 });
+                
+                addDebugMessage(`Perfil de usuario actualizado localmente. Nuevos valores: currentPeriodUsage=${newPeriodUsage}, totalUploads=${newTotalUploads}`);
+              } else {
+                addDebugMessage(`Advertencia: userProfile no disponible para actualización local. user=${user.uid}`);
               }
-              addDebugMessage("Contador de uso incrementado en segundo intento");
-            } catch (retryError) {
-              addDebugMessage(`Error al incrementar contador (segundo intento): ${retryError.message}`);
+            } catch (incrementError) {
+              addDebugMessage(`Error en intento ${attemptCount}: ${incrementError.message}`);
+              
+              // Esperar antes de reintentar
+              if (attemptCount < maxAttempts) {
+                const delayMs = attemptCount * 5000; // 5s, 10s, 15s
+                addDebugMessage(`Esperando ${delayMs/1000}s antes del siguiente intento...`);
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+              }
             }
-          }, 30000);
+          }
+          
+          if (!incrementSuccess) {
+            addDebugMessage(`Error: No se pudo incrementar el contador después de ${maxAttempts} intentos`);
+          }
+        } catch (outerError) {
+          addDebugMessage(`Error general al incrementar contador: ${outerError.message}`);
         }
       } else {
         addDebugMessage("No hay usuario autenticado para incrementar contador");
