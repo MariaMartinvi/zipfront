@@ -12,13 +12,35 @@ const debug = (message, data) => {
 };
 
 // Función para verificar si un archivo es probablemente un ZIP
+// Ahora extremadamente permisiva
 const isLikelyZipFile = (file) => {
-  // Verificar por tipo MIME o extensión
+  // Verificar por tipo MIME o extensión o nombre que contenga "zip"
   return file.type === 'application/zip' || 
          file.type === 'application/x-zip' || 
          file.type === 'application/x-zip-compressed' ||
          file.type === 'application/octet-stream' || // Tipos comunes de Google Drive
-         file.name.toLowerCase().endsWith('.zip');
+         file.type === '' || // Google Drive puede enviar tipo vacío
+         file.name.toLowerCase().endsWith('.zip') ||
+         file.name.toLowerCase().includes('zip');  // Por si el nombre contiene "zip" en cualquier parte
+};
+
+// Función para intentar corregir un archivo que no tiene tipo MIME correcto
+const fixFileMimeType = (file) => {
+  if (file.type === 'application/zip') {
+    return file; // Ya tiene el tipo correcto
+  }
+  
+  try {
+    // Intentar crear un nuevo archivo con el tipo correcto
+    return new File([file], file.name, {
+      type: 'application/zip',
+      lastModified: file.lastModified
+    });
+  } catch (error) {
+    debug('Error al corregir tipo MIME del archivo', error);
+    // Si falla, devolver el archivo original
+    return file;
+  }
 };
 
 // Instalación del Service Worker
@@ -67,9 +89,16 @@ self.addEventListener('fetch', event => {
           debug('Archivo encontrado', { name: file.name, type: file.type, size: file.size });
           
           // Verificar si probablemente es un ZIP
-          if (!isLikelyZipFile(file)) {
-            debug('El archivo no parece ser un ZIP', { type: file.type, name: file.name });
-            // Aún así lo enviamos, el cliente hará una verificación más exhaustiva
+          const likelyZip = isLikelyZipFile(file);
+          debug('¿Es probablemente un ZIP?', likelyZip);
+          
+          // Siempre aceptar el archivo, incluso si no parece ser un ZIP
+          // La app principal hará verificaciones más exhaustivas
+          
+          // Intentar corregir el tipo MIME si es necesario
+          if (file.name.toLowerCase().endsWith('.zip') && file.type !== 'application/zip') {
+            file = fixFileMimeType(file);
+            debug('Tipo MIME corregido:', file.type);
           }
           
           // Almacenar el archivo con un ID único

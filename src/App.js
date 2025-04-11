@@ -98,18 +98,32 @@ function App() {
     console.log("Tipo MIME:", file.type);
     console.log("Tamaño:", file.size, "bytes");
     
-    // Crear una copia del archivo con la extensión corregida si es necesario
+    // Si el nombre tiene extensión .zip, siempre crea una copia con el tipo correcto
+    // sin importar el tipo MIME original (solución más radical)
     let processedFile = file;
-    if (file.name.toLowerCase().endsWith('.zip') && 
-        file.type !== 'application/zip' && 
-        file.type !== 'application/x-zip-compressed' &&
-        file.type !== 'application/octet-stream') { // Añadido octet-stream como tipo aceptado
-      // Crear un nuevo archivo con el tipo MIME correcto
-      processedFile = new File([file], file.name, {
-        type: 'application/zip',
-        lastModified: file.lastModified
-      });
-      console.log("Archivo corregido con MIME type:", processedFile.type);
+    if (file.name.toLowerCase().endsWith('.zip')) {
+      // Siempre crear un nuevo archivo con el tipo MIME correcto
+      try {
+        processedFile = new File([file], file.name, {
+          type: 'application/zip',
+          lastModified: file.lastModified
+        });
+        console.log("Archivo forzado con MIME type application/zip", processedFile.type);
+      } catch (error) {
+        console.error("Error al crear nuevo File:", error);
+        // Si falla, intentamos con una solución alternativa usando Blob
+        try {
+          const blob = file.slice(0, file.size, 'application/zip');
+          processedFile = new File([blob], file.name, {
+            type: 'application/zip',
+            lastModified: file.lastModified
+          });
+          console.log("Archivo recreado desde Blob con MIME type:", processedFile.type);
+        } catch (blobError) {
+          console.error("Error al crear archivo desde Blob:", blobError);
+          // Mantener el archivo original si todo falla
+        }
+      }
     }
     
     // Examinar los primeros bytes del archivo para confirmar si es un ZIP
@@ -208,8 +222,24 @@ function App() {
   const processZipFile = async (file) => {
     addDebugMessage(`Enviando archivo al backend: ${file.name} (${file.size} bytes) - Tipo: ${file.type}`);
     
+    // Asegurarse una última vez que el archivo tiene el tipo MIME correcto
+    let finalFile = file;
+    if (file.name.toLowerCase().endsWith('.zip') && file.type !== 'application/zip') {
+      try {
+        finalFile = new File([file], file.name, {
+          type: 'application/zip',
+          lastModified: file.lastModified
+        });
+        addDebugMessage(`Tipo MIME corregido una última vez: ${finalFile.type}`);
+      } catch (error) {
+        addDebugMessage(`Error al corregir tipo MIME: ${error.message}`);
+        // Usar el archivo original si falla la conversión
+        finalFile = file;
+      }
+    }
+    
     const formData = new FormData();
-    formData.append('zipFile', file);
+    formData.append('zipFile', finalFile);
     
     try {
       // Mostrar la URL a la que se está enviando la solicitud
@@ -310,12 +340,14 @@ function App() {
     
     console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
     
-    // Verificación más permisiva para archivos - verificar por extensión y tipo
-    const isZipFile = file.type === 'application/zip' || 
-                     file.type === 'application/x-zip' ||
-                     file.type === 'application/x-zip-compressed' ||
-                     file.type === 'application/octet-stream' || // Añadir octet-stream de Google Drive
-                     file.name.toLowerCase().endsWith('.zip');
+    // Verificación extremadamente permisiva - aceptar cualquier archivo con extensión .zip
+    // o cualquier archivo con tipo MIME que pueda ser un ZIP
+    const isZipFile = file.name.toLowerCase().endsWith('.zip') || 
+                      file.type === 'application/zip' || 
+                      file.type === 'application/x-zip' ||
+                      file.type === 'application/x-zip-compressed' ||
+                      file.type === 'application/octet-stream' ||
+                      file.type === ''; // Google Drive a veces puede enviar tipo vacío
     
     if (!isZipFile) {
       setError('Por favor, sube un archivo ZIP válido (.zip)');
@@ -393,12 +425,14 @@ function App() {
       return;
     }
     
-    // Verificación más permisiva para archivos ZIP de Google Drive
-    const isZipFile = file.type === 'application/zip' || 
+    // Verificación extremadamente permisiva - aceptar cualquier archivo con extensión .zip
+    // o cualquier archivo con tipo MIME que pueda ser un ZIP
+    const isZipFile = file.name.toLowerCase().endsWith('.zip') || 
+                      file.type === 'application/zip' || 
                       file.type === 'application/x-zip' ||
                       file.type === 'application/x-zip-compressed' ||
-                      file.type === 'application/octet-stream' || // Añadir octet-stream de Google Drive
-                      file.name.toLowerCase().endsWith('.zip');
+                      file.type === 'application/octet-stream' ||
+                      file.type === ''; // Google Drive a veces puede enviar tipo vacío
     
     if (!isZipFile) {
       addDebugMessage(`Archivo no es ZIP: ${file.type}`);
@@ -409,6 +443,7 @@ function App() {
     }
     
     // Analizar y posiblemente corregir el archivo antes de procesarlo
+    addDebugMessage('Analizando y corrigiendo tipo MIME del archivo');
     const analyzedFile = analyzeFile(file);
     
     setError('');
@@ -416,11 +451,26 @@ function App() {
     setZipFile(analyzedFile); // Usar el archivo analizado/corregido
     
     try {
+      addDebugMessage(`Enviando archivo corregido al backend: ${analyzedFile.name} (${analyzedFile.size} bytes) - Tipo: ${analyzedFile.type}`);
       // Procesar el archivo
       await processZipFile(analyzedFile); // Usar el archivo analizado/corregido
     } catch (err) {
       addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
       setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
+      
+      // Último recurso - intentar procesar el archivo original si el corregido falló
+      if (file !== analyzedFile) {
+        addDebugMessage('Intentando procesar el archivo original como último recurso');
+        try {
+          await processZipFile(file);
+          // Si llegó aquí, funcionó
+          addDebugMessage('Procesamiento del archivo original exitoso');
+          setError(''); // Limpiar el error anterior
+        } catch (origErr) {
+          addDebugMessage(`Error procesando archivo original: ${origErr.message}`);
+          // Mantener el error original
+        }
+      }
     } finally {
       setIsLoading(false);
       setIsProcessingSharedFile(false);
@@ -803,7 +853,7 @@ const tryDeleteFiles = async (operationId) => {
                               <input 
                                 type="file" 
                                 className="file-upload-input" 
-                                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" 
+                                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
                                 onChange={handleFileUpload} 
                               />
                               <div className="file-upload-text">
