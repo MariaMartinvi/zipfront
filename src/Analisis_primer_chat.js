@@ -73,6 +73,8 @@ const AnalisisPrimerChat = ({ operationId }) => {
       });
   }, [operationId]);
 
+
+  
   // Preparar datos para el gráfico de mensajes por día de la semana
   const prepararDatosDiaSemana = () => {
     if (!datos || !datos.actividad_por_dia_semana) return [];

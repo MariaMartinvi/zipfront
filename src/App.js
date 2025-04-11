@@ -439,95 +439,100 @@ function App() {
 
   // Function to poll for Mistral response
   // Function to poll for Mistral response
-const fetchMistralResponse = async () => {
-  if (!operationId || isFetchingMistral) return;
-  
-  setIsFetchingMistral(true);
-  
-  try {
-    let attempts = 0;
-    const maxAttempts = 10; // Try 10 times with delay in between
+  const fetchMistralResponse = async () => {
+    if (!operationId || isFetchingMistral) return;
     
-    const checkResponse = async () => {
-      attempts++;
+    setIsFetchingMistral(true);
+    
+    try {
+      let attempts = 0;
+      const maxAttempts = 10; // Try 10 times with delay in between
       
-      try {
-        const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
+      const checkResponse = async () => {
+        attempts++;
         
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.ready && data.response) {
-          addDebugMessage('Respuesta de Mistral recibida');
-          setChatGptResponse(data.response);
-          setShowChatGptResponse(true);
+        try {
+          const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
           
-          // Use the checking and deletion with delay instead of immediate deletion
-          checkAndDeleteFiles(operationId);
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+          }
           
-          setIsFetchingMistral(false);
-          return true;
-        }
-        
-        if (attempts >= maxAttempts) {
-          addDebugMessage('Máximo de intentos alcanzado esperando por Mistral');
+          const data = await response.json();
+          
+          if (data.ready && data.response) {
+            addDebugMessage('Respuesta de Mistral recibida');
+            setChatGptResponse(data.response);
+            setShowChatGptResponse(true);
+            
+            // Wait a reasonable amount of time to ensure all components have loaded
+            // before scheduling the file deletion
+            setTimeout(() => {
+              addDebugMessage('Programando eliminación de archivos tras un periodo adecuado');
+              checkAndDeleteFiles(operationId);
+            }, 60000); // Wait 1 minute before even starting the deletion process
+            
+            setIsFetchingMistral(false);
+            return true;
+          }
+          
+          if (attempts >= maxAttempts) {
+            addDebugMessage('Máximo de intentos alcanzado esperando por Mistral');
+            setIsFetchingMistral(false);
+            return false;
+          }
+          
+          // Wait and try again
+          await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
+          return await checkResponse();
+        } catch (error) {
+          addDebugMessage(`Error al obtener respuesta de Mistral: ${error.message}`);
           setIsFetchingMistral(false);
           return false;
         }
-        
-        // Wait and try again
-        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds delay
-        return await checkResponse();
-      } catch (error) {
-        addDebugMessage(`Error al obtener respuesta de Mistral: ${error.message}`);
-        setIsFetchingMistral(false);
-        return false;
-      }
-    };
-    
-    // Start checking
-    await checkResponse();
-  } catch (error) {
-    addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
-    setIsFetchingMistral(false);
-  }
-};
-
-// Add this new function for checking if processing is complete before deleting
-const checkAndDeleteFiles = async (operationId, retries = 5, delay = 10000) => {
-  if (retries <= 0) {
-    addDebugMessage('Máximo de reintentos alcanzado, intentando eliminar archivos de todos modos');
-    tryDeleteFiles(operationId);
-    return;
-  }
-  
-  try {
-    // Check if the response file exists (since you don't have the /api/check-processing endpoint yet)
-    const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
-    
-    if (response.ok) {
-      const data = await response.json();
+      };
       
-      if (data.ready && data.response) {
-        addDebugMessage('Procesamiento confirmado como completo, eliminando archivos en 30 segundos');
-        // Add a delay to ensure any ongoing processes are complete
-        setTimeout(() => tryDeleteFiles(operationId), 30000);
-      } else {
-        addDebugMessage(`Procesamiento no completado todavía, esperando ${delay/1000} segundos...`);
-        setTimeout(() => checkAndDeleteFiles(operationId, retries - 1, delay), delay);
-      }
-    } else {
-      addDebugMessage('Error al verificar estado del procesamiento, intentando eliminar de todos modos');
-      setTimeout(() => tryDeleteFiles(operationId), 30000);
+      // Start checking
+      await checkResponse();
+    } catch (error) {
+      addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
+      setIsFetchingMistral(false);
     }
-  } catch (error) {
-    addDebugMessage(`Error en el proceso de verificación: ${error.message}`);
-    setTimeout(() => checkAndDeleteFiles(operationId, retries - 1, delay), delay);
-  }
-};
+  };
+  
+  // Add this new function for checking if processing is complete before deleting
+  const checkAndDeleteFiles = async (operationId, retries = 5, delay = 20000) => {
+    if (retries <= 0) {
+      addDebugMessage('Máximo de reintentos alcanzado, intentando eliminar archivos de todos modos');
+      tryDeleteFiles(operationId);
+      return;
+    }
+    
+    try {
+      // Check if the response file exists (since you don't have the /api/check-processing endpoint yet)
+      const response = await fetch(`${API_URL}/api/check-processing/${operationId}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.complete) {
+          addDebugMessage('Procesamiento confirmado como completo, eliminando archivos en 60 segundos');
+          // Add a longer delay to ensure any ongoing processes are complete
+          setTimeout(() => tryDeleteFiles(operationId), 60000);
+        } else {
+          addDebugMessage(`Procesamiento no completado todavía, esperando ${delay/1000} segundos...`);
+          setTimeout(() => checkAndDeleteFiles(operationId, retries - 1, delay), delay);
+        }
+      } else {
+        addDebugMessage('Error al verificar estado del procesamiento, intentando eliminar de todos modos');
+        // Give more time
+        setTimeout(() => tryDeleteFiles(operationId), 60000);
+      }
+    } catch (error) {
+      addDebugMessage(`Error en el proceso de verificación: ${error.message}`);
+      setTimeout(() => checkAndDeleteFiles(operationId, retries - 1, delay), delay);
+    }
+  };
 
 const tryDeleteFiles = async (operationId) => {
   try {
