@@ -372,9 +372,16 @@ function App() {
       return;
     }
     
-    const currentUser = await getCurrentUser();
+    const currentUser = window._tempUser || await getCurrentUser();
     if (currentUser && !user) {
+      console.log("Actualizando estado del usuario desde handleSharedFile:", currentUser.uid);
       setUser(currentUser);
+      if (typeof setUser === 'function') {
+        setUser(currentUser);
+      } else {
+        console.error("setUser no está disponible");
+      }
+
     }
     setError('');
     setIsLoading(true);
