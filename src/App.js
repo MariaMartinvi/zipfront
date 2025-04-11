@@ -446,6 +446,15 @@ function App() {
     addDebugMessage('Analizando y corrigiendo tipo MIME del archivo');
     const analyzedFile = analyzeFile(file);
     
+    // Check if user is logged in and has available uploads
+    addDebugMessage('Verificando elegibilidad del usuario para subir');
+    const isEligible = await checkUploadEligibility();
+    if (!isEligible) {
+      setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
+      return;
+    }
+    
     setError('');
     setIsLoading(true);
     setZipFile(analyzedFile); // Usar el archivo analizado/corregido
@@ -454,6 +463,43 @@ function App() {
       addDebugMessage(`Enviando archivo corregido al backend: ${analyzedFile.name} (${analyzedFile.size} bytes) - Tipo: ${analyzedFile.type}`);
       // Procesar el archivo
       await processZipFile(analyzedFile); // Usar el archivo analizado/corregido
+      
+      // If processing was successful, increment usage counter with retry mechanism
+      if (user) {
+        try {
+          await incrementChatUsage(user.uid);
+          
+          // Update local user profile data
+          if (userProfile) {
+            setUserProfile({
+              ...userProfile,
+              currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+              totalUploads: (userProfile.totalUploads || 0) + 1
+            });
+          }
+          addDebugMessage("Contador de uso incrementado correctamente");
+        } catch (usageError) {
+          addDebugMessage(`Error al incrementar contador: ${usageError.message}`);
+          // Try one more time after a delay
+          setTimeout(async () => {
+            try {
+              await incrementChatUsage(user.uid);
+              
+              // Update local user profile data
+              if (userProfile) {
+                setUserProfile({
+                  ...userProfile,
+                  currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+                  totalUploads: (userProfile.totalUploads || 0) + 1
+                });
+              }
+              addDebugMessage("Contador de uso incrementado en segundo intento");
+            } catch (retryError) {
+              addDebugMessage(`Error al incrementar contador (segundo intento): ${retryError.message}`);
+            }
+          }, 30000);
+        }
+      }
     } catch (err) {
       addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
       setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
@@ -466,6 +512,23 @@ function App() {
           // Si llegó aquí, funcionó
           addDebugMessage('Procesamiento del archivo original exitoso');
           setError(''); // Limpiar el error anterior
+          
+          // Incrementar contador también si el archivo original tuvo éxito
+          if (user) {
+            try {
+              await incrementChatUsage(user.uid);
+              if (userProfile) {
+                setUserProfile({
+                  ...userProfile,
+                  currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
+                  totalUploads: (userProfile.totalUploads || 0) + 1
+                });
+              }
+              addDebugMessage("Contador de uso incrementado correctamente (archivo original)");
+            } catch (usageError) {
+              addDebugMessage(`Error al incrementar contador (archivo original): ${usageError.message}`);
+            }
+          }
         } catch (origErr) {
           addDebugMessage(`Error procesando archivo original: ${origErr.message}`);
           // Mantener el error original
