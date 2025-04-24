@@ -162,6 +162,8 @@ function App() {
         if (currentUser) {
           setUserProfile(currentUser);
           console.log("Usuario recuperado correctamente desde Firebase:", currentUser);
+          window.recoveredUser = currentUser; // Guardar para uso posterior
+
           if (setUser) setUser(currentUser); // Usar condicional para evitar errores
 
           // Actualizar el estado de usuario manualmente
@@ -499,10 +501,20 @@ function App() {
       isProcessingRef.current = false;
       return;
     }
-    const currentUser =  await getCurrentUser();
-    if (currentUser && !user)  {
-    
-        setUser(currentUser);}
+
+    // Usar el usuario recuperado para el contador
+    const recoveredUser = window.recoveredUser;
+    if (recoveredUser && !user) {
+      console.log("Usando usuario recuperado para incrementar contador:", recoveredUser.uid);
+      try {
+        // Incrementar contador directamente con el usuario recuperado
+        await incrementChatUsage(recoveredUser.uid);
+        console.log("Contador incrementado con usuario recuperado");
+      } catch (err) {
+        console.error("Error incrementando contador con usuario recuperado:", err);
+      }
+    }
+
     setError('');
     setIsLoading(true);
     setZipFile(analyzedFile); // Usar el archivo analizado/corregido
