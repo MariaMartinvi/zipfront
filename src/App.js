@@ -1050,12 +1050,12 @@ const tryDeleteFiles = async (operationId) => {
                       </div>
                       {/* Nuevos componentes de análisis */}
                       <div className="additional-analysis">
-                        <div className="analysis-module">
+                       {/* <div className="analysis-module">
                           <AnalisisInfluencer operationId={operationId} />
                         </div>
                         <div className="analysis-module">
                           <AnalisisEmojis operationId={operationId} />
-                        </div>
+                        </div>*/}
                         <div className="analysis-module">
                           <AnalisisTop operationId={operationId} />
                         </div>

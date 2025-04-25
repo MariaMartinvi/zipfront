@@ -4,7 +4,6 @@ import { getUserProfile } from './firebase_auth';
 import { PLANS, redirectToCheckout, manageSubscription } from './stripe_integration';
 import './SubscriptionPlans.css';
 import { useLocation } from 'react-router-dom';
-import AuthDebug from './AuthDebug';
 
 // Add paymentSuccess prop
 const SubscriptionPlans = ({ userId, paymentSuccess }) => {

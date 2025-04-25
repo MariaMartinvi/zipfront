@@ -1,10 +1,8 @@
-// Updated stripe_integration.js
+// stripe_integration.js
 import { loadStripe } from '@stripe/stripe-js';
 import { getIdToken } from 'firebase/auth';
 import { auth } from './firebase_auth';
 
-// Replace with your actual Stripe publishable key
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_51R91efF4OlRGsz64ijTLjfN3zkMjBz9EKuzwlarmjRb8TbyXMWYNUf5d1lq6LoLiVMUXoilh0tZrPhejO32NfdHt00WxBbaYQ6';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 // Plan definitions - make sure priceIds match exactly with backend
@@ -15,7 +13,6 @@ export const PLANS = {
     price: '',
     quota: 2,
     description: 'Try our service with 2 free chat analyses'
-   
   },
   BASIC: {
     id: 'basic',
@@ -28,7 +25,7 @@ export const PLANS = {
   STANDARD: {
     id: 'standard',
     name: 'Standard Plan',
-    price: 8, // Fixed price to match backend
+    price: 8,
     quota: 50,
     description: '50 chat analyses per month',
     priceId: 'price_1R9pMGF4OlRGsz64F1vqFdj3' // VERIFIED price ID
@@ -47,7 +44,7 @@ export const PLANS = {
 let stripePromise;
 export const getStripe = () => {
   if (!stripePromise) {
-    stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
+    stripePromise = loadStripe('pk_test_51R91efF4OlRGsz64ijTLjfN3zkMjBz9EKuzwlarmjRb8TbyXMWYNUf5d1lq6LoLiVMUXoilh0tZrPhejO32NfdHt00WxBbaYQ6');
   }
   return stripePromise;
 };
@@ -127,7 +124,6 @@ export const redirectToCheckout = async (priceId, userId) => {
     }
   } catch (error) {
     console.error('Failed to redirect to checkout:', error);
-    alert('Error: ' + error.message);
     throw error;
   }
 };
@@ -135,13 +131,11 @@ export const redirectToCheckout = async (priceId, userId) => {
 // Handle subscription management
 export const manageSubscription = async (userId) => {
   try {
-    // Get the current user from auth object
     const currentUser = auth.currentUser;
     if (!currentUser) {
       throw new Error('User not authenticated');
     }
     
-    // Get ID token
     const token = await getIdToken(currentUser, true);
     
     const response = await fetch(`${API_URL}/api/create-portal-session`, {
@@ -164,7 +158,6 @@ export const manageSubscription = async (userId) => {
     window.location.href = session.url;
   } catch (error) {
     console.error('Failed to redirect to customer portal:', error);
-    alert('Error: ' + error.message);
     throw error;
   }
 };
@@ -172,13 +165,11 @@ export const manageSubscription = async (userId) => {
 // Get current user's plan
 export const getUserPlan = async (userId) => {
   try {
-    // Get the current user from auth object
     const currentUser = auth.currentUser;
     if (!currentUser) {
       throw new Error('User not authenticated');
     }
     
-    // Get ID token
     const token = await getIdToken(currentUser, true);
     
     const response = await fetch(`${API_URL}/api/user-plan/${userId}`, {
@@ -195,9 +186,6 @@ export const getUserPlan = async (userId) => {
     return data.plan;
   } catch (error) {
     console.error('Failed to fetch user plan:', error);
-    return 'free'; // Default to free plan on error
+    return 'free';
   }
 };
-
-// Other functions remain the same but should add authentication headers
-// ...
