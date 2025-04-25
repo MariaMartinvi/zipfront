@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { auth } from './firebase_auth'; // Adjust path if needed
+import { getUserPlan } from './stripe_integration';
 
 const SimplePaymentSuccess = () => {
   const navigate = useNavigate();
@@ -10,13 +11,22 @@ const SimplePaymentSuccess = () => {
   
   useEffect(() => {
     // Check if user is authenticated
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        // User is signed in, redirect to plans page with success flag
-        console.log('User is authenticated, redirecting to plans page');
-        setTimeout(() => {
-          navigate('/plans?payment_success=true', { replace: true });
-        }, 1500);
+        try {
+          // Actualizar el plan del usuario
+          const userPlan = await getUserPlan(user.uid);
+          console.log('Plan actualizado:', userPlan);
+          
+          // User is signed in, redirect to plans page with success flag
+          console.log('User is authenticated, redirecting to plans page');
+          setTimeout(() => {
+            navigate('/plans?payment_success=true', { replace: true });
+          }, 1500);
+        } catch (error) {
+          console.error('Error updating user plan:', error);
+          setError('Error al actualizar tu plan. Por favor, contacta con soporte.');
+        }
       } else {
         // User is not signed in, redirect to login page with return URL
         console.log('User is not authenticated, redirecting to login page');

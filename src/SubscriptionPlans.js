@@ -1,7 +1,7 @@
 // SubscriptionPlans.js
 import React, { useState, useEffect } from 'react';
 import { getUserProfile } from './firebase_auth';
-import { PLANS, redirectToCheckout, manageSubscription } from './stripe_integration';
+import { PLANS, redirectToCheckout, manageSubscription, getUserPlan } from './stripe_integration';
 import './SubscriptionPlans.css';
 import { useLocation } from 'react-router-dom';
 
@@ -21,17 +21,29 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
     const hasPaymentSuccess = urlParams.get('payment_success') === 'true';
     
     if (hasPaymentSuccess || paymentSuccess) {
-      setSuccessMessage('¡Tu pago ha sido procesado correctamente! Tu plan ha sido actualizado.');
+      // Actualizar el plan del usuario
+      const updateUserPlan = async () => {
+        try {
+          const newPlan = await getUserPlan(userId);
+          setUserPlan(newPlan);
+          setSuccessMessage('¡Tu pago ha sido procesado correctamente! Tu plan ha sido actualizado.');
+          
+          // Clear the URL parameters
+          window.history.replaceState({}, document.title, '/plans');
+          
+          // Hide the success message after 5 seconds
+          setTimeout(() => {
+            setSuccessMessage('');
+          }, 5000);
+        } catch (error) {
+          console.error('Error updating user plan:', error);
+          setError('Error al actualizar tu plan. Por favor, contacta con soporte.');
+        }
+      };
       
-      // Clear the URL parameters
-      window.history.replaceState({}, document.title, '/plans');
-      
-      // Hide the success message after 5 seconds
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 5000);
+      updateUserPlan();
     }
-  }, [location, paymentSuccess]);
+  }, [location, paymentSuccess, userId]);
 
   // Load user plan and usage data
   useEffect(() => {
