@@ -947,6 +947,33 @@ const tryDeleteFiles = async (operationId) => {
     </div>
   );
 
+  // Añadir un useEffect para manejar el evento beforeunload cuando está cargando
+  useEffect(() => {
+    // Función para advertir al usuario antes de refrescar o cerrar la página
+    const handleBeforeUnload = (e) => {
+      if (isLoading || isFetchingMistral) {
+        // Mensaje que se mostrará (aunque los navegadores modernos suelen mostrar su propio mensaje)
+        const message = "¡Atención! Se está generando tu informe. Si refrescas o cierras la página, perderás todos los datos. ¿Estás seguro de que quieres salir?";
+        e.preventDefault();
+        e.returnValue = message; // Para navegadores más antiguos
+        return message; // Para navegadores modernos
+      }
+    };
+
+    // Añadir el evento cuando se está cargando o esperando respuesta de Mistral
+    if (isLoading || isFetchingMistral) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      
+      // También podemos añadir un aviso visual en la página
+      addDebugMessage('Advertencia: No refresques la página mientras se genera el informe o perderás los datos');
+    }
+
+    // Eliminar el evento cuando ya no se está cargando
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isLoading, isFetchingMistral]); // Ejecutar cuando cambie el estado de carga
+
   // Main app component UI with routing
   return (
     <Router>
@@ -968,44 +995,46 @@ const tryDeleteFiles = async (operationId) => {
               path="/"
               element={
                 <>
-                  {/* Show analysis components immediately after upload */}
-                  {showAnalysis && operationId && (
+                  {/* Mostrar componentes de análisis estadístico */}
+                  {operationId && (
                     <div className="analysis-container">
                       <h2>Análisis Estadístico</h2>
-                      <div className="analysis-module">
-                        <AnalisisPrimerChat operationId={operationId} />
-                      </div>
-                      {/* Nuevos componentes de análisis */}
-                      <div className="additional-analysis">
-                        {/* <div className="analysis-module">
-                          <AnalisisInfluencer operationId={operationId} />
+                      
+                      {/* Mostrar el indicador de carga si está cargando */}
+                      {isLoading ? (
+                        <div className="loading-indicator">
+                          <div className="spinner"></div>
+                          <p>Cargando datos estadísticos...</p>
                         </div>
-                        <div className="analysis-module">
-                          <AnalisisEmojis operationId={operationId} />
-                        </div>*/}
-                        <div className="analysis-module">
-                          <AnalisisTop operationId={operationId} />
-                        </div>
-                      </div>
+                      ) : (
+                        <>
+                          <div className="analysis-module">
+                            <AnalisisPrimerChat operationId={operationId} />
+                          </div>
+                          {/* Nuevos componentes de análisis */}
+                          <div className="additional-analysis">
+                            <div className="analysis-module">
+                              <AnalisisTop operationId={operationId} />
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   )}
 
-                  {/* Show loading indicator for Mistral/ChatGPT response if it's still being fetched */}
-                  {operationId && isFetchingMistral && (
-                    <div className="chat-analysis-loading">
-                      <h2>Análisis Psicológico</h2>
-                      <div className="loading-indicator">
-                        <div className="spinner"></div>
-                        <p>Generando análisis con IA (esto puede tardar unos minutos)...</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Display ChatGPT/Mistral response when available */}
-                  {showChatGptResponse && chatGptResponse && (
+                  {/* Mostrar componentes de análisis psicológico */}
+                  {operationId && (
                     <div className="chat-analysis-section">
                       <h2>Análisis Psicológico</h2>
-                      <Chatgptresultados chatGptResponse={chatGptResponse} />
+                      
+                      {isFetchingMistral ? (
+                        <div className="loading-indicator">
+                          <div className="spinner"></div>
+                          <p>Generando análisis con IA (esto puede tardar unos minutos)...</p>
+                        </div>
+                      ) : (
+                        chatGptResponse && <Chatgptresultados chatGptResponse={chatGptResponse} />
+                      )}
                     </div>
                   )}
 
@@ -1117,6 +1146,14 @@ const tryDeleteFiles = async (operationId) => {
           
           {/* Optional: Add AuthDebug component for debugging */}
           {process.env.NODE_ENV === 'development' && <AuthDebug />}
+
+          {/* Mostrar aviso de no refrescar mientras se está generando el informe */}
+          {(isLoading || isFetchingMistral) && (
+            <div className="refresh-warning">
+              <div className="warning-icon">⚠️</div>
+              <p>No cierres ni refresques esta página mientras se genera tu informe o perderás todos los datos.</p>
+            </div>
+          )}
         </main>
       </div>
     </Router>

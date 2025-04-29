@@ -116,7 +116,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
       .slice(0, 5); // Tomar solo los 5 usuarios más activos
   };
 
-  if (cargando) return <div className="loading">Cargando datos del primer chat...</div>;
+  if (cargando) return null;
   if (error) return <div className="error">Error: {error}</div>;
   if (!datos || !datos.success) {
     return <div className="no-data">No se encontraron datos válidos para el análisis del primer chat</div>;
@@ -126,7 +126,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
 
   return (
     <div className="analisis-primer-chat-container">
-      <h2>Análisis de Inicio y Actividad del Chat</h2>
+      <h3>Análisis de Inicio y Actividad del Chat</h3>
       
       {/* Tarjeta de resumen principal */}
       <div className="resumen-card">

@@ -64,7 +64,7 @@ const AnalisisEmojis = ({ operationId }) => {
     }));
   };
 
-  if (cargando) return <div className="loading">Cargando datos de emojis...</div>;
+  if (cargando) return <div className="loading-indicator"><div className="spinner"></div></div>;
   if (error) return <div className="error">Error: {error}</div>;
   if (!datos || !datos.ranking || datos.ranking.length === 0) {
     return <div className="no-data">No se encontraron emojis en el chat</div>;

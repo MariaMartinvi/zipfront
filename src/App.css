@@ -121,15 +121,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  margin: 20px auto;
-  max-width: 500px;
+  padding: 30px 20px;
 }
 
-.spinner {
+.loading-indicator .spinner {
   border: 5px solid #f3f3f3;
   border-top: 5px solid #25D366;
   border-radius: 50%;
@@ -139,15 +134,16 @@
   margin-bottom: 15px;
 }
 
+.loading-indicator p {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+  text-align: center;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-.loading-indicator p {
-  color: #505050;
-  font-size: 1.1rem;
-  margin-bottom: 15px;
 }
 
 .cancel-button {
@@ -190,11 +186,33 @@
 .chat-analysis-section h2,
 .analysis-container h2 {
   background-color: #25D366;
-  color: white;
-  margin: 0;
-  padding: 15px;
-  font-size: 1.3rem;
-  font-weight: 600;
+  color: #000000;
+  font-weight: bold;
+  font-size: 1.5em;
+  margin: 20px 0;
+  text-align: center;
+}
+
+/* Estilo consistente para los títulos h2 en estados de carga */
+.chat-analysis-loading h2,
+.analysis-container h2 {
+  color: #000000;
+  font-weight: bold;
+  font-size: 1.5em;
+  margin: 20px 0;
+  text-align: center;
+  /* Añadir cualquier otro estilo específico que tenga .chat-analysis-loading h2 */
+}
+
+/* Asegurar que tanto el análisis psicológico como el estadístico
+   tengan la misma apariencia durante la carga */
+.chat-analysis-loading,
+.analysis-container .chat-analysis-loading {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin: 20px 0;
 }
 
 /* Tabla de archivos */
@@ -628,4 +646,103 @@
   border-top: 4px solid #25D366;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+}
+
+/* Aviso de no refrescar la página */
+.refresh-warning {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 8px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-width: 90%;
+  animation: fadeInUp 0.3s forwards;
+}
+
+.warning-icon {
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.refresh-warning p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Adaptación para móviles */
+@media (max-width: 768px) {
+  .refresh-warning {
+    bottom: 10px;
+    padding: 10px 15px;
+  }
+  
+  .warning-icon {
+    font-size: 18px;
+    margin-right: 8px;
+  }
+  
+  .refresh-warning p {
+    font-size: 13px;
+  }
+}
+
+/* Indicador de carga para la sección de análisis */
+.analysis-loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin: 20px 0;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #25D366;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+.loading-text {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

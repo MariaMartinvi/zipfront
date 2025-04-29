@@ -135,39 +135,7 @@ export const Login = ({ onLoginSuccess }) => {
           </style>
         </div>
       ) : (
-        <form onSubmit={handleLogin} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isLoading || isRedirecting}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={isLoading || isRedirecting}
-            />
-          </div>
-          <button 
-            type="submit" 
-            className="auth-button" 
-            disabled={isLoading || isRedirecting}
-          >
-            {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
-          </button>
-          <div className="separator">
-            <span>o</span>
-          </div>
+        <div className="auth-content">
           <button 
             type="button"
             className="google-auth-button"
@@ -182,7 +150,43 @@ export const Login = ({ onLoginSuccess }) => {
             </svg>
             Iniciar sesión con Google
           </button>
-        </form>
+          
+          <div className="separator">
+            <span>o</span>
+          </div>
+          
+          <form onSubmit={handleLogin} className="auth-form">
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading || isRedirecting}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">Contraseña</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading || isRedirecting}
+              />
+            </div>
+            <button 
+              type="submit" 
+              className="auth-button" 
+              disabled={isLoading || isRedirecting}
+            >
+              {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
+            </button>
+          </form>
+        </div>
       )}
       <div className="auth-links">
         <button 
@@ -264,63 +268,8 @@ export const Register = ({ onRegisterSuccess }) => {
     <div className="auth-form-container">
       <h2>Crear Cuenta</h2>
       {error && <div className="auth-error">{error}</div>}
-      <form onSubmit={handleRegister} className="auth-form">
-        <div className="form-group">
-          <label htmlFor="displayName">Nombre</label>
-          <input
-            type="text"
-            id="displayName"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            required
-            disabled={isLoading}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={isLoading}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Contraseña</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={isLoading}
-            minLength={6}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="confirmPassword">Confirmar Contraseña</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            disabled={isLoading}
-            minLength={6}
-          />
-        </div>
-        <button 
-          type="submit" 
-          className="auth-button" 
-          disabled={isLoading}
-        >
-          {isLoading ? 'Cargando...' : 'Registrarse'}
-        </button>
-        <div className="separator">
-          <span>o</span>
-        </div>
+      
+      <div className="auth-content">
         <button 
           type="button"
           className="google-auth-button"
@@ -335,7 +284,68 @@ export const Register = ({ onRegisterSuccess }) => {
           </svg>
           Registrarse con Google
         </button>
-      </form>
+        
+        <div className="separator">
+          <span>o</span>
+        </div>
+        
+        <form onSubmit={handleRegister} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="displayName">Nombre</label>
+            <input
+              type="text"
+              id="displayName"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Contraseña</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={isLoading}
+              minLength={6}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirmar Contraseña</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              disabled={isLoading}
+              minLength={6}
+            />
+          </div>
+          <button 
+            type="submit" 
+            className="auth-button" 
+            disabled={isLoading}
+          >
+            {isLoading ? 'Cargando...' : 'Registrarse'}
+          </button>
+        </form>
+      </div>
+      
       <div className="auth-links">
         <button 
           className="auth-link-button" 

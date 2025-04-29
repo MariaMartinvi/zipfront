@@ -281,7 +281,7 @@ const AnalisisTop = ({ operationId }) => {
     );
   };
 
-  if (cargando) return <div className="loading">Cargando perfiles destacados...</div>;
+  if (cargando) return null;
   if (error) return <div className="error">Error: {error}</div>;
   if (!datos || !datos.categorias || Object.keys(datos.categorias).length === 0) {
     return <div className="no-data">No se encontraron datos suficientes para el análisis</div>;
@@ -291,7 +291,22 @@ const AnalisisTop = ({ operationId }) => {
     <div className="analisis-top-container">
       <h2 className="titulo-principal">🏆 Perfiles Destacados del Chat 🏆</h2>
       
-      <div className="categorias-grid">
+      {/* Mostrar detalle por encima del grid cuando hay categoría seleccionada */}
+      {categoriaSeleccionada && (
+        <div className="detalle-container" style={{ marginBottom: '20px' }}>
+          <div className="detalle-header">
+            <div className="detalle-icono">{categoriaIconos[categoriaSeleccionada].icono}</div>
+            <div className="detalle-info">
+              <h3 className="detalle-titulo">{categoriaIconos[categoriaSeleccionada].titulo}</h3>
+              <p className="detalle-descripcion">{categoriaIconos[categoriaSeleccionada].descripcion}</p>
+            </div>
+          </div>
+          {renderDetalleCategoria(categoriaSeleccionada)}
+        </div>
+      )}
+      
+      {/* Usar la clase de grid específica */}
+      <div className="categorias-grid-container">
         {Object.keys(categoriaIconos).map(categoria => (
           datos.categorias[categoria] && datos.categorias[categoria].nombre ? (
             <div 
@@ -307,21 +322,6 @@ const AnalisisTop = ({ operationId }) => {
             </div>
           ) : null
         ))}
-      </div>
-      
-      <div className="detalle-container">
-        {categoriaSeleccionada && (
-          <>
-            <div className="detalle-header">
-              <div className="detalle-icono">{categoriaIconos[categoriaSeleccionada].icono}</div>
-              <div className="detalle-info">
-                <h3 className="detalle-titulo">{categoriaIconos[categoriaSeleccionada].titulo}</h3>
-                <p className="detalle-descripcion">{categoriaIconos[categoriaSeleccionada].descripcion}</p>
-              </div>
-            </div>
-            {renderDetalleCategoria(categoriaSeleccionada)}
-          </>
-        )}
       </div>
     </div>
   );
