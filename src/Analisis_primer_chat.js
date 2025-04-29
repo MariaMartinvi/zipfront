@@ -130,10 +130,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
       
       {/* Tarjeta de resumen principal */}
       <div className="resumen-card">
-        <div className="resumen-header">
-          <h3>📅 Detalles del Chat</h3>
-        </div>
-        
+                
         <div className="resumen-content">
           <div className="stat-highlight">
             <div className="stat-value">{formatearFecha(primer_mensaje.fecha)}</div>
@@ -191,7 +188,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
             <Bar 
               dataKey="mensajes" 
               name="Mensajes" 
-              fill="#0088FE"
+              fill="#25D366"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

@@ -968,6 +968,47 @@ const tryDeleteFiles = async (operationId) => {
               path="/"
               element={
                 <>
+                  {/* Show analysis components immediately after upload */}
+                  {showAnalysis && operationId && (
+                    <div className="analysis-container">
+                      <h2>Análisis Estadístico</h2>
+                      <div className="analysis-module">
+                        <AnalisisPrimerChat operationId={operationId} />
+                      </div>
+                      {/* Nuevos componentes de análisis */}
+                      <div className="additional-analysis">
+                        {/* <div className="analysis-module">
+                          <AnalisisInfluencer operationId={operationId} />
+                        </div>
+                        <div className="analysis-module">
+                          <AnalisisEmojis operationId={operationId} />
+                        </div>*/}
+                        <div className="analysis-module">
+                          <AnalisisTop operationId={operationId} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Show loading indicator for Mistral/ChatGPT response if it's still being fetched */}
+                  {operationId && isFetchingMistral && (
+                    <div className="chat-analysis-loading">
+                      <h2>Análisis Psicológico</h2>
+                      <div className="loading-indicator">
+                        <div className="spinner"></div>
+                        <p>Generando análisis con IA (esto puede tardar unos minutos)...</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Display ChatGPT/Mistral response when available */}
+                  {showChatGptResponse && chatGptResponse && (
+                    <div className="chat-analysis-section">
+                      <h2>Análisis Psicológico</h2>
+                      <Chatgptresultados chatGptResponse={chatGptResponse} />
+                    </div>
+                  )}
+
                   {isProcessingSharedFile ? (
                     <div className="loading-indicator">
                       <div className="spinner"></div>
@@ -1002,11 +1043,12 @@ const tryDeleteFiles = async (operationId) => {
                         </div>
                       ) : (
                         <>
+                          <h2>{showAnalysis ? "¿Quieres analizar otro chat?" : "Analiza tu chat de WhatsApp"}</h2>
                           {/* Carrusel de instrucciones de WhatsApp separado del botón */}
                           <WhatsappInstructions />
                           
                           {/* User subscription status card */}
-                     
+                       
                           
                           <div className="file-upload-container">
                             <label className="file-upload-label">
@@ -1035,50 +1077,8 @@ const tryDeleteFiles = async (operationId) => {
                   )}
 
                   {isLoading && (
-                    <div className="loading-indicator">
+                    <div className="loading-indicator-minimal">
                       <div className="spinner"></div>
-                      <p>Descomprimiendo archivo y analizando contenido...</p>
-                    </div>
-                  )}
-
-                  {/* Show analysis components immediately after upload */}
-                  {showAnalysis && operationId && (
-                    <div className="analysis-container">
-                      <h2>Análisis Estadístico</h2>
-                      <div className="analysis-module">
-                        <AnalisisPrimerChat operationId={operationId} />
-                      </div>
-                      {/* Nuevos componentes de análisis */}
-                      <div className="additional-analysis">
-                       {/* <div className="analysis-module">
-                          <AnalisisInfluencer operationId={operationId} />
-                        </div>
-                        <div className="analysis-module">
-                          <AnalisisEmojis operationId={operationId} />
-                        </div>*/}
-                        <div className="analysis-module">
-                          <AnalisisTop operationId={operationId} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Show loading indicator for Mistral/ChatGPT response if it's still being fetched */}
-                  {operationId && isFetchingMistral && (
-                    <div className="chat-analysis-loading">
-                      <h2>Análisis Psicológico</h2>
-                      <div className="loading-indicator">
-                        <div className="spinner"></div>
-                        <p>Generando análisis con IA (esto puede tardar unos minutos)...</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Display ChatGPT/Mistral response when available */}
-                  {showChatGptResponse && chatGptResponse && (
-                    <div className="chat-analysis-section">
-                      <h2>Análisis Psicológico</h2>
-                      <Chatgptresultados chatGptResponse={chatGptResponse} />
                     </div>
                   )}
                 </>
