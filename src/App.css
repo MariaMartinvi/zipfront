@@ -746,3 +746,27 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Quitar marcadores de listas para páginas específicas */
+.terms-of-service ul,
+.privacy-policy ul,
+.chat-analysis ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.terms-of-service li,
+.privacy-policy li,
+.chat-analysis li {
+  list-style-type: none;
+}
+
+/* Quitar marcadores de listas */
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+li {
+  list-style-type: none;
+}
