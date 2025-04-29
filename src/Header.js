@@ -24,7 +24,10 @@ const Header = ({ user }) => {
     <header className="app-header">
       <div className="header-container">
         <Link to="/" className="logo">
-          <h1>Analizador de Conversaciones</h1>
+          <div className="logo-text">
+            <span className="logo-chat">Chat</span>
+            <span className="logo-salsa">salsa</span>
+          </div>
         </Link>
         
         <div className="nav-container">

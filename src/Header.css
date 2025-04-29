@@ -18,13 +18,24 @@
   
   .logo {
     text-decoration: none;
-    color: #333;
+    display: flex;
+    align-items: center;
   }
   
-  .logo h1 {
-    font-size: 1.5rem;
-    margin: 0;
-    font-weight: 600;
+  /* Nuevos estilos para el logo como texto */
+  .logo-text {
+    display: flex;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  
+  .logo-chat {
+    color: #000000;
+  }
+  
+  .logo-salsa {
+    color: #25D366; /* Color verde de WhatsApp */
   }
   
   .nav-container {
@@ -161,7 +172,7 @@
       display: block;
     }
     
-    .logo h1 {
-      font-size: 1.25rem;
+    .logo-text {
+      font-size: 1.6rem; /* Texto más pequeño en móvil pero sigue siendo visible */
     }
   }

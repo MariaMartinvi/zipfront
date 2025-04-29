@@ -14,7 +14,6 @@ const categoriaIconos = {
   'menosesmas': { icono: '🔍', titulo: 'El Menosesmás', descripcion: 'Mensajes más cortos' },
   'chismoso': { icono: '👂', titulo: 'El Chismoso', descripcion: 'Habla más de otras personas' },
   'happyflower': { icono: '😊', titulo: 'El Happy Flower', descripcion: 'Usa más emojis' }
-
 };
 
 const AnalisisTop = ({ operationId }) => {
@@ -41,11 +40,82 @@ const AnalisisTop = ({ operationId }) => {
         return response.json();
       })
       .then(data => {
-        setDatos(data);
+        // Transformar los datos al formato esperado
+        const datosTransformados = {
+          categorias: {
+            profesor: {
+              nombre: data.categorias?.profesor?.nombre || 'Sin datos',
+              palabras_unicas: data.categorias?.profesor?.palabras_unicas || 0,
+              ratio: data.categorias?.profesor?.ratio || 0,
+              mensajes: data.categorias?.profesor?.mensajes || 0
+            },
+            rollero: {
+              nombre: data.categorias?.rollero?.nombre || 'Sin datos',
+              palabras_por_mensaje: data.categorias?.rollero?.palabras_por_mensaje || 0,
+              mensajes: data.categorias?.rollero?.mensajes || 0
+            },
+            pistolero: {
+              nombre: data.categorias?.pistolero?.nombre || 'Sin datos',
+              tiempo_respuesta_promedio: data.categorias?.pistolero?.tiempo_respuesta_promedio || 0,
+              mensajes: data.categorias?.pistolero?.mensajes || 0
+            },
+            vampiro: {
+              nombre: data.categorias?.vampiro?.nombre || 'Sin datos',
+              mensajes_noche: data.categorias?.vampiro?.mensajes_noche || 0,
+              porcentaje: data.categorias?.vampiro?.porcentaje || 0,
+              mensajes: data.categorias?.vampiro?.mensajes || 0
+            },
+            cafeconleche: {
+              nombre: data.categorias?.cafeconleche?.nombre || 'Sin datos',
+              hora_formateada: data.categorias?.cafeconleche?.hora_formateada || '00:00',
+              mensajes: data.categorias?.cafeconleche?.mensajes || 0
+            },
+            dejaenvisto: {
+              nombre: data.categorias?.dejaenvisto?.nombre || 'Sin datos',
+              tiempo_respuesta_promedio: data.categorias?.dejaenvisto?.tiempo_respuesta_promedio || 0,
+              mensajes: data.categorias?.dejaenvisto?.mensajes || 0
+            },
+            narcicista: {
+              nombre: data.categorias?.narcicista?.nombre || 'Sin datos',
+              menciones_yo: data.categorias?.narcicista?.menciones_yo || 0,
+              porcentaje: data.categorias?.narcicista?.porcentaje || 0,
+              mensajes: data.categorias?.narcicista?.mensajes || 0
+            },
+            chismoso: {
+              nombre: data.categorias?.chismoso?.nombre || 'Sin datos',
+              menciones_otros: data.categorias?.chismoso?.menciones_otros || 0,
+              porcentaje: data.categorias?.chismoso?.porcentaje || 0,
+              mensajes: data.categorias?.chismoso?.mensajes || 0
+            },
+            happyflower: {
+              nombre: data.categorias?.happyflower?.nombre || 'Sin datos',
+              emojis_totales: data.categorias?.happyflower?.emojis_totales || 0,
+              emojis_por_mensaje: data.categorias?.happyflower?.emojis_por_mensaje || 0,
+              mensajes: data.categorias?.happyflower?.mensajes || 0
+            },
+            puntofinal: {
+              nombre: data.categorias?.puntofinal?.nombre || 'Sin datos',
+              conversaciones_terminadas: data.categorias?.puntofinal?.conversaciones_terminadas || 0,
+              mensajes: data.categorias?.puntofinal?.mensajes || 0
+            },
+            fosforo: {
+              nombre: data.categorias?.fosforo?.nombre || 'Sin datos',
+              conversaciones_iniciadas: data.categorias?.fosforo?.conversaciones_iniciadas || 0,
+              mensajes: data.categorias?.fosforo?.mensajes || 0
+            },
+            menosesmas: {
+              nombre: data.categorias?.menosesmas?.nombre || 'Sin datos',
+              longitud_promedio: data.categorias?.menosesmas?.longitud_promedio || 0,
+              mensajes: data.categorias?.menosesmas?.mensajes || 0
+            }
+          }
+        };
+        
+        setDatos(datosTransformados);
         setCargando(false);
         // Seleccionar la primera categoría por defecto
-        if (data.categorias && Object.keys(data.categorias).length > 0) {
-          setCategoriaSeleccionada(Object.keys(data.categorias)[0]);
+        if (datosTransformados.categorias && Object.keys(datosTransformados.categorias).length > 0) {
+          setCategoriaSeleccionada(Object.keys(datosTransformados.categorias)[0]);
         }
       })
       .catch(err => {
@@ -63,16 +133,20 @@ const AnalisisTop = ({ operationId }) => {
     const catData = datos.categorias[categoria];
     let detalleEspecifico = null;
 
+    const formatNumber = (num) => {
+      return num !== undefined ? Number(num).toFixed(1) : '0.0';
+    };
+
     switch (categoria) {
       case 'profesor':
         detalleEspecifico = (
           <>
             <div className="estadistica">
-              <span className="valor">{catData.palabras_unicas}</span>
+              <span className="valor">{catData.palabras_unicas || 0}</span>
               <span className="label">Palabras únicas utilizadas</span>
             </div>
             <div className="estadistica">
-              <span className="valor">{catData.ratio.toFixed(2)}</span>
+              <span className="valor">{formatNumber(catData.ratio)}</span>
               <span className="label">Palabras únicas por mensaje</span>
             </div>
           </>
@@ -81,7 +155,7 @@ const AnalisisTop = ({ operationId }) => {
       case 'rollero':
         detalleEspecifico = (
           <div className="estadistica">
-            <span className="valor">{catData.palabras_por_mensaje.toFixed(1)}</span>
+            <span className="valor">{formatNumber(catData.palabras_por_mensaje)}</span>
             <span className="label">Palabras por mensaje en promedio</span>
           </div>
         );
@@ -89,7 +163,7 @@ const AnalisisTop = ({ operationId }) => {
       case 'pistolero':
         detalleEspecifico = (
           <div className="estadistica">
-            <span className="valor">{catData.tiempo_respuesta_promedio.toFixed(1)}</span>
+            <span className="valor">{formatNumber(catData.tiempo_respuesta_promedio)}</span>
             <span className="label">Minutos en responder (promedio)</span>
           </div>
         );
@@ -98,11 +172,11 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <>
             <div className="estadistica">
-              <span className="valor">{catData.mensajes_noche}</span>
+              <span className="valor">{catData.mensajes_noche || 0}</span>
               <span className="label">Mensajes nocturnos</span>
             </div>
             <div className="estadistica">
-              <span className="valor">{catData.porcentaje.toFixed(1)}%</span>
+              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
               <span className="label">De sus mensajes son por la noche</span>
             </div>
           </>
@@ -111,7 +185,7 @@ const AnalisisTop = ({ operationId }) => {
       case 'cafeconleche':
         detalleEspecifico = (
           <div className="estadistica">
-            <span className="valor">{catData.hora_formateada}</span>
+            <span className="valor">{catData.hora_formateada || '00:00'}</span>
             <span className="label">Hora promedio de mensajes</span>
           </div>
         );
@@ -119,7 +193,7 @@ const AnalisisTop = ({ operationId }) => {
       case 'dejaenvisto':
         detalleEspecifico = (
           <div className="estadistica">
-            <span className="valor">{catData.tiempo_respuesta_promedio.toFixed(1)}</span>
+            <span className="valor">{formatNumber(catData.tiempo_respuesta_promedio)}</span>
             <span className="label">Minutos para responder (promedio)</span>
           </div>
         );
@@ -128,49 +202,25 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <>
             <div className="estadistica">
-              <span className="valor">{catData.menciones_yo}</span>
+              <span className="valor">{catData.menciones_yo || 0}</span>
               <span className="label">Menciones a sí mismo</span>
             </div>
             <div className="estadistica">
-              <span className="valor">{catData.porcentaje.toFixed(1)}%</span>
+              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
               <span className="label">De sus mensajes hablan de sí mismo</span>
             </div>
           </>
-        );
-        break;
-      case 'puntofinal':
-        detalleEspecifico = (
-          <div className="estadistica">
-            <span className="valor">{catData.conversaciones_terminadas}</span>
-            <span className="label">Conversaciones terminadas</span>
-          </div>
-        );
-        break;
-      case 'fosforo':
-        detalleEspecifico = (
-          <div className="estadistica">
-            <span className="valor">{catData.conversaciones_iniciadas}</span>
-            <span className="label">Conversaciones iniciadas</span>
-          </div>
-        );
-        break;
-      case 'menosesmas':
-        detalleEspecifico = (
-          <div className="estadistica">
-            <span className="valor">{catData.longitud_promedio.toFixed(1)}</span>
-            <span className="label">Caracteres por mensaje (promedio)</span>
-          </div>
         );
         break;
       case 'chismoso':
         detalleEspecifico = (
           <>
             <div className="estadistica">
-              <span className="valor">{catData.menciones_otros}</span>
+              <span className="valor">{catData.menciones_otros || 0}</span>
               <span className="label">Menciones a otras personas</span>
             </div>
             <div className="estadistica">
-              <span className="valor">{catData.porcentaje.toFixed(1)}%</span>
+              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
               <span className="label">De sus mensajes mencionan a otros</span>
             </div>
           </>
@@ -180,16 +230,40 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <>
             <div className="estadistica">
-              <span className="valor">{catData.emojis_totales}</span>
+              <span className="valor">{catData.emojis_totales || 0}</span>
               <span className="label">Emojis totales utilizados</span>
             </div>
             <div className="estadistica">
-              <span className="valor">{catData.emojis_por_mensaje.toFixed(2)}</span>
+              <span className="valor">{formatNumber(catData.emojis_por_mensaje)}</span>
               <span className="label">Emojis por mensaje (promedio)</span>
             </div>
-          </>);
-          break;
-
+          </>
+        );
+        break;
+      case 'puntofinal':
+        detalleEspecifico = (
+          <div className="estadistica">
+            <span className="valor">{catData.conversaciones_terminadas || 0}</span>
+            <span className="label">Conversaciones terminadas</span>
+          </div>
+        );
+        break;
+      case 'fosforo':
+        detalleEspecifico = (
+          <div className="estadistica">
+            <span className="valor">{catData.conversaciones_iniciadas || 0}</span>
+            <span className="label">Conversaciones iniciadas</span>
+          </div>
+        );
+        break;
+      case 'menosesmas':
+        detalleEspecifico = (
+          <div className="estadistica">
+            <span className="valor">{formatNumber(catData.longitud_promedio)}</span>
+            <span className="label">Caracteres por mensaje (promedio)</span>
+          </div>
+        );
+        break;
       default:
         detalleEspecifico = <p>No hay detalles específicos disponibles</p>;
     }
@@ -197,8 +271,8 @@ const AnalisisTop = ({ operationId }) => {
     return (
       <div className="categoria-detalle">
         <div className="usuario-destacado">
-          <span className="nombre">{catData.nombre}</span>
-          <span className="mensajes-totales">{catData.mensajes} mensajes totales</span>
+          <span className="nombre">{catData.nombre || 'Sin nombre'}</span>
+          <span className="mensajes-totales">{catData.mensajes || 0} mensajes totales</span>
         </div>
         <div className="estadisticas-container">
           {detalleEspecifico}

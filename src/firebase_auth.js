@@ -9,7 +9,9 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   setPersistence,
-  browserLocalPersistence
+  browserLocalPersistence,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
 import { 
   getFirestore, 
@@ -288,6 +290,38 @@ export const incrementChatUsage = async (userId) => {
     return true;
   } catch (error) {
     console.error('[incrementChatUsage] Error general:', error);
+    throw error;
+  }
+};
+
+// Login with Google
+export const loginWithGoogle = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    const user = userCredential.user;
+    
+    // Check if this is a first-time login
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    
+    if (!userDoc.exists()) {
+      // Create a user document in Firestore for first-time Google sign-ins
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        createdAt: new Date(),
+        plan: 'free',
+        currentPeriodUsage: 0,
+        totalUploads: 0,
+        authProvider: 'google'
+      });
+      console.log("New Google user profile created");
+    }
+    
+    return user;
+  } catch (error) {
+    console.error('Error logging in with Google:', error);
     throw error;
   }
 };
