@@ -202,27 +202,103 @@
   }
 }
 
+/* Mejorar responsive para móviles */
 @media (max-width: 480px) {
+  .whatsapp-instructions {
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
   .carousel-container {
-    min-height: 240px;
+    min-height: 280px; /* Aumentar altura para evitar corte de texto */
+    margin: 10px 0;
+    flex-direction: column; /* Cambiar layout para móviles */
   }
   
-  .platform-button {
-    padding: 5px 10px;
-    font-size: 0.85rem;
+  .carousel-slides {
+    width: 100%;
+    min-height: 220px;
+    order: 1; /* Mover slides al inicio */
   }
   
-  .step-icon {
-    font-size: 2rem;
-    width: 50px;
-    height: 50px;
-  }
-  
-  .carousel-slide h3 {
-    font-size: 1rem;
+  .carousel-slide {
+    padding: 15px 10px;
+    height: auto;
   }
   
   .carousel-slide p {
-    font-size: 0.9rem;
+    max-width: 100%;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    /* Evitar que el texto se corte */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Poner botones en horizontal debajo del slide */
+  .carousel-button {
+    position: relative; /* Ya no absolute */
+    margin: 10px 15px 0;
+    width: 44px; /* Botones más grandes */
+    height: 44px;
+    order: 2; /* Mover botones al final */
+  }
+  
+  /* Contenedor para botones */
+  .carousel-buttons-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .step-icon {
+    font-size: 1.8rem;
+    width: 45px;
+    height: 45px;
+    margin-bottom: 5px;
+  }
+  
+  .carousel-slide h3 {
+    font-size: 0.95rem;
+    margin: 8px 0 5px;
+    /* Evitar que el texto se corte */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  .platform-button {
+    padding: 5px 12px;
+    font-size: 0.85rem;
+  }
+  
+  /* Indicadores más separados para mejor uso táctil */
+  .indicator {
+    width: 12px;
+    height: 12px;
+    margin: 0 8px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .carousel-container {
+    min-height: 320px; /* Aún más altura */
+  }
+  
+  .carousel-slides {
+    min-height: 260px;
+  }
+  
+  .platform-button {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .carousel-slide p {
+    font-size: 0.8rem;
+    line-height: 1.3;
   }
 }

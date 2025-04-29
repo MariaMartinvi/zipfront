@@ -615,44 +615,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Botón para nuevo análisis */
-.new-analysis-button-container {
-  text-align: center;
-  margin: 30px 0;
-}
-
-.new-analysis-button {
-  background-color: #25D366;
-  color: white;
-  border: none;
-  border-radius: 24px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.new-analysis-button:hover {
-  background-color: #128C7E;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(37, 211, 102, 0.3);
-}
-
-.new-analysis-button:active {
-  transform: translateY(0);
-}
-
-.new-analysis-button::after {
-  content: "↓";
-  margin-left: 8px;
-  font-size: 1.2rem;
-}
-
 .loading-indicator-minimal {
   display: flex;
   justify-content: center;

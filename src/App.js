@@ -1021,7 +1021,7 @@ const tryDeleteFiles = async (operationId) => {
                       </button>
                     </div>
                   ) : (
-                    <div className="upload-section">
+                    <div id="upload-section" className="upload-section">
                       {!user ? (
                         <div className="login-required">
                           <h2>Inicia sesión para comenzar</h2>
