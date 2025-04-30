@@ -65,6 +65,7 @@
   overflow: hidden;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease;
+  max-height: 300px;
 }
 
 .app-preview-image:hover {
@@ -76,6 +77,7 @@
   height: auto;
   display: block;
   border-radius: 8px;
+  object-position: top;
 }
 
 .image-overlay {
@@ -193,11 +195,7 @@
   }
   
   .app-preview-image {
-    margin-top: 20px;
-    max-width: 90%;
-    align-self: center;
-    margin-left: auto;
-    margin-right: auto;
+    max-height: 250px;
   }
   
   .cta-container {
@@ -207,5 +205,116 @@
   
   .testimonials-container {
     grid-template-columns: 1fr;
+  }
+  
+  .expand-button {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+} 
+
+.expand-button {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #25D366;
+  color: white;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  transition: all 0.2s ease;
+}
+
+.expand-button:hover {
+  background-color: #128C7E;
+  transform: scale(1.1);
+}
+
+/* Estilos del modal */
+.imagen-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.imagen-modal-contenido {
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 8px;
+  overflow: auto;
+  background: white;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+}
+
+.imagen-modal-contenido img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cerrar-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #25D366;
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cerrar-modal:hover {
+  background-color: #128C7E;
+}
+
+/* Para dispositivos móviles */
+@media (max-width: 768px) {
+  .app-preview-image {
+    max-height: 250px;
+  }
+  
+  .expand-button {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+  
+  .imagen-modal-contenido {
+    max-width: 95%;
+    max-height: 95vh;
   }
 } 

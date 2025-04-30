@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './AppPreview.css';
 
 const AppPreview = () => {
+  const [modalAbierto, setModalAbierto] = useState(false);
+
+  // Función para abrir/cerrar el modal
+  const toggleModal = () => {
+    setModalAbierto(!modalAbierto);
+  };
+
   return (
     <div className="app-preview-container">
       <div className="app-preview-content">
@@ -43,8 +50,26 @@ const AppPreview = () => {
           <div className="image-overlay">
             <span className="image-caption">¡Así lucirá tu análisis!</span>
           </div>
+          <button 
+            className="expand-button" 
+            onClick={toggleModal}
+            aria-label="Ver imagen completa"
+          >
+            +
+          </button>
         </div>
       </div>
+      
+      {/* Modal para ver la imagen completa */}
+      {modalAbierto && (
+        <div className="imagen-modal" onClick={toggleModal}>
+          <div className="imagen-modal-contenido" onClick={e => e.stopPropagation()}>
+            <button className="cerrar-modal" onClick={toggleModal}>×</button>
+            <img src="/ejemplo.png" alt="Ejemplo completo de análisis de chat" />
+          </div>
+        </div>
+      )}
+      
       <div className="app-preview-testimonials">
         <h3>Lo que dicen nuestros usuarios</h3>
         <div className="testimonials-container">
