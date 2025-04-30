@@ -24,13 +24,19 @@
   font-size: 1.8rem !important;
   margin-bottom: 15px !important;
   text-align: left !important;
+  line-height: 1.3;
 }
 
 .app-preview-text p {
   font-size: 1.1rem;
   line-height: 1.6;
-  color: #555;
+  color: #444;
   margin-bottom: 20px;
+}
+
+.app-preview-text strong {
+  color: #128C7E;
+  font-weight: 600;
 }
 
 .app-preview-features {
@@ -65,7 +71,7 @@
   overflow: hidden;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease;
-  max-height: 300px;
+  max-height: 400px;
 }
 
 .app-preview-image:hover {
@@ -117,12 +123,46 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button:after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(60deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.1), rgba(255,255,255,0) 80%);
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 .cta-button:hover {
   background-color: #128C7E;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+}
+
+.cta-button:hover:after {
+  opacity: 1;
+  animation: shine 1.5s ease-out;
+}
+
+@keyframes shine {
+  0% {
+    left: -50%;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    left: 150%;
+    opacity: 0;
+  }
 }
 
 /* Testimonials Section */
@@ -178,6 +218,58 @@
   text-align: right;
 }
 
+/* Badge de seguridad */
+.security-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border: 1px solid #C8E6C9;
+}
+
+.security-icon {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.security-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Contenedor de privacidad */
+.privacy-container {
+  background-color: #F5F8FA;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px 0;
+  border: 1px solid #E1E8ED;
+}
+
+.privacy-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #E1E8ED;
+}
+
+.privacy-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.privacy-icon {
+  font-size: 20px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 992px) {
   .testimonials-container {
@@ -192,10 +284,11 @@
   
   .app-preview-text h2 {
     text-align: center !important;
+    font-size: 1.5rem !important;
   }
   
   .app-preview-image {
-    max-height: 250px;
+    max-height: 450px;
   }
   
   .cta-container {
@@ -214,6 +307,21 @@
   
   .expand-icon {
     font-size: 16px;
+  }
+  
+  .security-badge {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 6px 12px;
+  }
+  
+  .privacy-item {
+    font-size: 0.9rem;
+  }
+  
+  .privacy-icon {
+    font-size: 18px;
   }
 } 
 
@@ -259,7 +367,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 70px;
+  height: 80px;
   background: linear-gradient(transparent, rgba(255, 255, 255, 0.9));
   pointer-events: none;
 }
@@ -343,7 +451,7 @@
 /* Para dispositivos móviles */
 @media (max-width: 768px) {
   .app-preview-image {
-    max-height: 250px;
+    max-height: 350px;
   }
   
   .expand-button {
@@ -384,4 +492,107 @@
   0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
   40% { transform: translateY(-10px); }
   60% { transform: translateY(-5px); }
+}
+
+.eu-flag {
+  font-size: 1.2em;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+.eu-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #003399; /* Azul de la bandera de la UE */
+  color: white;
+  font-weight: bold;
+  font-size: 0.8em;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-left: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  vertical-align: middle;
+}
+
+.eu-stars-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #003399; /* Azul de la bandera de la UE */
+  color: white;
+  font-weight: bold;
+  font-size: 0.75em;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  margin-left: 8px;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  vertical-align: middle;
+}
+
+.eu-stars-badge::before {
+  content: "★ ★ ★ ★ ★";
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.6em;
+  letter-spacing: -1px;
+  color: gold;
+}
+
+/* Animación sutil para destacar las estrellas */
+@keyframes starTwinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.eu-stars-badge:hover::before {
+  animation: starTwinkle 2s infinite;
+}
+
+.eu-flag-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #003399; /* Azul de la bandera de la UE */
+  color: white;
+  font-weight: bold;
+  font-size: 0.75em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 8px;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  vertical-align: middle;
+  border: 1px solid #002266;
+}
+
+.eu-flag-badge::before {
+  content: "★ ★ ★ ★ ★";
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.55em;
+  letter-spacing: -1px;
+  color: gold;
+}
+
+/* Efecto de ondulación sutil para simular una bandera */
+@keyframes flagWave {
+  0% { transform: skewX(0deg); }
+  25% { transform: skewX(0.5deg); }
+  50% { transform: skewX(0deg); }
+  75% { transform: skewX(-0.5deg); }
+  100% { transform: skewX(0deg); }
+}
+
+.eu-flag-badge:hover {
+  animation: flagWave 2s infinite ease-in-out;
 } 

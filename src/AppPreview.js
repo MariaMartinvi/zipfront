@@ -15,33 +15,53 @@ const AppPreview = () => {
         <div className="app-preview-text">
           <h2>Descubre los secretos de tus conversaciones</h2>
           <p>
-            ChatSalsa analiza tus conversaciones de WhatsApp para revelarte datos fascinantes sobre quién habla más, 
-            quién usa más emojis, y mucho más.
+            Combinamos la estadística y la  <strong>Inteligencia Artificial avanzada de Mistral</strong> (desarrollada en la UE) 
+            para revelarte datos fascinantes sobre los  perfiles psicológicos de los participantes y las dinámicas de grupo.
           </p>
+          
+          <div className="security-badge">
+            <span className="security-icon">🔒</span>
+            <span className="security-text">100% privado y seguro</span>
+          </div>
+          
           <ul className="app-preview-features">
             <li>
+              <span className="feature-icon">🧠</span>
+              <span><strong>Análisis psicológico</strong> de los patrones de comunicación.</span>
+            </li>
+            <li>
               <span className="feature-icon">📊</span>
-              <span>Descubre quién domina las conversaciones</span>
+              <span>Estadísticas detalladas sobre quién domina las conversaciones.</span>
             </li>
             <li>
               <span className="feature-icon">😀</span>
-              <span>Analiza el uso de emojis y expresiones</span>
-            </li>
-            <li>
-              <span className="feature-icon">⏰</span>
-              <span>Conoce los horarios más activos del chat</span>
+              <span>Interpretación emocional basada en el uso de emojis y lenguaje.</span>
             </li>
             <li>
               <span className="feature-icon">🔍</span>
-              <span>Identifica patrones y tendencias únicas</span>
+              <span>Descubre personalidades ocultas y dinámicas de grupo.</span>
             </li>
           </ul>
+          
+          <div className="privacy-container">
+            <div className="privacy-item">
+              <span className="privacy-icon">⚡</span>
+              <span>Los chats se analizan al momento y se eliminan inmediatamente</span>
+            </div>
+            
+           
+            <div className="privacy-item">
+              <span className="privacy-icon">🔐</span>
+              <span>Los datos no se almacenan ni se usan para entrenar IA</span>
+            </div>
+          </div>
+          
           <div className="cta-container">
             <button 
               className="cta-button"
               onClick={() => window.location.href = '/register'}
             >
-              ¡Regístrate y analiza tu chat!
+              ¡Descubre la psicología de tu chat!
             </button>
           </div>
         </div>
@@ -83,19 +103,19 @@ const AppPreview = () => {
         <div className="testimonials-container">
           <div className="testimonial">
             <div className="testimonial-content">
-              "¡Increíble! Descubrí que soy quien más habla en mi grupo familiar. ¡Ahora todos me llaman el parlanchín oficial!"
+              "¡Increíble! El análisis psicológico me permitió entender mejor a mis amigos y por qué respondemos como lo hacemos."
             </div>
             <div className="testimonial-author">Carlos P.</div>
           </div>
           <div className="testimonial">
             <div className="testimonial-content">
-              "Me encantó descubrir quiénes son los nocturnos del grupo. Resultó que todos escribimos más después de medianoche."
+              "Me sorprendió descubrir los patrones emocionales en nuestro grupo familiar. La IA detectó tensiones que ni siquiera habíamos notado."
             </div>
             <div className="testimonial-author">Ana M.</div>
           </div>
           <div className="testimonial">
             <div className="testimonial-content">
-              "Ya no discutimos sobre quién responde más tarde. ¡Los datos no mienten! ChatSalsa resolvió nuestras dudas."
+              "Tranquilidad total sabiendo que mis datos están seguros y se eliminan automáticamente. El análisis psicológico fue fascinante."
             </div>
             <div className="testimonial-author">Laura T.</div>
           </div>
