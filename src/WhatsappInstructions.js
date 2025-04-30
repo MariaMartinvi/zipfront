@@ -5,6 +5,7 @@ import './WhatsappInstructions.css';
 function WhatsappInstructions() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [platform, setPlatform] = useState('android'); // 'android' o 'ios'
+  const [activeTab, setActiveTab] = useState('carousel'); // 'carousel' o 'video'
 
   // Lista de pasos para Android
   const androidSteps = [
@@ -42,11 +43,7 @@ function WhatsappInstructions() {
 
   // Lista de pasos para iOS
   const iosSteps = [
-    {
-      title: "Instala la App",
-      description: "Asegúrate de tener esta app instalada en tu iPhone",
-      icon: "📱"
-    },
+    
     {
       title: "Abre tu chat de WhatsApp",
       description: "Ve al grupo o conversación que deseas exportar",
@@ -84,13 +81,16 @@ function WhatsappInstructions() {
     },
     {
       title: "Abre nuestra web",
-      description: "Abre esta aplicación y selecciona el archivo guardado",
+      description: "Abre esta web y selecciona el archivo guardado",
       icon: "✓"
     }
   ];
 
   // Seleccionar los pasos según la plataforma
   const steps = platform === 'android' ? androidSteps : iosSteps;
+  
+  // Seleccionar el video según la plataforma
+  const tutorialVideo = platform === 'android' ? '/recortadov1.mp4' : '/recortadoios.mp4';
 
   // Cambiar de plataforma
   const togglePlatform = (newPlatform) => {
@@ -102,7 +102,6 @@ function WhatsappInstructions() {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveSlide((prevSlide) => (prevSlide + 1) % steps.length);
-
     }, 5000);
     
     return () => clearInterval(interval);
@@ -111,16 +110,6 @@ function WhatsappInstructions() {
   // Cambiar a un slide específico
   const goToSlide = (index) => {
     setActiveSlide(index);
-  };
-
-  // Ir al slide anterior
-  const prevSlide = () => {
-    setActiveSlide((prevSlide) => (prevSlide - 1 + steps.length) % steps.length);
-  };
-
-  // Ir al slide siguiente
-  const nextSlide = () => {
-    setActiveSlide((prevSlide) => (prevSlide + 1) % steps.length);
   };
 
   return (
@@ -142,40 +131,69 @@ function WhatsappInstructions() {
         </button>
       </div>
       
-      <div className="carousel-container">
-        <button className="carousel-button prev" onClick={prevSlide} aria-label="Anterior">
-          &lt;
+      <div className="instruction-tabs mobile-only">
+        <button 
+          className={`tab-button ${activeTab === 'carousel' ? 'active' : ''}`}
+          onClick={() => setActiveTab('carousel')}
+        >
+          Paso a paso
         </button>
-        
-        <div className="carousel-slides">
-          {/* Mostrar solo el slide activo */}
-          {steps.map((step, index) => (
-            <div 
-              key={index} 
-              className={`carousel-slide ${index === activeSlide ? 'active' : ''}`}
-              style={{ display: index === activeSlide ? 'flex' : 'none' }}
-            >
-              <div className="step-icon">{step.icon}</div>
-              <h3>{`Paso ${index + 1}: ${step.title}`}</h3>
-              <p>{step.description}</p>
-            </div>
-          ))}
-        </div>
-        
-        <button className="carousel-button next" onClick={nextSlide} aria-label="Siguiente">
-          &gt;
+        <button 
+          className={`tab-button ${activeTab === 'video' ? 'active' : ''}`}
+          onClick={() => setActiveTab('video')}
+        >
+          Video tutorial
         </button>
       </div>
       
-      <div className="carousel-indicators">
-        {steps.map((_, index) => (
-          <button 
-            key={index} 
-            className={`indicator ${index === activeSlide ? 'active' : ''}`}
-            onClick={() => goToSlide(index)}
-            aria-label={`Ir al paso ${index + 1}`}
-          />
-        ))}
+      <div className="instructions-content">
+        <div 
+          className={`carousel-wrapper ${activeTab === 'video' ? 'hidden-mobile' : ''}`}
+        >
+          <div className="carousel-container">
+            <div className="carousel-slides">
+              {/* Mostrar solo el slide activo */}
+              {steps.map((step, index) => (
+                <div 
+                  key={index} 
+                  className={`carousel-slide ${index === activeSlide ? 'active' : ''}`}
+                  style={{ display: index === activeSlide ? 'flex' : 'none' }}
+                >
+                  <div className="step-icon">{step.icon}</div>
+                  <h3>{`Paso ${index + 1}: ${step.title}`}</h3>
+                  <p>{step.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="carousel-indicators">
+            {steps.map((_, index) => (
+              <button 
+                key={index} 
+                className={`indicator ${index === activeSlide ? 'active' : ''}`}
+                onClick={() => goToSlide(index)}
+                aria-label={`Ir al paso ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+        
+        <div 
+          className={`video-tutorial-container ${activeTab === 'carousel' ? 'hidden-mobile' : ''}`}
+        >
+          <video 
+            controls 
+            className="tutorial-video"
+            src={tutorialVideo}
+            poster={platform === 'android' ? '/tutorial-android-thumbnail.jpg' : '/tutorial-ios-thumbnail.jpg'}
+          >
+            Tu navegador no soporta la reproducción de videos.
+          </video>
+          <p className="video-caption">
+            Video tutorial: Cómo exportar chats en {platform === 'android' ? 'Android' : 'iOS'}
+          </p>
+        </div>
       </div>
     </div>
   );

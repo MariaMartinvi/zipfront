@@ -25,6 +25,7 @@ import Contact from './Paginasextra/Contact';
 import FAQ from './Paginasextra/FAQ';
 import TermsOfService from './Paginasextra/TermsOfService';
 import PrivacyPolicy from './Paginasextra/PrivacyPolicy';
+import AppPreview from './AppPreview';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -1038,20 +1039,13 @@ const tryDeleteFiles = async (operationId) => {
                     </div>
                   )}
 
-                  {isProcessingSharedFile ? (
-                    <div className="loading-indicator">
-                      <div className="spinner"></div>
-                      <p>Recibiendo archivo compartido...</p>
-                      <button 
-                        onClick={handleReset}
-                        className="cancel-button"
-                      >
-                        Cancelar
-                      </button>
-                    </div>
-                  ) : (
-                    <div id="upload-section" className="upload-section">
-                      {!user ? (
+                  {/* Sección de carga de archivos */}
+                  <div id="upload-section" className="upload-section">
+                    {!user ? (
+                      <>
+                        {/* Componente de vista previa de la aplicación ANTES del login */}
+                        <AppPreview />
+                        
                         <div className="login-required">
                           <h2>Inicia sesión para comenzar</h2>
                           <p>Necesitas iniciar sesión para analizar conversaciones.</p>
@@ -1070,34 +1064,34 @@ const tryDeleteFiles = async (operationId) => {
                             </button>
                           </div>
                         </div>
-                      ) : (
-                        <>
-                          <h2>{showAnalysis ? "¿Quieres analizar otro chat?" : "Analiza tu chat de WhatsApp"}</h2>
-                          {/* Carrusel de instrucciones de WhatsApp separado del botón */}
-                          <WhatsappInstructions />
-                          
-                          {/* User subscription status card */}
-                       
-                          
-                          <div className="file-upload-container">
-                            <label className="file-upload-label">
-                              <input 
-                                type="file" 
-                                className="file-upload-input" 
-                                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
-                                onChange={handleFileUpload} 
-                              />
-                              <div className="file-upload-text">
-                                <span className="upload-icon">📂</span>
-                                <span>Sube un archivo ZIP</span>
-                                <span className="file-upload-subtext">o comparte directamente desde WhatsApp siguiendo los pasos anteriores</span>
-                              </div>
-                            </label>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  )}
+                      </>
+                    ) : (
+                      <>
+                        <h2>{showAnalysis ? "¿Quieres analizar otro chat?" : "Analiza tu chat de WhatsApp"}</h2>
+                        
+                        {/* Carrusel de instrucciones de WhatsApp separado del botón */}
+                        <WhatsappInstructions />
+                        
+                        {/* User subscription status card */}
+                        
+                        <div className="file-upload-container">
+                          <label className="file-upload-label">
+                            <input 
+                              type="file" 
+                              className="file-upload-input" 
+                              accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
+                              onChange={handleFileUpload} 
+                            />
+                            <div className="file-upload-text">
+                              <span className="upload-icon">📂</span>
+                              <span>Sube un archivo ZIP</span>
+                              <span className="file-upload-subtext">o comparte directamente desde WhatsApp siguiendo los pasos anteriores</span>
+                            </div>
+                          </label>
+                        </div>
+                      </>
+                    )}
+                  </div>
 
                   {error && (
                     <div className="error-message">
