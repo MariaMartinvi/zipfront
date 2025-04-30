@@ -5,7 +5,7 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut,
-  onAuthStateChanged,
+  onAuthStateChanged as firebaseAuthStateChanged,
   sendPasswordResetEmail,
   updateProfile,
   setPersistence,
@@ -53,12 +53,53 @@ setPersistence(auth, browserLocalPersistence)
 
 const db = getFirestore(app);
 
+// Traducir mensajes de error de Firebase a mensajes amigables en español
+export const getErrorMessage = (errorCode) => {
+  const errorMessages = {
+    // Errores de autenticación
+    'auth/invalid-credential': 'Credenciales inválidas. Por favor verifica tu email y contraseña.',
+    'auth/invalid-email': 'El formato del email no es válido.',
+    'auth/user-disabled': 'Esta cuenta ha sido deshabilitada.',
+    'auth/user-not-found': 'No existe una cuenta con este email.',
+    'auth/wrong-password': 'Contraseña incorrecta.',
+    'auth/email-already-in-use': 'Ya existe una cuenta con este email.',
+    'auth/weak-password': 'La contraseña es demasiado débil. Debe tener al menos 6 caracteres.',
+    'auth/operation-not-allowed': 'Esta operación no está permitida.',
+    'auth/account-exists-with-different-credential': 'Ya existe una cuenta con este email pero con un método de inicio de sesión diferente.',
+    'auth/invalid-api-key': 'La clave API de Firebase no es válida o ha expirado. Contacta al administrador.',
+    'auth/network-request-failed': 'Error de conexión. Verifica tu conexión a internet.',
+    'auth/popup-closed-by-user': 'Inicio de sesión cancelado. Ventana cerrada antes de completar la autenticación.',
+    'auth/unauthorized-domain': 'Este dominio no está autorizado para operaciones de OAuth.',
+    'auth/too-many-requests': 'Demasiados intentos fallidos. Por favor, inténtalo más tarde.',
+    
+    // Errores específicos de Firestore
+    'permission-denied': 'No tienes permiso para acceder a estos datos.',
+    'unavailable': 'El servicio no está disponible en este momento.',
+    
+    // Error genérico
+    'default': 'Ha ocurrido un error. Por favor, inténtalo de nuevo.'
+  };
+  
+  // Si encontramos el código de error específico, devolvemos su mensaje traducido
+  if (errorCode && errorMessages[errorCode]) {
+    return errorMessages[errorCode];
+  }
+  
+  // Si no hay código específico o no lo tenemos catalogado, devolvemos un mensaje genérico
+  return errorMessages['default'];
+};
+
 // Register a new user
 export const registerUser = async (email, password, displayName) => {
   try {
+    // Garantizar que la persistencia está configurada en LOCAL antes del registro
+    await setPersistence(auth, browserLocalPersistence);
+    console.log("Persistencia configurada para LOCAL durante el registro");
+    
     // Create the user account
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
+    console.log("Usuario registrado exitosamente con ID:", user.uid);
     
     // Update the user's profile with the display name
     await updateProfile(user, { displayName });
@@ -76,6 +117,8 @@ export const registerUser = async (email, password, displayName) => {
     return user;
   } catch (error) {
     console.error('Error registering user:', error);
+    // Transformar el error antes de propagarlo
+    error.message = getErrorMessage(error.code) || error.message;
     throw error;
   }
 };
@@ -83,10 +126,17 @@ export const registerUser = async (email, password, displayName) => {
 // Sign in an existing user
 export const loginUser = async (email, password) => {
   try {
+    // Garantizar que la persistencia está configurada en LOCAL antes de iniciar sesión
+    await setPersistence(auth, browserLocalPersistence);
+    console.log("Persistencia configurada para LOCAL durante el login");
+    
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log("Login exitoso con ID:", userCredential.user.uid);
     return userCredential.user;
   } catch (error) {
     console.error('Error logging in:', error);
+    // Transformar el error antes de propagarlo
+    error.message = getErrorMessage(error.code) || error.message;
     throw error;
   }
 };
@@ -108,6 +158,8 @@ export const resetPassword = async (email) => {
     await sendPasswordResetEmail(auth, email);
   } catch (error) {
     console.error('Error resetting password:', error);
+    // Transformar el error antes de propagarlo
+    error.message = getErrorMessage(error.code) || error.message;
     throw error;
   }
 };
@@ -115,7 +167,7 @@ export const resetPassword = async (email) => {
 // Get the current authenticated user
 export const getCurrentUser = () => {
   return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = firebaseAuthStateChanged(auth, (user) => {
       unsubscribe();
       console.log("getCurrentUser returned:", user ? user.uid : "No user");
       resolve(user);
@@ -132,7 +184,7 @@ export const isAuthenticated = () => {
       resolve(false);
     }, 2000);
     
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = firebaseAuthStateChanged(auth, (user) => {
       clearTimeout(timeout);
       unsubscribe();
       const isLoggedIn = !!user;
@@ -297,9 +349,14 @@ export const incrementChatUsage = async (userId) => {
 // Login with Google
 export const loginWithGoogle = async () => {
   try {
+    // Garantizar que la persistencia está configurada en LOCAL antes de iniciar sesión con Google
+    await setPersistence(auth, browserLocalPersistence);
+    console.log("Persistencia configurada para LOCAL durante el login con Google");
+    
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
+    console.log("Login con Google exitoso con ID:", user.uid);
     
     // Check if this is a first-time login
     const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -322,8 +379,15 @@ export const loginWithGoogle = async () => {
     return user;
   } catch (error) {
     console.error('Error logging in with Google:', error);
+    // Transformar el error antes de propagarlo
+    error.message = getErrorMessage(error.code) || error.message;
     throw error;
   }
+};
+
+// Exportar onAuthStateChanged para poder usarlo en otros componentes
+export const onAuthStateChanged = (auth, callback) => {
+  return firebaseAuthStateChanged(auth, callback);
 };
 
 export { auth, db };

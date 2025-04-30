@@ -39,10 +39,9 @@ const Contact = () => {
 
       <div className="contact-container">
         <div className="contact-info">
-          <h2>Información de Contacto</h2>
-          <p>Email: soporte@misanalisisdewhatsapp.com</p>
-          <p>Teléfono: +57 (601) 123-4567</p>
-          <p>Dirección: Calle Ficticia 123, Bogotá, Colombia</p>
+          <h2>Información de Contacto -Comartinvi</h2>
+          <p>Email: maria@comartinvi.com</p>
+          <p>Dirección: Avenida Roma 153, 08011 Barcelona, España</p>
         </div>
 
         <form onSubmit={handleSubmit} className="contact-form">

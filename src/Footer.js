@@ -46,7 +46,7 @@ const Footer = () => {
             </div>
           </div>
           
-          <div className="footer-section">
+         {/*   <div className="footer-section">
             <h3>Redes Sociales</h3>
             <div className="social-grid">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="social-link">
@@ -62,7 +62,7 @@ const Footer = () => {
                 <FaWhatsapp className="social-icon" />
               </a>
             </div>
-          </div>
+          </div>*/}
         </div>
       </div>
       

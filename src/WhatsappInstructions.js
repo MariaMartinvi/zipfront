@@ -152,15 +152,14 @@ function WhatsappInstructions() {
         >
           <div className="carousel-container">
             <div className="carousel-slides">
-              {/* Mostrar solo el slide activo */}
+              {/* Mostrar solo el slide activo con clase active */}
               {steps.map((step, index) => (
                 <div 
                   key={index} 
                   className={`carousel-slide ${index === activeSlide ? 'active' : ''}`}
-                  style={{ display: index === activeSlide ? 'flex' : 'none' }}
                 >
                   <div className="step-icon">{step.icon}</div>
-                  <h3>{`Paso ${index + 1}: ${step.title}`}</h3>
+                  <h3>Paso {index + 1}: {step.title}</h3>
                   <p>{step.description}</p>
                 </div>
               ))}

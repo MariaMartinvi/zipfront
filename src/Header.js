@@ -36,6 +36,7 @@ const Header = ({ user }) => {
             <Link to="/" className="nav-link">Inicio</Link>
             {user ? (
               <>
+                <Link to="/" className="nav-link"><span role="img" aria-label="Subir">📤</span> Subir archivo</Link>
                 <Link to="/plans" className="nav-link">Planes</Link>
                 <div className="user-menu">
                   <button 
@@ -81,6 +82,7 @@ const Header = ({ user }) => {
           <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>Inicio</Link>
           {user ? (
             <>
+              <Link to="/" className="mobile-nav-link" onClick={toggleMenu}><span role="img" aria-label="Subir">📤</span> Subir archivo</Link>
               <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>Planes</Link>
               <button 
                 className="mobile-nav-link mobile-logout"

@@ -106,7 +106,14 @@ export const Login = ({ onLoginSuccess }) => {
   return (
     <div className="auth-form-container">
       <h2>Iniciar Sesión</h2>
-      {error && <div className="auth-error">{error}</div>}
+      {error && (
+        <div className="auth-error-container">
+          <div className="auth-error">
+            <span className="auth-error-icon">⚠️</span>
+            <span className="auth-error-text">{error}</span>
+          </div>
+        </div>
+      )}
       {returnTo && (
         <div className="auth-message">
           Por favor inicia sesión para continuar.
@@ -267,7 +274,14 @@ export const Register = ({ onRegisterSuccess }) => {
   return (
     <div className="auth-form-container">
       <h2>Crear Cuenta</h2>
-      {error && <div className="auth-error">{error}</div>}
+      {error && (
+        <div className="auth-error-container">
+          <div className="auth-error">
+            <span className="auth-error-icon">⚠️</span>
+            <span className="auth-error-text">{error}</span>
+          </div>
+        </div>
+      )}
       
       <div className="auth-content">
         <button 
@@ -385,7 +399,14 @@ export const PasswordReset = () => {
   return (
     <div className="auth-form-container">
       <h2>Restablecer Contraseña</h2>
-      {error && <div className="auth-error">{error}</div>}
+      {error && (
+        <div className="auth-error-container">
+          <div className="auth-error">
+            <span className="auth-error-icon">⚠️</span>
+            <span className="auth-error-text">{error}</span>
+          </div>
+        </div>
+      )}
       {message && <div className="auth-message">{message}</div>}
       <form onSubmit={handleResetPassword} className="auth-form">
         <div className="form-group">

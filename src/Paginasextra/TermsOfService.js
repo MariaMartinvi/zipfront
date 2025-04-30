@@ -61,7 +61,7 @@ const TermsOfService = () => {
 
         <section>
           <h2>10. Ley Aplicable</h2>
-          <p>Estos términos se regirán e interpretarán de acuerdo con las leyes de Colombia, sin consideración a sus principios de conflicto de leyes.</p>
+          <p>Estos términos se regirán e interpretarán de acuerdo con las leyes de España, sin consideración a sus principios de conflicto de leyes.</p>
         </section>
 
         <section>
