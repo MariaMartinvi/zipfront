@@ -145,7 +145,7 @@ function App() {
       />
       
       <header className="App-header">
-        <h1>Extractor de archivos ZIP</h1>
+        <h1>Analiza tus chats</h1>
       </header>
       <main className="App-main">
         {isProcessingSharedFile ? (
