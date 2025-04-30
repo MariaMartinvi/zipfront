@@ -50,12 +50,20 @@ const AppPreview = () => {
           <div className="image-overlay">
             <span className="image-caption">¡Así lucirá tu análisis!</span>
           </div>
+          
+          {/* Indicador adicional de que hay más contenido */}
+          <div className="image-more-indicator">
+            <span>Ver análisis completo</span>
+            <div className="more-arrow">↓</div>
+          </div>
+          
           <button 
             className="expand-button" 
             onClick={toggleModal}
             aria-label="Ver imagen completa"
           >
-            +
+            <span className="expand-icon">+</span>
+            <span className="expand-text">Ver completo</span>
           </button>
         </div>
       </div>
