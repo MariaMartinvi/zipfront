@@ -260,10 +260,10 @@ const AnalisisPrimerChat = ({ operationId }) => {
               type="monotone" 
               dataKey="mensajes" 
               name="Mensajes" 
-              stroke="#8884d8"
+              stroke="#4285f4"
               strokeWidth={2}
-              dot={{ stroke: '#8884d8', strokeWidth: 2, r: 4 }}
-              activeDot={{ stroke: '#8884d8', strokeWidth: 2, r: 6 }}
+              dot={{ stroke: '#4285f4', strokeWidth: 2, r: 4 }}
+              activeDot={{ stroke: '#4285f4', strokeWidth: 2, r: 6 }}
             />
           </LineChart>
         </ResponsiveContainer>

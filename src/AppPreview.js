@@ -12,7 +12,7 @@ const AppPreview = () => {
     <div className="app-preview-container">
       <div className="app-preview-content">
         <div className="app-preview-text">
-          <h2>Descubre los secretos de tus conversaciones</h2>
+          <h2>Descubre los secretos de tus conversaciones de <span style={{ color: '#25D366' }}>WhatsApp</span></h2>
           <p>
             Combinamos la estadística y la  <strong>Inteligencia Artificial avanzada de Mistral</strong> (desarrollada en la UE) 
             para revelarte datos fascinantes sobre los  perfiles psicológicos de los participantes y las dinámicas de grupo.

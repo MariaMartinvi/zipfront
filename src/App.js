@@ -763,7 +763,7 @@ function App() {
             
             // Determinar qué fase mostrar basado en el número de intentos
             const phaseIndex = Math.min(Math.floor(attempts / 4), progressPhases.length - 1);
-            setProgressMessage(`Generando análisis con IA: ${progressPhases[phaseIndex]}`);
+            setProgressMessage(`Generando análisis: ${progressPhases[phaseIndex]}`);
           }
           
           addDebugMessage(`Intentando obtener respuesta de Mistral (intento ${attempts}/${maxAttempts})`);

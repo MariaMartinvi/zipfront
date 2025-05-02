@@ -120,7 +120,7 @@ function WhatsappInstructions() {
     },
     {
       title: "Sube el archivo",
-      description: "Haz clic en 'Subir archivo' y selecciona el archivo de chat .txt descargado",
+      description: "Haz clic en 'Subir archivo' y selecciona el archivo de chat .zip descargado",
       icon: "📁"
     }
   ];
@@ -257,13 +257,13 @@ function WhatsappInstructions() {
             <video 
               controls 
               className="tutorial-video"
-              src="/recortadoios.mp4"
+              src="/desktop.mp4"
               poster="/tutorial-ios-thumbnail.jpg"
             >
               Tu navegador no soporta la reproducción de videos.
             </video>
             <p className="video-caption">
-              Video tutorial: Cómo exportar el chat desde tu dispositivo iOS
+              Video tutorial: Cómo exportar el chat desde tu dispositivo
             </p>
             <p className="desktop-instructions-note">
               <strong>Para usar ChatSalsa en tu ordenador:</strong><br/>

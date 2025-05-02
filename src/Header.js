@@ -84,14 +84,13 @@ const Header = ({ user }) => {
             <>
               <Link to="/" className="mobile-nav-link" onClick={toggleMenu}><span role="img" aria-label="Subir">📤</span> Subir archivo</Link>
               <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>Planes</Link>
-              <button 
-                className="mobile-nav-link mobile-logout"
-                onClick={handleLogout}
-              >
-                Cerrar Sesión
-              </button>
-              <div className="mobile-user-info">
-                Conectado como: {user.displayName || user.email}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button 
+                  className="mobile-nav-link mobile-logout"
+                  onClick={handleLogout}
+                >
+                  Cerrar Sesión
+                </button>
               </div>
             </>
           ) : (
