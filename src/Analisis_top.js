@@ -32,7 +32,11 @@ const AnalisisTop = ({ operationId }) => {
     // Cargar los datos desde el endpoint de la API
     const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
     
-    fetch(`${API_URL}/api/resultados-top/${operationId}`)
+    // Eliminar parámetro para forzar formato iOS
+    const url = `${API_URL}/api/resultados-top/${operationId}`;
+    console.log(`Cargando datos de top perfiles desde: ${url}`);
+    
+    fetch(url)
       .then(response => {
         if (!response.ok) {
           throw new Error('No se pudieron cargar los datos de top perfiles');
@@ -40,8 +44,17 @@ const AnalisisTop = ({ operationId }) => {
         return response.json();
       })
       .then(data => {
+        console.log('Datos recibidos de la API:', data);
+        // Verificar explícitamente el formato
+        if (!data.formato_chat) {
+          console.warn('El formato de chat no está especificado en la respuesta');
+        } else {
+          console.log('Formato de chat detectado:', data.formato_chat);
+        }
+        
         // Transformar los datos al formato esperado
         const datosTransformados = {
+          formato_chat: data.formato_chat || 'desconocido',
           categorias: {
             profesor: {
               nombre: data.categorias?.profesor?.nombre || 'Sin datos',

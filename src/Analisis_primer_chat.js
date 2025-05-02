@@ -15,6 +15,7 @@ import {
   Cell
 } from 'recharts';
 import './Analisis_primer_chat.css'; // Importar los estilos
+
 // Colores para los gráficos
 const COLORS = [
   '#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', 
@@ -52,23 +53,36 @@ const AnalisisPrimerChat = ({ operationId }) => {
       return;
     }
 
-    // Cargar los datos desde el endpoint de la API
+    console.log(`Cargando datos de análisis para operación: ${operationId}`);
     const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+
+    // Eliminar parámetro para forzar formato iOS
+    const url = `${API_URL}/api/resultados-primer-chat/${operationId}`;
+    console.log(`Cargando datos desde: ${url}`);
     
-    fetch(`${API_URL}/api/resultados-primer-chat/${operationId}`)
+    fetch(url)
       .then(response => {
+        console.log(`Respuesta recibida con status: ${response.status}`);
         if (!response.ok) {
-          throw new Error('No se pudieron cargar los datos del primer chat');
+          throw new Error(`Error ${response.status}: No se pudieron cargar los datos del primer chat`);
         }
         return response.json();
       })
       .then(data => {
+        console.log('Datos recibidos:', data);
+        // Verificar formato
+        if (!data.formato_chat) {
+          console.warn('El formato de chat no está especificado en la respuesta');
+        } else {
+          console.log('Formato de chat detectado:', data.formato_chat);
+        }
+        
         setDatos(data);
         setCargando(false);
       })
       .catch(err => {
-        console.error('Error cargando datos:', err);
-        setError(err.message);
+        console.error("Error cargando datos:", err);
+        setError(`Error al cargar los datos: ${err.message}`);
         setCargando(false);
       });
   }, [operationId]);

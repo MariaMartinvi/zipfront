@@ -32,7 +32,11 @@ const AnalisisEmojis = ({ operationId }) => {
     // Cargar los datos desde el endpoint de la API
     const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
     
-    fetch(`${API_URL}/api/resultados-emojis/${operationId}`)
+    // Añadir parámetro para forzar formato iOS
+    const url = `${API_URL}/api/resultados-emojis/${operationId}?formato=ios`;
+    console.log(`Cargando datos de emojis desde: ${url}`);
+    
+    fetch(url)
       .then(response => {
         if (!response.ok) {
           throw new Error('No se pudieron cargar los datos de emojis');
@@ -40,11 +44,20 @@ const AnalisisEmojis = ({ operationId }) => {
         return response.json();
       })
       .then(data => {
+        console.log('Datos de emojis recibidos:', data);
+        // Verificar formato
+        if (!data.formato_chat) {
+          console.warn('El formato de chat no está especificado en la respuesta de emojis');
+          data.formato_chat = 'ios'; // Asegurarnos de que el formato esté establecido
+        } else {
+          console.log('Formato de chat en emojis:', data.formato_chat);
+        }
+        
         setDatos(data);
         setCargando(false);
       })
       .catch(err => {
-        console.error('Error cargando datos:', err);
+        console.error('Error cargando datos de emojis:', err);
         setError(err.message);
         setCargando(false);
       });
