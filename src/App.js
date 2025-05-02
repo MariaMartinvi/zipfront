@@ -7,8 +7,6 @@ import Chatgptresultados from './Chatgptresultados';
 import ChatAnalysisComponent from './ChatAnalysisComponent';
 import WhatsappInstructions from './WhatsappInstructions';
 import AnalisisPrimerChat from './Analisis_primer_chat';
-import AnalisisInfluencer from './Analisis_influencer';
-import AnalisisEmojis from './Analisis_emojis';
 import AnalisisTop from './Analisis_top';
 import { AuthContainer, Login, Register, PasswordReset } from './AuthComponents';
 import SubscriptionPlans from './SubscriptionPlans';

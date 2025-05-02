@@ -4,7 +4,7 @@ import './WhatsappInstructions.css';
 // Componente para las instrucciones de WhatsApp en formato carrusel
 function WhatsappInstructions() {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [platform, setPlatform] = useState('android'); // 'android' o 'ios'
+  const [platform, setPlatform] = useState('android'); // 'android', 'ios' o 'desktop'
   const [activeTab, setActiveTab] = useState('carousel'); // 'carousel' o 'video'
 
   // Lista de pasos para Android
@@ -86,11 +86,58 @@ function WhatsappInstructions() {
     }
   ];
 
+  // Lista de pasos para Desktop
+  const desktopSteps = [
+    {
+      title: "Abre WhatsApp en tu dispositivo",
+      description: "Abre la aplicación de WhatsApp en tu dispositivo móvil (Android o iOS)",
+      icon: "📱"
+    },
+    {
+      title: "Extrae el chat",
+      description: "Sigue las instrucciones de exportación según tu dispositivo (selecciona la pestaña Android o iOS)",
+      icon: "📤"
+    },
+    {
+      title: "Envía el archivo por email",
+      description: "Selecciona 'Compartir' o 'Enviar por email' y envíate el archivo a ti mismo",
+      icon: "📧"
+    },
+    {
+      title: "Accede a tu email en PC",
+      description: "En tu ordenador (PC o Mac), abre tu correo electrónico y busca el mensaje con el chat",
+      icon: "💻"
+    },
+    {
+      title: "Descarga el archivo",
+      description: "Descarga el archivo adjunto .txt a tu ordenador. Recuerda dónde lo guardas",
+      icon: "💾"
+    },
+    {
+      title: "Visita ChatSalsa",
+      description: "Abre ChatSalsa en el navegador de tu ordenador (la página donde estás ahora)",
+      icon: "🌐"
+    },
+    {
+      title: "Sube el archivo",
+      description: "Haz clic en 'Subir archivo' y selecciona el archivo de chat .txt descargado",
+      icon: "📁"
+    }
+  ];
+
   // Seleccionar los pasos según la plataforma
-  const steps = platform === 'android' ? androidSteps : iosSteps;
+  const steps = platform === 'android' 
+    ? androidSteps 
+    : platform === 'ios' 
+      ? iosSteps 
+      : desktopSteps;
   
   // Seleccionar el video según la plataforma
-  const tutorialVideo = platform === 'android' ? '/recortadov1.mp4' : '/recortadoios.mp4';
+  const tutorialVideo = platform === 'android' 
+    ? '/recortadov1.mp4' 
+    : platform === 'ios' 
+      ? '/recortadoios.mp4' 
+      : '/recortadoios.mp4'; // Usando el mismo video de iOS para desktop
 
   // Cambiar de plataforma
   const togglePlatform = (newPlatform) => {
@@ -112,6 +159,11 @@ function WhatsappInstructions() {
     setActiveSlide(index);
   };
 
+  // Avanzar al siguiente slide
+  const nextSlide = () => {
+    setActiveSlide((prevSlide) => (prevSlide + 1) % steps.length);
+  };
+
   return (
     <div className="whatsapp-instructions">
       <h2>Cómo compartir un chat desde WhatsApp</h2>
@@ -128,6 +180,12 @@ function WhatsappInstructions() {
           onClick={() => togglePlatform('ios')}
         >
           iOS
+        </button>
+        <button 
+          className={`platform-button ${platform === 'desktop' ? 'active' : ''}`}
+          onClick={() => togglePlatform('desktop')}
+        >
+          PC/Mac
         </button>
       </div>
       
@@ -148,15 +206,15 @@ function WhatsappInstructions() {
       
       <div className="instructions-content">
         <div 
-          className={`carousel-wrapper ${activeTab === 'video' ? 'hidden-mobile' : ''}`}
+          className={`carousel-wrapper ${activeTab === 'video' && platform !== 'desktop' ? 'hidden-mobile' : ''}`}
         >
           <div className="carousel-container">
             <div className="carousel-slides">
-              {/* Mostrar solo el slide activo con clase active */}
               {steps.map((step, index) => (
                 <div 
                   key={index} 
                   className={`carousel-slide ${index === activeSlide ? 'active' : ''}`}
+                  onClick={nextSlide}
                 >
                   <div className="step-icon">{step.icon}</div>
                   <h3>Paso {index + 1}: {step.title}</h3>
@@ -178,21 +236,44 @@ function WhatsappInstructions() {
           </div>
         </div>
         
-        <div 
-          className={`video-tutorial-container ${activeTab === 'carousel' ? 'hidden-mobile' : ''}`}
-        >
-          <video 
-            controls 
-            className="tutorial-video"
-            src={tutorialVideo}
-            poster={platform === 'android' ? '/tutorial-android-thumbnail.jpg' : '/tutorial-ios-thumbnail.jpg'}
+        {platform !== 'desktop' ? (
+          <div 
+            className={`video-tutorial-container ${activeTab === 'carousel' ? 'hidden-mobile' : ''}`}
           >
-            Tu navegador no soporta la reproducción de videos.
-          </video>
-          <p className="video-caption">
-            Video tutorial: Cómo exportar chats en {platform === 'android' ? 'Android' : 'iOS'}
-          </p>
-        </div>
+            <video 
+              controls 
+              className="tutorial-video"
+              src={tutorialVideo}
+              poster={platform === 'android' ? '/tutorial-android-thumbnail.jpg' : '/tutorial-ios-thumbnail.jpg'}
+            >
+              Tu navegador no soporta la reproducción de videos.
+            </video>
+            <p className="video-caption">
+              Video tutorial: Cómo exportar chats en {platform === 'android' ? 'Android' : 'iOS'}
+            </p>
+          </div>
+        ) : (
+          <div className="video-tutorial-container desktop-only">
+            <video 
+              controls 
+              className="tutorial-video"
+              src="/recortadoios.mp4"
+              poster="/tutorial-ios-thumbnail.jpg"
+            >
+              Tu navegador no soporta la reproducción de videos.
+            </video>
+            <p className="video-caption">
+              Video tutorial: Cómo exportar el chat desde tu dispositivo iOS
+            </p>
+            <p className="desktop-instructions-note">
+              <strong>Para usar ChatSalsa en tu ordenador:</strong><br/>
+              1. Exporta el chat desde tu móvil (Android o iOS) como se muestra en el video<br/>
+              2. Envíatelo por email o transfiere el archivo a tu PC/Mac<br/>
+              3. Descarga el archivo .txt a tu ordenador<br/>
+              4. Sube el archivo en esta página usando el botón "Subir archivo"
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

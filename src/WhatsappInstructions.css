@@ -20,6 +20,7 @@
   justify-content: center;
   margin-bottom: 20px;
   gap: 10px;
+  flex-wrap: wrap; /* Permitir que los botones se ajusten en pantallas pequeñas */
 }
 
 .platform-button {
@@ -32,6 +33,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin: 0 2px; /* Espaciado horizontal para los botones */
 }
 
 .platform-button.active {
@@ -79,22 +81,49 @@
   padding: 0px;
   text-align: center;
   animation: fadeIn 0.5s ease-in-out;
+  cursor: pointer; /* Indicar que es clickable */
+  transition: transform 0.2s ease;
 }
 
-/* Asegurarse de que el slide activo siempre se muestre correctamente */
-.carousel-slide.active {
-  display: flex !important;
+.carousel-slide:hover {
+  transform: scale(1.02); /* Efecto sutil de escala al pasar el cursor */
 }
 
+.carousel-slide:active {
+  transform: scale(0.98); /* Efecto al hacer clic */
+}
+
+/* Animación para entrada del slide */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateX(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
+}
+
+/* Animación para salida del slide (preparación para el siguiente) */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+.carousel-slide.active {
+  display: flex !important;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.carousel-slide.exiting {
+  animation: fadeOut 0.3s ease-in forwards;
 }
 
 .step-icon {
@@ -191,6 +220,10 @@
   .platform-button {
     padding: 6px 12px;
     font-size: 0.9rem;
+    /* Asegurar que los tres botones quepan */
+    flex: 0 1 auto;
+    min-width: 80px;
+    text-align: center;
   }
   
   .carousel-slide p {
@@ -278,8 +311,9 @@
   }
   
   .platform-button {
-    padding: 5px 12px;
+    padding: 6px 10px;
     font-size: 0.85rem;
+    margin: 0 1px; /* Reducir el margen en pantallas muy pequeñas */
   }
   
   /* Indicadores más separados para mejor uso táctil */
@@ -395,5 +429,45 @@
   
   .video-tutorial-container {
     margin-top: 5px;
+  }
+}
+
+.desktop-only {
+  display: flex;
+  flex-direction: column;
+}
+
+.desktop-instructions-note {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #f5f9ff;
+  border-left: 4px solid #25D366;
+  border-radius: 4px;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .instructions-content {
+    flex-direction: column;
+  }
+  
+  .instruction-tabs.mobile-only {
+    display: flex;
+  }
+  
+  .hidden-mobile {
+    display: none;
+  }
+  
+  .video-tutorial-container {
+    margin-top: 5px;
+  }
+  
+  .desktop-instructions-note {
+    font-size: 0.85rem;
+    padding: 10px;
   }
 }

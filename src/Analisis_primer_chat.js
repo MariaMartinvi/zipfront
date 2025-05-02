@@ -45,6 +45,21 @@ const AnalisisPrimerChat = ({ operationId }) => {
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // Effect to handle window resize for responsive display
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Calculate interval for X-axis labels based on screen width
+  const getXAxisInterval = () => {
+    if (windowWidth <= 480) return 3; // Mobile: every 3 hours
+    if (windowWidth <= 768) return 2; // Tablet: every 2 hours
+    return 1; // Desktop: every hour
+  };
 
   useEffect(() => {
     if (!operationId) {
@@ -130,6 +145,14 @@ const AnalisisPrimerChat = ({ operationId }) => {
       .slice(0, 5); // Tomar solo los 5 usuarios más activos
   };
 
+  // Función para acortar nombres en dispositivos móviles
+  const acortarNombre = (nombre) => {
+    if (windowWidth <= 480 && nombre.length > 10) {
+      return nombre.substring(0, 8) + '...';
+    }
+    return nombre;
+  };
+
   if (cargando) return null;
   if (error) return <div className="error">Error: {error}</div>;
   if (!datos || !datos.success) {
@@ -195,7 +218,12 @@ const AnalisisPrimerChat = ({ operationId }) => {
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="nombre" />
+            <XAxis 
+              dataKey="nombre" 
+              angle={windowWidth <= 480 ? -45 : 0}
+              textAnchor={windowWidth <= 480 ? "end" : "middle"}
+              height={windowWidth <= 480 ? 60 : 30}
+            />
             <YAxis />
             <Tooltip formatter={(value) => [`${value} mensajes`, 'Mensajes']} />
             <Legend />
@@ -220,7 +248,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="horaFormateada" 
-              interval={1}
+              interval={getXAxisInterval()}
               angle={-45}
               textAnchor="end"
               height={60}
@@ -250,20 +278,30 @@ const AnalisisPrimerChat = ({ operationId }) => {
               data={prepararDatosUsuarios()}
               cx="50%"
               cy="50%"
-              labelLine={true}
-              outerRadius={100}
+              labelLine={windowWidth > 480}
+              outerRadius={windowWidth <= 480 ? 80 : 100}
               fill="#8884d8"
               dataKey="mensajes"
               nameKey="nombre"
               label={({ nombre, mensajes, percent }) => 
-                `${nombre}: ${mensajes} (${(percent * 100).toFixed(1)}%)`
+                windowWidth <= 480 
+                  ? `${(percent * 100).toFixed(0)}%`
+                  : `${acortarNombre(nombre)}: ${mensajes} (${(percent * 100).toFixed(1)}%)`
               }
             >
               {prepararDatosUsuarios().map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip formatter={(value) => [`${value} mensajes`, 'Mensajes']} />
+            <Tooltip formatter={(value, name) => [`${value} mensajes`, acortarNombre(name)]} />
+            {windowWidth <= 480 && (
+              <Legend
+                layout="vertical"
+                verticalAlign="bottom"
+                align="center"
+                formatter={(value) => acortarNombre(value)}
+              />
+            )}
           </PieChart>
         </ResponsiveContainer>
       </div>
