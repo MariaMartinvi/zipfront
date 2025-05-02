@@ -1015,6 +1015,16 @@ const tryDeleteFiles = async (operationId) => {
       
       // Si estaba en proceso de carga al refrescar, continuar donde estaba
       if ((savedIsLoading || savedIsFetchingMistral) && !savedAnalysisComplete) {
+        // Importante: mostrar los spinners de carga correctamente
+        if (savedIsLoading) {
+          setIsLoading(true);
+          
+          // Establecer un temporizador para quitar el estado de carga si tarda demasiado
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 15000); // 15 segundos máximo de espera
+        }
+        
         // No reiniciar el estado de carga, sino continuar donde se quedó
         setTimeout(() => {
           // Reiniciar la carga del análisis para continuar el procesamiento
@@ -1246,9 +1256,11 @@ const tryDeleteFiles = async (operationId) => {
                       
                       {/* Mostrar el indicador de carga si está cargando */}
                       {isLoading ? (
-                        <div className="loading-indicator">
-                          <div className="spinner"></div>
-                          <p>Cargando datos estadísticos...</p>
+                        <div className="analysis-loading-indicator">
+                          <div className="loading-content">
+                            <div className="spinner"></div>
+                            <p className="loading-text">Analizando datos estadísticos...</p>
+                          </div>
                         </div>
                       ) : (
                         <>
@@ -1272,9 +1284,11 @@ const tryDeleteFiles = async (operationId) => {
                       <h2>Análisis Psicológico</h2>
                       
                       {isFetchingMistral ? (
-                        <div className="loading-indicator">
-                          <div className="spinner"></div>
-                          <p>Generando análisis con IA (esto puede tardar unos minutos)...</p>
+                        <div className="analysis-loading-indicator">
+                          <div className="loading-content">
+                            <div className="spinner"></div>
+                            <p className="loading-text">Generando análisis con IA (esto puede tardar unos minutos)...</p>
+                          </div>
                         </div>
                       ) : (
                         chatGptResponse && <Chatgptresultados chatGptResponse={chatGptResponse} />
