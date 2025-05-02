@@ -9,7 +9,7 @@
 }
 
 .App-header {
-  background-color: #25D366; /* Color oscuro de WhatsApp */
+  background-color: #25D366; /* Color verde de WhatsApp */
   color: white;
   padding: 1.5rem 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -34,11 +34,16 @@
 
 /* Estilo simple y único para todos los h2 */
 .App-main h2 {
-  color: #000000;                /* Negro */
+  color: #333;                /* Color base para el texto */
   font-weight: bold;
   font-size: 1.5em;
   margin: 20px 0;
   text-align: center;
+}
+
+/* Estilo específico para la palabra WhatsApp */
+.App-main h2 span.whatsapp-text {
+  color: #25D366;            /* Verde de WhatsApp */
 }
 
 /* Sección de carga de archivos */

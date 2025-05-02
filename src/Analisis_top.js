@@ -302,7 +302,7 @@ const AnalisisTop = ({ operationId }) => {
 
   return (
     <div className="analisis-top-container">
-      <h2 className="titulo-principal">🏆 Perfiles Destacados del Chat 🏆</h2>
+      <h2 className="titulo-principal">Perfiles Destacados del Chat</h2>
       
       {/* Mostrar detalle por encima del grid cuando hay categoría seleccionada */}
       {categoriaSeleccionada && (

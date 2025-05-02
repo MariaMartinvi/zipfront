@@ -1466,7 +1466,7 @@ const tryDeleteFiles = async (operationId) => {
                       </>
                     ) : (
                       <>
-                        <h2>{showAnalysis ? "¿Quieres analizar otro chat?" : "Analiza tu chat de WhatsApp"}</h2>
+                        <h2>{showAnalysis ? "¿Quieres analizar otro chat?" : "Analiza tu chat de "}<span className="whatsapp-text">WhatsApp</span></h2>
                         
                         {/* Carrusel de instrucciones de WhatsApp separado del botón */}
                         <WhatsappInstructions />
