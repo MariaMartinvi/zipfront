@@ -69,7 +69,7 @@
   left: 0;
   width: 30px;
   height: 2px;
-  background-color: #007bff; /* Nuevo color para subrayado */
+  background-color: #25D366; /* Cambiado de #007bff a #25D366 */
   transition: width 0.3s ease;
 }
 
@@ -111,13 +111,13 @@
 
 .footer-link:hover {
   /* background: rgba(255, 255, 255, 0.1); */ /* Eliminado */
-  color: #0056b3; /* Color hover enlace */
+  color: #007bff; /* Cambiado de #25D366 a #007bff */
   transform: translateX(5px);
 }
 
 .footer-icon {
   font-size: 1rem;
-  color: #007bff; /* Nuevo color icono */
+  color: #007bff; /* Cambiado de #25D366 a #007bff */
   transition: transform 0.3s ease;
   flex-shrink: 0;
 }
@@ -159,7 +159,7 @@
 }
 
 .social-link:hover .social-icon {
-  color: #0056b3; /* Color hover icono social */
+  color: #007bff; /* Cambiado de #25D366 a #007bff */
   transform: scale(1.2);
 }
 
