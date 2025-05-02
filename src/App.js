@@ -78,6 +78,12 @@ function App() {
   const [isDeleting, setIsDeleting] = useState(false);
   // Nuevo estado para alerta de confirmación
   const [showRefreshConfirmation, setShowRefreshConfirmation] = useState(false);
+  // Estado para controlar si mostrar el botón de ver análisis
+  const [showViewAnalysisButton, setShowViewAnalysisButton] = useState(false);
+  // Estado para mensajes de progreso
+  const [progressMessage, setProgressMessage] = useState("");
+  // Referencias para secciones de análisis - usadas para scroll automático
+  const analysisRef = useRef(null);
   // Get user-related state from AuthContext instead of managing locally
   const { user, userProfile, setUserProfile, isAuthLoading, setUser } = useAuth();
   
@@ -292,6 +298,9 @@ function App() {
       if (result.operation_id) {
         setOperationId(result.operation_id);
         
+        // Hacer scroll automático cuando se obtiene el operation_id
+        setTimeout(() => scrollToAnalysis(), 300);
+        
         // Trigger Mistral analysis after successful file extraction
         try {
           addDebugMessage(`Iniciando análisis Mistral para operación ${result.operation_id}`);
@@ -345,12 +354,48 @@ function App() {
     }
   };
 
+  // Función para manejar scroll automático hacia la sección de análisis
+  const scrollToAnalysis = () => {
+    // Intentar varias veces en caso de que el componente aún no esté renderizado
+    let attempts = 0;
+    const maxAttempts = 5;
+    
+    const tryScroll = () => {
+      attempts++;
+      if (analysisRef.current) {
+        // Si encontramos la referencia, hacer scroll
+        analysisRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start'
+        });
+        console.log('Scrolling to analysis section - Success');
+      } else if (attempts < maxAttempts) {
+        // Si no encontramos la referencia y no hemos agotado los intentos, probar de nuevo
+        console.log(`Scroll attempt ${attempts}/${maxAttempts} - Reference not found, retrying...`);
+        setTimeout(tryScroll, 300);
+      } else {
+        // Si agotamos los intentos, hacer scroll al inicio de la página como fallback
+        console.log('Scroll failed, falling back to window.scrollTo(0,0)');
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    };
+    
+    // Iniciar el intento de scroll
+    setTimeout(tryScroll, 100);
+  };
+
   // Manejar la carga manual de archivos
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
     
     console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
+    
+    // Hacer scroll inmediatamente al seleccionar el archivo, sin esperar al procesamiento
+    setTimeout(() => scrollToAnalysis(), 100);
     
     // Limpiar los datos anteriores al iniciar un nuevo análisis
     setOperationId(null);
@@ -399,9 +444,13 @@ function App() {
     setError('');
     setIsLoading(true);
     setZipFile(analyzedFile);
+    setProgressMessage("Procesando chat: Extrayendo mensajes y participantes...");
     
     try {
       await processZipFile(analyzedFile);
+      
+      // Ya no es necesario hacer scroll aquí, ya que lo hacemos al inicio
+      // scrollToAnalysis();
       
       // If processing was successful, increment usage counter with retry mechanism
       if (user) {
@@ -544,6 +593,9 @@ function App() {
       addDebugMessage(`Enviando archivo corregido al backend: ${analyzedFile.name} (${analyzedFile.size} bytes) - Tipo: ${analyzedFile.type}`);
       // Procesar el archivo
       await processZipFile(analyzedFile); // Usar el archivo analizado/corregido
+      
+      // Hacer scroll hacia la sección de análisis después de procesar con éxito
+      scrollToAnalysis();
       
       // Si llegamos aquí, el procesamiento fue exitoso
       processingSuccess = true;
@@ -691,6 +743,7 @@ function App() {
     localStorage.removeItem('whatsapp_analyzer_force_fetch');
     
     setIsFetchingMistral(true);
+    setProgressMessage("Generando análisis psicológico con IA...");
     
     try {
       let attempts = 0;
@@ -700,6 +753,21 @@ function App() {
         attempts++;
         
         try {
+          // Actualizar mensaje de progreso con mensajes positivos según el avance
+          if (attempts > 1) {
+            const progressPhases = [
+              "Procesando datos de chat...",
+              "Analizando patrones de comunicación...",
+              "Aplicando modelo psicológico...",
+              "Generando conclusiones...",
+              "Finalizando análisis psicológico..."
+            ];
+            
+            // Determinar qué fase mostrar basado en el número de intentos
+            const phaseIndex = Math.min(Math.floor(attempts / 4), progressPhases.length - 1);
+            setProgressMessage(`Generando análisis con IA: ${progressPhases[phaseIndex]}`);
+          }
+          
           addDebugMessage(`Intentando obtener respuesta de Mistral (intento ${attempts}/${maxAttempts})`);
           const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
           
@@ -717,6 +785,9 @@ function App() {
             
             // Guardar en localStorage que el análisis está completo
             localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
+            
+            // Hacer scroll automático hacia arriba cuando finaliza el análisis
+            setTimeout(() => scrollToAnalysis(), 300);
             
             // Programar la eliminación de archivos con un retraso mayor
             setTimeout(() => {
@@ -970,6 +1041,12 @@ const tryDeleteFiles = async (operationId) => {
     const savedAnalysisComplete = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
     const hadMistralError = localStorage.getItem('whatsapp_analyzer_mistral_error') === 'true';
     const wasRefreshed = localStorage.getItem('whatsapp_analyzer_page_refreshed') === 'true';
+    
+    // Si hay un operationId guardado, hacer scroll automático hacia arriba después de un refresh
+    if (savedOperationId) {
+      // Usar un pequeño retraso para asegurarse de que el componente se ha renderizado
+      setTimeout(() => scrollToAnalysis(), 300);
+    }
     
     // Si el análisis estaba completo y la página se recargó, mostrar alerta de confirmación
     if (savedAnalysisComplete && wasRefreshed) {
@@ -1228,12 +1305,85 @@ const tryDeleteFiles = async (operationId) => {
     </div>
   );
 
+  // Actualizar visibilidad del botón de Ver Análisis basado en la posición de scroll
+  useEffect(() => {
+    if (!operationId) return;
+    
+    const checkScrollPosition = () => {
+      if (analysisRef.current) {
+        const rect = analysisRef.current.getBoundingClientRect();
+        // Si la sección de análisis está fuera de la vista (por debajo de la ventana),
+        // mostrar el botón flotante
+        if (rect.top > window.innerHeight) {
+          setShowViewAnalysisButton(true);
+        } else {
+          setShowViewAnalysisButton(false);
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', checkScrollPosition);
+    // Comprobar inicialmente
+    checkScrollPosition();
+    
+    return () => {
+      window.removeEventListener('scroll', checkScrollPosition);
+    };
+  }, [operationId]);
+
+  // Añadir un efecto para manejar cuando el usuario vuelve a la aplicación después de cambiar de pestaña
+  useEffect(() => {
+    // No hacer nada si no hay análisis
+    if (!operationId) return;
+    
+    // Función para manejar cuando el usuario vuelve a la página
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && operationId) {
+        // Si el usuario vuelve a la página y hay un análisis, hacer scroll
+        setTimeout(() => scrollToAnalysis(), 300);
+      }
+    };
+    
+    // Añadir listener para cambios de visibilidad
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Limpiar listener al desmontar
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [operationId]);
+
   // Main app component UI with routing
   return (
     <Router>
       <div className="App">
         <Header user={user} />
         <UserPlanBanner userProfile={userProfile} />
+        
+        {/* Indicador de progreso flotante para todos los dispositivos */}
+        {(isLoading || isFetchingMistral) && (
+          <div className="mobile-progress-indicator">
+            <div className="progress-content">
+              <div className="spinner-small"></div>
+              <span>{progressMessage || (isLoading ? 'Procesando chat: Analizando mensajes...' : 'Generando análisis con IA: Procesando datos...')}</span>
+            </div>
+            <div className="progress-bar">
+              <div className="progress-value"></div>
+            </div>
+          </div>
+        )}
+        
+        {/* Botón flotante para ver análisis */}
+        {operationId && showViewAnalysisButton && !(isLoading || isFetchingMistral) && (
+          <button 
+            className="view-analysis-button"
+            onClick={scrollToAnalysis}
+          >
+            <span className="icon">📊</span>
+            Ver Análisis
+          </button>
+        )}
+        
         <main className="App-main">
         {showPaymentSuccess && (
             <PaymentSuccessBanner 
@@ -1251,16 +1401,13 @@ const tryDeleteFiles = async (operationId) => {
                 <>
                   {/* Mostrar componentes de análisis estadístico */}
                   {operationId && (
-                    <div className="analysis-container">
+                    <div className="analysis-container" ref={analysisRef}>
                       <h2>Análisis Estadístico</h2>
                       
-                      {/* Mostrar el indicador de carga si está cargando */}
+                      {/* Reemplazar el spinner individual con un contenedor simple */}
                       {isLoading ? (
-                        <div className="analysis-loading-indicator">
-                          <div className="loading-content">
-                            <div className="spinner"></div>
-                            <p className="loading-text">Analizando datos estadísticos...</p>
-                          </div>
+                        <div className="empty-placeholder-container">
+                          <p>Preparando análisis estadístico de la conversación...</p>
                         </div>
                       ) : (
                         <>
@@ -1284,11 +1431,8 @@ const tryDeleteFiles = async (operationId) => {
                       <h2>Análisis Psicológico</h2>
                       
                       {isFetchingMistral ? (
-                        <div className="analysis-loading-indicator">
-                          <div className="loading-content">
-                            <div className="spinner"></div>
-                            <p className="loading-text">Generando análisis con IA (esto puede tardar unos minutos)...</p>
-                          </div>
+                        <div className="empty-placeholder-container">
+                          <p>Preparando análisis psicológico de la conversación...</p>
                         </div>
                       ) : (
                         chatGptResponse && <Chatgptresultados chatGptResponse={chatGptResponse} />
