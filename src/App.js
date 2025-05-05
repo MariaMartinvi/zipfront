@@ -270,8 +270,7 @@ function App() {
         signal: controller.signal,
         headers: {
           'Accept': 'application/json'
-        },
-        credentials: 'include' // Incluir cookies para autenticación si es necesario
+        }
       });
       
       // Clear the timeout since we got a response
@@ -303,8 +302,7 @@ function App() {
         try {
           addDebugMessage(`Iniciando análisis Mistral para operación ${result.operation_id}`);
           const mistralResponse = await fetch(`${API_URL}/api/analyze-mistral/${result.operation_id}`, {
-            method: 'POST',
-            credentials: 'include' // Incluir cookies para autenticación si es necesario
+            method: 'POST'
           });
           
           if (mistralResponse.ok) {
