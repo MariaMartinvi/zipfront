@@ -189,7 +189,7 @@ function WhatsappInstructions() {
         </button>
       </div>
       
-      <div className="instruction-tabs mobile-only">
+      <div className="instruction-tabs">
         <button 
           className={`tab-button ${activeTab === 'carousel' ? 'active' : ''}`}
           onClick={() => setActiveTab('carousel')}
@@ -206,7 +206,7 @@ function WhatsappInstructions() {
       
       <div className="instructions-content">
         <div 
-          className={`carousel-wrapper ${activeTab === 'video' && platform !== 'desktop' ? 'hidden-mobile' : ''}`}
+          className={`carousel-wrapper ${activeTab === 'video' ? 'hidden-content' : ''}`}
         >
           <div className="carousel-container">
             <div className="carousel-slides">
@@ -236,35 +236,22 @@ function WhatsappInstructions() {
           </div>
         </div>
         
-        {platform !== 'desktop' ? (
-          <div 
-            className={`video-tutorial-container ${activeTab === 'carousel' ? 'hidden-mobile' : ''}`}
+        <div 
+          className={`video-tutorial-container ${activeTab === 'carousel' ? 'hidden-content' : ''}`}
+        >
+          <video 
+            controls 
+            className="tutorial-video"
+            src={platform === 'desktop' ? '/desktop.mp4' : tutorialVideo}
+            poster={platform === 'android' ? '/tutorial-android-thumbnail.jpg' : '/tutorial-ios-thumbnail.jpg'}
           >
-            <video 
-              controls 
-              className="tutorial-video"
-              src={tutorialVideo}
-              poster={platform === 'android' ? '/tutorial-android-thumbnail.jpg' : '/tutorial-ios-thumbnail.jpg'}
-            >
-              Tu navegador no soporta la reproducción de videos.
-            </video>
-            <p className="video-caption">
-              Video tutorial: Cómo exportar chats en {platform === 'android' ? 'Android' : 'iOS'}
-            </p>
-          </div>
-        ) : (
-          <div className="video-tutorial-container desktop-only">
-            <video 
-              controls 
-              className="tutorial-video"
-              src="/desktop.mp4"
-              poster="/tutorial-ios-thumbnail.jpg"
-            >
-              Tu navegador no soporta la reproducción de videos.
-            </video>
-            <p className="video-caption">
-              Video tutorial: Cómo exportar el chat desde tu dispositivo
-            </p>
+            Tu navegador no soporta la reproducción de videos.
+          </video>
+          <p className="video-caption">
+            Video tutorial: Cómo exportar chats en {platform === 'android' ? 'Android' : platform === 'ios' ? 'iOS' : 'PC/Mac'}
+          </p>
+          
+          {platform === 'desktop' && (
             <p className="desktop-instructions-note">
               <strong>Para usar ChatSalsa en tu ordenador:</strong><br/>
               1. Exporta el chat desde tu móvil (Android o iOS) como se muestra en el video<br/>
@@ -272,8 +259,8 @@ function WhatsappInstructions() {
               3. Descarga el archivo .txt a tu ordenador<br/>
               4. Sube el archivo en esta página usando el botón "Subir archivo"
             </p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

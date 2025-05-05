@@ -490,3 +490,24 @@
     padding: 10px;
   }
 }
+
+/* Añadir estos estilos nuevos para arreglar el problema */
+.hidden-content {
+  display: none !important;
+}
+
+/* Mostrar las pestañas para todas las plataformas */
+.instruction-tabs {
+  display: flex;
+  margin: 15px 0;
+  width: 100%;
+  max-width: 500px;
+  margin: 15px auto;
+}
+
+/* Asegurar que las pestañas sean responsivas */
+@media (max-width: 768px) {
+  .instruction-tabs {
+    width: 90%;
+  }
+}
