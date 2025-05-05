@@ -49,10 +49,10 @@ const AppPreview = () => {
             </div>
             
            
-            <div className="privacy-item">
+          {/*  <div className="privacy-item">
               <span className="privacy-icon">🔐</span>
               <span>Los datos no se almacenan ni se usan para entrenar IA</span>
-            </div>
+            </div>*/}
           </div>
           
           <div className="cta-container">
