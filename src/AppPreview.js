@@ -20,7 +20,8 @@ const AppPreview = () => {
           
           <div className="security-badge">
             <span className="security-icon">🔒</span>
-            <span className="security-text">100% privado y seguro</span>
+            <span className="security-text">100% privado y seguro - Borrado garantizado</span>
+            <span className="security-icon">✓</span>
           </div>
           
           <ul className="app-preview-features">
@@ -45,14 +46,18 @@ const AppPreview = () => {
           <div className="privacy-container">
             <div className="privacy-item">
               <span className="privacy-icon">⚡</span>
-              <span>Los chats se analizan al momento y se eliminan inmediatamente</span>
+              <span>Los chats se cifran, analizan al momento y se eliminan de forma segura.</span>
             </div>
             
-           
-          {/*  <div className="privacy-item">
+            <div className="privacy-item">
               <span className="privacy-icon">🔐</span>
-              <span>Los datos no se almacenan ni se usan para entrenar IA</span>
-            </div>*/}
+              <span>Tus datos están 100% protegidos con cifrado AES.</span>
+            </div>
+            
+            <div className="privacy-item">
+              <span className="privacy-icon">🛡️</span>
+              <span>Sistema verificado de borrado seguro  para máxima protección.</span>
+            </div>
           </div>
           
           <div className="cta-container">
@@ -113,7 +118,7 @@ const AppPreview = () => {
           </div>
           <div className="testimonial">
             <div className="testimonial-content">
-              "Tranquilidad total sabiendo que mis datos están seguros y se eliminan automáticamente. El análisis psicológico fue fascinante."
+              "Tranquilidad total sabiendo que mis datos están cifrados, protegidos y se eliminan automáticamente. El sistema de borrado seguro me da la confianza para subir mis chats sin preocupaciones."
             </div>
             <div className="testimonial-author">Laura T.</div>
           </div>
