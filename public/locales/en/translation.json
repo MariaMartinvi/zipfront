@@ -85,6 +85,18 @@
         "total_emojis": "Total emojis used",
         "emojis_per_message": "Emojis per message (average)"
       },
+      "amoroso": {
+        "title": "The Romantic",
+        "description": "Uses more love-related emojis",
+        "love_emojis": "Love emojis used",
+        "percentage": "Of their emojis are love-related"
+      },
+      "sicopata": {
+        "title": "The Psychopath",
+        "description": "Sends more consecutive messages without anyone responding",
+        "consecutive_messages": "Consecutive messages (maximum)",
+        "record": "Their record of messages without response"
+      },
       "finisher": {
         "title": "The Finisher",
         "description": "Ends more conversations",

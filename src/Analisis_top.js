@@ -70,6 +70,16 @@ const AnalisisTop = ({ operationId }) => {
       icono: '😊', 
       titulo: () => t('app.top_profiles.emoji.title'), 
       descripcion: () => t('app.top_profiles.emoji.description') 
+    },
+    'amoroso': { 
+      icono: '❤️', 
+      titulo: () => t('app.top_profiles.amoroso.title'), 
+      descripcion: () => t('app.top_profiles.amoroso.description') 
+    },
+    'sicopata': { 
+      icono: '🔪', 
+      titulo: () => t('app.top_profiles.sicopata.title'), 
+      descripcion: () => t('app.top_profiles.sicopata.description') 
     }
   };
 
@@ -179,6 +189,17 @@ const AnalisisTop = ({ operationId }) => {
               nombre: data.categorias?.menosesmas?.nombre || 'Sin datos',
               longitud_promedio: data.categorias?.menosesmas?.longitud_promedio || 0,
               mensajes: data.categorias?.menosesmas?.mensajes || 0
+            },
+            amoroso: {
+              nombre: data.categorias?.amoroso?.nombre || 'Sin datos',
+              emojis_amor: data.categorias?.amoroso?.emojis_amor || 0,
+              porcentaje_amor: data.categorias?.amoroso?.porcentaje_amor || 0,
+              mensajes: data.categorias?.amoroso?.mensajes || 0
+            },
+            sicopata: {
+              nombre: data.categorias?.sicopata?.nombre || 'Sin datos',
+              max_mensajes_seguidos: data.categorias?.sicopata?.max_mensajes_seguidos || 0,
+              mensajes: data.categorias?.sicopata?.mensajes || 0
             }
           }
         };
@@ -318,6 +339,20 @@ const AnalisisTop = ({ operationId }) => {
           </>
         );
         break;
+      case 'amoroso':
+        detalleEspecifico = (
+          <>
+            <div className="estadistica">
+              <span className="valor">{catData.emojis_amor || 0}</span>
+              <span className="label">{t('app.top_profiles.amoroso.love_emojis')}</span>
+            </div>
+            <div className="estadistica">
+              <span className="valor">{formatNumber(catData.porcentaje_amor)}%</span>
+              <span className="label">{t('app.top_profiles.amoroso.percentage')}</span>
+            </div>
+          </>
+        );
+        break;
       case 'puntofinal':
         detalleEspecifico = (
           <div className="estadistica">
@@ -340,6 +375,20 @@ const AnalisisTop = ({ operationId }) => {
             <span className="valor">{formatNumber(catData.longitud_promedio)}</span>
             <span className="label">{t('app.top_profiles.concise.avg_length')}</span>
           </div>
+        );
+        break;
+      case 'sicopata':
+        detalleEspecifico = (
+          <>
+            <div className="estadistica">
+              <span className="valor">{catData.max_mensajes_seguidos || 0}</span>
+              <span className="label">{t('app.top_profiles.sicopata.consecutive_messages')}</span>
+            </div>
+            <div className="estadistica">
+              <span className="valor">{catData.max_mensajes_seguidos || 0}</span>
+              <span className="label">{t('app.top_profiles.sicopata.record')}</span>
+            </div>
+          </>
         );
         break;
       default:

@@ -84,6 +84,18 @@
         "total_emojis": "Emojis totales utilizados",
         "emojis_per_message": "Emojis por mensaje (promedio)"
       },
+      "amoroso": {
+        "title": "El Amoroso",
+        "description": "Usa más emojis relacionados con el amor",
+        "love_emojis": "Emojis de amor utilizados",
+        "percentage": "De sus emojis son de amor"
+      },
+      "sicopata": {
+        "title": "El Sicópata",
+        "description": "Envía más mensajes seguidos sin que nadie responda",
+        "consecutive_messages": "Mensajes consecutivos (máximo)",
+        "record": "Su récord de mensajes sin respuesta"
+      },
       "finisher": {
         "title": "El Finalizador",
         "description": "Acaba más conversaciones",
