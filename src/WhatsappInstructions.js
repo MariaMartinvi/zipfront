@@ -144,7 +144,7 @@ function WhatsappInstructions() {
             controls 
             className="tutorial-video"
           >
-            {t('messages.error')}
+            {t('messages_status.error')}
           </video>
         </div>
       )}

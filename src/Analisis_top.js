@@ -75,7 +75,7 @@ const AnalisisTop = ({ operationId }) => {
 
   useEffect(() => {
     if (!operationId) {
-      setError("No se ha proporcionado un ID de operación");
+      setError(t('app.errors.no_operation_id'));
       setCargando(false);
       return;
     }
@@ -93,7 +93,7 @@ const AnalisisTop = ({ operationId }) => {
     fetch(url)
       .then(response => {
         if (!response.ok) {
-          throw new Error('No se pudieron cargar los datos de top perfiles');
+          throw new Error(t('app.errors.loading_data_top'));
         }
         return response.json();
       })
@@ -108,7 +108,7 @@ const AnalisisTop = ({ operationId }) => {
         
         // Verificar que los datos no sean nulos o vacíos
         if (!data || !data.categorias || Object.keys(data.categorias).length === 0) {
-          throw new Error('Los datos de categorías están vacíos');
+          throw new Error(t('app.errors.empty_categories'));
         }
         
         // Transformar los datos al formato esperado
@@ -201,11 +201,11 @@ const AnalisisTop = ({ operationId }) => {
         setError(err.message);
         setCargando(false);
       });
-  }, [operationId]);
+  }, [operationId, t]);
 
   const renderDetalleCategoria = (categoria) => {
     if (!datos || !datos.categorias || !datos.categorias[categoria]) {
-      return <p>No hay datos disponibles para esta categoría</p>;
+      return <p>{t('app.errors.no_category_data')}</p>;
     }
 
     const catData = datos.categorias[categoria];
@@ -343,7 +343,7 @@ const AnalisisTop = ({ operationId }) => {
         );
         break;
       default:
-        detalleEspecifico = <p>No hay detalles específicos disponibles</p>;
+        detalleEspecifico = <p>{t('app.errors.no_specific_details')}</p>;
     }
 
     return (
@@ -379,7 +379,7 @@ const AnalisisTop = ({ operationId }) => {
       `}</style>
     </div>
   );
-  if (error) return <div className="error">Error: {error}</div>;
+  if (error) return <div className="error">{t('app.errors.generic')}: {error}</div>;
   if (!datos || !datos.categorias || Object.keys(datos.categorias).length === 0) {
     return <div className="no-data">{t('app.top_profiles.no_data')}</div>;
   }

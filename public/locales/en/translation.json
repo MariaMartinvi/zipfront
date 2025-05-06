@@ -16,6 +16,7 @@
       "preparing_psychological": "Preparing psychological analysis of the conversation..."
     },
     "generating_analysis": "Generating analysis: Analyzing communication patterns...",
+    "generating_ai_analysis": "Generating psychological analysis with AI...",
     "primer_chat": {
       "title": "Chat Beginning and Activity Analysis",
       "date_start": "Chat start date",
@@ -122,17 +123,39 @@
       "processing": "Processing chat: Analyzing messages...",
       "generating": "Generating AI analysis: Processing data..."
     },
+    "loading": "Loading...",
+    "loading_status": "Analyzing data...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "save": "Save",
+    "edit": "Edit",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "prev": "Previous",
+    "refresh_confirmation": {
+      "title": "Are you sure?",
+      "message": "All current analysis data will be lost. Do you want to continue?",
+      "cancel": "Keep analysis",
+      "confirm": "Yes, start new"
+    },
     "errors": {
       "zip_file": "Please upload a valid ZIP file (.zip)",
-      "login_required": "You must be logged in to analyze conversations."
-    },
-    "refresh_confirmation": {
-      "title": "Are you sure you want to leave?",
-      "message": "All current analysis data will be lost.",
-      "cancel": "Cancel",
-      "confirm": "Yes, I want to leave"
-    },
-    "loading_status": "Processing data..."
+      "login_required": "You need to log in to analyze conversations",
+      "loading_data": "Error {{status}}: Could not load first chat data",
+      "loading_data_top": "Could not load top profiles data",
+      "empty_data": "Received data is empty",
+      "empty_categories": "Categories data is empty",
+      "loading": "Error loading data",
+      "no_data_primer_chat": "No valid data found for first chat analysis",
+      "no_operation_id": "No operation ID provided",
+      "no_category_data": "No data available for this category",
+      "no_specific_details": "No specific details available",
+      "generic": "Error"
+    }
   },
   "header": {
     "home": "Home",
@@ -147,7 +170,6 @@
     "upload": "Upload file",
     "analyze": "Analyze",
     "reset": "Reset",
-    "delete": "Delete",
     "download": "Download",
     "view": "View analysis"
   },
@@ -590,5 +612,12 @@
   },
   "pwa": {
     "install_button": "Install app"
+  },
+  "progress_phases": {
+    "processing_data": "Processing chat data...",
+    "analyzing_patterns": "Analyzing communication patterns...",
+    "applying_model": "Applying psychological model...",
+    "generating_conclusions": "Generating conclusions...",
+    "finalizing_analysis": "Finalizing psychological analysis..."
   }
 } 

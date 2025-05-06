@@ -15,7 +15,8 @@
       "preparing_statistical": "Vorbereitung der statistischen Analyse der Konversation...",
       "preparing_psychological": "Vorbereitung der psychologischen Analyse der Konversation..."
     },
-    "generating_analysis": "Analyse wird generiert: Kommunikationsmuster werden analysiert...",
+    "generating_analysis": "Analyse wird generiert",
+    "generating_ai_analysis": "Psychologische Analyse mit KI wird generiert...",
     "primer_chat": {
       "title": "Analyse des Chat-Beginns und der Aktivität",
       "date_start": "Startdatum des Chats",
@@ -122,17 +123,39 @@
       "processing": "Chat wird verarbeitet: Nachrichten werden analysiert...",
       "generating": "KI-Analyse wird generiert: Daten werden verarbeitet..."
     },
-    "errors": {
-      "zip_file": "Bitte laden Sie eine gültige ZIP-Datei hoch (.zip)",
-      "login_required": "Sie müssen angemeldet sein, um Konversationen zu analysieren."
-    },
+    "loading": "Wird geladen...",
+    "loading_status": "Daten werden analysiert...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "delete": "Löschen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "view": "Ansehen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "prev": "Zurück",
     "refresh_confirmation": {
-      "title": "Sind Sie sicher, dass Sie verlassen möchten?",
-      "message": "Alle aktuellen Analysedaten gehen verloren.",
-      "cancel": "Abbrechen",
-      "confirm": "Ja, ich möchte verlassen"
+      "title": "Sind Sie sicher?",
+      "message": "Alle aktuellen Analysedaten gehen verloren. Möchten Sie fortfahren?",
+      "cancel": "Analyse behalten",
+      "confirm": "Ja, neu starten"
     },
-    "loading_status": "Daten werden verarbeitet..."
+    "errors": {
+      "zip_file": "Bitte laden Sie eine gültige ZIP-Datei (.zip) hoch",
+      "login_required": "Sie müssen sich anmelden, um Gespräche zu analysieren",
+      "loading_data": "Fehler {{status}}: Die Daten des ersten Chats konnten nicht geladen werden",
+      "loading_data_top": "Die Daten der Top-Profile konnten nicht geladen werden",
+      "empty_data": "Die empfangenen Daten sind leer",
+      "empty_categories": "Die Kategoriedaten sind leer",
+      "loading": "Fehler beim Laden der Daten",
+      "no_data_primer_chat": "Keine gültigen Daten für die Analyse des ersten Chats gefunden",
+      "no_operation_id": "Keine Vorgangs-ID angegeben",
+      "no_category_data": "Keine Daten für diese Kategorie verfügbar",
+      "no_specific_details": "Keine spezifischen Details verfügbar",
+      "generic": "Fehler"
+    }
   },
   "header": {
     "home": "Startseite",
@@ -147,7 +170,6 @@
     "upload": "Datei hochladen",
     "analyze": "Analysieren",
     "reset": "Zurücksetzen",
-    "delete": "Löschen",
     "download": "Herunterladen",
     "view": "Analyse anzeigen"
   },
@@ -573,5 +595,12 @@
   },
   "pwa": {
     "install_button": "App installieren"
+  },
+  "progress_phases": {
+    "processing_data": "Chat-Daten werden verarbeitet...",
+    "analyzing_patterns": "Kommunikationsmuster werden analysiert...",
+    "applying_model": "Psychologisches Modell wird angewendet...",
+    "generating_conclusions": "Schlussfolgerungen werden generiert...",
+    "finalizing_analysis": "Psychologische Analyse wird abgeschlossen..."
   }
 } 

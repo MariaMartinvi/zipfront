@@ -122,15 +122,40 @@
       "processing": "Procesando chat: Analizando mensajes...",
       "generating": "Generando análisis con IA: Procesando datos..."
     },
+    "loading": "Cargando...",
+    "loading_status": "Analizando datos...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "view": "Ver",
+    "back": "Volver",
+    "next": "Siguiente",
+    "prev": "Anterior",
+    "generating_analysis": "Generando análisis",
+    "generating_ai_analysis": "Generando análisis psicológico con IA...",
+    "refresh_confirmation": {
+      "title": "¿Estás seguro?",
+      "message": "Se perderán todos los datos del análisis actual. ¿Deseas continuar?",
+      "cancel": "Mantener análisis",
+      "confirm": "Sí, empezar nuevo"
+    },
     "errors": {
       "zip_file": "Por favor, sube un archivo ZIP válido (.zip)",
-      "login_required": "Debes iniciar sesión para analizar conversaciones"
-    },
-    "refresh_confirmation": {
-      "title": "¿Seguro que quieres salir?",
-      "message": "Se perderán todos los datos del análisis actual",
-      "cancel": "Cancelar",
-      "confirm": "Sí, quiero salir"
+      "login_required": "Debes iniciar sesión para analizar conversaciones",
+      "loading_data": "Error {{status}}: No se pudieron cargar los datos del primer chat",
+      "loading_data_top": "No se pudieron cargar los datos de top perfiles",
+      "empty_data": "Los datos recibidos están vacíos",
+      "empty_categories": "Los datos de categorías están vacíos",
+      "loading": "Error al cargar los datos",
+      "no_data_primer_chat": "No se encontraron datos válidos para el análisis del primer chat",
+      "no_operation_id": "No se ha proporcionado un ID de operación",
+      "no_category_data": "No hay datos disponibles para esta categoría",
+      "no_specific_details": "No hay detalles específicos disponibles",
+      "generic": "Error"
     },
     "loading_status": "Procesando datos..."
   },
@@ -147,7 +172,6 @@
     "upload": "Subir archivo",
     "analyze": "Analizar",
     "reset": "Reiniciar",
-    "delete": "Eliminar",
     "download": "Descargar",
     "view": "Ver análisis"
   },
@@ -590,5 +614,12 @@
   },
   "pwa": {
     "install_button": "Instalar aplicación"
+  },
+  "progress_phases": {
+    "processing_data": "Procesando datos de chat...",
+    "analyzing_patterns": "Analizando patrones de comunicación...",
+    "applying_model": "Aplicando modelo psicológico...",
+    "generating_conclusions": "Generando conclusiones...",
+    "finalizing_analysis": "Finalizando análisis psicológico..."
   }
 } 

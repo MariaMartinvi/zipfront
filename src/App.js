@@ -712,7 +712,7 @@ function App() {
     localStorage.removeItem('whatsapp_analyzer_force_fetch');
     
     setIsFetchingMistral(true);
-    setProgressMessage("Generando análisis psicológico con IA...");
+    setProgressMessage(t('app.generating_ai_analysis'));
     
     try {
       let attempts = 0;
@@ -725,16 +725,16 @@ function App() {
           // Actualizar mensaje de progreso con mensajes positivos según el avance
           if (attempts > 1) {
             const progressPhases = [
-              "Procesando datos de chat...",
-              "Analizando patrones de comunicación...",
-              "Aplicando modelo psicológico...",
-              "Generando conclusiones...",
-              "Finalizando análisis psicológico..."
+              t('progress_phases.processing_data'),
+              t('progress_phases.analyzing_patterns'),
+              t('progress_phases.applying_model'),
+              t('progress_phases.generating_conclusions'),
+              t('progress_phases.finalizing_analysis')
             ];
             
             // Determinar qué fase mostrar basado en el número de intentos
             const phaseIndex = Math.min(Math.floor(attempts / 4), progressPhases.length - 1);
-            setProgressMessage(`Generando análisis: ${progressPhases[phaseIndex]}`);
+            setProgressMessage(`${t('app.generating_analysis')}: ${progressPhases[phaseIndex]}`);
           }
           
           addDebugMessage(`Intentando obtener respuesta de Mistral (intento ${attempts}/${maxAttempts})`);
@@ -1024,7 +1024,7 @@ const tryDeleteFiles = async (operationId) => {
       
       // Mostrar confirmación antes de borrar
       setTimeout(() => {
-        if (window.confirm('Si recargas la página, se eliminan los datos. ¿Quieres borrar los datos del análisis anterior?')) {
+        if (window.confirm(t('app.refresh_confirmation.message'))) {
           // Si confirma, limpiar todos los datos guardados
           localStorage.removeItem('whatsapp_analyzer_operation_id');
           localStorage.removeItem('whatsapp_analyzer_loading');

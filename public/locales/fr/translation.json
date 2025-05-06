@@ -16,6 +16,7 @@
       "preparing_psychological": "Préparation de l'analyse psychologique de la conversation..."
     },
     "generating_analysis": "Génération de l'analyse : Analyse des modèles de communication...",
+    "generating_ai_analysis": "Génération de l'analyse psychologique avec l'IA...",
     "primer_chat": {
       "title": "Analyse du Début et de l'Activité du Chat",
       "date_start": "Date de début du chat",
@@ -122,15 +123,40 @@
       "processing": "Traitement du chat : Analyse des messages...",
       "generating": "Génération de l'analyse IA : Traitement des données..."
     },
+    "loading": "Chargement...",
+    "loading_status": "Analyse des données...",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "back": "Retour",
+    "next": "Suivant",
+    "prev": "Précédent",
+    "generating_analysis": "Génération de l'analyse",
+    "generating_ai_analysis": "Génération de l'analyse psychologique avec l'IA...",
+    "refresh_confirmation": {
+      "title": "Êtes-vous sûr ?",
+      "message": "Toutes les données d'analyse actuelles seront perdues. Voulez-vous continuer ?",
+      "cancel": "Conserver l'analyse",
+      "confirm": "Oui, recommencer"
+    },
     "errors": {
       "zip_file": "Veuillez télécharger un fichier ZIP valide (.zip)",
-      "login_required": "Vous devez être connecté pour analyser les conversations."
-    },
-    "refresh_confirmation": {
-      "title": "Êtes-vous sûr de vouloir quitter ?",
-      "message": "Toutes les données d'analyse actuelles seront perdues.",
-      "cancel": "Annuler",
-      "confirm": "Oui, je veux quitter"
+      "login_required": "Vous devez vous connecter pour analyser les conversations",
+      "loading_data": "Erreur {{status}} : Impossible de charger les données du premier chat",
+      "loading_data_top": "Impossible de charger les données des profils supérieurs",
+      "empty_data": "Les données reçues sont vides",
+      "empty_categories": "Les données des catégories sont vides",
+      "loading": "Erreur lors du chargement des données",
+      "no_data_primer_chat": "Aucune donnée valide trouvée pour l'analyse du premier chat",
+      "no_operation_id": "Aucun identifiant d'opération fourni",
+      "no_category_data": "Aucune donnée disponible pour cette catégorie",
+      "no_specific_details": "Aucun détail spécifique disponible",
+      "generic": "Erreur"
     },
     "loading_status": "Traitement des données..."
   },
@@ -147,7 +173,6 @@
     "upload": "Télécharger un fichier",
     "analyze": "Analyser",
     "reset": "Réinitialiser",
-    "delete": "Supprimer",
     "download": "Télécharger",
     "view": "Voir l'analyse"
   },
@@ -590,5 +615,12 @@
   },
   "pwa": {
     "install_button": "Installer l'application"
+  },
+  "progress_phases": {
+    "processing_data": "Traitement des données de chat...",
+    "analyzing_patterns": "Analyse des modèles de communication...",
+    "applying_model": "Application du modèle psychologique...",
+    "generating_conclusions": "Génération des conclusions...",
+    "finalizing_analysis": "Finalisation de l'analyse psychologique..."
   }
 } 

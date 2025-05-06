@@ -396,6 +396,41 @@
       "response_time_trend": "Tendenza Tempo di Risposta",
       "interest_trend": "Tendenza di Interesse",
       "insufficient_data": "Dati insufficienti per l'analisi"
+    },
+    "loading": "Caricamento...",
+    "loading_status": "Analisi dei dati in corso...",
+    "error": "Errore",
+    "success": "Successo",
+    "cancel": "Annulla",
+    "confirm": "Conferma",
+    "delete": "Elimina",
+    "save": "Salva",
+    "edit": "Modifica",
+    "view": "Visualizza",
+    "back": "Indietro",
+    "next": "Avanti",
+    "prev": "Precedente",
+    "generating_analysis": "Generazione dell'analisi",
+    "generating_ai_analysis": "Generazione dell'analisi psicologica con IA...",
+    "refresh_confirmation": {
+      "title": "Sei sicuro?",
+      "message": "Tutti i dati dell'analisi corrente andranno persi. Vuoi continuare?",
+      "cancel": "Mantieni analisi",
+      "confirm": "Sì, ricomincia"
+    },
+    "errors": {
+      "zip_file": "Carica un file ZIP valido (.zip)",
+      "login_required": "Devi accedere per analizzare le conversazioni",
+      "loading_data": "Errore {{status}}: Impossibile caricare i dati della prima chat",
+      "loading_data_top": "Impossibile caricare i dati dei profili principali",
+      "empty_data": "I dati ricevuti sono vuoti",
+      "empty_categories": "I dati delle categorie sono vuoti",
+      "loading": "Errore durante il caricamento dei dati",
+      "no_data_primer_chat": "Nessun dato valido trovato per l'analisi della prima chat",
+      "no_operation_id": "Nessun ID operazione fornito",
+      "no_category_data": "Nessun dato disponibile per questa categoria",
+      "no_specific_details": "Nessun dettaglio specifico disponibile",
+      "generic": "Errore"
     }
   },
   "date": {
@@ -427,6 +462,13 @@
   "messages": "Messaggi",
   "actions": {
     "upload": "Carica Chat"
+  },
+  "messages_status": {
+    "loading": "Caricamento...",
+    "processing": "Elaborazione file...",
+    "success": "Il file è stato elaborato correttamente",
+    "error": "Si è verificato un errore",
+    "delete_confirmation": "Sei sicuro di voler eliminare?"
   },
   "payment": {
     "success": {
@@ -541,13 +583,6 @@
         }
       ]
     }
-  },
-  "messages": {
-    "loading": "Caricamento...",
-    "processing": "Elaborazione file...",
-    "success": "Il file è stato elaborato correttamente",
-    "error": "Si è verificato un errore",
-    "delete_confirmation": "Sei sicuro di voler eliminare?"
   },
   "error": {
     "file_type": "Il file deve essere un ZIP",
@@ -678,5 +713,12 @@
   },
   "pwa": {
     "install_button": "Installa applicazione"
+  },
+  "progress_phases": {
+    "processing_data": "Elaborazione dei dati della chat...",
+    "analyzing_patterns": "Analisi dei modelli di comunicazione...",
+    "applying_model": "Applicazione del modello psicologico...",
+    "generating_conclusions": "Generazione delle conclusioni...",
+    "finalizing_analysis": "Finalizzazione dell'analisi psicologica..."
   }
 } 

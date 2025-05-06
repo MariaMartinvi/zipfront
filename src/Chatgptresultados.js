@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import './Chatgptresultados.css';
 
 function Chatgptresultados({ chatGptResponse }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [htmlContent, setHtmlContent] = useState('');
 
   useEffect(() => {
@@ -24,6 +24,9 @@ function Chatgptresultados({ chatGptResponse }) {
       
       // Actualizar el estado con el HTML procesado
       setHtmlContent(cleanHtml);
+    } else {
+      // Si no hay respuesta, mostrar un mensaje vacío o de carga
+      setHtmlContent('');
     }
   }, [chatGptResponse]);
 
@@ -38,6 +41,15 @@ function Chatgptresultados({ chatGptResponse }) {
       console.log(`Idioma actualizado a: ${i18n.language}`);
     }
   }, [i18n.language]);
+
+  // Si no hay contenido, mostrar un mensaje o nada
+  if (!htmlContent) {
+    return (
+      <div className="no-content-message" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+        {chatGptResponse === null ? '' : t('app.loading_status')}
+      </div>
+    );
+  }
 
   // Renderizar el HTML generado
   return (

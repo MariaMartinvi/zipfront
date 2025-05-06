@@ -141,7 +141,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
       .then(response => {
         console.log(`Respuesta recibida con status: ${response.status}`);
         if (!response.ok) {
-          throw new Error(`Error ${response.status}: No se pudieron cargar los datos del primer chat`);
+          throw new Error(t('app.errors.loading_data', { status: response.status }));
         }
         return response.json();
       })
@@ -156,7 +156,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
         
         // Verificar que los datos no sean nulos o vacíos
         if (!data || Object.keys(data).length === 0) {
-          throw new Error('Los datos recibidos están vacíos');
+          throw new Error(t('app.errors.empty_data'));
         }
         
         // Establecer los datos y DESPUÉS cambiar el estado de carga
@@ -170,7 +170,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
       })
       .catch(err => {
         console.error("Error cargando datos:", err);
-        setError(`Error al cargar los datos: ${err.message}`);
+        setError(`${t('app.errors.loading')}: ${err.message}`);
         setCargando(false);
       });
   }, [operationId]);
@@ -445,7 +445,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
   if (error) return <div className="error">{error}</div>;
   
   if (!datos || !datos.success) {
-    return <div className="no-data">No se encontraron datos válidos para el análisis del primer chat</div>;
+    return <div className="no-data">{t('app.errors.no_data_primer_chat')}</div>;
   }
 
   const { resumen, primer_mensaje } = datos;
