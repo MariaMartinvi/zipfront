@@ -73,6 +73,7 @@ export const Login = ({ onLoginSuccess }) => {
     
     try {
       console.log('Attempting Google login...');
+      
       const user = await loginWithGoogle();
       console.log('Google login successful:', user.uid);
       

@@ -330,6 +330,7 @@ const AnalisisTop = ({ operationId }) => {
               <div className="categoria-icono">{categoriaIconos[categoria].icono}</div>
               <div className="categoria-info">
                 <div className="categoria-titulo">{categoriaIconos[categoria].titulo}</div>
+                <div className="categoria-descripcion">{categoriaIconos[categoria].descripcion}</div>
                 <div className="categoria-usuario">{datos.categorias[categoria].nombre}</div>
               </div>
             </div>

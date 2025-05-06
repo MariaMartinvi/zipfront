@@ -186,3 +186,34 @@
     flex-direction: column;
     align-items: center;
   }
+  
+  /* Estilos para el mensaje informativo durante el inicio de sesión con Google */
+  .auth-info-message {
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #4285F4;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  .auth-info-content {
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .auth-info-icon {
+    font-size: 20px;
+    margin-right: 10px;
+  }
+  
+  .auth-info-text {
+    color: #555;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }

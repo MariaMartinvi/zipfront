@@ -354,6 +354,24 @@ export const loginWithGoogle = async () => {
     console.log("Persistencia configurada para LOCAL durante el login con Google");
     
     const provider = new GoogleAuthProvider();
+    
+    // Personalización de la experiencia de inicio de sesión con Google
+    provider.setCustomParameters({
+      // Personalizar la pantalla de selección de cuenta
+      prompt: 'select_account',
+      // Mostrar marca en la pantalla de inicio de sesión
+      login_hint: 'Iniciar sesión en chatsalsa.com con Google',
+      // Especificar idioma para la UI (español)
+      hl: 'es',
+      // Intentar establecer el título de la ventana
+      title: 'Iniciar sesión en chatsalsa.com'
+    });
+    
+    // Utilizar signInWithRedirect en lugar de signInWithPopup para más control sobre la UI
+    // const userCredential = await signInWithPopup(auth, provider);
+    
+    // Configurar para que no se muestre el dominio de Firebase
+    auth.useDeviceLanguage();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
     console.log("Login con Google exitoso con ID:", user.uid);

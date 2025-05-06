@@ -1,0 +1,121 @@
+/* Estilos para los gráficos de análisis */
+
+.chart-container {
+  margin: 30px 0;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-height: 400px;
+  max-height: 500px;
+}
+
+.chart-container h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #444;
+  font-size: 18px;
+  text-align: center;
+}
+
+/* Asegurar que los gráficos se muestren correctamente */
+.recharts-wrapper {
+  margin: 0 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 300px !important;
+}
+
+.recharts-surface {
+  overflow: visible !important;
+}
+
+/* Mejorar la visibilidad de las barras */
+.recharts-bar-rectangle {
+  opacity: 0.9;
+}
+
+/* Estilos específicos para gráficos apilados */
+.recharts-bar-rectangle.recharts-bar-rectangle-0 path {
+  stroke-width: 0;
+}
+
+.recharts-bar-rectangle.recharts-bar-rectangle-1 path {
+  stroke-width: 0;
+}
+
+.recharts-bar-rectangle.recharts-bar-rectangle-2 path {
+  stroke-width: 0;
+}
+
+/* Mejorar contraste de etiquetas dentro de las barras */
+.recharts-label-list text {
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
+  fill: white !important;
+  font-size: 11px;
+}
+
+/* Ajustes para orientación horizontal */
+.recharts-xAxis .recharts-cartesian-axis-tick-value {
+  text-anchor: end;
+}
+
+/* Destacar separaciones entre meses */
+.recharts-reference-line line {
+  stroke: #aaa;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+/* Estilos para el grid */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #ccc;
+  stroke-dasharray: 3 3;
+}
+
+/* Estilos para los ejes */
+.recharts-cartesian-axis-line {
+  stroke: #666;
+  stroke-width: 1;
+}
+
+.recharts-cartesian-axis-tick-line {
+  stroke: #666;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: #666;
+  font-size: 12px;
+}
+
+/* Estilos para el tooltip */
+.recharts-tooltip-wrapper {
+  z-index: 1000;
+}
+
+.recharts-default-tooltip {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #ccc !important;
+  border-radius: 5px !important;
+  padding: 10px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+  .chart-container {
+    padding: 15px;
+    margin: 20px 0;
+  }
+  
+  .chart-container h3 {
+    font-size: 16px;
+  }
+  
+  /* Ajustes específicos para móvil */
+  .recharts-label-list text {
+    font-size: 9px;
+  }
+} 
