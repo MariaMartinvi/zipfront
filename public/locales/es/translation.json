@@ -416,26 +416,26 @@
     },
     "plans": {
       "free": {
-        "name": "Plan Gratuito",
+        "name": "Gratis",
         "price": "Gratis"
       },
       "basic": {
-        "name": "Plan Básico",
-        "price": "{{price}}€/mes"
+        "name": "Plan Básico"
+      },
+      "standard": {
+        "name": "Plan Estándar"
       },
       "premium": {
-        "name": "Plan Premium",
-        "price": "{{price}}€/mes"
+        "name": "Plan Premium"
       },
       "enterprise": {
-        "name": "Plan Empresarial",
-        "price": "{{price}}€/mes"
+        "name": "Plan Empresarial"
       }
     },
     "features": {
-      "chats": "Análisis de {{quota}} chats por mes",
-      "stats": "Análisis estadístico",
-      "psych": "Análisis psicológico",
+      "chats": "{{quota}} análisis de chats por mes",
+      "stats": "Análisis estadístico completo",
+      "psych": "Análisis psicológico detallado",
       "renewal": "Renovación automática mensual"
     }
   },
@@ -587,5 +587,8 @@
         }
       ]
     }
+  },
+  "pwa": {
+    "install_button": "Instalar aplicación"
   }
 } 

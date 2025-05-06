@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './InstallPWA.css';
+import { useTranslation } from 'react-i18next';
 
 const InstallPWA = () => {
   const [supportsPWA, setSupportsPWA] = useState(false);
   const [promptInstall, setPromptInstall] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handler = (e) => {
@@ -52,7 +54,7 @@ const InstallPWA = () => {
     <div className="install-pwa-container">
       <button className="install-pwa-button" onClick={onClick}>
         <span className="install-icon">📱</span>
-        Instalar aplicación
+        {t('pwa.install_button')}
       </button>
     </div>
   );

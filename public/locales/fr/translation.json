@@ -406,27 +406,27 @@
     },
     "plans": {
       "free": {
-        "name": "Plan Gratuit",
+        "name": "Gratuit",
         "price": "Gratuit"
       },
       "basic": {
-        "name": "Plan Basique",
-        "price": "{{price}}€/mois"
+        "name": "Plan Basique"
+      },
+      "standard": {
+        "name": "Plan Standard"
       },
       "premium": {
-        "name": "Plan Premium",
-        "price": "{{price}}€/mois"
+        "name": "Plan Premium"
       },
       "enterprise": {
-        "name": "Plan Entreprise",
-        "price": "{{price}}€/mois"
+        "name": "Plan Entreprise"
       }
     },
     "features": {
-      "chats": "Analyse de {{quota}} chats par mois",
-      "stats": "Analyse statistique",
-      "psych": "Analyse psychologique",
-      "renewal": "Renouvellement mensuel automatique"
+      "chats": "{{quota}} analyses de chat par mois",
+      "stats": "Analyse statistique complète",
+      "psych": "Analyse psychologique détaillée",
+      "renewal": "Renouvellement automatique mensuel"
     }
   },
   "weekdays": {
@@ -587,5 +587,8 @@
       "november": "novembre",
       "december": "décembre"
     }
+  },
+  "pwa": {
+    "install_button": "Installer l'application"
   }
 } 

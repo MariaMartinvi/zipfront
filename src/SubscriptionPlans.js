@@ -113,6 +113,10 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
     switch (plan.id) {
       case 'free':
         return t('subscription.plans.free.name');
+      case 'basic':
+        return t('subscription.plans.basic.name', { price: plan.price });
+      case 'standard':
+        return t('subscription.plans.standard.name', { price: plan.price });
       case 'premium':
         return t('subscription.plans.premium.name', { price: plan.price });
       case 'enterprise':

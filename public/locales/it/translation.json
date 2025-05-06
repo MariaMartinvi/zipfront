@@ -221,20 +221,20 @@
     },
     "plans": {
       "free": {
-        "name": "Piano Gratuito",
+        "name": "Gratuito",
         "price": "Gratuito"
       },
       "basic": {
-        "name": "Piano Base",
-        "price": "{{price}}€/mese"
+        "name": "Piano Base"
+      },
+      "standard": {
+        "name": "Piano Standard"
       },
       "premium": {
-        "name": "Piano Premium",
-        "price": "{{price}}€/mese"
+        "name": "Piano Premium"
       },
       "enterprise": {
-        "name": "Piano Enterprise",
-        "price": "{{price}}€/mese"
+        "name": "Piano Enterprise"
       }
     },
     "features": {
@@ -674,5 +674,8 @@
         "icon": "📁"
       }
     ]
+  },
+  "pwa": {
+    "install_button": "Installa applicazione"
   }
 } 

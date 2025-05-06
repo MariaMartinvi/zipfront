@@ -406,27 +406,27 @@
     },
     "plans": {
       "free": {
-        "name": "Free Plan",
+        "name": "Free",
         "price": "Free"
       },
       "basic": {
-        "name": "Basic Plan",
-        "price": "{{price}}€/month"
+        "name": "Basic Plan"
+      },
+      "standard": {
+        "name": "Standard Plan"
       },
       "premium": {
-        "name": "Premium Plan",
-        "price": "{{price}}€/month"
+        "name": "Premium Plan"
       },
       "enterprise": {
-        "name": "Enterprise Plan",
-        "price": "{{price}}€/month"
+        "name": "Enterprise Plan"
       }
     },
     "features": {
-      "chats": "Analysis of {{quota}} chats per month",
-      "stats": "Statistical analysis",
-      "psych": "Psychological analysis",
-      "renewal": "Automatic monthly renewal"
+      "chats": "{{quota}} chat analyses per month",
+      "stats": "Complete statistical analysis",
+      "psych": "Detailed psychological analysis",
+      "renewal": "Monthly automatic renewal"
     }
   },
   "weekdays": {
@@ -587,5 +587,8 @@
         "session": "Session expired. Please log in again."
       }
     }
+  },
+  "pwa": {
+    "install_button": "Install app"
   }
 } 
