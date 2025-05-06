@@ -9,7 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "dompurify": "^3.2.4",
     "firebase": "^11.6.1",
-    "i18next": "^25.1.1",
+    "i18next": "^23.7.11",
     "i18next-browser-languagedetector": "^8.1.0",
     "i18next-http-backend": "^3.0.2",
     "marked": "^15.0.7",
