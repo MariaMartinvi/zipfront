@@ -2,9 +2,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { logoutUser } from './firebase_auth';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 import './Header.css';
 
 const Header = ({ user }) => {
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const handleLogout = async () => {
@@ -33,11 +36,12 @@ const Header = ({ user }) => {
         <div className="nav-container">
           {/* Desktop Navigation */}
           <nav className="desktop-nav">
-            <Link to="/" className="nav-link">Inicio</Link>
+            <Link to="/" className="nav-link">{t('header.home')}</Link>
             {user ? (
               <>
-                <Link to="/" className="nav-link"><span role="img" aria-label="Subir">📤</span> Subir archivo</Link>
-                <Link to="/plans" className="nav-link">Planes</Link>
+                <Link to="/" className="nav-link"><span role="img" aria-label="Upload">📤</span> {t('actions.upload')}</Link>
+                <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
+                <LanguageSwitcher />
                 <div className="user-menu">
                   <button 
                     className="user-button"
@@ -51,7 +55,7 @@ const Header = ({ user }) => {
                         className="menu-item"
                         onClick={handleLogout}
                       >
-                        Cerrar Sesión
+                        {t('header.logout', 'Cerrar Sesión')}
                       </button>
                     </div>
                   )}
@@ -59,8 +63,9 @@ const Header = ({ user }) => {
               </>
             ) : (
               <>
-                <Link to="/login" className="nav-link">Iniciar Sesión</Link>
-                <Link to="/register" className="nav-link sign-up">Crear Cuenta</Link>
+                <Link to="/login" className="nav-link">{t('header.login')}</Link>
+                <Link to="/register" className="nav-link sign-up">{t('header.register')}</Link>
+                <LanguageSwitcher />
               </>
             )}
           </nav>
@@ -79,24 +84,26 @@ const Header = ({ user }) => {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="mobile-menu">
-          <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>Inicio</Link>
+          <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>{t('header.home')}</Link>
           {user ? (
             <>
-              <Link to="/" className="mobile-nav-link" onClick={toggleMenu}><span role="img" aria-label="Subir">📤</span> Subir archivo</Link>
-              <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>Planes</Link>
+              <Link to="/" className="mobile-nav-link" onClick={toggleMenu}><span role="img" aria-label="Upload">📤</span> {t('actions.upload')}</Link>
+              <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <button 
                   className="mobile-nav-link mobile-logout"
                   onClick={handleLogout}
                 >
-                  Cerrar Sesión
+                  {t('header.logout', 'Cerrar Sesión')}
                 </button>
               </div>
+              <LanguageSwitcher />
             </>
           ) : (
             <>
-              <Link to="/login" className="mobile-nav-link" onClick={toggleMenu}>Iniciar Sesión</Link>
-              <Link to="/register" className="mobile-nav-link" onClick={toggleMenu}>Crear Cuenta</Link>
+              <Link to="/login" className="mobile-nav-link" onClick={toggleMenu}>{t('header.login')}</Link>
+              <Link to="/register" className="mobile-nav-link" onClick={toggleMenu}>{t('header.register')}</Link>
+              <LanguageSwitcher />
             </>
           )}
         </div>

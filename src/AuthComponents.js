@@ -4,11 +4,13 @@ import { loginUser, registerUser, resetPassword, getCurrentUser, loginWithGoogle
 import './AuthComponents.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { useTranslation } from 'react-i18next';
  
 
 // Login Component
 
 export const Login = ({ onLoginSuccess }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -61,7 +63,7 @@ export const Login = ({ onLoginSuccess }) => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message || 'Error al iniciar sesión. Por favor, inténtalo de nuevo.');
+      setError(error.message || t('auth.login.error'));
       setIsLoading(false);
       setIsRedirecting(false);
     }
@@ -98,7 +100,7 @@ export const Login = ({ onLoginSuccess }) => {
       }
     } catch (error) {
       console.error('Google login error:', error);
-      setError(error.message || 'Error al iniciar sesión con Google. Por favor, inténtalo de nuevo.');
+      setError(error.message || t('auth.login.error'));
       setIsLoading(false);
       setIsRedirecting(false);
     }
@@ -106,7 +108,7 @@ export const Login = ({ onLoginSuccess }) => {
 
   return (
     <div className="auth-form-container">
-      <h2>Iniciar Sesión</h2>
+      <h2>{t('auth.login.title')}</h2>
       {error && (
         <div className="auth-error-container">
           <div className="auth-error">
@@ -117,7 +119,7 @@ export const Login = ({ onLoginSuccess }) => {
       )}
       {returnTo && (
         <div className="auth-message">
-          Por favor inicia sesión para continuar.
+          {t('auth.login.please_login')}
         </div>
       )}
       {isRedirecting ? (
@@ -132,7 +134,7 @@ export const Login = ({ onLoginSuccess }) => {
             animation: "spin 1s linear infinite",
             marginRight: "10px"
           }}></div>
-          <p>Iniciando sesión exitosamente. Redirigiendo...</p>
+          <p>{t('auth.login.redirecting')}</p>
           <style>
             {`
               @keyframes spin {
@@ -156,16 +158,16 @@ export const Login = ({ onLoginSuccess }) => {
               <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
             </svg>
-            Iniciar sesión con Google
+            {t('auth.login.google_button')}
           </button>
           
           <div className="separator">
-            <span>o</span>
+            <span>{t('auth.login.or')}</span>
           </div>
           
           <form onSubmit={handleLogin} className="auth-form">
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t('auth.login.email')}</label>
               <input
                 type="email"
                 id="email"
@@ -176,7 +178,7 @@ export const Login = ({ onLoginSuccess }) => {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="password">Contraseña</label>
+              <label htmlFor="password">{t('auth.login.password')}</label>
               <input
                 type="password"
                 id="password"
@@ -191,7 +193,7 @@ export const Login = ({ onLoginSuccess }) => {
               className="auth-button" 
               disabled={isLoading || isRedirecting}
             >
-              {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
+              {isLoading ? t('auth.login.loading') : t('auth.login.button')}
             </button>
           </form>
         </div>
@@ -210,34 +212,37 @@ export const Login = ({ onLoginSuccess }) => {
           }}
           disabled={isLoading || isRedirecting}
         >
-          ¿No tienes una cuenta? Regístrate
+          {t('auth.links.register')}
         </button>
         <button 
           className="auth-link-button" 
           onClick={() => navigate('/reset-password')}
           disabled={isLoading || isRedirecting}
         >
-          ¿Olvidaste tu contraseña?
+          {t('auth.links.forgot_password')}
         </button>
       </div>
     </div>
   );
 };
+
 // Registration Component
 export const Register = ({ onRegisterSuccess }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
     
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      setError(t('auth.register.password_mismatch'));
       return;
     }
     
@@ -247,7 +252,7 @@ export const Register = ({ onRegisterSuccess }) => {
       const user = await registerUser(email, password, displayName);
       if (onRegisterSuccess) onRegisterSuccess(user);
     } catch (error) {
-      setError(error.message || 'Error al registrarse. Por favor, inténtalo de nuevo.');
+      setError(error.message || t('auth.register.error'));
     } finally {
       setIsLoading(false);
     }
@@ -267,14 +272,14 @@ export const Register = ({ onRegisterSuccess }) => {
       }
     } catch (error) {
       console.error('Error de registro con Google:', error);
-      setError(error.message || 'Error al registrarse con Google. Por favor, inténtalo de nuevo.');
+      setError(error.message || t('auth.register.error'));
       setIsLoading(false);
     }
   };
 
   return (
     <div className="auth-form-container">
-      <h2>Crear Cuenta</h2>
+      <h2>{t('auth.register.title')}</h2>
       {error && (
         <div className="auth-error-container">
           <div className="auth-error">
@@ -297,16 +302,16 @@ export const Register = ({ onRegisterSuccess }) => {
             <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
             <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
-          Registrarse con Google
+          {t('auth.register.google_button')}
         </button>
         
         <div className="separator">
-          <span>o</span>
+          <span>{t('auth.register.or')}</span>
         </div>
         
         <form onSubmit={handleRegister} className="auth-form">
           <div className="form-group">
-            <label htmlFor="displayName">Nombre</label>
+            <label htmlFor="displayName">{t('auth.register.name', 'Nombre')}</label>
             <input
               type="text"
               id="displayName"
@@ -317,7 +322,7 @@ export const Register = ({ onRegisterSuccess }) => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{t('auth.register.email')}</label>
             <input
               type="email"
               id="email"
@@ -328,7 +333,7 @@ export const Register = ({ onRegisterSuccess }) => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+            <label htmlFor="password">{t('auth.register.password')}</label>
             <input
               type="password"
               id="password"
@@ -340,7 +345,7 @@ export const Register = ({ onRegisterSuccess }) => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirmar Contraseña</label>
+            <label htmlFor="confirmPassword">{t('auth.register.confirm_password')}</label>
             <input
               type="password"
               id="confirmPassword"
@@ -356,7 +361,7 @@ export const Register = ({ onRegisterSuccess }) => {
             className="auth-button" 
             disabled={isLoading}
           >
-            {isLoading ? 'Cargando...' : 'Registrarse'}
+            {isLoading ? t('auth.register.loading') : t('auth.register.button')}
           </button>
         </form>
       </div>
@@ -364,10 +369,10 @@ export const Register = ({ onRegisterSuccess }) => {
       <div className="auth-links">
         <button 
           className="auth-link-button" 
-          onClick={() => window.location.href = '/login'}
+          onClick={() => navigate('/login')}
           disabled={isLoading}
         >
-          ¿Ya tienes una cuenta? Inicia sesión
+          {t('auth.links.login')}
         </button>
       </div>
     </div>
@@ -376,22 +381,27 @@ export const Register = ({ onRegisterSuccess }) => {
 
 // Password Reset Component
 export const PasswordReset = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    setError('');
     setMessage('');
+    setError('');
     setIsLoading(true);
     
     try {
       await resetPassword(email);
-      setMessage('Se ha enviado un enlace para restablecer tu contraseña. Por favor, revisa tu correo electrónico.');
+      setMessage(t('auth.password_reset.success'));
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
     } catch (error) {
-      setError(error.message || 'Error al enviar el correo de restablecimiento. Por favor, inténtalo de nuevo.');
+      setError(error.message || t('auth.password_reset.error'));
     } finally {
       setIsLoading(false);
     }
@@ -399,7 +409,7 @@ export const PasswordReset = () => {
 
   return (
     <div className="auth-form-container">
-      <h2>Restablecer Contraseña</h2>
+      <h2>{t('auth.password_reset.title')}</h2>
       {error && (
         <div className="auth-error-container">
           <div className="auth-error">
@@ -408,10 +418,14 @@ export const PasswordReset = () => {
           </div>
         </div>
       )}
-      {message && <div className="auth-message">{message}</div>}
+      {message && (
+        <div className="auth-message">
+          {message}
+        </div>
+      )}
       <form onSubmit={handleResetPassword} className="auth-form">
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">{t('auth.password_reset.email')}</label>
           <input
             type="email"
             id="email"
@@ -426,16 +440,16 @@ export const PasswordReset = () => {
           className="auth-button" 
           disabled={isLoading}
         >
-          {isLoading ? 'Enviando...' : 'Enviar Correo de Restablecimiento'}
+          {isLoading ? t('auth.password_reset.loading') : t('auth.password_reset.button')}
         </button>
       </form>
       <div className="auth-links">
         <button 
           className="auth-link-button" 
-          onClick={() => window.location.href = '/login'}
+          onClick={() => navigate('/login')}
           disabled={isLoading}
         >
-          Volver a Iniciar Sesión
+          {t('auth.links.login')}
         </button>
       </div>
     </div>
@@ -444,6 +458,7 @@ export const PasswordReset = () => {
 
 // Auth Container - Handles common authentication logic
 export const AuthContainer = ({ children }) => {
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -463,7 +478,7 @@ export const AuthContainer = ({ children }) => {
   }, []);
 
   if (loading) {
-    return <div className="auth-loading">Cargando...</div>;
+    return <div className="auth-loading">{t('auth.login.loading')}</div>;
   }
 
   return children(user);

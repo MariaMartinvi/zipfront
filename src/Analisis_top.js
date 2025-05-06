@@ -1,26 +1,77 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './Analisis_top.css';
 
-const categoriaIconos = {
-  'profesor': { icono: '👨‍🏫', titulo: 'El Profesor', descripcion: 'Más palabras distintas, más vocabulario' },
-  'rollero': { icono: '📜', titulo: 'El Rollero', descripcion: 'Más palabras por mensaje' },
-  'pistolero': { icono: '🔫', titulo: 'El Pistolero', descripcion: 'Contesta más rápido' },
-  'vampiro': { icono: '🧛', titulo: 'El Vampiro', descripcion: 'Manda más mensajes por la noche' },
-  'cafeconleche': { icono: '☕', titulo: 'El Cafeconleche', descripcion: 'Manda mensajes más temprano' },
-  'dejaenvisto': { icono: '👻', titulo: 'El Dejaenvisto', descripcion: 'Contesta más lento' },
-  'narcicista': { icono: '🪞', titulo: 'El Narcicista', descripcion: 'Usa más la palabra yo' },
-  'puntofinal': { icono: '🔚', titulo: 'El Puntofinal', descripcion: 'Acaba más conversaciones' },
-  'fosforo': { icono: '🔥', titulo: 'El Fósforo', descripcion: 'Inicia conversaciones' },
-  'menosesmas': { icono: '🔍', titulo: 'El Menosesmás', descripcion: 'Mensajes más cortos' },
-  'chismoso': { icono: '👂', titulo: 'El Chismoso', descripcion: 'Habla más de otras personas' },
-  'happyflower': { icono: '😊', titulo: 'El Happy Flower', descripcion: 'Usa más emojis' }
-};
-
 const AnalisisTop = ({ operationId }) => {
+  const { t } = useTranslation();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
+
+  // Mapeo de categorías con íconos y traducciones
+  const categoriaIconos = {
+    'profesor': { 
+      icono: '👨‍🏫', 
+      titulo: () => t('app.top_profiles.professor.title'), 
+      descripcion: () => t('app.top_profiles.professor.description') 
+    },
+    'rollero': { 
+      icono: '📜', 
+      titulo: () => t('app.top_profiles.verbose.title'), 
+      descripcion: () => t('app.top_profiles.verbose.description') 
+    },
+    'pistolero': { 
+      icono: '🔫', 
+      titulo: () => t('app.top_profiles.gunslinger.title'), 
+      descripcion: () => t('app.top_profiles.gunslinger.description') 
+    },
+    'vampiro': { 
+      icono: '🧛', 
+      titulo: () => t('app.top_profiles.vampire.title'), 
+      descripcion: () => t('app.top_profiles.vampire.description') 
+    },
+    'cafeconleche': { 
+      icono: '☕', 
+      titulo: () => t('app.top_profiles.morning.title'), 
+      descripcion: () => t('app.top_profiles.morning.description') 
+    },
+    'dejaenvisto': { 
+      icono: '👻', 
+      titulo: () => t('app.top_profiles.ghost.title'), 
+      descripcion: () => t('app.top_profiles.ghost.description') 
+    },
+    'narcicista': { 
+      icono: '🪞', 
+      titulo: () => t('app.top_profiles.narcissist.title'), 
+      descripcion: () => t('app.top_profiles.narcissist.description') 
+    },
+    'puntofinal': { 
+      icono: '🔚', 
+      titulo: () => t('app.top_profiles.finisher.title'), 
+      descripcion: () => t('app.top_profiles.finisher.description') 
+    },
+    'fosforo': { 
+      icono: '🔥', 
+      titulo: () => t('app.top_profiles.initiator.title'), 
+      descripcion: () => t('app.top_profiles.initiator.description') 
+    },
+    'menosesmas': { 
+      icono: '🔍', 
+      titulo: () => t('app.top_profiles.concise.title'), 
+      descripcion: () => t('app.top_profiles.concise.description') 
+    },
+    'chismoso': { 
+      icono: '👂', 
+      titulo: () => t('app.top_profiles.gossip.title'), 
+      descripcion: () => t('app.top_profiles.gossip.description') 
+    },
+    'happyflower': { 
+      icono: '😊', 
+      titulo: () => t('app.top_profiles.emoji.title'), 
+      descripcion: () => t('app.top_profiles.emoji.description') 
+    }
+  };
 
   useEffect(() => {
     if (!operationId) {
@@ -36,6 +87,9 @@ const AnalisisTop = ({ operationId }) => {
     const url = `${API_URL}/api/resultados-top/${operationId}`;
     console.log(`Cargando datos de top perfiles desde: ${url}`);
     
+    // Asegurar que el estado de carga esté activo
+    setCargando(true);
+    
     fetch(url)
       .then(response => {
         if (!response.ok) {
@@ -50,6 +104,11 @@ const AnalisisTop = ({ operationId }) => {
           console.warn('El formato de chat no está especificado en la respuesta');
         } else {
           console.log('Formato de chat detectado:', data.formato_chat);
+        }
+        
+        // Verificar que los datos no sean nulos o vacíos
+        if (!data || !data.categorias || Object.keys(data.categorias).length === 0) {
+          throw new Error('Los datos de categorías están vacíos');
         }
         
         // Transformar los datos al formato esperado
@@ -124,12 +183,18 @@ const AnalisisTop = ({ operationId }) => {
           }
         };
         
+        // Establecer los datos y esperar a que se procesen
         setDatos(datosTransformados);
-        setCargando(false);
-        // Seleccionar la primera categoría por defecto
-        if (datosTransformados.categorias && Object.keys(datosTransformados.categorias).length > 0) {
-          setCategoriaSeleccionada(Object.keys(datosTransformados.categorias)[0]);
-        }
+        
+        // Usar un pequeño timeout para asegurar que los datos se han procesado
+        // antes de quitar el indicador de carga y seleccionar categoría
+        setTimeout(() => {
+          setCargando(false);
+          // Seleccionar la primera categoría por defecto
+          if (datosTransformados.categorias && Object.keys(datosTransformados.categorias).length > 0) {
+            setCategoriaSeleccionada(Object.keys(datosTransformados.categorias)[0]);
+          }
+        }, 300);
       })
       .catch(err => {
         console.error('Error cargando datos:', err);
@@ -156,11 +221,11 @@ const AnalisisTop = ({ operationId }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.palabras_unicas || 0}</span>
-              <span className="label">Palabras únicas utilizadas</span>
+              <span className="label">{t('app.top_profiles.professor.unique_words')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.ratio)}</span>
-              <span className="label">Palabras únicas por mensaje</span>
+              <span className="label">{t('app.top_profiles.professor.unique_ratio')}</span>
             </div>
           </>
         );
@@ -169,7 +234,7 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.palabras_por_mensaje)}</span>
-            <span className="label">Palabras por mensaje en promedio</span>
+            <span className="label">{t('app.top_profiles.verbose.words_per_message')}</span>
           </div>
         );
         break;
@@ -177,7 +242,7 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.tiempo_respuesta_promedio)}</span>
-            <span className="label">Minutos en responder (promedio)</span>
+            <span className="label">{t('app.top_profiles.gunslinger.response_time')}</span>
           </div>
         );
         break;
@@ -186,11 +251,11 @@ const AnalisisTop = ({ operationId }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.mensajes_noche || 0}</span>
-              <span className="label">Mensajes nocturnos</span>
+              <span className="label">{t('app.top_profiles.vampire.night_messages')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="label">De sus mensajes son por la noche</span>
+              <span className="label">{t('app.top_profiles.vampire.percentage')}</span>
             </div>
           </>
         );
@@ -199,7 +264,7 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{catData.hora_formateada || '00:00'}</span>
-            <span className="label">Hora promedio de mensajes</span>
+            <span className="label">{t('app.top_profiles.morning.avg_time')}</span>
           </div>
         );
         break;
@@ -207,7 +272,7 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.tiempo_respuesta_promedio)}</span>
-            <span className="label">Minutos para responder (promedio)</span>
+            <span className="label">{t('app.top_profiles.ghost.response_time')}</span>
           </div>
         );
         break;
@@ -216,11 +281,11 @@ const AnalisisTop = ({ operationId }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.menciones_yo || 0}</span>
-              <span className="label">Menciones a sí mismo</span>
+              <span className="label">{t('app.top_profiles.narcissist.self_mentions')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="label">De sus mensajes hablan de sí mismo</span>
+              <span className="label">{t('app.top_profiles.narcissist.percentage')}</span>
             </div>
           </>
         );
@@ -230,11 +295,11 @@ const AnalisisTop = ({ operationId }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.menciones_otros || 0}</span>
-              <span className="label">Menciones a otras personas</span>
+              <span className="label">{t('app.top_profiles.gossip.others_mentions')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="label">De sus mensajes mencionan a otros</span>
+              <span className="label">{t('app.top_profiles.gossip.percentage')}</span>
             </div>
           </>
         );
@@ -244,11 +309,11 @@ const AnalisisTop = ({ operationId }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.emojis_totales || 0}</span>
-              <span className="label">Emojis totales utilizados</span>
+              <span className="label">{t('app.top_profiles.emoji.total_emojis')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.emojis_por_mensaje)}</span>
-              <span className="label">Emojis por mensaje (promedio)</span>
+              <span className="label">{t('app.top_profiles.emoji.emojis_per_message')}</span>
             </div>
           </>
         );
@@ -257,7 +322,7 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{catData.conversaciones_terminadas || 0}</span>
-            <span className="label">Conversaciones terminadas</span>
+            <span className="label">{t('app.top_profiles.finisher.conversations_ended')}</span>
           </div>
         );
         break;
@@ -265,7 +330,7 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{catData.conversaciones_iniciadas || 0}</span>
-            <span className="label">Conversaciones iniciadas</span>
+            <span className="label">{t('app.top_profiles.initiator.conversations_started')}</span>
           </div>
         );
         break;
@@ -273,7 +338,7 @@ const AnalisisTop = ({ operationId }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.longitud_promedio)}</span>
-            <span className="label">Caracteres por mensaje (promedio)</span>
+            <span className="label">{t('app.top_profiles.concise.avg_length')}</span>
           </div>
         );
         break;
@@ -285,7 +350,7 @@ const AnalisisTop = ({ operationId }) => {
       <div className="categoria-detalle">
         <div className="usuario-destacado">
           <span className="nombre">{catData.nombre || 'Sin nombre'}</span>
-          <span className="mensajes-totales">{catData.mensajes || 0} mensajes totales</span>
+          <span className="mensajes-totales">{catData.mensajes || 0} {t('app.top_profiles.total_messages')}</span>
         </div>
         <div className="estadisticas-container">
           {detalleEspecifico}
@@ -294,15 +359,34 @@ const AnalisisTop = ({ operationId }) => {
     );
   };
 
-  if (cargando) return null;
+  if (cargando) return (
+    <div className="loading-container" style={{ textAlign: 'center', padding: '50px 0' }}>
+      <div className="loader" style={{ 
+        border: '5px solid #f3f3f3', 
+        borderTop: '5px solid #3498db', 
+        borderRadius: '50%', 
+        width: '50px', 
+        height: '50px', 
+        animation: 'spin 1s linear infinite',
+        margin: '0 auto 20px auto'
+      }}></div>
+      <p>{t('app.loading')}</p>
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
   if (error) return <div className="error">Error: {error}</div>;
   if (!datos || !datos.categorias || Object.keys(datos.categorias).length === 0) {
-    return <div className="no-data">No se encontraron datos suficientes para el análisis</div>;
+    return <div className="no-data">{t('app.top_profiles.no_data')}</div>;
   }
 
   return (
     <div className="analisis-top-container">
-      <h2 className="titulo-principal">Perfiles Destacados del Chat</h2>
+      <h2 className="titulo-principal">{t('app.top_profiles.title')}</h2>
       
       {/* Mostrar detalle por encima del grid cuando hay categoría seleccionada */}
       {categoriaSeleccionada && (
@@ -310,8 +394,8 @@ const AnalisisTop = ({ operationId }) => {
           <div className="detalle-header">
             <div className="detalle-icono">{categoriaIconos[categoriaSeleccionada].icono}</div>
             <div className="detalle-info">
-              <h3 className="detalle-titulo">{categoriaIconos[categoriaSeleccionada].titulo}</h3>
-              <p className="detalle-descripcion">{categoriaIconos[categoriaSeleccionada].descripcion}</p>
+              <h3 className="detalle-titulo">{categoriaIconos[categoriaSeleccionada].titulo()}</h3>
+              <p className="detalle-descripcion">{categoriaIconos[categoriaSeleccionada].descripcion()}</p>
             </div>
           </div>
           {renderDetalleCategoria(categoriaSeleccionada)}
@@ -329,8 +413,8 @@ const AnalisisTop = ({ operationId }) => {
             >
               <div className="categoria-icono">{categoriaIconos[categoria].icono}</div>
               <div className="categoria-info">
-                <div className="categoria-titulo">{categoriaIconos[categoria].titulo}</div>
-                <div className="categoria-descripcion">{categoriaIconos[categoria].descripcion}</div>
+                <div className="categoria-titulo">{categoriaIconos[categoria].titulo()}</div>
+                <div className="categoria-descripcion">{categoriaIconos[categoria].descripcion()}</div>
                 <div className="categoria-usuario">{datos.categorias[categoria].nombre}</div>
               </div>
             </div>

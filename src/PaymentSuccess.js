@@ -3,11 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { auth } from './firebase_auth'; // Adjust path if needed
 import { getUserPlan } from './stripe_integration';
+import { useTranslation } from 'react-i18next';
 
 const SimplePaymentSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
   
   useEffect(() => {
     // Check if user is authenticated
@@ -25,12 +27,12 @@ const SimplePaymentSuccess = () => {
           }, 1500);
         } catch (error) {
           console.error('Error updating user plan:', error);
-          setError('Error al actualizar tu plan. Por favor, contacta con soporte.');
+          setError(t('payment.success.error.update'));
         }
       } else {
         // User is not signed in, redirect to login page with return URL
         console.log('User is not authenticated, redirecting to login page');
-        setError('Session expired. Please log in again.');
+        setError(t('payment.success.error.session'));
         setTimeout(() => {
           // Redirect to login with return URL to come back to plans
           navigate('/login?returnUrl=/plans&payment_success=true', { replace: true });
@@ -40,7 +42,7 @@ const SimplePaymentSuccess = () => {
     
     // Cleanup subscription
     return () => unsubscribe();
-  }, [navigate]);
+  }, [navigate, t]);
   
   return (
     <div style={{
@@ -52,11 +54,11 @@ const SimplePaymentSuccess = () => {
       textAlign: "center",
       backgroundColor: "#fff"
     }}>
-      <h2 style={{ color: "#4CAF50" }}>¡Pago Exitoso!</h2>
+      <h2 style={{ color: "#4CAF50" }}>{t('payment.success.title')}</h2>
       {error ? (
         <p style={{ color: "#F44336" }}>{error}</p>
       ) : (
-        <p>Estamos redireccionando a la página de planes...</p>
+        <p>{t('payment.success.redirecting')}</p>
       )}
       <div style={{
         width: "50px",

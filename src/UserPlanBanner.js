@@ -1,16 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const UserPlanBanner = ({ userProfile }) => {
-  // Map plan names to more readable formats
-  const getPlanName = (plan) => {
-    switch(plan) {
-      case 'free': return 'Gratuito';
-      case 'basic': return 'Básico';
-      case 'standard': return 'Estándar';
-      case 'premium': return 'Premium';
-      default: return 'Plan Desconocido';
-    }
-  };
+  const { t } = useTranslation();
 
   // Determine max uploads for the current plan
   const getMaxUploads = (plan) => {
@@ -25,7 +17,7 @@ const UserPlanBanner = ({ userProfile }) => {
 
   if (!userProfile) return null;
 
-  const planName = getPlanName(userProfile.plan);
+  const planName = t(`subscription.plans.${userProfile.plan}.name`, { fallbackValue: userProfile.plan });
   const maxUploads = getMaxUploads(userProfile.plan);
   const currentUsage = userProfile.currentPeriodUsage || 0;
 
@@ -34,14 +26,14 @@ const UserPlanBanner = ({ userProfile }) => {
       <div className="user-plan-banner-content">
         <span className="user-plan-badge">{planName}</span>
         <span>
-          Has analizado {currentUsage} de {maxUploads} conversaciones este mes
+          {t('subscription.banner.analyzed', { used: currentUsage, total: maxUploads })}
         </span>
         {userProfile.plan === 'free' && (
           <span 
             className="user-plan-upgrade-link"
             onClick={() => window.location.href = '/plans'}
           >
-            Actualizar Plan
+            {t('subscription.banner.upgrade')}
           </span>
         )}
       </div>

@@ -1,0 +1,591 @@
+{
+  "app": {
+    "title": "Analizador de Chats",
+    "welcome": "Bienvenido al analizador de chats",
+    "description": "Sube tu archivo ZIP de WhatsApp para analizarlo",
+    "upload": {
+      "title": "Analiza tu chat",
+      "button": "Sube un archivo ZIP",
+      "subtext": "o comparte directamente desde WhatsApp siguiendo los pasos anteriores",
+      "another": "¿Quieres analizar otro chat?"
+    },
+    "analysis": {
+      "statistical": "Análisis Estadístico",
+      "psychological": "Análisis Psicológico",
+      "preparing_statistical": "Preparando análisis estadístico de la conversación...",
+      "preparing_psychological": "Preparando análisis psicológico de la conversación..."
+    },
+    "generating_analysis": "Generando análisis: Analizando patrones de comunicación...",
+    "primer_chat": {
+      "title": "Análisis de Inicio y Actividad del Chat",
+      "date_start": "Fecha de inicio del chat",
+      "total_messages": "Mensajes totales",
+      "messages_per_day": "Mensajes por día",
+      "most_active_user": "Usuario más activo",
+      "with_messages": "con {{count}} mensajes",
+      "most_active_day": "Día más activo",
+      "most_active_hour": "Hora más activa",
+      "activity_by_day": "Actividad por Día de la Semana",
+      "activity_by_hour": "Actividad por Hora del Día",
+      "top_users": "Top 5 Usuarios más Activos",
+      "response_time_trend": "Tendencia del Tiempo de Respuesta (minutos)",
+      "interest_trend": "Tendencia de Interés (Mensajes por Usuario por Mes)",
+      "insufficient_data": "No hay datos suficientes para mostrar tiempos de respuesta"
+    },
+    "top_profiles": {
+      "title": "Perfiles Destacados del Chat",
+      "professor": {
+        "title": "El Profesor",
+        "description": "Más palabras distintas, más vocabulario",
+        "unique_words": "Palabras únicas utilizadas",
+        "unique_ratio": "Palabras únicas por mensaje"
+      },
+      "verbose": {
+        "title": "El Rollero",
+        "description": "Más palabras por mensaje",
+        "words_per_message": "Palabras por mensaje en promedio"
+      },
+      "gunslinger": {
+        "title": "El Pistolero",
+        "description": "Contesta más rápido",
+        "response_time": "Minutos en responder (promedio)"
+      },
+      "vampire": {
+        "title": "El Vampiro",
+        "description": "Manda más mensajes por la noche",
+        "night_messages": "Mensajes nocturnos",
+        "percentage": "De sus mensajes son por la noche"
+      },
+      "morning": {
+        "title": "El Madrugador",
+        "description": "Manda mensajes más temprano",
+        "avg_time": "Hora promedio de mensajes"
+      },
+      "ghost": {
+        "title": "El Fantasma",
+        "description": "Contesta más lento",
+        "response_time": "Minutos para responder (promedio)"
+      },
+      "narcissist": {
+        "title": "El Narcisista",
+        "description": "Usa más la palabra 'yo'",
+        "self_mentions": "Menciones a sí mismo",
+        "percentage": "De sus mensajes hablan de sí mismo"
+      },
+      "gossip": {
+        "title": "El Chismoso",
+        "description": "Habla más de otras personas",
+        "others_mentions": "Menciones a otras personas",
+        "percentage": "De sus mensajes mencionan a otros"
+      },
+      "emoji": {
+        "title": "El Emoji",
+        "description": "Usa más emojis",
+        "total_emojis": "Emojis totales utilizados",
+        "emojis_per_message": "Emojis por mensaje (promedio)"
+      },
+      "finisher": {
+        "title": "El Finalizador",
+        "description": "Acaba más conversaciones",
+        "conversations_ended": "Conversaciones terminadas"
+      },
+      "initiator": {
+        "title": "El Iniciador",
+        "description": "Inicia conversaciones",
+        "conversations_started": "Conversaciones iniciadas"
+      },
+      "concise": {
+        "title": "El Conciso",
+        "description": "Mensajes más cortos",
+        "avg_length": "Caracteres por mensaje (promedio)"
+      },
+      "total_messages": "mensajes totales",
+      "no_data": "No se encontraron datos suficientes para el análisis"
+    },
+    "login_required": {
+      "title": "Inicia sesión para comenzar",
+      "description": "Necesitas iniciar sesión para analizar conversaciones",
+      "login": "Iniciar Sesión",
+      "register": "Crear Cuenta"
+    },
+    "upgrade_modal": {
+      "title": "Límite de análisis alcanzado",
+      "message": "Has alcanzado el límite de análisis de conversaciones para tu plan actual",
+      "upgrade": "Actualiza a un plan superior para continuar analizando tus conversaciones",
+      "view_plans": "Ver Planes",
+      "close": "Cerrar"
+    },
+    "buttons": {
+      "view_analysis": "Ver Análisis"
+    },
+    "progress": {
+      "processing": "Procesando chat: Analizando mensajes...",
+      "generating": "Generando análisis con IA: Procesando datos..."
+    },
+    "errors": {
+      "zip_file": "Por favor, sube un archivo ZIP válido (.zip)",
+      "login_required": "Debes iniciar sesión para analizar conversaciones"
+    },
+    "refresh_confirmation": {
+      "title": "¿Seguro que quieres salir?",
+      "message": "Se perderán todos los datos del análisis actual",
+      "cancel": "Cancelar",
+      "confirm": "Sí, quiero salir"
+    },
+    "loading_status": "Procesando datos..."
+  },
+  "header": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "pricing": "Precios",
+    "contact": "Contacto",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión"
+  },
+  "actions": {
+    "upload": "Subir archivo",
+    "analyze": "Analizar",
+    "reset": "Reiniciar",
+    "delete": "Eliminar",
+    "download": "Descargar",
+    "view": "Ver análisis"
+  },
+  "footer": {
+    "terms": "Términos de Servicio",
+    "privacy": "Política de Privacidad",
+    "contact": "Contacto",
+    "faq": "Preguntas Frecuentes"
+  },
+  "messages": {
+    "loading": "Cargando...",
+    "processing": "Procesando archivo...",
+    "success": "El archivo se ha procesado correctamente",
+    "error": "Ha ocurrido un error",
+    "delete_confirmation": "¿Estás seguro de que deseas eliminar?"
+  },
+  "error": {
+    "file_type": "El archivo debe ser un ZIP",
+    "file_size": "El archivo es demasiado grande",
+    "server": "Error del servidor",
+    "unknown": "Error desconocido"
+  },
+  "language": {
+    "es": "Español",
+    "en": "Inglés",
+    "fr": "Francés",
+    "de": "Alemán",
+    "it": "Italiano",
+    "select": "Seleccionar idioma"
+  },
+  "weekdays": {
+    "monday": "Lunes",
+    "tuesday": "Martes",
+    "wednesday": "Miércoles",
+    "thursday": "Jueves",
+    "friday": "Viernes",
+    "saturday": "Sábado",
+    "sunday": "Domingo"
+  },
+  "messages": "Mensajes",
+  "whatsapp": {
+    "title": "Cómo compartir un chat desde WhatsApp",
+    "step_by_step": "Paso a paso",
+    "video": "Video tutorial",
+    "platforms": {
+      "android": "Android",
+      "ios": "iOS",
+      "desktop": "PC/Mac"
+    },
+    "android_steps": [
+      {
+        "title": "Instala la aplicación",
+        "description": "Asegúrate de tener esta app instalada en tu dispositivo",
+        "icon": "📱"
+      },
+      {
+        "title": "Abre tu chat de WhatsApp",
+        "description": "Ve al grupo o conversación que deseas analizar",
+        "icon": "💬"
+      },
+      {
+        "title": "Accede al menú",
+        "description": "Toca los tres puntos en la esquina superior derecha",
+        "icon": "⋮"
+      },
+      {
+        "title": "Selecciona 'Más'",
+        "description": "Busca y selecciona la opción 'Más' en el menú desplegable",
+        "icon": "+"
+      },
+      {
+        "title": "Exporta el chat",
+        "description": "Selecciona 'Exportar chat' en las opciones disponibles",
+        "icon": "📤"
+      },
+      {
+        "title": "Comparte con esta app",
+        "description": "Elige esta aplicación de la lista de opciones para compartir",
+        "icon": "✓"
+      }
+    ],
+    "ios_steps": [
+      {
+        "title": "Abre tu chat de WhatsApp",
+        "description": "Ve al grupo o conversación que deseas exportar",
+        "icon": "💬"
+      },
+      {
+        "title": "Toca el nombre del chat",
+        "description": "En la parte superior del chat, toca el nombre para ver los detalles",
+        "icon": "👆"
+      },
+      {
+        "title": "Desplázate al final",
+        "description": "En la información del chat, desplázate hasta el final de la pantalla",
+        "icon": "⬇️"
+      },
+      {
+        "title": "Exporta el chat",
+        "description": "Toca 'Exportar chat' en las opciones disponibles",
+        "icon": "📤"
+      },
+      {
+        "title": "Selecciona Sin medios",
+        "description": "Elige la opción 'Sin medios' para exportar solo los mensajes",
+        "icon": "📝"
+      },
+      {
+        "title": "Guarda en archivos",
+        "description": "Toca 'Guardar en archivos' para guardar en tu iPhone",
+        "icon": "💾"
+      },
+      {
+        "title": "Guarda localmente",
+        "description": "Selecciona 'En mi iPhone' y toca guardar",
+        "icon": "📂"
+      },
+      {
+        "title": "Abre nuestra web",
+        "description": "Abre esta web y selecciona el archivo guardado",
+        "icon": "✓"
+      }
+    ],
+    "desktop_steps": [
+      {
+        "title": "Abre WhatsApp en tu dispositivo",
+        "description": "Abre la aplicación de WhatsApp en tu dispositivo móvil (Android o iOS)",
+        "icon": "📱"
+      },
+      {
+        "title": "Extrae el chat",
+        "description": "Sigue las instrucciones de exportación según tu dispositivo (selecciona la pestaña Android o iOS)",
+        "icon": "📤"
+      },
+      {
+        "title": "Envía el archivo por email",
+        "description": "Selecciona 'Compartir' o 'Enviar por email' y envíate el archivo a ti mismo",
+        "icon": "📧"
+      },
+      {
+        "title": "Accede a tu email en PC",
+        "description": "En tu ordenador (PC o Mac), abre tu correo electrónico y busca el mensaje con el chat",
+        "icon": "💻"
+      },
+      {
+        "title": "Descarga el archivo",
+        "description": "Descarga el archivo adjunto .txt a tu ordenador. Recuerda dónde lo guardas",
+        "icon": "💾"
+      },
+      {
+        "title": "Visita ChatSalsa",
+        "description": "Abre ChatSalsa en el navegador de tu ordenador (la página donde estás ahora)",
+        "icon": "🌐"
+      },
+      {
+        "title": "Sube el archivo",
+        "description": "Haz clic en 'Subir archivo' y selecciona el archivo de chat .zip descargado",
+        "icon": "📁"
+      }
+    ]
+  },
+  "preview": {
+    "title": "Descubre los secretos de tus conversaciones de WhatsApp",
+    "description": "Combinamos la estadística y la Inteligencia Artificial avanzada para revelarte datos fascinantes sobre los perfiles psicológicos de los participantes y las dinámicas de grupo.",
+    "security": {
+      "badge": "100% privado y seguro - Borrado garantizado"
+    },
+    "features": {
+      "psychological": "Análisis psicológico de los patrones de comunicación.",
+      "statistics": "Estadísticas detalladas sobre quién domina las conversaciones.",
+      "emotional": "Interpretación emocional basada en el uso de emojis y lenguaje.",
+      "discover": "Descubre personalidades ocultas y dinámicas de grupo."
+    },
+    "privacy": {
+      "encryption": "Los chats se cifran, analizan al momento y se eliminan de forma segura.",
+      "protection": "Tus datos están 100% protegidos con cifrado AES.",
+      "deletion": "Sistema verificado de borrado seguro para máxima protección."
+    },
+    "cta": "¡Descubre la psicología de tu chat!",
+    "image": {
+      "alt": "Ejemplo de análisis de chat",
+      "caption": "¡Así lucirá tu análisis!",
+      "more": "Ver análisis completo",
+      "expand": "Ver completo",
+      "modal_alt": "Ejemplo completo de análisis"
+    },
+    "testimonials": {
+      "title": "Lo que dicen nuestros usuarios",
+      "reviews": [
+        {
+          "content": "¡Increíble! El análisis psicológico me permitió entender mejor a mis amigos y por qué respondemos como lo hacemos.",
+          "author": "Carlos P."
+        },
+        {
+          "content": "Me sorprendió descubrir los patrones emocionales en nuestro grupo familiar. La IA detectó tensiones que ni siquiera habíamos notado.",
+          "author": "Ana M."
+        },
+        {
+          "content": "Tranquilidad total sabiendo que mis datos están cifrados, protegidos y se eliminan automáticamente. El sistema de borrado seguro me da la confianza para subir mis chats sin preocupaciones.",
+          "author": "Laura T."
+        }
+      ]
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar Sesión",
+      "email": "Email",
+      "password": "Contraseña",
+      "button": "Iniciar Sesión",
+      "loading": "Cargando...",
+      "google_button": "Iniciar sesión con Google",
+      "or": "o",
+      "error": "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
+      "please_login": "Por favor inicia sesión para continuar.",
+      "redirecting": "Iniciando sesión exitosamente. Redirigiendo..."
+    },
+    "register": {
+      "title": "Crear Cuenta",
+      "name": "Nombre",
+      "email": "Email",
+      "password": "Contraseña",
+      "confirm_password": "Confirmar Contraseña",
+      "button": "Registrarse",
+      "loading": "Cargando...",
+      "google_button": "Registrarse con Google",
+      "or": "o",
+      "error": "Error al registrarse. Por favor, inténtalo de nuevo.",
+      "password_mismatch": "Las contraseñas no coinciden.",
+      "redirecting": "Cuenta creada exitosamente. Redirigiendo..."
+    },
+    "password_reset": {
+      "title": "Recuperar Contraseña",
+      "email": "Email",
+      "button": "Enviar correo de recuperación",
+      "loading": "Enviando...",
+      "success": "Correo de recuperación enviado. Revisa tu bandeja de entrada.",
+      "error": "Error al enviar el correo de recuperación. Por favor, inténtalo de nuevo."
+    },
+    "links": {
+      "forgot_password": "¿Olvidaste tu contraseña?",
+      "login": "¿Ya tienes una cuenta? Inicia sesión",
+      "register": "¿No tienes una cuenta? Regístrate"
+    }
+  },
+  "subscription": {
+    "title": "Planes de Suscripción",
+    "current_plan": "Tu Plan Actual: {{planName}}",
+    "usage": "{{used}} de {{total}} chats utilizados",
+    "remaining": "{{remaining}} chats restantes",
+    "manage_button": "Gestionar Suscripción",
+    "current_button": "Plan Actual",
+    "free_button": "Plan Gratuito",
+    "subscribe_button": "Suscribirse",
+    "loading": "Cargando información de planes...",
+    "success_message": "¡Tu pago ha sido procesado correctamente! Tu plan ha sido actualizado.",
+    "quota_exceeded": "Has alcanzado el límite máximo del Plan Premium. Deberás esperar hasta tu próximo ciclo de facturación para analizar más chats.",
+    "banner": {
+      "analyzed": "Has analizado {{used}} de {{total}} conversaciones este mes",
+      "upgrade": "Actualizar Plan"
+    },
+    "error": {
+      "load": "No se pudo cargar la información de tu plan. Por favor, inténtalo de nuevo.",
+      "subscribe": "Error al procesar tu suscripción. Por favor, inténtalo de nuevo.",
+      "manage": "Error al abrir el portal de gestión. Por favor, inténtalo de nuevo."
+    },
+    "plans": {
+      "free": {
+        "name": "Plan Gratuito",
+        "price": "Gratis"
+      },
+      "basic": {
+        "name": "Plan Básico",
+        "price": "{{price}}€/mes"
+      },
+      "premium": {
+        "name": "Plan Premium",
+        "price": "{{price}}€/mes"
+      },
+      "enterprise": {
+        "name": "Plan Empresarial",
+        "price": "{{price}}€/mes"
+      }
+    },
+    "features": {
+      "chats": "Análisis de {{quota}} chats por mes",
+      "stats": "Análisis estadístico",
+      "psych": "Análisis psicológico",
+      "renewal": "Renovación automática mensual"
+    }
+  },
+  "payment": {
+    "success": {
+      "title": "¡Pago Exitoso!",
+      "redirecting": "Estamos redireccionando a la página de planes...",
+      "error": {
+        "update": "Error al actualizar tu plan. Por favor, contacta con soporte.",
+        "session": "Sesión caducada. Por favor, inicia sesión de nuevo."
+      }
+    }
+  },
+  "date": {
+    "format": "d 'de' MMMM 'de' yy",
+    "months": {
+      "january": "enero",
+      "february": "febrero",
+      "march": "marzo",
+      "april": "abril",
+      "may": "mayo",
+      "june": "junio",
+      "july": "julio",
+      "august": "agosto",
+      "september": "septiembre",
+      "october": "octubre",
+      "november": "noviembre",
+      "december": "diciembre"
+    }
+  },
+  "pages": {
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "subtitle": "Encuentra respuestas a las preguntas más comunes sobre nuestro servicio",
+      "questions": [
+        {
+          "question": "¿Cómo funciona el análisis de chats de WhatsApp?",
+          "answer": "Nuestro sistema analiza el contenido de tus conversaciones de WhatsApp que has exportado, identificando patrones, estadísticas y tendencias. Utilizamos algoritmos avanzados y análisis de lenguaje natural para proporcionar información valiosa sobre tus comunicaciones."
+        },
+        {
+          "question": "¿Es seguro subir mis conversaciones?",
+          "answer": "Sí, tu privacidad es nuestra prioridad. Utilizamos cifrado de extremo a extremo, y tus datos se eliminan automáticamente después del análisis. No almacenamos permanentemente ninguna conversación y nunca compartimos tu información con terceros."
+        },
+        {
+          "question": "¿Qué formatos de archivo son compatibles?",
+          "answer": "Actualmente admitimos archivos de chat exportados de WhatsApp en formato .txt y archivos .zip que contienen exportaciones de WhatsApp."
+        },
+        {
+          "question": "¿Cuántas conversaciones puedo analizar con mi plan?",
+          "answer": "El número de conversaciones que puedes analizar depende de tu plan de suscripción. Los usuarios gratuitos pueden analizar un número limitado de chats, mientras que los suscriptores premium disfrutan de una cuota mensual más alta. Consulta nuestra página de Planes para más detalles."
+        },
+        {
+          "question": "¿Cómo puedo exportar una conversación de WhatsApp?",
+          "answer": "En WhatsApp, abre el chat que deseas exportar, toca los tres puntos verticales > Más > Exportar chat. Puedes elegir incluir o no los archivos multimedia. Luego, selecciona cómo quieres compartir el archivo exportado y guárdalo para subirlo a nuestra plataforma."
+        },
+        {
+          "question": "¿Puedo cancelar mi suscripción en cualquier momento?",
+          "answer": "Sí, puedes cancelar tu suscripción en cualquier momento desde tu panel de control. La cancelación será efectiva al final del período de facturación actual."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Contacto",
+      "subtitle": "Estamos aquí para ayudarte. Envíanos un mensaje y nos pondremos en contacto contigo lo antes posible.",
+      "form": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "subject": "Asunto",
+        "message": "Mensaje",
+        "send": "Enviar mensaje",
+        "success": "¡Mensaje enviado con éxito! Te responderemos pronto.",
+        "error": "Ha ocurrido un error al enviar tu mensaje. Por favor, inténtalo de nuevo."
+      },
+      "info": {
+        "title": "Información de contacto",
+        "email": "soporte@chatsalsa.com",
+        "hours": "Horario de atención: Lunes a Viernes, 9:00 - 18:00 CET"
+      }
+    },
+    "terms": {
+      "title": "Términos y Condiciones",
+      "updated": "Última actualización: 1 de junio de 2023",
+      "content": [
+        {
+          "section": "1. Introducción",
+          "text": "Estos Términos y Condiciones regulan el uso del servicio de análisis de conversaciones de WhatsApp proporcionado por ChatSalsa. Al utilizar nuestro servicio, aceptas estos términos en su totalidad. Si no estás de acuerdo con alguna parte de estos términos, no debes utilizar nuestro servicio."
+        },
+        {
+          "section": "2. Uso del Servicio",
+          "text": "Nuestro servicio permite a los usuarios analizar conversaciones exportadas de WhatsApp. Es tu responsabilidad asegurarte de que tienes el derecho legal para subir y analizar dichas conversaciones. No debes utilizar nuestro servicio para fines ilegales o no autorizados."
+        },
+        {
+          "section": "3. Privacidad y Protección de Datos",
+          "text": "Respetamos tu privacidad y protegemos tus datos personales. Utilizamos cifrado seguro y eliminamos tus conversaciones después del análisis. Para más información, consulta nuestra Política de Privacidad."
+        },
+        {
+          "section": "4. Suscripciones y Pagos",
+          "text": "Ofrecemos diferentes planes de suscripción con distintas funcionalidades. Los pagos se procesan a través de proveedores de pago seguros. Las suscripciones se renuevan automáticamente hasta que se cancelen. Puedes cancelar tu suscripción en cualquier momento desde tu panel de control."
+        },
+        {
+          "section": "5. Limitación de Responsabilidad",
+          "text": "ChatSalsa proporciona este servicio 'tal cual' y no garantiza que el servicio sea ininterrumpido o esté libre de errores. No somos responsables de ningún daño directo, indirecto, incidental o consecuente derivado del uso de nuestro servicio."
+        },
+        {
+          "section": "6. Cambios en los Términos",
+          "text": "Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación en nuestro sitio web. Es tu responsabilidad revisar periódicamente estos términos."
+        },
+        {
+          "section": "7. Contacto",
+          "text": "Si tienes alguna pregunta sobre estos Términos y Condiciones, puedes contactarnos en soporte@chatsalsa.com."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Política de Privacidad",
+      "updated": "Última actualización: 1 de junio de 2023",
+      "content": [
+        {
+          "section": "1. Introducción",
+          "text": "En ChatSalsa, valoramos y respetamos tu privacidad. Esta Política de Privacidad explica cómo recopilamos, utilizamos y protegemos tu información cuando utilizas nuestro servicio de análisis de conversaciones de WhatsApp."
+        },
+        {
+          "section": "2. Información que Recopilamos",
+          "text": "Recopilamos información de registro (nombre, correo electrónico) cuando creas una cuenta, y temporalmente procesamos el contenido de las conversaciones de WhatsApp que subes para el análisis. También recopilamos información de uso y datos técnicos para mejorar nuestro servicio."
+        },
+        {
+          "section": "3. Uso de la Información",
+          "text": "Utilizamos tu información para proporcionar y mejorar nuestro servicio, procesar pagos, comunicarnos contigo y cumplir con obligaciones legales. Nunca vendemos tu información personal a terceros."
+        },
+        {
+          "section": "4. Seguridad de Datos",
+          "text": "Implementamos medidas de seguridad técnicas y organizativas para proteger tu información. Las conversaciones se cifran durante la transmisión y el almacenamiento, y se eliminan automáticamente después del análisis."
+        },
+        {
+          "section": "5. Retención de Datos",
+          "text": "Conservamos tu información de cuenta mientras mantengas una cuenta activa. Las conversaciones subidas se eliminan después del análisis, generalmente dentro de las 24 horas siguientes."
+        },
+        {
+          "section": "6. Tus Derechos",
+          "text": "Tienes derecho a acceder, corregir o eliminar tu información personal. También puedes oponerte al procesamiento o solicitar la portabilidad de tus datos. Para ejercer estos derechos, contáctanos a través de soporte@chatsalsa.com."
+        },
+        {
+          "section": "7. Cambios en esta Política",
+          "text": "Podemos actualizar esta política periódicamente. Te notificaremos cualquier cambio significativo mediante un aviso visible en nuestro sitio web o por correo electrónico."
+        },
+        {
+          "section": "8. Contacto",
+          "text": "Si tienes preguntas sobre esta Política de Privacidad, por favor contáctanos en soporte@chatsalsa.com."
+        }
+      ]
+    }
+  }
+} 

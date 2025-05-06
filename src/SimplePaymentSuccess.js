@@ -1,9 +1,11 @@
 // SimplePaymentSuccess.js
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const SimplePaymentSuccess = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   useEffect(() => {
     // Just redirect to plans after a short delay
@@ -22,8 +24,8 @@ const SimplePaymentSuccess = () => {
       textAlign: "center",
       backgroundColor: "#fff"
     }}>
-      <h2 style={{ color: "#4CAF50" }}>¡Pago Exitoso!</h2>
-      <p>Estamos redireccionando a la página de planes...</p>
+      <h2 style={{ color: "#4CAF50" }}>{t('payment.success.title')}</h2>
+      <p>{t('payment.success.redirecting')}</p>
       <div style={{
         width: "50px",
         height: "50px",

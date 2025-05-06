@@ -1,136 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './WhatsappInstructions.css';
 
 // Componente para las instrucciones de WhatsApp en formato carrusel
 function WhatsappInstructions() {
+  const { t } = useTranslation();
   const [activeSlide, setActiveSlide] = useState(0);
   const [platform, setPlatform] = useState('android'); // 'android', 'ios' o 'desktop'
   const [activeTab, setActiveTab] = useState('carousel'); // 'carousel' o 'video'
 
-  // Lista de pasos para Android
-  const androidSteps = [
-    {
-      title: "Instala la aplicación",
-      description: "Asegúrate de tener esta app instalada en tu dispositivo",
-      icon: "📱"
-    },
-    {
-      title: "Abre tu chat de WhatsApp",
-      description: "Ve al grupo o conversación que deseas analizar",
-      icon: "💬"
-    },
-    {
-      title: "Accede al menú",
-      description: "Toca los tres puntos en la esquina superior derecha",
-      icon: "⋮"
-    },
-    {
-      title: "Selecciona 'Más'",
-      description: "Busca y selecciona la opción 'Más' en el menú desplegable",
-      icon: "+"
-    },
-    {
-      title: "Exporta el chat",
-      description: "Selecciona 'Exportar chat' en las opciones disponibles",
-      icon: "📤"
-    },
-    {
-      title: "Comparte con esta app",
-      description: "Elige esta aplicación de la lista de opciones para compartir",
-      icon: "✓"
+  // Obtener los pasos de las traducciones
+  const getSteps = () => {
+    if (platform === 'android') {
+      return t('whatsapp.android_steps', { returnObjects: true });
+    } else if (platform === 'ios') {
+      return t('whatsapp.ios_steps', { returnObjects: true });
+    } else {
+      return t('whatsapp.desktop_steps', { returnObjects: true });
     }
-  ];
+  };
 
-  // Lista de pasos para iOS
-  const iosSteps = [
-    
-    {
-      title: "Abre tu chat de WhatsApp",
-      description: "Ve al grupo o conversación que deseas exportar",
-      icon: "💬"
-    },
-    {
-      title: "Toca el nombre del chat",
-      description: "En la parte superior del chat, toca el nombre para ver los detalles",
-      icon: "👆"
-    },
-    {
-      title: "Desplázate al final",
-      description: "En la información del chat, desplázate hasta el final de la pantalla",
-      icon: "⬇️"
-    },
-    {
-      title: "Exporta el chat",
-      description: "Toca 'Exportar chat' en las opciones disponibles",
-      icon: "📤"
-    },
-    {
-      title: "Selecciona Sin medios",
-      description: "Elige la opción 'Sin medios' para exportar solo los mensajes",
-      icon: "📝"
-    },
-    {
-      title: "Guarda en archivos",
-      description: "Toca 'Guardar en archivos' para guardar en tu iPhone",
-      icon: "💾"
-    },
-    {
-      title: "Guarda localmente",
-      description: "Selecciona 'En mi iPhone' y toca guardar",
-      icon: "📂"
-    },
-    {
-      title: "Abre nuestra web",
-      description: "Abre esta web y selecciona el archivo guardado",
-      icon: "✓"
-    }
-  ];
-
-  // Lista de pasos para Desktop
-  const desktopSteps = [
-    {
-      title: "Abre WhatsApp en tu dispositivo",
-      description: "Abre la aplicación de WhatsApp en tu dispositivo móvil (Android o iOS)",
-      icon: "📱"
-    },
-    {
-      title: "Extrae el chat",
-      description: "Sigue las instrucciones de exportación según tu dispositivo (selecciona la pestaña Android o iOS)",
-      icon: "📤"
-    },
-    {
-      title: "Envía el archivo por email",
-      description: "Selecciona 'Compartir' o 'Enviar por email' y envíate el archivo a ti mismo",
-      icon: "📧"
-    },
-    {
-      title: "Accede a tu email en PC",
-      description: "En tu ordenador (PC o Mac), abre tu correo electrónico y busca el mensaje con el chat",
-      icon: "💻"
-    },
-    {
-      title: "Descarga el archivo",
-      description: "Descarga el archivo adjunto .txt a tu ordenador. Recuerda dónde lo guardas",
-      icon: "💾"
-    },
-    {
-      title: "Visita ChatSalsa",
-      description: "Abre ChatSalsa en el navegador de tu ordenador (la página donde estás ahora)",
-      icon: "🌐"
-    },
-    {
-      title: "Sube el archivo",
-      description: "Haz clic en 'Subir archivo' y selecciona el archivo de chat .zip descargado",
-      icon: "📁"
-    }
-  ];
-
-  // Seleccionar los pasos según la plataforma
-  const steps = platform === 'android' 
-    ? androidSteps 
-    : platform === 'ios' 
-      ? iosSteps 
-      : desktopSteps;
+  // Obtener los pasos según la plataforma
+  const steps = getSteps();
   
   // Seleccionar el video según la plataforma
   const tutorialVideo = platform === 'android' 
@@ -164,28 +55,33 @@ function WhatsappInstructions() {
     setActiveSlide((prevSlide) => (prevSlide + 1) % steps.length);
   };
 
+  // Manejar clic en un slide para avanzar al siguiente
+  const handleSlideClick = () => {
+    nextSlide();
+  };
+
   return (
     <div className="whatsapp-instructions">
-      <h2>Cómo compartir un chat desde WhatsApp</h2>
+      <h2>{t('whatsapp.title')}</h2>
       
       <div className="platform-selector">
         <button 
           className={`platform-button ${platform === 'android' ? 'active' : ''}`}
           onClick={() => togglePlatform('android')}
         >
-          Android
+          {t('whatsapp.platforms.android')}
         </button>
         <button 
           className={`platform-button ${platform === 'ios' ? 'active' : ''}`}
           onClick={() => togglePlatform('ios')}
         >
-          iOS
+          {t('whatsapp.platforms.ios')}
         </button>
         <button 
           className={`platform-button ${platform === 'desktop' ? 'active' : ''}`}
           onClick={() => togglePlatform('desktop')}
         >
-          PC/Mac
+          {t('whatsapp.platforms.desktop')}
         </button>
       </div>
       
@@ -194,31 +90,34 @@ function WhatsappInstructions() {
           className={`tab-button ${activeTab === 'carousel' ? 'active' : ''}`}
           onClick={() => setActiveTab('carousel')}
         >
-          Paso a paso
+          {t('whatsapp.step_by_step')}
         </button>
         <button 
           className={`tab-button ${activeTab === 'video' ? 'active' : ''}`}
           onClick={() => setActiveTab('video')}
         >
-          Video tutorial
+          {t('whatsapp.video')}
         </button>
       </div>
       
-      <div className="instructions-content">
-        <div 
-          className={`carousel-wrapper ${activeTab === 'video' ? 'hidden-content' : ''}`}
-        >
+      {/* Carousel View */}
+      {activeTab === 'carousel' && (
+        <div className="instruction-carousel">
           <div className="carousel-container">
             <div className="carousel-slides">
               {steps.map((step, index) => (
                 <div 
-                  key={index} 
+                  key={index}
                   className={`carousel-slide ${index === activeSlide ? 'active' : ''}`}
-                  onClick={nextSlide}
+                  onClick={handleSlideClick}
                 >
-                  <div className="step-icon">{step.icon}</div>
-                  <h3>Paso {index + 1}: {step.title}</h3>
-                  <p>{step.description}</p>
+                  <div className="slide-content">
+                    <div className="slide-icon">{step.icon}</div>
+                    <div className="slide-text">
+                      <h3 className="slide-title">{step.title}</h3>
+                      <p className="slide-description">{step.description}</p>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -226,42 +125,29 @@ function WhatsappInstructions() {
           
           <div className="carousel-indicators">
             {steps.map((_, index) => (
-              <button 
-                key={index} 
+              <button
+                key={index}
                 className={`indicator ${index === activeSlide ? 'active' : ''}`}
                 onClick={() => goToSlide(index)}
-                aria-label={`Ir al paso ${index + 1}`}
+                aria-label={`Slide ${index + 1}`}
               />
             ))}
           </div>
         </div>
-        
-        <div 
-          className={`video-tutorial-container ${activeTab === 'carousel' ? 'hidden-content' : ''}`}
-        >
+      )}
+      
+      {/* Video View */}
+      {activeTab === 'video' && (
+        <div className="instruction-video">
           <video 
+            src={tutorialVideo} 
             controls 
             className="tutorial-video"
-            src={platform === 'desktop' ? '/desktop.mp4' : tutorialVideo}
-            poster={platform === 'android' ? '/tutorial-android-thumbnail.jpg' : '/tutorial-ios-thumbnail.jpg'}
           >
-            Tu navegador no soporta la reproducción de videos.
+            {t('messages.error')}
           </video>
-          <p className="video-caption">
-            Video tutorial: Cómo exportar chats en {platform === 'android' ? 'Android' : platform === 'ios' ? 'iOS' : 'PC/Mac'}
-          </p>
-          
-          {platform === 'desktop' && (
-            <p className="desktop-instructions-note">
-              <strong>Para usar ChatSalsa en tu ordenador:</strong><br/>
-              1. Exporta el chat desde tu móvil (Android o iOS) como se muestra en el video<br/>
-              2. Envíatelo por email o transfiere el archivo a tu PC/Mac<br/>
-              3. Descarga el archivo .txt a tu ordenador<br/>
-              4. Sube el archivo en esta página usando el botón "Subir archivo"
-            </p>
-          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -28,6 +28,48 @@ export const getMistralResponse = async (operationId) => {
 };
 
 /**
+ * Inicia el análisis de Mistral/ChatGPT para una operación en un idioma específico
+ * @param {string} operationId - ID de la operación
+ * @param {string} language - Código de idioma (es, en, fr, de)
+ * @returns {Promise<Object>} - Resultado de la operación
+ */
+export const startChatAnalysis = async (operationId, language = 'es') => {
+  try {
+    console.log(`Iniciando análisis para operación ${operationId} en idioma ${language}`);
+    
+    const response = await fetch(`${API_URL}/api/analyze-mistral/${operationId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ language })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('Error al iniciar el análisis:', data.error);
+      return {
+        success: false,
+        error: data.error || 'Error al iniciar el análisis'
+      };
+    }
+    
+    console.log('Análisis iniciado correctamente');
+    return {
+      success: true,
+      data: data
+    };
+  } catch (error) {
+    console.error('Error al iniciar el análisis:', error);
+    return {
+      success: false,
+      error: error.message || 'Error al iniciar el análisis'
+    };
+  }
+};
+
+/**
  * Función para registro de depuración, compatible con el sistema de debug de la App
  * @param {Function} addDebugMessage - Función para añadir mensajes de debug
  * @param {string} message - Mensaje a registrar

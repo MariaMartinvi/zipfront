@@ -4,9 +4,11 @@ import { getUserProfile } from './firebase_auth';
 import { PLANS, redirectToCheckout, manageSubscription, getUserPlan } from './stripe_integration';
 import './SubscriptionPlans.css';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Add paymentSuccess prop
 const SubscriptionPlans = ({ userId, paymentSuccess }) => {
+  const { t } = useTranslation();
   const [userPlan, setUserPlan] = useState('free');
   const [userUsage, setUserUsage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +28,7 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
         try {
           const newPlan = await getUserPlan(userId);
           setUserPlan(newPlan);
-          setSuccessMessage('¡Tu pago ha sido procesado correctamente! Tu plan ha sido actualizado.');
+          setSuccessMessage(t('subscription.success_message'));
           
           // Clear the URL parameters
           window.history.replaceState({}, document.title, '/plans');
@@ -37,13 +39,13 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
           }, 5000);
         } catch (error) {
           console.error('Error updating user plan:', error);
-          setError('Error al actualizar tu plan. Por favor, contacta con soporte.');
+          setError(t('subscription.error.load'));
         }
       };
       
       updateUserPlan();
     }
-  }, [location, paymentSuccess, userId]);
+  }, [location, paymentSuccess, userId, t]);
 
   // Load user plan and usage data
   useEffect(() => {
@@ -57,14 +59,14 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
         setUserUsage(userProfile.currentPeriodUsage || 0);
       } catch (error) {
         console.error('Error loading user data:', error);
-        setError('No se pudo cargar la información de tu plan. Por favor, inténtalo de nuevo.');
+        setError(t('subscription.error.load'));
       } finally {
         setIsLoading(false);
       }
     };
 
     loadUserData();
-  }, [userId]);
+  }, [userId, t]);
 
   // Handle plan subscription
   const handleSubscribe = async (planId) => {
@@ -82,7 +84,7 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
       await redirectToCheckout(plan.priceId, userId);
     } catch (error) {
       console.error('Error subscribing to plan:', error);
-      setError('Error al procesar tu suscripción. Por favor, inténtalo de nuevo.');
+      setError(t('subscription.error.subscribe'));
     }
   };
 
@@ -93,12 +95,12 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
       await manageSubscription(userId);
     } catch (error) {
       console.error('Error managing subscription:', error);
-      setError('Error al abrir el portal de gestión. Por favor, inténtalo de nuevo.');
+      setError(t('subscription.error.manage'));
     }
   };
 
   if (isLoading) {
-    return <div className="subscription-loading">Cargando información de planes...</div>;
+    return <div className="subscription-loading">{t('subscription.loading')}</div>;
   }
 
   // Calculate quota usage and limits
@@ -106,9 +108,23 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
   const usagePercentage = Math.min((userUsage / currentPlan.quota) * 100, 100);
   const remainingUploads = Math.max(currentPlan.quota - userUsage, 0);
 
+  // Traducir nombres de planes
+  const getPlanName = (plan) => {
+    switch (plan.id) {
+      case 'free':
+        return t('subscription.plans.free.name');
+      case 'premium':
+        return t('subscription.plans.premium.name', { price: plan.price });
+      case 'enterprise':
+        return t('subscription.plans.enterprise.name', { price: plan.price });
+      default:
+        return plan.name;
+    }
+  };
+
   return (
     <div className="subscription-container">
-      <h2>Planes de Suscripción</h2>
+      <h2>{t('subscription.title')}</h2>
       
       {error && <div className="subscription-error">{error}</div>}
       
@@ -126,11 +142,11 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
       )}
       
       <div className="current-plan-info">
-        <h3>Tu Plan Actual: {currentPlan.name}</h3>
+        <h3>{t('subscription.current_plan', { planName: getPlanName(currentPlan) })}</h3>
         <div className="usage-info">
           <div className="usage-text">
-            <span>{userUsage} de {currentPlan.quota} chats utilizados</span>
-            <span>{remainingUploads} chats restantes</span>
+            <span>{t('subscription.usage', { used: userUsage, total: currentPlan.quota })}</span>
+            <span>{t('subscription.remaining', { remaining: remainingUploads })}</span>
           </div>
           <div className="usage-bar-container">
             <div 
@@ -145,7 +161,7 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
             className="manage-subscription-button"
             onClick={handleManageSubscription}
           >
-            Gestionar Suscripción
+            {t('subscription.manage_button')}
           </button>
         )}
       </div>
@@ -157,7 +173,7 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
             className={`plan-card ${userPlan === plan.id ? 'current-plan' : ''}`}
           >
             <div className="plan-header">
-              <h3 className="plan-name">{plan.name}</h3>
+              <h3 className="plan-name">{getPlanName(plan)}</h3>
               <div className="plan-price">
                 {plan.price > 0 ? (
                   <>
@@ -165,7 +181,7 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
                     <span className="price-period">/mes</span>
                   </>
                 ) : (
-                  <span className="price-free">Gratis</span>
+                  <span className="price-free">{t('subscription.plans.free.price')}</span>
                 )}
               </div>
             </div>
@@ -173,20 +189,20 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
             <div className="plan-features">
               <div className="plan-feature">
                 <span className="feature-check">✓</span>
-                <span>Análisis de {plan.quota} chats por mes</span>
+                <span>{t('subscription.features.chats', { quota: plan.quota })}</span>
               </div>
               <div className="plan-feature">
                 <span className="feature-check">✓</span>
-                <span>Análisis estadístico</span>
+                <span>{t('subscription.features.stats')}</span>
               </div>
               <div className="plan-feature">
                 <span className="feature-check">✓</span>
-                <span>Análisis psicológico</span>
+                <span>{t('subscription.features.psych')}</span>
               </div>
               {plan.id !== 'free' && (
                 <div className="plan-feature">
                   <span className="feature-check">✓</span>
-                  <span>Renovación automática mensual</span>
+                  <span>{t('subscription.features.renewal')}</span>
                 </div>
               )}
             </div>
@@ -194,21 +210,21 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
             <div className="plan-action">
               {userPlan === plan.id ? (
                 <button className="plan-button current" disabled>
-                  Plan Actual
+                  {t('subscription.current_button')}
                 </button>
               ) : plan.id === 'free' ? (
                 <button 
                   className="plan-button"
                   disabled
                 >
-                  Plan Gratuito
+                  {t('subscription.free_button')}
                 </button>
               ) : (
                 <button 
                   className="plan-button"
                   onClick={() => handleSubscribe(plan.id)}
                 >
-                  {userPlan === 'free' ? 'Suscribirse' : 'Cambiar Plan'}
+                  {t('subscription.subscribe_button')}
                 </button>
               )}
             </div>
@@ -218,7 +234,7 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
       
       {userPlan === 'premium' && userUsage >= PLANS.PREMIUM.quota && (
         <div className="quota-exceeded-message">
-          Has alcanzado el límite máximo del Plan Premium. Deberás esperar hasta tu próximo ciclo de facturación para analizar más chats.
+          {t('subscription.quota_exceeded')}
         </div>
       )}
     </div>

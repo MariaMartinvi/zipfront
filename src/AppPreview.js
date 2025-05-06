@@ -1,62 +1,81 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './AppPreview.css';
 
 const AppPreview = () => {
+  const { t } = useTranslation();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
 
+  // Función para renderizar el título con el formato correcto
+  const renderTitle = () => {
+    const title = t('preview.title');
+    const parts = title.split('WhatsApp');
+    
+    if (parts.length > 1) {
+      return (
+        <>
+          {parts[0]}
+          <span style={{ color: '#25D366' }}>WhatsApp</span>
+          {parts[1]}
+        </>
+      );
+    }
+    
+    return title;
+  };
+
   return (
     <div className="app-preview-container">
       <div className="app-preview-content">
         <div className="app-preview-text">
-          <h2>Descubre los secretos de tus conversaciones de <span style={{ color: '#25D366' }}>WhatsApp</span></h2>
+          <h2>{renderTitle()}</h2>
           <p>
-            Combinamos la estadística y la  Inteligencia Artificial avanzada 
-            para revelarte datos fascinantes sobre los  perfiles psicológicos de los participantes y las dinámicas de grupo.
+            {t('preview.description')}
           </p>
           
           <div className="security-badge">
             <span className="security-icon">🔒</span>
-            <span className="security-text">100% privado y seguro - Borrado garantizado</span>
+            <span className="security-text">{t('preview.security.badge')}</span>
             <span className="security-icon">✓</span>
           </div>
           
           <ul className="app-preview-features">
             <li>
               <span className="feature-icon">🧠</span>
-              <span><strong>Análisis psicológico</strong> de los patrones de comunicación.</span>
+              <span><strong>{t('preview.features.psychological').split(' ')[0]}</strong> {t('preview.features.psychological').split(' ').slice(1).join(' ')}</span>
             </li>
             <li>
               <span className="feature-icon">📊</span>
-              <span>Estadísticas detalladas sobre quién domina las conversaciones.</span>
+              <span>{t('preview.features.statistics')}</span>
             </li>
             <li>
               <span className="feature-icon">😀</span>
-              <span>Interpretación emocional basada en el uso de emojis y lenguaje.</span>
+              <span>{t('preview.features.emotional')}</span>
             </li>
             <li>
               <span className="feature-icon">🔍</span>
-              <span>Descubre personalidades ocultas y dinámicas de grupo.</span>
+              <span>{t('preview.features.discover')}</span>
             </li>
           </ul>
           
           <div className="privacy-container">
             <div className="privacy-item">
               <span className="privacy-icon">⚡</span>
-              <span>Los chats se cifran, analizan al momento y se eliminan de forma segura.</span>
+              <span>{t('preview.privacy.encryption')}</span>
             </div>
             
             <div className="privacy-item">
               <span className="privacy-icon">🔐</span>
-              <span>Tus datos están 100% protegidos con cifrado AES.</span>
+              <span>{t('preview.privacy.protection')}</span>
             </div>
             
             <div className="privacy-item">
               <span className="privacy-icon">🛡️</span>
-              <span>Sistema verificado de borrado seguro  para máxima protección.</span>
+              <span>{t('preview.privacy.deletion')}</span>
             </div>
           </div>
           
@@ -65,29 +84,29 @@ const AppPreview = () => {
               className="cta-button"
               onClick={() => window.location.href = '/register'}
             >
-              ¡Descubre la psicología de tu chat!
+              {t('preview.cta')}
             </button>
           </div>
         </div>
         <div className="app-preview-image">
-          <img src="/ejemplo.png" alt="Ejemplo de análisis de chat" />
+          <img src="/ejemplo.png" alt={t('preview.image.alt')} />
           <div className="image-overlay">
-            <span className="image-caption">¡Así lucirá tu análisis!</span>
+            <span className="image-caption">{t('preview.image.caption')}</span>
           </div>
           
           {/* Indicador adicional de que hay más contenido */}
           <div className="image-more-indicator">
-            <span>Ver análisis completo</span>
+            <span>{t('preview.image.more')}</span>
             <div className="more-arrow">↓</div>
           </div>
           
           <button 
             className="expand-button" 
             onClick={toggleModal}
-            aria-label="Ver imagen completa"
+            aria-label={t('preview.image.expand')}
           >
             <span className="expand-icon">+</span>
-            <span className="expand-text">Ver completo</span>
+            <span className="expand-text">{t('preview.image.expand')}</span>
           </button>
         </div>
       </div>
@@ -95,33 +114,23 @@ const AppPreview = () => {
       {isModalVisible && (
         <div className="imagen-modal" onClick={toggleModal}>
           <div className="imagen-modal-contenido" onClick={(e) => e.stopPropagation()}>
-            <img src="/ejemplo.png" alt="Ejemplo completo de análisis" />
+            <img src="/ejemplo.png" alt={t('preview.image.modal_alt')} />
             <button className="cerrar-modal" onClick={toggleModal}>×</button>
           </div>
         </div>
       )}
       
       <div className="app-preview-testimonials">
-        <h3>Lo que dicen nuestros usuarios</h3>
+        <h3>{t('preview.testimonials.title')}</h3>
         <div className="testimonials-container">
-          <div className="testimonial">
-            <div className="testimonial-content">
-              "¡Increíble! El análisis psicológico me permitió entender mejor a mis amigos y por qué respondemos como lo hacemos."
+          {t('preview.testimonials.reviews', { returnObjects: true }).map((testimonial, index) => (
+            <div className="testimonial" key={index}>
+              <div className="testimonial-content">
+                "{testimonial.content}"
+              </div>
+              <div className="testimonial-author">{testimonial.author}</div>
             </div>
-            <div className="testimonial-author">Carlos P.</div>
-          </div>
-          <div className="testimonial">
-            <div className="testimonial-content">
-              "Me sorprendió descubrir los patrones emocionales en nuestro grupo familiar. La IA detectó tensiones que ni siquiera habíamos notado."
-            </div>
-            <div className="testimonial-author">Ana M.</div>
-          </div>
-          <div className="testimonial">
-            <div className="testimonial-content">
-              "Tranquilidad total sabiendo que mis datos están cifrados, protegidos y se eliminan automáticamente. El sistema de borrado seguro me da la confianza para subir mis chats sin preocupaciones."
-            </div>
-            <div className="testimonial-author">Laura T.</div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

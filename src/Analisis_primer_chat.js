@@ -18,6 +18,7 @@ import {
   Area,
   LabelList
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import './styles/Analisis.css';
 import './Analisis_primer_chat.css'; // Importar los estilos
 
@@ -27,11 +28,8 @@ const COLORS = [
   '#82CA9D', '#F44236', '#E91E63', '#9C27B0', '#673AB7'
 ];
 
-// Nombres de los días de la semana
-const DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-
 // Función para formatear fechas
-const formatearFecha = (fecha) => {
+const formatearFecha = (fecha, t) => {
   if (!fecha) return 'N/A';
   
   const partes = fecha.split('/');
@@ -39,31 +37,74 @@ const formatearFecha = (fecha) => {
   
   const [dia, mes, anio] = partes;
   const meses = [
-    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    t('date.months.january'),
+    t('date.months.february'),
+    t('date.months.march'),
+    t('date.months.april'),
+    t('date.months.may'),
+    t('date.months.june'),
+    t('date.months.july'),
+    t('date.months.august'),
+    t('date.months.september'),
+    t('date.months.october'),
+    t('date.months.november'),
+    t('date.months.december')
   ];
   
-  return `${dia} de ${meses[parseInt(mes) - 1]} de ${anio}`;
+  // Obtener el formato de la traducción y reemplazar los valores
+  const formato = t('date.format');
+  
+  // Reemplazar los marcadores de posición en el formato
+  let fechaFormateada = formato
+    .replace('d', dia)
+    .replace('MMMM', meses[parseInt(mes) - 1])
+    .replace('yy', anio);
+  
+  return fechaFormateada;
 };
 
 // Función para formatear nombres de meses
-const formatearMes = (fechaMes) => {
+const formatearMes = (fechaMes, t) => {
   if (!fechaMes) return 'N/A';
   
   const [anio, mes] = fechaMes.split('-');
   const meses = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    t('date.months.january'),
+    t('date.months.february'),
+    t('date.months.march'),
+    t('date.months.april'),
+    t('date.months.may'),
+    t('date.months.june'),
+    t('date.months.july'),
+    t('date.months.august'),
+    t('date.months.september'),
+    t('date.months.october'),
+    t('date.months.november'),
+    t('date.months.december')
   ];
   
   return `${meses[parseInt(mes) - 1]} ${anio}`;
 };
 
 const AnalisisPrimerChat = ({ operationId }) => {
+  const { t, i18n } = useTranslation();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // Obtenemos los días de la semana según el idioma actual
+  const obtenerDiasSemana = () => {
+    return [
+      t('weekdays.monday'),
+      t('weekdays.tuesday'),
+      t('weekdays.wednesday'),
+      t('weekdays.thursday'),
+      t('weekdays.friday'),
+      t('weekdays.saturday'),
+      t('weekdays.sunday')
+    ];
+  };
 
   // Effect to handle window resize for responsive display
   useEffect(() => {
@@ -93,6 +134,9 @@ const AnalisisPrimerChat = ({ operationId }) => {
     const url = `${API_URL}/api/resultados-primer-chat/${operationId}`;
     console.log(`Cargando datos desde: ${url}`);
     
+    // Mantener el estado de carga hasta que los datos estén completamente procesados
+    setCargando(true);
+    
     fetch(url)
       .then(response => {
         console.log(`Respuesta recibida con status: ${response.status}`);
@@ -110,8 +154,19 @@ const AnalisisPrimerChat = ({ operationId }) => {
           console.log('Formato de chat detectado:', data.formato_chat);
         }
         
+        // Verificar que los datos no sean nulos o vacíos
+        if (!data || Object.keys(data).length === 0) {
+          throw new Error('Los datos recibidos están vacíos');
+        }
+        
+        // Establecer los datos y DESPUÉS cambiar el estado de carga
         setDatos(data);
-        setCargando(false);
+        
+        // Usar un pequeño timeout para asegurar que los datos se han procesado
+        // antes de quitar el indicador de carga
+        setTimeout(() => {
+          setCargando(false);
+        }, 300);
       })
       .catch(err => {
         console.error("Error cargando datos:", err);
@@ -120,16 +175,21 @@ const AnalisisPrimerChat = ({ operationId }) => {
       });
   }, [operationId]);
 
-
-  
   // Preparar datos para el gráfico de mensajes por día de la semana
   const prepararDatosDiaSemana = () => {
     if (!datos || !datos.actividad_por_dia_semana) return [];
     
+    // Obtener los días de la semana traducidos
+    const diasSemana = obtenerDiasSemana();
+    
     // Asegurarnos de que todos los días de la semana estén representados
-    const datosCompletos = [...DIAS_SEMANA].map(dia => ({
-      nombre: dia,
-      mensajes: datos.actividad_por_dia_semana[dia] || 0
+    // Usamos los nombres en español del backend como claves, pero mostramos los nombres traducidos
+    const diasBackend = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    
+    const datosCompletos = diasBackend.map((diaBackend, index) => ({
+      nombreBackend: diaBackend, // Nombre original para acceder a los datos
+      nombre: diasSemana[index], // Nombre traducido para mostrar
+      mensajes: datos.actividad_por_dia_semana[diaBackend] || 0
     }));
     
     return datosCompletos;
@@ -227,7 +287,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
         const usuarios = tiempoRespuesta[mes] || {};
         const resultado = {
           mes,
-          mesFormateado: formatearMes(mes)
+          mesFormateado: formatearMes(mes, t)
         };
         
         // Agregar datos de cada usuario
@@ -285,7 +345,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
       // Crear objeto base con el mes
       const resultado = {
         mes,
-        mesFormateado: formatearMes(mes),
+        mesFormateado: formatearMes(mes, t),
         total: datosMes.total
       };
       
@@ -358,8 +418,32 @@ const AnalisisPrimerChat = ({ operationId }) => {
     return listaUsuarios;
   };
 
-  if (cargando) return null;
-  if (error) return <div className="error">Error: {error}</div>;
+  // Renderizar el contenido principal
+  if (cargando) {
+    return (
+      <div className="loading-container" style={{ textAlign: 'center', padding: '50px 0' }}>
+        <div className="loader" style={{ 
+          border: '5px solid #f3f3f3', 
+          borderTop: '5px solid #3498db', 
+          borderRadius: '50%', 
+          width: '50px', 
+          height: '50px', 
+          animation: 'spin 1s linear infinite',
+          margin: '0 auto 20px auto'
+        }}></div>
+        <p>{t('app.loading')}</p>
+        <style jsx>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+  
+  if (error) return <div className="error">{error}</div>;
+  
   if (!datos || !datos.success) {
     return <div className="no-data">No se encontraron datos válidos para el análisis del primer chat</div>;
   }
@@ -368,46 +452,46 @@ const AnalisisPrimerChat = ({ operationId }) => {
 
   return (
     <div className="analisis-primer-chat-container">
-      <h3>Análisis de Inicio y Actividad del Chat</h3>
+      <h3>{t('app.primer_chat.title')}</h3>
       
       {/* Tarjeta de resumen principal */}
       <div className="resumen-card">
                 
         <div className="resumen-content">
           <div className="stat-highlight">
-            <div className="stat-value">{formatearFecha(primer_mensaje.fecha)}</div>
-            <div className="stat-label">Fecha de inicio del chat</div>
+            <div className="stat-value">{formatearFecha(primer_mensaje.fecha, t)}</div>
+            <div className="stat-label">{t('app.primer_chat.date_start')}</div>
           </div>
           
           <div className="stats-row">
             <div className="stat-item">
               <div className="stat-value">{resumen.total_mensajes.toLocaleString()}</div>
-              <div className="stat-label">Mensajes totales</div>
+              <div className="stat-label">{t('app.primer_chat.total_messages')}</div>
             </div>
             <div className="stat-item">
               <div className="stat-value">{resumen.promedio_mensajes_diarios}</div>
-              <div className="stat-label">Mensajes por día</div>
+              <div className="stat-label">{t('app.primer_chat.messages_per_day')}</div>
             </div>
           </div>
           
           <div className="highlight-box">
             <div className="highlight-title">
               <span className="highlight-icon">👑</span>
-              <span>Usuario más activo</span>
+              <span>{t('app.primer_chat.most_active_user')}</span>
             </div>
             <div className="highlight-content">
               <div className="highlight-value">{resumen.usuario_mas_activo.nombre}</div>
-              <div className="highlight-detail">con {resumen.usuario_mas_activo.mensajes.toLocaleString()} mensajes</div>
+              <div className="highlight-detail">{t('app.primer_chat.with_messages', { count: resumen.usuario_mas_activo.mensajes.toLocaleString() })}</div>
             </div>
           </div>
           
           <div className="activity-highlights">
             <div className="activity-item">
-              <div className="activity-label">Día más activo:</div>
+              <div className="activity-label">{t('app.primer_chat.most_active_day')}</div>
               <div className="activity-value">{resumen.dia_semana_mas_activo.dia}</div>
             </div>
             <div className="activity-item">
-              <div className="activity-label">Hora más activa:</div>
+              <div className="activity-label">{t('app.primer_chat.most_active_hour')}</div>
               <div className="activity-value">{resumen.hora_mas_activa.hora}:00</div>
             </div>
           </div>
@@ -416,7 +500,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
       
       {/* Gráfico de actividad por día de la semana */}
       <div className="chart-container">
-        <h3>Actividad por Día de la Semana</h3>
+        <h3>{t('app.primer_chat.activity_by_day')}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart
             data={prepararDatosDiaSemana()}
@@ -430,11 +514,11 @@ const AnalisisPrimerChat = ({ operationId }) => {
               height={windowWidth <= 480 ? 60 : 30}
             />
             <YAxis />
-            <Tooltip formatter={(value) => [`${value} mensajes`, 'Mensajes']} />
+            <Tooltip formatter={(value) => [`${value} ${t('messages')}`, t('messages')]} />
             <Legend />
             <Bar 
               dataKey="mensajes" 
-              name="Mensajes" 
+              name={t('messages')} 
               fill="#25D366"
               radius={[4, 4, 0, 0]}
             />
@@ -444,7 +528,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
       
       {/* Gráfico de actividad por hora del día */}
       <div className="chart-container">
-        <h3>Actividad por Hora del Día</h3>
+        <h3>{t('app.primer_chat.activity_by_hour')}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart
             data={prepararDatosHora()}
@@ -459,12 +543,12 @@ const AnalisisPrimerChat = ({ operationId }) => {
               height={60}
             />
             <YAxis />
-            <Tooltip formatter={(value) => [`${value} mensajes`, 'Mensajes']} />
+            <Tooltip formatter={(value) => [`${value} ${t('messages')}`, t('messages')]} />
             <Legend />
             <Line 
               type="monotone" 
               dataKey="mensajes" 
-              name="Mensajes" 
+              name={t('messages')} 
               stroke="#4285f4"
               strokeWidth={2}
               dot={{ stroke: '#4285f4', strokeWidth: 2, r: 4 }}
@@ -476,7 +560,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
       
       {/* Gráfico de mensajes por usuario (top 5) */}
       <div className="chart-container">
-        <h3>Top 5 Usuarios más Activos</h3>
+        <h3>{t('app.primer_chat.top_users')}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
@@ -513,7 +597,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
       
       {/* NUEVO: Gráfico de tendencia mes a mes del tiempo de respuesta */}
       <div className="chart-container tiempo-respuesta-chart">
-        <h3>Tendencia del Tiempo de Respuesta (minutos)</h3>
+        <h3>{t('app.primer_chat.response_time_trend')}</h3>
         <ResponsiveContainer width="100%" height={450}>
           <LineChart
             data={prepararDatosTiempoRespuesta()}
@@ -527,12 +611,12 @@ const AnalisisPrimerChat = ({ operationId }) => {
               height={80}
             />
             <YAxis 
-              label={{ value: 'Minutos', angle: -90, position: 'insideLeft', offset: -5 }}
+              label={{ value: t('app.top_profiles.gunslinger.response_time'), angle: -90, position: 'insideLeft', offset: -5 }}
               domain={['auto', 'auto']}
             />
             <Tooltip 
-              formatter={(value, name) => [`${value} min`, acortarNombre(name)]}
-              labelFormatter={(label) => `Tiempo de respuesta: ${label}`}
+              formatter={(value, name) => [`${value} ${t('app.top_profiles.gunslinger.response_time').toLowerCase()}`, acortarNombre(name)]}
+              labelFormatter={(label) => `${t('app.primer_chat.response_time_trend')}: ${label}`}
             />
             <Legend 
               layout="horizontal"
@@ -545,7 +629,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
               // Verificar si hay datos
               const datosGrafico = prepararDatosTiempoRespuesta();
               if (!datosGrafico || datosGrafico.length === 0) {
-                return <text x={300} y={140} textAnchor="middle">No hay datos disponibles</text>;
+                return <text x={300} y={140} textAnchor="middle">{t('app.top_profiles.no_data')}</text>;
               }
               
               // Extraer los nombres de usuario del primer elemento (excluyendo props especiales)
@@ -577,14 +661,14 @@ const AnalisisPrimerChat = ({ operationId }) => {
         {/* Mensaje informativo opcional */}
         {!prepararDatosTiempoRespuesta() || prepararDatosTiempoRespuesta().length === 0 ? (
           <div style={{textAlign: 'center', padding: '20px', color: '#666'}}>
-            No hay datos suficientes para mostrar tiempos de respuesta.
+            {t('app.primer_chat.insufficient_data')}
           </div>
         ) : null}
       </div>
 
       {/* NUEVO: Gráfico de porcentaje de mensajes por usuario por mes */}
       <div className="chart-container">
-        <h3>Tendencia de Interés (Mensajes por Usuario por Mes)</h3>
+        <h3>{t('app.primer_chat.interest_trend')}</h3>
         {(() => {
           const datosGrafico = prepararDatosMensajesPorMes();
           console.log("Datos para el gráfico de porcentajes:", datosGrafico);
@@ -606,11 +690,11 @@ const AnalisisPrimerChat = ({ operationId }) => {
                 <YAxis 
                   tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
                   domain={[0, 1]}
-                  label={{ value: 'Porcentaje', angle: -90, position: 'insideLeft' }}
+                  label={{ value: t('app.top_profiles.vampire.percentage'), angle: -90, position: 'insideLeft' }}
                 />
                 <Tooltip 
                   formatter={(value, name) => [`${(value * 100).toFixed(1)}%`, acortarNombre(name)]}
-                  labelFormatter={(label) => `Distribución mensajes: ${label}`}
+                  labelFormatter={(label) => `${t('app.primer_chat.interest_trend')}: ${label}`}
                 />
                 <Legend 
                   layout="horizontal"
@@ -622,7 +706,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
                 {(() => {
                   // Si no hay datos, mostrar mensaje
                   if (datosGrafico.length === 0) {
-                    return <text x={150} y={200} textAnchor="middle" fill="#999">No hay datos disponibles</text>;
+                    return <text x={150} y={200} textAnchor="middle" fill="#999">{t('app.top_profiles.no_data')}</text>;
                   }
                   
                   // Extraer los nombres de usuario del primer elemento (excluyendo props especiales)

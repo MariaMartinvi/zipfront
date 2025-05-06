@@ -18,12 +18,13 @@ import SimplePaymentSuccess from './SimplePaymentSuccess';
 import PaymentSuccessBanner from './PaymentSuccessBanner';
 import { useAuth } from './AuthContext';
 import AuthDebug from './AuthDebug'; // Optional for debugging
-import { deleteFiles, uploadFile, getMistralResponse } from './fileService';
+import { deleteFiles, uploadFile, getMistralResponse, startChatAnalysis } from './fileService';
 import Contact from './Paginasextra/Contact';
 import FAQ from './Paginasextra/FAQ';
 import TermsOfService from './Paginasextra/TermsOfService';
 import PrivacyPolicy from './Paginasextra/PrivacyPolicy';
 import AppPreview from './AppPreview';
+import { useTranslation } from 'react-i18next'; // Importar useTranslation
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -59,6 +60,7 @@ function PlansWithLocationCheck({ user }) {
 }
 
 function App() {
+  const { t, i18n } = useTranslation(); // Inicializar hook de traducción
   const [operationId, setOperationId] = useState(null);
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -231,122 +233,93 @@ function App() {
     }
   };
 
+  // Función para procesar el archivo ZIP una vez validado y autorizado
   const processZipFile = async (file) => {
-    addDebugMessage(`Enviando archivo al backend: ${file.name} (${file.size} bytes) - Tipo: ${file.type}`);
-    
-    // Asegurarse una última vez que el archivo tiene el tipo MIME correcto
-    let finalFile = file;
-    if (file.name.toLowerCase().endsWith('.zip') && file.type !== 'application/zip') {
-      try {
-        finalFile = new File([file], file.name, {
-          type: 'application/zip',
-          lastModified: file.lastModified
-        });
-        addDebugMessage(`Tipo MIME corregido una última vez: ${finalFile.type}`);
-      } catch (error) {
-        addDebugMessage(`Error al corregir tipo MIME: ${error.message}`);
-        // Usar el archivo original si falla la conversión
-        finalFile = file;
-      }
+    if (!file) {
+      setError(t('error.file_type'));
+      setIsLoading(false);
+      return;
     }
-    
-    const formData = new FormData();
-    formData.append('zipFile', finalFile);
-    
+
     try {
-      // Mostrar la URL a la que se está enviando la solicitud
-      addDebugMessage(`URL de API: ${API_URL}/api/extract`);
+      setIsLoading(true);
+      setError('');
+      setProgressMessage(t('app.loading_status'));
       
-      // Set operation_id and show analysis sections right after uploading files
-      setShowAnalysis(true);
+      // Limpiar cualquier operación previa
+      setOperationId(null);
+      setChatGptResponse('');
+      setShowChatGptResponse(false);
       
-      // Add timeout to prevent hanging requests
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      addDebugMessage(`Procesando archivo: ${file.name} (${Math.round(file.size / 1024)} KB)`);
       
+      // Crear FormData para subir el archivo
+      const formData = new FormData();
+      formData.append('zipFile', file);
+      formData.append('user_id', user ? user.uid : 'anonymous');
+      
+      // Enviar directamente a la API de extracción
+      addDebugMessage('Enviando solicitud POST a /api/extract...');
       const response = await fetch(`${API_URL}/api/extract`, {
         method: 'POST',
-        body: formData,
-        signal: controller.signal,
-        headers: {
-          'Accept': 'application/json'
-        }
+        body: formData
       });
       
-      // Clear the timeout since we got a response
-      clearTimeout(timeoutId);
-      
       if (!response.ok) {
-        const errorText = await response.text();
-        addDebugMessage(`Error en respuesta del servidor: ${response.status}, ${errorText}`);
-        
-        try {
-          const errorData = JSON.parse(errorText);
-          throw new Error(errorData.error || `Error ${response.status}`);
-        } catch (jsonError) {
-          throw new Error(`Error del servidor: ${response.status}`);
-        }
+        throw new Error(`Error en la extracción: ${response.status} ${response.statusText}`);
       }
       
-      const result = await response.json();
-      addDebugMessage(`Respuesta exitosa: ${result.files?.length || 0} archivos`);
+      const data = await response.json();
+      addDebugMessage(`Respuesta de /api/extract: ${JSON.stringify(data).substring(0, 200)}...`);
       
-      // Set the operation_id immediately so analysis components can start loading their data
-      if (result.operation_id) {
-        setOperationId(result.operation_id);
-        
-        // Hacer scroll automático cuando se obtiene el operation_id
-        setTimeout(() => scrollToAnalysis(), 300);
-        
-        // Trigger Mistral analysis after successful file extraction
-        try {
-          addDebugMessage(`Iniciando análisis Mistral para operación ${result.operation_id}`);
-          const mistralResponse = await fetch(`${API_URL}/api/analyze-mistral/${result.operation_id}`, {
-            method: 'POST'
-          });
-          
-          if (mistralResponse.ok) {
-            addDebugMessage(`Análisis Mistral iniciado correctamente para operación ${result.operation_id}`);
-          } else {
-            addDebugMessage(`Error al iniciar análisis Mistral: ${mistralResponse.status}`);
-          }
-        } catch (mistralError) {
-          addDebugMessage(`Error al iniciar análisis Mistral: ${mistralError.message}`);
-        }
+      if (!data.operation_id) {
+        throw new Error('No se recibió un ID de operación');
       }
       
-      const extractedFiles = result.files.map(file => ({
-        name: file.name,
-        size: file.size,
-        path: file.path,
-        operationId: result.operation_id,
-        hasText: file.has_text
-      }));
+      // Iniciar análisis con ChatGPT/Mistral usando el idioma actual
+      const currentLanguage = i18n.language; // Obtener el idioma actual
+      addDebugMessage(`Iniciando análisis con idioma: ${currentLanguage}`);
       
-      setFiles(extractedFiles);
+      const analysisResult = await startChatAnalysis(data.operation_id, currentLanguage);
       
-      // Handle ChatGPT/Mistral response separately
-      if (result.chatgpt_response || result.mistral_response) {
-        addDebugMessage('Respuesta de AI recibida');
-        setChatGptResponse(result.chatgpt_response || result.mistral_response);
-        setShowChatGptResponse(true);
-      } else {
-        setChatGptResponse("");
-        setShowChatGptResponse(false);
+      if (!analysisResult.success) {
+        throw new Error(`Error al iniciar el análisis: ${analysisResult.error}`);
       }
       
-      // Indicar éxito para que la lógica de incremento de contador funcione
-      addDebugMessage('Procesamiento de archivo ZIP completado con éxito');
-      return result;
+      // Actualizar ID de operación para seguimiento y visualización
+      handleZipExtraction(data);
+      
+      // Actualizar el contador de uso del usuario
+      if (user && user.uid) {
+        incrementChatUsage(user.uid).catch(error => {
+          console.error("Error al incrementar el uso de chat:", error);
+          addDebugMessage(`Error al incrementar estadísticas de uso: ${error.message}`);
+        });
+      }
+      
+      // Incrementar el contador de uso global (estadística general)
+      try {
+        const response = await fetch(`${API_URL}/api/increment-usage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: user ? user.uid : 'anonymous' })
+        });
+        const data = await response.json();
+        addDebugMessage(`Uso global incrementado: ${JSON.stringify(data)}`);
+      } catch (usageError) {
+        addDebugMessage(`Error al incrementar uso global: ${usageError.message}`);
+        // No fallar por este error, es solo una estadística
+      }
+      
+      setIsLoading(false);
+      
     } catch (error) {
-      // Handle abort/timeout errors specifically
-      if (error.name === 'AbortError') {
-        addDebugMessage("La solicitud tardó demasiado tiempo en completarse");
-        throw new Error("La operación tardó demasiado tiempo. Por favor, inténtalo de nuevo más tarde.");
-      }
-      
-      addDebugMessage(`Error procesando ZIP: ${error.message}. Inténtalo más tarde.`);
-      throw error;
+      console.error('Error procesando archivo:', error);
+      setIsLoading(false);
+      setError(error.message);
+      addDebugMessage(`Error: ${error.message}`);
     }
   };
 
@@ -411,7 +384,7 @@ function App() {
                       file.type === ''; // Google Drive a veces puede enviar tipo vacío
     
     if (!isZipFile) {
-      setError('Por favor, sube un archivo ZIP válido (.zip)');
+      setError(t('app.errors.zip_file'));
       return;
     }
     
@@ -1280,21 +1253,21 @@ const tryDeleteFiles = async (operationId) => {
   const UpgradeModal = () => (
     <div className="upgrade-modal">
       <div className="upgrade-modal-content">
-        <h2>Límite de análisis alcanzado</h2>
-        <p>Has alcanzado el límite de análisis de conversaciones para tu plan actual.</p>
-        <p>Actualiza a un plan superior para continuar analizando tus conversaciones.</p>
+        <h2>{t('app.upgrade_modal.title')}</h2>
+        <p>{t('app.upgrade_modal.message')}</p>
+        <p>{t('app.upgrade_modal.upgrade')}</p>
         <div className="upgrade-buttons">
           <button 
             className="view-plans-button"
             onClick={() => window.location.href = '/plans'}
           >
-            Ver Planes
+            {t('app.upgrade_modal.view_plans')}
           </button>
           <button 
             className="close-button"
             onClick={() => setShowUpgradeModal(false)}
           >
-            Cerrar
+            {t('app.upgrade_modal.close')}
           </button>
         </div>
       </div>
@@ -1361,7 +1334,7 @@ const tryDeleteFiles = async (operationId) => {
           <div className="mobile-progress-indicator">
             <div className="progress-content">
               <div className="spinner-small"></div>
-              <span>{progressMessage || (isLoading ? 'Procesando chat: Analizando mensajes...' : 'Generando análisis con IA: Procesando datos...')}</span>
+              <span>{progressMessage || (isLoading ? t('app.progress.processing') : t('app.progress.generating'))}</span>
             </div>
             <div className="progress-bar">
               <div className="progress-value"></div>
@@ -1376,7 +1349,7 @@ const tryDeleteFiles = async (operationId) => {
             onClick={scrollToAnalysis}
           >
             <span className="icon">📊</span>
-            Ver Análisis
+            {t('app.buttons.view_analysis')}
           </button>
         )}
         
@@ -1398,12 +1371,12 @@ const tryDeleteFiles = async (operationId) => {
                   {/* Mostrar componentes de análisis estadístico */}
                   {operationId && (
                     <div className="analysis-container" ref={analysisRef}>
-                      <h2>Análisis Estadístico</h2>
+                      <h2>{t('app.analysis.statistical')}</h2>
                       
                       {/* Reemplazar el spinner individual con un contenedor simple */}
                       {isLoading ? (
                         <div className="empty-placeholder-container">
-                          <p>Preparando análisis estadístico de la conversación...</p>
+                          <p>{t('app.analysis.preparing_statistical')}</p>
                         </div>
                       ) : (
                         <>
@@ -1424,11 +1397,11 @@ const tryDeleteFiles = async (operationId) => {
                   {/* Mostrar componentes de análisis psicológico */}
                   {operationId && (
                     <div className="chat-analysis-section">
-                      <h2>Análisis Psicológico</h2>
+                      <h2>{t('app.analysis.psychological')}</h2>
                       
                       {isFetchingMistral ? (
                         <div className="empty-placeholder-container">
-                          <p>Preparando análisis psicológico de la conversación...</p>
+                          <p>{t('app.analysis.preparing_psychological')}</p>
                         </div>
                       ) : (
                         chatGptResponse && <Chatgptresultados chatGptResponse={chatGptResponse} />
@@ -1444,27 +1417,27 @@ const tryDeleteFiles = async (operationId) => {
                         <AppPreview />
                         
                         <div className="login-required">
-                          <h2>Inicia sesión para comenzar</h2>
-                          <p>Necesitas iniciar sesión para analizar conversaciones.</p>
+                          <h2>{t('app.login_required.title')}</h2>
+                          <p>{t('app.login_required.description')}</p>
                           <div className="auth-buttons">
                             <button 
                               className="login-button"
                               onClick={() => window.location.href = '/login'}
                             >
-                              Iniciar Sesión
+                              {t('app.login_required.login')}
                             </button>
                             <button 
                               className="register-button"
                               onClick={() => window.location.href = '/register'}
                             >
-                              Crear Cuenta
+                              {t('app.login_required.register')}
                             </button>
                           </div>
                         </div>
                       </>
                     ) : (
                       <>
-                        <h2>{showAnalysis ? "¿Quieres analizar otro chat?" : "Analiza tu chat de "}<span className="whatsapp-text">WhatsApp</span></h2>
+                        <h2>{showAnalysis ? t('app.upload.another') : t('app.upload.title') + " "}<span className="whatsapp-text">WhatsApp</span></h2>
                         
                         {/* Carrusel de instrucciones de WhatsApp separado del botón */}
                         <WhatsappInstructions />
@@ -1481,8 +1454,8 @@ const tryDeleteFiles = async (operationId) => {
                             />
                             <div className="file-upload-text">
                               <span className="upload-icon">📂</span>
-                              <span>Sube un archivo ZIP</span>
-                              <span className="file-upload-subtext">o comparte directamente desde WhatsApp siguiendo los pasos anteriores</span>
+                              <span>{t('app.upload.button')}</span>
+                              <span className="file-upload-subtext">{t('app.upload.subtext')}</span>
                             </div>
                           </label>
                         </div>
@@ -1543,7 +1516,7 @@ const tryDeleteFiles = async (operationId) => {
             <div className="loading-status-indicator">
               <div className="spinner-small"></div>
               <div className="loading-status-text">
-                Procesando datos...
+                {t('app.loading_status')}
               </div>
             </div>
           )}
@@ -1553,20 +1526,20 @@ const tryDeleteFiles = async (operationId) => {
             <div className="refresh-confirmation">
               <div className="refresh-confirmation-icon">⚠️</div>
               <div className="refresh-confirmation-content">
-                <h3>¿Seguro que quieres salir?</h3>
-                <p>Se perderán todos los datos del análisis actual.</p>
+                <h3>{t('app.refresh_confirmation.title')}</h3>
+                <p>{t('app.refresh_confirmation.message')}</p>
                 <div className="refresh-confirmation-buttons">
                   <button 
                     className="refresh-confirmation-cancel" 
                     onClick={handleCancelRefresh}
                   >
-                    Cancelar
+                    {t('app.refresh_confirmation.cancel')}
                   </button>
                   <button 
                     className="refresh-confirmation-continue" 
                     onClick={handleConfirmRefresh}
                   >
-                    Sí, quiero salir
+                    {t('app.refresh_confirmation.confirm')}
                   </button>
                 </div>
               </div>

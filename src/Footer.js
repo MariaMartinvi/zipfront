@@ -1,8 +1,11 @@
 import React from 'react';
 import './Footer.css';
+import { useTranslation } from 'react-i18next';
 import { FaHome, FaQuestionCircle, FaEnvelope, FaFileContract, FaShieldAlt, FaFacebook, FaTwitter, FaInstagram, FaWhatsapp, FaArrowUp } from 'react-icons/fa';
 
 const Footer = () => {
+  const { t } = useTranslation();
+  
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -15,33 +18,33 @@ const Footer = () => {
       <div className="footer-content">
         <div className="footer-grid">
           <div className="footer-section">
-            <h3>Navegación</h3>
+            <h3>{t('header.home')}</h3>
             <div className="footer-links">
               <a href="/" className="footer-link">
                 <FaHome className="footer-icon" />
-                <span>Inicio</span>
+                <span>{t('header.home')}</span>
               </a>
               <a href="/faq" className="footer-link">
                 <FaQuestionCircle className="footer-icon" />
-                <span>Preguntas Frecuentes</span>
+                <span>{t('footer.faq')}</span>
               </a>
               <a href="/contact" className="footer-link">
                 <FaEnvelope className="footer-icon" />
-                <span>Contacto</span>
+                <span>{t('footer.contact')}</span>
               </a>
             </div>
           </div>
           
           <div className="footer-section">
-            <h3>Legal</h3>
+            <h3>{t('footer.legal', 'Legal')}</h3>
             <div className="footer-links">
               <a href="/terms" className="footer-link">
                 <FaFileContract className="footer-icon" />
-                <span>Términos de Servicio</span>
+                <span>{t('footer.terms')}</span>
               </a>
               <a href="/privacy" className="footer-link">
                 <FaShieldAlt className="footer-icon" />
-                <span>Política de Privacidad</span>
+                <span>{t('footer.privacy')}</span>
               </a>
             </div>
           </div>
@@ -67,8 +70,12 @@ const Footer = () => {
       </div>
       
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} Mis Análisis de WhatsApp. Todos los derechos reservados.</p>
-        <button className="scroll-top" onClick={scrollToTop} aria-label="Volver arriba">
+        <p>&copy; {new Date().getFullYear()} {t('footer.rights')}</p>
+        <button 
+          className="scroll-top" 
+          onClick={scrollToTop} 
+          aria-label={t('footer.scroll_top')}
+        >
           <FaArrowUp />
         </button>
       </div>

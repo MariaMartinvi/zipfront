@@ -1,19 +1,21 @@
-
-
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { AuthProvider } from './AuthContext';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+// Importar i18n
+import './i18n';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <Suspense fallback={<div>Cargando traducciones...</div>}>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </Suspense>
   </React.StrictMode>
 );
 

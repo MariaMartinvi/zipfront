@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { marked } from 'marked'; // Importamos marked
 import DOMPurify from 'dompurify'; // Para seguridad
+import { useTranslation } from 'react-i18next';
 import './Chatgptresultados.css';
 
 function Chatgptresultados({ chatGptResponse }) {
+  const { i18n } = useTranslation();
   const [htmlContent, setHtmlContent] = useState('');
 
   useEffect(() => {
@@ -25,11 +27,23 @@ function Chatgptresultados({ chatGptResponse }) {
     }
   }, [chatGptResponse]);
 
+  // Efecto para aplicar personalizaciones específicas según el idioma
+  useEffect(() => {
+    // Si cambia el idioma, no es necesario recargar todo, pero podríamos aplicar estilos específicos
+    // o modificaciones menores si fuera necesario
+    const container = document.getElementById('analysisResults');
+    if (container) {
+      // Podríamos aplicar ajustes específicos por idioma si fuera necesario
+      // Por ejemplo, fuentes especiales para ciertos idiomas, o estilos específicos
+      console.log(`Idioma actualizado a: ${i18n.language}`);
+    }
+  }, [i18n.language]);
+
   // Renderizar el HTML generado
   return (
     <div 
       id="analysisResults" 
-      className="chat-analysis-container"
+      className={`chat-analysis-container language-${i18n.language}`}
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );
