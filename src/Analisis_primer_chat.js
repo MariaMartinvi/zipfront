@@ -488,7 +488,16 @@ const AnalisisPrimerChat = ({ operationId }) => {
           <div className="activity-highlights">
             <div className="activity-item">
               <div className="activity-label">{t('app.primer_chat.most_active_day')}</div>
-              <div className="activity-value">{resumen.dia_semana_mas_activo.dia}</div>
+              <div className="activity-value">
+                {resumen.dia_semana_mas_activo.dia === "Lunes" ? t('weekdays.monday') :
+                 resumen.dia_semana_mas_activo.dia === "Martes" ? t('weekdays.tuesday') :
+                 resumen.dia_semana_mas_activo.dia === "Miércoles" ? t('weekdays.wednesday') :
+                 resumen.dia_semana_mas_activo.dia === "Jueves" ? t('weekdays.thursday') :
+                 resumen.dia_semana_mas_activo.dia === "Viernes" ? t('weekdays.friday') :
+                 resumen.dia_semana_mas_activo.dia === "Sábado" ? t('weekdays.saturday') :
+                 resumen.dia_semana_mas_activo.dia === "Domingo" ? t('weekdays.sunday') :
+                 resumen.dia_semana_mas_activo.dia}
+              </div>
             </div>
             <div className="activity-item">
               <div className="activity-label">{t('app.primer_chat.most_active_hour')}</div>
@@ -582,7 +591,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip formatter={(value, name) => [`${value} mensajes`, acortarNombre(name)]} />
+            <Tooltip formatter={(value, name) => [`${value} ${t('messages')}`, acortarNombre(name)]} />
             {windowWidth <= 480 && (
               <Legend
                 layout="vertical"

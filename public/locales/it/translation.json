@@ -193,9 +193,9 @@
     },
     "login_required": {
       "title": "Accedi per iniziare",
-      "message": "Devi accedere per analizzare le conversazioni",
-      "login_button": "Accedi",
-      "register_button": "Crea Account"
+      "description": "Devi accedere per analizzare le conversazioni",
+      "login": "Accedi",
+      "register": "Crea Account"
     }
   },
   "subscription": {
@@ -424,6 +424,7 @@
     "saturday": "Sabato",
     "sunday": "Domenica"
   },
+  "messages": "Messaggi",
   "actions": {
     "upload": "Carica Chat"
   },
