@@ -777,8 +777,8 @@ function App() {
             return false;
           }
           
-          // Wait and try again with exponential backoff
-          const delay = Math.min(3000 * Math.pow(1.5, attempts - 1), 30000); // 3s, 4.5s, 6.8s... hasta máximo 30s
+          // Reducir el tiempo de espera entre intentos
+          const delay = Math.min(1000 * Math.pow(1.1, attempts - 1), 5000); // Reducido de 2000 a 1000 y de 15000 a 5000
           addDebugMessage(`Esperando ${Math.round(delay/1000)}s antes del siguiente intento...`);
           await new Promise(resolve => setTimeout(resolve, delay));
           return await checkResponse();
@@ -792,8 +792,8 @@ function App() {
             return false;
           }
           
-          // Para errores de red, esperar más tiempo antes de reintentar
-          const delay = Math.min(5000 * Math.pow(1.5, attempts - 1), 30000);
+          // Reducir el tiempo de espera para errores de red
+          const delay = Math.min(2000 * Math.pow(1.2, attempts - 1), 15000); // Reducido de 5000 a 2000 y de 30000 a 15000
           addDebugMessage(`Error de red. Esperando ${Math.round(delay/1000)}s antes del siguiente intento...`);
           await new Promise(resolve => setTimeout(resolve, delay));
           return await checkResponse();

@@ -158,6 +158,11 @@ const AnalisisPrimerChat = ({ operationId }) => {
         if (!data || Object.keys(data).length === 0) {
           throw new Error(t('app.errors.empty_data'));
         }
+
+        // Verificar que los datos necesarios estén presentes
+        if (!data.mensajes_por_usuario || !data.actividad_por_hora || !data.actividad_por_dia_semana) {
+          throw new Error(t('app.errors.incomplete_data'));
+        }
         
         // Establecer los datos y DESPUÉS cambiar el estado de carga
         setDatos(data);
@@ -166,7 +171,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
         // antes de quitar el indicador de carga
         setTimeout(() => {
           setCargando(false);
-        }, 300);
+        }, 500); // Aumentado a 500ms para dar más tiempo al procesamiento
       })
       .catch(err => {
         console.error("Error cargando datos:", err);
@@ -323,13 +328,11 @@ const AnalisisPrimerChat = ({ operationId }) => {
   const prepararDatosMensajesPorMes = () => {
     if (!datos || !datos.mensajes_por_mes_porcentaje) return [];
     
+    // Obtener los 5 usuarios más activos en total
+    const usuariosMasActivos = obtenerUsuariosUnicos();
+    
     // Ordenar meses cronológicamente
     const mesesOrdenados = Object.keys(datos.mensajes_por_mes_porcentaje).sort();
-    
-    // Obtener lista de usuarios para incluir en el gráfico
-    const usuariosGrafico = obtenerUsuariosUnicos();
-    
-    console.log("Usuarios para el gráfico:", usuariosGrafico);
     
     // Preparar datos para el gráfico
     return mesesOrdenados.map(mes => {
@@ -343,25 +346,27 @@ const AnalisisPrimerChat = ({ operationId }) => {
         total: datosMes.total
       };
       
-      // Agregar datos de cada usuario como proporción (0-1)
-      usuariosGrafico.forEach(usuario => {
-        if (datosUsuarios[usuario] && typeof datosUsuarios[usuario].porcentaje === 'number') {
-          // Convertir el porcentaje a una proporción (dividir por 100)
+      // Agregar datos de los 5 usuarios más activos en total
+      usuariosMasActivos.forEach(usuario => {
+        if (datosUsuarios[usuario]) {
           resultado[usuario] = datosUsuarios[usuario].porcentaje / 100;
         } else {
-          // Si no hay datos para este usuario en este mes, asignar 0
           resultado[usuario] = 0;
         }
       });
 
-      // Calcular el porcentaje de "Otros"
-      let porcentajeOtros = 1; // Comenzamos con 100%
-      usuariosGrafico.forEach(usuario => {
-        if (resultado[usuario]) {
-          porcentajeOtros -= resultado[usuario];
+      // Calcular el porcentaje de "Otros" sumando todos los usuarios que no están en el top 5
+      let porcentajeOtros = 0;
+      Object.entries(datosUsuarios).forEach(([usuario, datos]) => {
+        if (!usuariosMasActivos.includes(usuario)) {
+          porcentajeOtros += datos.porcentaje / 100;
         }
       });
-      resultado['Otros'] = Math.max(0, porcentajeOtros); // Asegurarnos de que no sea negativo
+      
+      // Agregar "Otros" si hay algún porcentaje
+      if (porcentajeOtros > 0) {
+        resultado['Otros'] = porcentajeOtros;
+      }
       
       return resultado;
     });

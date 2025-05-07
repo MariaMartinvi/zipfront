@@ -100,128 +100,164 @@ const AnalisisTop = ({ operationId }) => {
     // Asegurar que el estado de carga esté activo
     setCargando(true);
     
-    fetch(url)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(t('app.errors.loading_data_top'));
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Datos recibidos de la API:', data);
-        // Verificar explícitamente el formato
-        if (!data.formato_chat) {
-          console.warn('El formato de chat no está especificado en la respuesta');
-        } else {
-          console.log('Formato de chat detectado:', data.formato_chat);
-        }
-        
-        // Verificar que los datos no sean nulos o vacíos
-        if (!data || !data.categorias || Object.keys(data.categorias).length === 0) {
-          throw new Error(t('app.errors.empty_categories'));
-        }
-        
-        // Transformar los datos al formato esperado
-        const datosTransformados = {
-          formato_chat: data.formato_chat || 'desconocido',
-          categorias: {
-            profesor: {
-              nombre: data.categorias?.profesor?.nombre || 'Sin datos',
-              palabras_unicas: data.categorias?.profesor?.palabras_unicas || 0,
-              ratio: data.categorias?.profesor?.ratio || 0,
-              mensajes: data.categorias?.profesor?.mensajes || 0
-            },
-            rollero: {
-              nombre: data.categorias?.rollero?.nombre || 'Sin datos',
-              palabras_por_mensaje: data.categorias?.rollero?.palabras_por_mensaje || 0,
-              mensajes: data.categorias?.rollero?.mensajes || 0
-            },
-            pistolero: {
-              nombre: data.categorias?.pistolero?.nombre || 'Sin datos',
-              tiempo_respuesta_promedio: data.categorias?.pistolero?.tiempo_respuesta_promedio || 0,
-              mensajes: data.categorias?.pistolero?.mensajes || 0
-            },
-            vampiro: {
-              nombre: data.categorias?.vampiro?.nombre || 'Sin datos',
-              mensajes_noche: data.categorias?.vampiro?.mensajes_noche || 0,
-              porcentaje: data.categorias?.vampiro?.porcentaje || 0,
-              mensajes: data.categorias?.vampiro?.mensajes || 0
-            },
-            cafeconleche: {
-              nombre: data.categorias?.cafeconleche?.nombre || 'Sin datos',
-              hora_formateada: data.categorias?.cafeconleche?.hora_formateada || '00:00',
-              mensajes: data.categorias?.cafeconleche?.mensajes || 0
-            },
-            dejaenvisto: {
-              nombre: data.categorias?.dejaenvisto?.nombre || 'Sin datos',
-              tiempo_respuesta_promedio: data.categorias?.dejaenvisto?.tiempo_respuesta_promedio || 0,
-              mensajes: data.categorias?.dejaenvisto?.mensajes || 0
-            },
-            narcicista: {
-              nombre: data.categorias?.narcicista?.nombre || 'Sin datos',
-              menciones_yo: data.categorias?.narcicista?.menciones_yo || 0,
-              porcentaje: data.categorias?.narcicista?.porcentaje || 0,
-              mensajes: data.categorias?.narcicista?.mensajes || 0
-            },
-            chismoso: {
-              nombre: data.categorias?.chismoso?.nombre || 'Sin datos',
-              menciones_otros: data.categorias?.chismoso?.menciones_otros || 0,
-              porcentaje: data.categorias?.chismoso?.porcentaje || 0,
-              mensajes: data.categorias?.chismoso?.mensajes || 0
-            },
-            happyflower: {
-              nombre: data.categorias?.happyflower?.nombre || 'Sin datos',
-              emojis_totales: data.categorias?.happyflower?.emojis_totales || 0,
-              emojis_por_mensaje: data.categorias?.happyflower?.emojis_por_mensaje || 0,
-              mensajes: data.categorias?.happyflower?.mensajes || 0
-            },
-            puntofinal: {
-              nombre: data.categorias?.puntofinal?.nombre || 'Sin datos',
-              conversaciones_terminadas: data.categorias?.puntofinal?.conversaciones_terminadas || 0,
-              mensajes: data.categorias?.puntofinal?.mensajes || 0
-            },
-            fosforo: {
-              nombre: data.categorias?.fosforo?.nombre || 'Sin datos',
-              conversaciones_iniciadas: data.categorias?.fosforo?.conversaciones_iniciadas || 0,
-              mensajes: data.categorias?.fosforo?.mensajes || 0
-            },
-            menosesmas: {
-              nombre: data.categorias?.menosesmas?.nombre || 'Sin datos',
-              longitud_promedio: data.categorias?.menosesmas?.longitud_promedio || 0,
-              mensajes: data.categorias?.menosesmas?.mensajes || 0
-            },
-            amoroso: {
-              nombre: data.categorias?.amoroso?.nombre || 'Sin datos',
-              emojis_amor: data.categorias?.amoroso?.emojis_amor || 0,
-              porcentaje_amor: data.categorias?.amoroso?.porcentaje_amor || 0,
-              mensajes: data.categorias?.amoroso?.mensajes || 0
-            },
-            sicopata: {
-              nombre: data.categorias?.sicopata?.nombre || 'Sin datos',
-              max_mensajes_seguidos: data.categorias?.sicopata?.max_mensajes_seguidos || 0,
-              mensajes: data.categorias?.sicopata?.mensajes || 0
+    // Función para verificar que los datos estén completos
+    const verificarDatosCompletos = (data) => {
+      if (!data || !data.categorias) return false;
+      
+      // Verificar que todas las categorías necesarias estén presentes
+      const categoriasRequeridas = [
+        'profesor', 'rollero', 'pistolero', 'vampiro', 'cafeconleche',
+        'dejaenvisto', 'narcicista', 'chismoso', 'happyflower',
+        'puntofinal', 'fosforo', 'menosesmas', 'amoroso', 'sicopata'
+      ];
+      
+      return categoriasRequeridas.every(categoria => 
+        data.categorias[categoria] && 
+        data.categorias[categoria].nombre && 
+        data.categorias[categoria].mensajes !== undefined
+      );
+    };
+
+    // Función para reintentar la carga si es necesario
+    const cargarDatos = (intentos = 0) => {
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(t('app.errors.loading_data_top'));
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Datos recibidos de la API:', data);
+          
+          // Verificar explícitamente el formato
+          if (!data.formato_chat) {
+            console.warn('El formato de chat no está especificado en la respuesta');
+          } else {
+            console.log('Formato de chat detectado:', data.formato_chat);
+          }
+          
+          // Verificar que los datos no sean nulos o vacíos
+          if (!data || !data.categorias || Object.keys(data.categorias).length === 0) {
+            throw new Error(t('app.errors.empty_categories'));
+          }
+
+          // Verificar que los datos estén completos
+          if (!verificarDatosCompletos(data)) {
+            if (intentos < 3) { // Máximo 3 intentos
+              console.log(`Datos incompletos, reintentando... (intento ${intentos + 1})`);
+              setTimeout(() => cargarDatos(intentos + 1), 1000); // Esperar 1 segundo antes de reintentar
+              return;
+            } else {
+              throw new Error(t('app.errors.incomplete_data'));
             }
           }
-        };
-        
-        // Establecer los datos y esperar a que se procesen
-        setDatos(datosTransformados);
-        
-        // Usar un pequeño timeout para asegurar que los datos se han procesado
-        // antes de quitar el indicador de carga y seleccionar categoría
-        setTimeout(() => {
+          
+          // Transformar los datos al formato esperado
+          const datosTransformados = {
+            formato_chat: data.formato_chat || 'desconocido',
+            categorias: {
+              profesor: {
+                nombre: data.categorias?.profesor?.nombre || 'Sin datos',
+                palabras_unicas: data.categorias?.profesor?.palabras_unicas || 0,
+                ratio: data.categorias?.profesor?.ratio || 0,
+                mensajes: data.categorias?.profesor?.mensajes || 0
+              },
+              rollero: {
+                nombre: data.categorias?.rollero?.nombre || 'Sin datos',
+                palabras_por_mensaje: data.categorias?.rollero?.palabras_por_mensaje || 0,
+                mensajes: data.categorias?.rollero?.mensajes || 0
+              },
+              pistolero: {
+                nombre: data.categorias?.pistolero?.nombre || 'Sin datos',
+                tiempo_respuesta_promedio: data.categorias?.pistolero?.tiempo_respuesta_promedio || 0,
+                mensajes: data.categorias?.pistolero?.mensajes || 0
+              },
+              vampiro: {
+                nombre: data.categorias?.vampiro?.nombre || 'Sin datos',
+                mensajes_noche: data.categorias?.vampiro?.mensajes_noche || 0,
+                porcentaje: data.categorias?.vampiro?.porcentaje || 0,
+                mensajes: data.categorias?.vampiro?.mensajes || 0
+              },
+              cafeconleche: {
+                nombre: data.categorias?.cafeconleche?.nombre || 'Sin datos',
+                hora_formateada: data.categorias?.cafeconleche?.hora_formateada || '00:00',
+                mensajes: data.categorias?.cafeconleche?.mensajes || 0
+              },
+              dejaenvisto: {
+                nombre: data.categorias?.dejaenvisto?.nombre || 'Sin datos',
+                tiempo_respuesta_promedio: data.categorias?.dejaenvisto?.tiempo_respuesta_promedio || 0,
+                mensajes: data.categorias?.dejaenvisto?.mensajes || 0
+              },
+              narcicista: {
+                nombre: data.categorias?.narcicista?.nombre || 'Sin datos',
+                menciones_yo: data.categorias?.narcicista?.menciones_yo || 0,
+                porcentaje: data.categorias?.narcicista?.porcentaje || 0,
+                mensajes: data.categorias?.narcicista?.mensajes || 0
+              },
+              chismoso: {
+                nombre: data.categorias?.chismoso?.nombre || 'Sin datos',
+                menciones_otros: data.categorias?.chismoso?.menciones_otros || 0,
+                porcentaje: data.categorias?.chismoso?.porcentaje || 0,
+                mensajes: data.categorias?.chismoso?.mensajes || 0
+              },
+              happyflower: {
+                nombre: data.categorias?.happyflower?.nombre || 'Sin datos',
+                emojis_totales: data.categorias?.happyflower?.emojis_totales || 0,
+                emojis_por_mensaje: data.categorias?.happyflower?.emojis_por_mensaje || 0,
+                mensajes: data.categorias?.happyflower?.mensajes || 0
+              },
+              puntofinal: {
+                nombre: data.categorias?.puntofinal?.nombre || 'Sin datos',
+                conversaciones_terminadas: data.categorias?.puntofinal?.conversaciones_terminadas || 0,
+                mensajes: data.categorias?.puntofinal?.mensajes || 0
+              },
+              fosforo: {
+                nombre: data.categorias?.fosforo?.nombre || 'Sin datos',
+                conversaciones_iniciadas: data.categorias?.fosforo?.conversaciones_iniciadas || 0,
+                mensajes: data.categorias?.fosforo?.mensajes || 0
+              },
+              menosesmas: {
+                nombre: data.categorias?.menosesmas?.nombre || 'Sin datos',
+                longitud_promedio: data.categorias?.menosesmas?.longitud_promedio || 0,
+                mensajes: data.categorias?.menosesmas?.mensajes || 0
+              },
+              amoroso: {
+                nombre: data.categorias?.amoroso?.nombre || 'Sin datos',
+                emojis_amor: data.categorias?.amoroso?.emojis_amor || 0,
+                porcentaje_amor: data.categorias?.amoroso?.porcentaje_amor || 0,
+                mensajes: data.categorias?.amoroso?.mensajes || 0
+              },
+              sicopata: {
+                nombre: data.categorias?.sicopata?.nombre || 'Sin datos',
+                max_mensajes_seguidos: data.categorias?.sicopata?.max_mensajes_seguidos || 0,
+                mensajes: data.categorias?.sicopata?.mensajes || 0
+              }
+            }
+          };
+          
+          // Establecer los datos y esperar a que se procesen
+          setDatos(datosTransformados);
+          
+          // Usar un pequeño timeout para asegurar que los datos se han procesado
+          // antes de quitar el indicador de carga y seleccionar categoría
+          setTimeout(() => {
+            setCargando(false);
+            // Seleccionar la primera categoría por defecto
+            if (datosTransformados.categorias && Object.keys(datosTransformados.categorias).length > 0) {
+              setCategoriaSeleccionada(Object.keys(datosTransformados.categorias)[0]);
+            }
+          }, 500); // Aumentado a 500ms para dar más tiempo al procesamiento
+        })
+        .catch(err => {
+          console.error('Error cargando datos:', err);
+          setError(err.message);
           setCargando(false);
-          // Seleccionar la primera categoría por defecto
-          if (datosTransformados.categorias && Object.keys(datosTransformados.categorias).length > 0) {
-            setCategoriaSeleccionada(Object.keys(datosTransformados.categorias)[0]);
-          }
-        }, 300);
-      })
-      .catch(err => {
-        console.error('Error cargando datos:', err);
-        setError(err.message);
-        setCargando(false);
-      });
+        });
+    };
+
+    // Iniciar la carga de datos
+    cargarDatos();
   }, [operationId, t]);
 
   const renderDetalleCategoria = (categoria) => {
