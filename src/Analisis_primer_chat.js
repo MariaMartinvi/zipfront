@@ -327,13 +327,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
     const mesesOrdenados = Object.keys(datos.mensajes_por_mes_porcentaje).sort();
     
     // Obtener lista de usuarios para incluir en el gráfico
-    const usuariosGrafico = obtenerUsuariosUnicos().filter(usuario => {
-      // Verificar si este usuario tiene datos en algún mes
-      return mesesOrdenados.some(mes => {
-        const datosMes = datos.mensajes_por_mes_porcentaje[mes];
-        return datosMes.usuarios && datosMes.usuarios[usuario] && datosMes.usuarios[usuario].porcentaje > 0;
-      });
-    }).slice(0, 5); // Limitar a 5 usuarios
+    const usuariosGrafico = obtenerUsuariosUnicos();
     
     console.log("Usuarios para el gráfico:", usuariosGrafico);
     
@@ -349,14 +343,6 @@ const AnalisisPrimerChat = ({ operationId }) => {
         total: datosMes.total
       };
       
-      // Calcular el total de porcentajes para asegurar que suman 100%
-      let totalPorcentaje = 0;
-      usuariosGrafico.forEach(usuario => {
-        if (datosUsuarios[usuario] && typeof datosUsuarios[usuario].porcentaje === 'number') {
-          totalPorcentaje += datosUsuarios[usuario].porcentaje;
-        }
-      });
-      
       // Agregar datos de cada usuario como proporción (0-1)
       usuariosGrafico.forEach(usuario => {
         if (datosUsuarios[usuario] && typeof datosUsuarios[usuario].porcentaje === 'number') {
@@ -367,6 +353,15 @@ const AnalisisPrimerChat = ({ operationId }) => {
           resultado[usuario] = 0;
         }
       });
+
+      // Calcular el porcentaje de "Otros"
+      let porcentajeOtros = 1; // Comenzamos con 100%
+      usuariosGrafico.forEach(usuario => {
+        if (resultado[usuario]) {
+          porcentajeOtros -= resultado[usuario];
+        }
+      });
+      resultado['Otros'] = Math.max(0, porcentajeOtros); // Asegurarnos de que no sea negativo
       
       return resultado;
     });
@@ -376,46 +371,45 @@ const AnalisisPrimerChat = ({ operationId }) => {
   const obtenerUsuariosUnicos = () => {
     if (!datos) return [];
     
-    const usuarios = new Set();
+    // Crear un mapa para contar mensajes totales por usuario
+    const mensajesPorUsuario = new Map();
     
-    // Usuarios de tiempo de respuesta
+    // Contar mensajes de tiempo_respuesta_promedio_mes
     if (datos.tiempo_respuesta_promedio_mes) {
-      console.log("Extrayendo usuarios de tiempo_respuesta_promedio_mes");
       Object.values(datos.tiempo_respuesta_promedio_mes).forEach(usuariosDatos => {
         Object.keys(usuariosDatos).forEach(usuario => {
-          console.log(`  - Añadiendo usuario: ${usuario}`);
-          usuarios.add(usuario);
+          mensajesPorUsuario.set(usuario, (mensajesPorUsuario.get(usuario) || 0) + 1);
         });
       });
     }
     
-    // Usuarios de mensajes por mes
+    // Contar mensajes de mensajes_por_mes_porcentaje
     if (datos.mensajes_por_mes_porcentaje) {
-      console.log("Extrayendo usuarios de mensajes_por_mes_porcentaje");
       Object.values(datos.mensajes_por_mes_porcentaje).forEach(datosMes => {
         if (datosMes.usuarios) {
-          Object.keys(datosMes.usuarios).forEach(usuario => {
-            console.log(`  - Añadiendo usuario: ${usuario}`);
-            usuarios.add(usuario);
+          Object.entries(datosMes.usuarios).forEach(([usuario, datos]) => {
+            mensajesPorUsuario.set(usuario, (mensajesPorUsuario.get(usuario) || 0) + datos.mensajes);
           });
         }
       });
     }
     
-    // Si no hay usuarios, verificar mensajes_por_usuario
-    if (usuarios.size === 0 && datos.mensajes_por_usuario) {
-      console.log("Extrayendo usuarios de mensajes_por_usuario");
-      Object.keys(datos.mensajes_por_usuario).forEach(usuario => {
-        console.log(`  - Añadiendo usuario: ${usuario}`);
-        usuarios.add(usuario);
+    // Si no hay datos en los anteriores, usar mensajes_por_usuario
+    if (mensajesPorUsuario.size === 0 && datos.mensajes_por_usuario) {
+      Object.entries(datos.mensajes_por_usuario).forEach(([usuario, mensajes]) => {
+        mensajesPorUsuario.set(usuario, mensajes);
       });
     }
     
-    const listaUsuarios = Array.from(usuarios);
-    console.log("Total de usuarios únicos encontrados:", listaUsuarios.length);
-    console.log("Lista de usuarios:", listaUsuarios);
+    // Convertir a array y ordenar por número de mensajes (descendente)
+    const usuariosOrdenados = Array.from(mensajesPorUsuario.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([usuario]) => usuario)
+      .slice(0, 5); // Tomar los 5 usuarios más activos
     
-    return listaUsuarios;
+    console.log("Top 5 usuarios más activos:", usuariosOrdenados);
+    
+    return usuariosOrdenados;
   };
 
   // Renderizar el contenido principal
@@ -641,16 +635,13 @@ const AnalisisPrimerChat = ({ operationId }) => {
                 return <text x={300} y={140} textAnchor="middle">{t('app.top_profiles.no_data')}</text>;
               }
               
-              // Extraer los nombres de usuario del primer elemento (excluyendo props especiales)
-              const primerMes = datosGrafico[0];
-              const usuarios = Object.keys(primerMes).filter(
-                key => !['mes', 'mesFormateado'].includes(key)
-              );
+              // Obtener los 5 usuarios más activos
+              const usuariosActivos = obtenerUsuariosUnicos();
               
-              console.log("Usuarios para gráfico de tiempo respuesta:", usuarios);
+              console.log("Usuarios más activos para gráfico de tiempo respuesta:", usuariosActivos);
               
-              // Renderizar líneas para cada usuario (máximo 5)
-              return usuarios.slice(0, 5).map((usuario, index) => (
+              // Renderizar líneas solo para los usuarios más activos
+              return usuariosActivos.map((usuario, index) => (
                 <Line 
                   key={usuario}
                   type="monotone" 
