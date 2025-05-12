@@ -255,7 +255,7 @@ function App() {
       
       // Crear FormData para subir el archivo
       const formData = new FormData();
-      formData.append('zipFile', file);
+      formData.append('file', file);
       formData.append('user_id', user ? user.uid : 'anonymous');
       
       // Enviar directamente a la API de extracción

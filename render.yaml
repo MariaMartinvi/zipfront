@@ -31,3 +31,19 @@ services:
       - path: /index.html
         name: Cache-Control
         value: no-cache
+
+  - type: web
+    name: zip-extractor-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: AZURE_OPENAI_API_KEY
+        sync: false
+      - key: AZURE_OPENAI_ENDPOINT
+        value: https://chatsalsa.openai.azure.com/
+      - key: AZURE_OPENAI_DEPLOYMENT
+        value: chatsalsa
