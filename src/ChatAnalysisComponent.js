@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ChatAnalyzer from './Chatanalyzer';
+import { analizarChat, encontrarArchivosChat } from './chatAnalyzer';
 import './ChatAnalysis.css'; // Importamos el nuevo archivo CSS
+import AnalisisTop from './Analisis_top'; // Importar AnalisisTop
 
 function ChatAnalysisComponent({ operationId }) {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [chatContent, setChatContent] = useState(null); // Almacenar el contenido del chat
   const resultsContainerRef = useRef(null);
 
   useEffect(() => {
@@ -13,10 +15,25 @@ function ChatAnalysisComponent({ operationId }) {
       setLoading(true);
       setError(null);
       
-      // Usando el objeto ChatAnalyzer para hacer la solicitud
-      ChatAnalyzer.analyzeChatOperation(operationId)
+      // Obtener datos del chat para analizar
+      fetch(`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000'}/api/obtener-chat/${operationId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Error al obtener datos del chat: ${response.status}`);
+          }
+          return response.json();
+        })
         .then(data => {
-          setAnalysisResult(data);
+          if (data && data.content) {
+            // Guardar el contenido del chat para compartirlo con otros componentes
+            setChatContent(data.content);
+            
+            // Analizar el contenido del chat con analizarChat
+            const resultado = analizarChat(data.content);
+            setAnalysisResult(resultado);
+          } else {
+            throw new Error('No se recibió contenido de chat para analizar');
+          }
           setLoading(false);
         })
         .catch(err => {
@@ -197,6 +214,13 @@ function ChatAnalysisComponent({ operationId }) {
       <div id="analysisResultsContainer" ref={resultsContainerRef}>
         {!loading && !error && renderAnalysisResults()}
       </div>
+      
+      {/* Renderizar AnalisisTop con los datos del chat */}
+      {chatContent && (
+        <div className="top-analysis-section">
+          <AnalisisTop operationId={operationId} chatData={chatContent} />
+        </div>
+      )}
     </div>
   );
 }

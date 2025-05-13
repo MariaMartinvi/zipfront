@@ -21,6 +21,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import './styles/Analisis.css';
 import './Analisis_primer_chat.css'; // Importar los estilos
+// Importar nuestro analizador de chat para el cliente
+import { analizarChat } from './chatAnalyzer';
 
 // Colores para los gráficos
 const COLORS = [
@@ -86,7 +88,7 @@ const formatearMes = (fechaMes, t) => {
   return `${meses[parseInt(mes) - 1]} ${anio}`;
 };
 
-const AnalisisPrimerChat = ({ operationId }) => {
+const AnalisisPrimerChat = ({ operationId, chatData }) => {
   const { t, i18n } = useTranslation();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -121,6 +123,33 @@ const AnalisisPrimerChat = ({ operationId }) => {
   };
 
   useEffect(() => {
+    // Verificar si tenemos datos del chat para analizar directamente en el cliente
+    if (chatData) {
+      console.log("Analizando datos del chat en el cliente");
+      setCargando(true);
+      
+      try {
+        // Analizar los datos del chat utilizando nuestro analizador de cliente
+        const resultadoAnalisis = analizarChat(chatData);
+        console.log("Resultado del análisis en cliente:", resultadoAnalisis);
+        
+        // Establecer los datos analizados
+        if (resultadoAnalisis && resultadoAnalisis.success) {
+          setDatos(resultadoAnalisis);
+          setError(null);
+        } else {
+          setError(resultadoAnalisis.error || t('app.errors.analysis_failed'));
+        }
+      } catch (err) {
+        console.error("Error analizando el chat:", err);
+        setError(`${t('app.errors.analysis_error')}: ${err.message}`);
+      } finally {
+        setCargando(false);
+      }
+      return;
+    }
+    
+    // Si no hay datos directos pero hay operationId, cargar del servidor
     if (!operationId) {
       setError("No se ha proporcionado un ID de operación");
       setCargando(false);
@@ -178,7 +207,7 @@ const AnalisisPrimerChat = ({ operationId }) => {
         setError(`${t('app.errors.loading')}: ${err.message}`);
         setCargando(false);
       });
-  }, [operationId]);
+  }, [operationId, chatData]);
 
   // Preparar datos para el gráfico de mensajes por día de la semana
   const prepararDatosDiaSemana = () => {

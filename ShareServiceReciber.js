@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import InstallPWA from './InstallPWA';
-import ShareReceiver from './ShareReceiver';
 // Importar nuestro nuevo servicio de procesamiento de cliente
 import { processZipFile, downloadProcessedFiles, createDownloadUrl } from './src/clientProcessor';
+// Importar el analizador de chat y el detector de archivos de chat
+import { analizarChat, encontrarArchivosChat } from './src/chatAnalyzer';
+// Importar el componente de análisis
+import AnalisisPrimerChat from './src/Analisis_primer_chat';
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -13,266 +16,173 @@ function App() {
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
   // Estado para almacenar el resultado del procesamiento completo
   const [processingResult, setProcessingResult] = useState(null);
+  // Contenido del archivo de chat para análisis
+  const [chatContent, setChatContent] = useState(null);
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
 
-  // Función para mostrar mensajes de depuración
-  const logDebug = (message, data) => {
-    console.log(`[DEBUG] ${message}`, data || '');
-  };
-
-  // Procesar el archivo ZIP en el cliente (reemplaza la versión anterior)
-  const handleZipProcessing = async (file) => {
-    logDebug('Procesando archivo ZIP en el cliente:', file.name);
-    
-    try {
-      // Usar nuestro nuevo procesador de cliente
-      const result = await processZipFile(file);
-      logDebug('Resultado del procesamiento cliente:', result);
-      
-      // Guardar el resultado completo para uso posterior (incluye rawFiles)
-      setProcessingResult(result);
-      
-      // Actualizar la lista de archivos visible - mantener formato idéntico al original
-      const extractedFiles = result.files.map(file => ({
-        name: file.name,
-        size: file.size,
-        path: file.path,
-        operationId: result.operation_id
-      }));
-      
-      setFiles(extractedFiles);
-      return result;
-    } catch (error) {
-      logDebug('Error al procesar ZIP en cliente:', error);
-      throw error;
-    }
-  };
-
-  // Callback para manejar archivos compartidos (usado por ShareReceiver)
-  const handleSharedFile = useCallback(async (file) => {
-    logDebug('Procesando archivo compartido:', file.name);
-    if (!file) return;
-    
-    // Verificar que sea un archivo ZIP - mejorado para manejar diferentes tipos MIME
-    const isZipFile = file.type === 'application/zip' || 
-                      file.type === 'application/x-zip' || 
-                      file.type === 'application/x-zip-compressed' ||
-                      file.name.toLowerCase().endsWith('.zip');
-                      
-    if (!isZipFile) {
-      setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
-      return;
-    }
-
-    setError('');
-    setIsLoading(true);
-    setZipFile(file);
-    
-    try {
-      // Usar nuestra nueva función de procesamiento
-      await handleZipProcessing(file);
-    } catch (err) {
-      logDebug('Error al procesar archivo compartido:', err.message);
-      setError(`Error al procesar el archivo compartido: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-      setIsProcessingSharedFile(false);
-    }
-  }, []);
-
-  // Callback para manejar errores de compartir (usado por ShareReceiver)
-  const handleShareError = useCallback((errorMessage) => {
-    setError(errorMessage);
-    setIsProcessingSharedFile(false);
-  }, []);
-
-  // Manejar el evento de carga de archivos desde el input
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    if (file.type !== 'application/zip' && !file.name.endsWith('.zip')) {
-      setError('Por favor, sube un archivo ZIP válido');
-      return;
-    }
-
-    setError('');
-    setIsLoading(true);
-    setZipFile(file);
-    
-    try {
-      // Usar nuestra nueva función de procesamiento
-      await handleZipProcessing(file);
-    } catch (err) {
-      console.error('Error al procesar:', err);
-      setError(`Error al procesar el archivo: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Función para descargar un archivo específico (actualizada para cliente)
-  const downloadFile = async (file) => {
-    try {
-      logDebug('Descargando archivo:', file.path);
-      
-      if (!processingResult) {
-        throw new Error('No hay resultados de procesamiento disponibles');
-      }
-      
-      // Buscar el archivo en los resultados del procesamiento
-      const fileToDownload = processingResult.rawFiles.find(f => f.path === file.path);
-      
-      if (!fileToDownload) {
-        throw new Error(`Archivo no encontrado: ${file.path}`);
-      }
-      
-      // Crear URL para descarga
-      const downloadInfo = createDownloadUrl(fileToDownload);
-      
-      // Crear un enlace temporal y hacer clic en él para descargar
-      const a = document.createElement('a');
-      a.href = downloadInfo.url;
-      a.download = downloadInfo.filename;
-      document.body.appendChild(a);
-      a.click();
-      
-      // Limpiar
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(downloadInfo.url);
-      }, 100);
-      
-    } catch (error) {
-      console.error('Error al descargar archivo:', error);
-      setError(`Error al descargar: ${error.message}`);
-    }
-  };
-
-  // Función para descargar todos los archivos (actualizada para cliente)
-  const downloadAll = async () => {
-    try {
-      if (!processingResult) {
-        throw new Error('No hay resultados de procesamiento disponibles');
-      }
-      
-      logDebug('Descargando todos los archivos...');
-      
-      // Generar el ZIP con todos los archivos procesados
-      const downloadInfo = await downloadProcessedFiles(processingResult);
-      
-      // Crear un enlace temporal y hacer clic en él para descargar
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(downloadInfo.blob);
-      a.download = downloadInfo.filename;
-      document.body.appendChild(a);
-      a.click();
-      
-      // Limpiar
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(a.href);
-      }, 100);
-      
-    } catch (error) {
-      console.error('Error al descargar todos los archivos:', error);
-      setError(`Error al descargar: ${error.message}`);
-    }
-  };
-
-  // Verificar si se está compartiendo un archivo (para mostrar el spinner)
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('share-target') && urlParams.has('shareId')) {
+  // Gestionar archivos recibidos por compartición (simulado, ya que no tenemos ShareReceiver)
+  const handleSharedFiles = (sharedFiles) => {
+    if (sharedFiles && sharedFiles.length > 0) {
+      console.log("Archivos compartidos recibidos:", sharedFiles);
+      setZipFile(sharedFiles[0]);
       setIsProcessingSharedFile(true);
     }
-  }, []);
+  };
+
+  // Procesar archivos de forma asíncrona
+  useEffect(() => {
+    const processFiles = async () => {
+      if (zipFile && isProcessingSharedFile) {
+        setIsLoading(true);
+        setError('');
+        console.log(`Procesando archivo: ${zipFile.name}`);
+        
+        try {
+          // Usar nuestro procesador cliente para extraer y anonimizar
+          const result = await processZipFile(zipFile);
+          
+          if (result.success) {
+            console.log("Procesamiento completado con éxito:", result);
+            setFiles(result.processedFiles || []);
+            setProcessingResult(result);
+            
+            // Buscar el archivo de chat para análisis
+            const chatFile = encontrarArchivosChat(result.processedFiles);
+            if (chatFile) {
+              console.log("Archivo de chat encontrado para análisis:", chatFile.name);
+              // Usar FileReader para leer el contenido del archivo de chat
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                const content = e.target.result;
+                setChatContent(content);
+              };
+              reader.readAsText(chatFile.data);
+            }
+          } else {
+            console.error("Error en el procesamiento:", result.error);
+            setError(result.error || "Error procesando el archivo");
+          }
+        } catch (err) {
+          console.error("Error durante el procesamiento:", err);
+          setError(`Error: ${err.message}`);
+        } finally {
+          setIsLoading(false);
+          setIsProcessingSharedFile(false);
+        }
+      }
+    };
+
+    processFiles();
+  }, [zipFile, isProcessingSharedFile]);
+
+  // Manejar la subida de archivos desde la interfaz
+  const handleFileUpload = (event) => {
+    const uploadedFile = event.target.files[0];
+    if (uploadedFile) {
+      setZipFile(uploadedFile);
+      setIsProcessingSharedFile(true);
+    }
+  };
+
+  // Descargar todos los archivos procesados como ZIP
+  const handleDownloadAll = async () => {
+    if (processingResult && processingResult.processedFiles && processingResult.processedFiles.length > 0) {
+      try {
+        await downloadProcessedFiles(processingResult.processedFiles, "archivos_procesados.zip");
+      } catch (error) {
+        console.error("Error al descargar archivos:", error);
+        setError(`Error al descargar: ${error.message}`);
+      }
+    }
+  };
+
+  // Descargar un archivo individual
+  const handleDownloadFile = (file) => {
+    if (file && file.data) {
+      const url = createDownloadUrl(file.data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }
+  };
 
   return (
     <div className="App">
-      {/* Componente invisible para manejar archivos compartidos */}
-      <ShareReceiver 
-        onShareReceived={handleSharedFile} 
-        onShareError={handleShareError} 
-      />
-      
       <header className="App-header">
-        <h1>Analiza tus chats</h1>
+        <div className="logo-container">
+          <img src="logo512.png" className="App-logo" alt="logo" />
+          <h1>Visualizador de Archivos</h1>
+        </div>
+        <InstallPWA />
       </header>
-      <main className="App-main">
-        {isProcessingSharedFile ? (
-          <div className="loading-indicator">
-            <div className="spinner"></div>
-            <p>Recibiendo archivo compartido...</p>
-          </div>
-        ) : (
-          <div className="file-upload-container">
-            <label className="file-upload-label">
-              <input 
-                type="file" 
-                className="file-upload-input" 
-                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed" 
-                onChange={handleFileUpload} 
-              />
-              <div className="file-upload-text">
-                <span>Haz clic para subir un archivo ZIP</span>
-                <span className="file-upload-subtext">o comparte directamente desde WhatsApp</span>
-              </div>
-            </label>
-          </div>
-        )}
 
-        {error && (
-          <div className="error-message">
-            <p>{error}</p>
-          </div>
-        )}
+      <main className="App-main">
+        {/* No usamos ShareReceiver ya que no lo tenemos disponible */}
+        <div className="file-upload">
+          <h2>Subir Archivo ZIP</h2>
+          <p>Selecciona un archivo ZIP para procesarlo</p>
+          <input
+            type="file"
+            accept=".zip"
+            onChange={handleFileUpload}
+            disabled={isLoading}
+          />
+        </div>
 
         {isLoading && (
-          <div className="loading-indicator">
+          <div className="loading">
             <div className="spinner"></div>
-            <p>Descomprimiendo archivo...</p>
+            <p>Procesando archivo...</p>
           </div>
         )}
+
+        {error && <div className="error">{error}</div>}
 
         {files.length > 0 && (
-          <div className="files-container">
-            <div className="files-header">
-              <h2>Archivos extraídos</h2>
-              <button onClick={downloadAll} className="download-all-button">
-                Descargar todos
-              </button>
+          <div className="results">
+            <h2>Archivos Procesados</h2>
+            <button className="download-all-btn" onClick={handleDownloadAll}>
+              Descargar Todos
+            </button>
+            <div className="files-grid">
+              {files.map((file, index) => (
+                <div key={index} className="file-card">
+                  <div className="file-icon">
+                    {file.name.endsWith('.txt') ? '📄' : 
+                     file.name.endsWith('.csv') ? '📊' : 
+                     file.name.endsWith('.jpg') || file.name.endsWith('.png') ? '🖼️' : 
+                     file.name.endsWith('.pdf') ? '📑' : '📁'}
+                  </div>
+                  <div className="file-name">{file.name}</div>
+                  <button 
+                    className="download-btn"
+                    onClick={() => handleDownloadFile(file)}
+                  >
+                    Descargar
+                  </button>
+                </div>
+              ))}
             </div>
-
-            <table className="files-table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Tamaño</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {files.map((file, index) => (
-                  <tr key={index}>
-                    <td>{file.name}</td>
-                    <td>{(file.size / 1024).toFixed(2)} KB</td>
-                    <td>
-                      <button onClick={() => downloadFile(file)} className="download-button">
-                        Descargar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         )}
-        
-        {/* Componente de instalación de PWA */}
-        <InstallPWA />
+
+        {chatContent && (
+          <div className="analysis-section">
+            <h2>Análisis del Chat</h2>
+            {/* Usamos nuestro componente de análisis pasando los datos directamente */}
+            <AnalisisPrimerChat chatData={chatContent} />
+          </div>
+        )}
       </main>
+
+      <footer className="App-footer">
+        <p>&copy; 2023 Visualizador de Archivos</p>
+      </footer>
     </div>
   );
 }

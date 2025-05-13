@@ -1,13 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './Analisis_top.css';
+// Importar el analizador de perfiles cliente
+import { analizarPerfilesCompleto } from './profileAnalyzerComplete';
 
-const AnalisisTop = ({ operationId }) => {
+// Variable global para rastrear si el componente ya está renderizado
+let isAlreadyRendered = false;
+
+const AnalisisTop = ({ operationId, chatData }) => {
   const { t } = useTranslation();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
+  const [isRenderAllowed, setIsRenderAllowed] = useState(false);
+
+  // Determinar si es seguro renderizar este componente
+  useEffect(() => {
+    // Si este es el primer renderizado, permitirlo
+    if (!isAlreadyRendered) {
+      isAlreadyRendered = true;
+      setIsRenderAllowed(true);
+    } else {
+      // Si ya está renderizado y tenemos datos de chat, permitirlo (reemplaza versión App.js)
+      if (chatData) {
+        isAlreadyRendered = true;
+        setIsRenderAllowed(true);
+      } else {
+        // De lo contrario, no permitir renderizar
+        setIsRenderAllowed(false);
+      }
+    }
+
+    // Reset al desmontar
+    return () => {
+      isAlreadyRendered = false;
+    };
+  }, [chatData]);
 
   // Mapeo de categorías con íconos y traducciones
   const categoriaIconos = {
@@ -84,13 +113,48 @@ const AnalisisTop = ({ operationId }) => {
   };
 
   useEffect(() => {
+    // Si no se permite el renderizado, no hacer nada
+    if (!isRenderAllowed) return;
+
+    // Verificar si tenemos datos del chat para analizar directamente en el cliente
+    if (chatData) {
+      console.log("Analizando perfiles del chat en el cliente");
+      setCargando(true);
+      
+      try {
+        // Analizar los datos del chat utilizando nuestro analizador de cliente
+        const resultadoAnalisis = analizarPerfilesCompleto(chatData);
+        console.log("Resultado del análisis de perfiles en cliente:", resultadoAnalisis);
+        
+        // Establecer los datos analizados
+        if (resultadoAnalisis && resultadoAnalisis.success) {
+          setDatos(resultadoAnalisis);
+          setError(null);
+          
+          // Seleccionar la primera categoría por defecto
+          if (resultadoAnalisis.categorias && Object.keys(resultadoAnalisis.categorias).length > 0) {
+            setCategoriaSeleccionada(Object.keys(resultadoAnalisis.categorias)[0]);
+          }
+        } else {
+          setError(resultadoAnalisis.error || t('app.errors.analysis_failed'));
+        }
+      } catch (err) {
+        console.error("Error analizando los perfiles del chat:", err);
+        setError(`${t('app.errors.analysis_error')}: ${err.message}`);
+      } finally {
+        setCargando(false);
+      }
+      return;
+    }
+    
     if (!operationId) {
       setError(t('app.errors.no_operation_id'));
       setCargando(false);
       return;
     }
 
-    // Cargar los datos desde el endpoint de la API
+    // Si no hay datos directos pero hay operationId, cargar del servidor
+    // (Fallback a la versión original que usa el servidor)
     const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
     
     // Eliminar parámetro para forzar formato iOS
@@ -258,7 +322,7 @@ const AnalisisTop = ({ operationId }) => {
 
     // Iniciar la carga de datos
     cargarDatos();
-  }, [operationId, t]);
+  }, [operationId, chatData, t, isRenderAllowed]);
 
   const renderDetalleCategoria = (categoria) => {
     if (!datos || !datos.categorias || !datos.categorias[categoria]) {
@@ -444,6 +508,9 @@ const AnalisisTop = ({ operationId }) => {
     );
   };
 
+  // Si no se permite el renderizado, no mostrar nada
+  if (!isRenderAllowed) return null;
+
   if (cargando) return (
     <div className="loading-container" style={{ textAlign: 'center', padding: '50px 0' }}>
       <div className="loader" style={{ 
@@ -490,7 +557,7 @@ const AnalisisTop = ({ operationId }) => {
       {/* Usar la clase de grid específica */}
       <div className="categorias-grid-container">
         {Object.keys(categoriaIconos).map(categoria => (
-          datos.categorias[categoria] && datos.categorias[categoria].nombre ? (
+          datos && datos.categorias && datos.categorias[categoria] && datos.categorias[categoria].nombre ? (
             <div 
               key={categoria}
               className={`categoria-card ${categoriaSeleccionada === categoria ? 'seleccionada' : ''}`}
