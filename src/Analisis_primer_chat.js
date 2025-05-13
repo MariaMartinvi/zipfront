@@ -61,6 +61,7 @@ const analizarChat = (contenido, formatoForzado = null) => {
       actividad_por_hora: {},
       actividad_por_dia_semana: {},
       mensajes_por_mes: {},
+      mensajes_por_dia: {}, // Añadir esta estructura para contar mensajes por día
       formato_chat: formato,
       // Nuevas estructuras para los gráficos
       mensajes_por_mes_usuario: {},
@@ -93,6 +94,8 @@ const analizarChat = (contenido, formatoForzado = null) => {
       const diaSemana = fecha.getDay();
       // Formato YYYY-MM para el mes
       const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+      // Formato YYYY-MM-DD para el día
+      const dia = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
       
       // Actualizar primer fecha si es necesario
       if (!primerFecha || fecha < primerFecha) {
@@ -108,6 +111,9 @@ const analizarChat = (contenido, formatoForzado = null) => {
       // Actividad por día de la semana
       const diaSemanaStr = diasSemana[diaSemana];
       stats.actividad_por_dia_semana[diaSemanaStr] = (stats.actividad_por_dia_semana[diaSemanaStr] || 0) + 1;
+      
+      // Mensajes por día
+      stats.mensajes_por_dia[dia] = (stats.mensajes_por_dia[dia] || 0) + 1;
       
       // Mensajes por mes y usuario (estructura para gráfico de tendencia de interés)
       if (!stats.mensajes_por_mes_usuario[mes]) {
@@ -196,6 +202,10 @@ const analizarChat = (contenido, formatoForzado = null) => {
     const usuarioMasActivo = Object.entries(stats.mensajes_por_usuario)
       .reduce((max, [nombre, count]) => count > max[1] ? [nombre, count] : max, ["", 0]);
     
+    // Calcular promedio de mensajes diarios
+    const diasConActividad = Object.keys(stats.mensajes_por_dia).length;
+    const promedioMensajesDiarios = diasConActividad > 0 ? mensajes.length / diasConActividad : 0;
+    
     // Añadir información del primer mensaje
     stats.primer_mensaje = {
       fecha: primerFecha ? `${primerFecha.getDate()}/${primerFecha.getMonth() + 1}/${primerFecha.getFullYear().toString().substr(2, 2)}` : "No disponible",
@@ -207,7 +217,7 @@ const analizarChat = (contenido, formatoForzado = null) => {
     stats.resumen = {
       total_mensajes: mensajes.length,
       fecha_inicio: stats.primer_mensaje.fecha,
-      promedio_mensajes_diarios: 0, // Se calcularía con más datos históricos
+      promedio_mensajes_diarios: promedioMensajesDiarios.toFixed(2), // Usar el valor calculado
       dia_mas_activo: {
         fecha: "N/A", // En el frontend no calculamos esto
         mensajes: 0
