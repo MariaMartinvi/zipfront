@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+// Usar path completo para evitar problemas de ruta en Render
 import { analizarChat, encontrarArchivosChat } from './chatAnalyzer.js';
 import './ChatAnalysis.css'; // Importamos el nuevo archivo CSS
 import AnalisisTop from './Analisis_top'; // Importar AnalisisTop
