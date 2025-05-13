@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { analizarChat, encontrarArchivosChat } from './chatAnalyzer';
+import { analizarChat, encontrarArchivosChat } from './chatAnalyzer.js';
 import './ChatAnalysis.css'; // Importamos el nuevo archivo CSS
 import AnalisisTop from './Analisis_top'; // Importar AnalisisTop
 
