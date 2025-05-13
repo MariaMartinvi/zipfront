@@ -1,8 +1,242 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './Analisis_top.css';
-// Importar el analizador de perfiles cliente
-import { analizarPerfilesCompleto } from './profileAnalyzerComplete';
+// Importar el detector de formato directamente
+import { detectarFormatoArchivo } from './formatDetector.js';
+
+// Función simplificada para analizar perfiles
+const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat = 'es') => {
+  console.log("Analizando perfiles directamente desde Analisis_top...");
+  try {
+    const formato = detectarFormatoArchivo(contenido, formatoForzado, true);
+    
+    if (formato === "desconocido") {
+      return { error: "Formato de chat no reconocido", success: false };
+    }
+    
+    // Analizar mensajes
+    const lineas = contenido.split(/\r?\n/);
+    const mensajes = extraerMensajes(lineas, formato);
+    
+    if (mensajes.length === 0) {
+      return { error: "No se encontraron mensajes válidos", success: false };
+    }
+    
+    // Obtener usuarios
+    const usuarios = {};
+    const participantes = new Set();
+    mensajes.forEach(m => participantes.add(m.nombre));
+    
+    // Inicializar estadísticas para cada usuario
+    participantes.forEach(usuario => {
+      usuarios[usuario] = {
+        mensajes: 0,
+        palabras_totales: 0,
+        palabras_unicas: new Set(),
+        palabras_por_mensaje: [],
+        tiempo_respuesta: [],
+        mensajes_noche: 0,
+        horario_mensajes: [],
+        uso_primera_persona: 0,
+        mensajes_terminan_conversacion: 0,
+        mensajes_inician_conversacion: 0,
+        longitud_mensajes: [],
+        menciones_otros: 0,
+        emojis_utilizados: 0,
+        emojis_amor: 0,
+        max_mensajes_seguidos: 0
+      };
+    });
+    
+    // Calcular estadísticas básicas
+    mensajes.forEach(msg => {
+      const usuario = msg.nombre;
+      
+      // Incrementar contadores
+      usuarios[usuario].mensajes++;
+      
+      // Si el mensaje es entre 9PM y 6AM, es nocturno
+      const hora = parseInt(msg.hora.split(':')[0], 10);
+      if (hora >= 21 || hora < 6) {
+        usuarios[usuario].mensajes_noche++;
+      }
+      
+      // Registrar hora para promedio
+      usuarios[usuario].horario_mensajes.push(hora);
+      
+      // Registrar longitud del mensaje
+      if (msg.mensaje) {
+        const longitud = msg.mensaje.length;
+        usuarios[usuario].longitud_mensajes.push(longitud);
+      }
+    });
+    
+    // Crear categorías con datos simplificados
+    const categorias = {
+      profesor: { nombre: '--', palabras_unicas: 0, mensajes: 0, ratio: 0 },
+      rollero: { nombre: '--', palabras_por_mensaje: 0, mensajes: 0 },
+      pistolero: { nombre: '--', tiempo_respuesta_promedio: 0, mensajes: 0 },
+      vampiro: { nombre: '--', mensajes_noche: 0, porcentaje: 0, mensajes: 0 },
+      cafeconleche: { nombre: '--', hora_promedio: 12.0, hora_formateada: '12:00', mensajes: 0 },
+      dejaenvisto: { nombre: '--', tiempo_respuesta_promedio: 0, mensajes: 0 },
+      narcicista: { nombre: '--', menciones_yo: 0, porcentaje: 0, mensajes: 0 },
+      puntofinal: { nombre: '--', conversaciones_terminadas: 0, mensajes: 0 },
+      fosforo: { nombre: '--', conversaciones_iniciadas: 0, mensajes: 0 },
+      menosesmas: { nombre: '--', longitud_promedio: 0, mensajes: 0 },
+      chismoso: { nombre: '--', menciones_otros: 0, porcentaje: 0, mensajes: 0 },
+      happyflower: { nombre: '--', emojis_totales: 0, emojis_por_mensaje: 0, mensajes: 0 },
+      amoroso: { nombre: '--', emojis_amor: 0, porcentaje_amor: 0, mensajes: 0 },
+      sicopata: { nombre: '--', max_mensajes_seguidos: 0, mensajes: 0 }
+    };
+    
+    // Asignar categorías simplificadas basadas en las estadísticas básicas
+    
+    // Vampiro (nocturno)
+    let maxMensajesNoche = 0;
+    let usuarioVampiro = '';
+    
+    Object.entries(usuarios).forEach(([nombre, datos]) => {
+      if (datos.mensajes_noche > maxMensajesNoche) {
+        maxMensajesNoche = datos.mensajes_noche;
+        usuarioVampiro = nombre;
+      }
+    });
+    
+    if (usuarioVampiro) {
+      const porcentaje = (maxMensajesNoche / usuarios[usuarioVampiro].mensajes) * 100;
+      categorias.vampiro = {
+        nombre: usuarioVampiro,
+        mensajes_noche: maxMensajesNoche,
+        porcentaje: porcentaje,
+        mensajes: usuarios[usuarioVampiro].mensajes
+      };
+    }
+    
+    // CafeConLeche (hora promedio más temprana)
+    const horasPromedio = {};
+    Object.entries(usuarios).forEach(([nombre, datos]) => {
+      if (datos.horario_mensajes.length > 0) {
+        let suma = datos.horario_mensajes.reduce((a, b) => a + b, 0);
+        horasPromedio[nombre] = suma / datos.horario_mensajes.length;
+      }
+    });
+    
+    if (Object.keys(horasPromedio).length > 0) {
+      const usuarioCafeConLeche = Object.entries(horasPromedio)
+        .sort((a, b) => a[1] - b[1])[0][0];
+      
+      const horaPromedio = horasPromedio[usuarioCafeConLeche];
+      const horaEntera = Math.floor(horaPromedio);
+      const minutos = Math.floor((horaPromedio - horaEntera) * 60);
+      
+      categorias.cafeconleche = {
+        nombre: usuarioCafeConLeche,
+        hora_promedio: horaPromedio,
+        hora_formateada: `${horaEntera}:${minutos.toString().padStart(2, '0')}`,
+        mensajes: usuarios[usuarioCafeConLeche].mensajes
+      };
+    }
+    
+    // MenosEsMas (mensajes más cortos)
+    const longitudPromedio = {};
+    Object.entries(usuarios).forEach(([nombre, datos]) => {
+      if (datos.longitud_mensajes.length > 0) {
+        let suma = datos.longitud_mensajes.reduce((a, b) => a + b, 0);
+        longitudPromedio[nombre] = suma / datos.longitud_mensajes.length;
+      }
+    });
+    
+    if (Object.keys(longitudPromedio).length > 0) {
+      const usuarioMenosEsMas = Object.entries(longitudPromedio)
+        .sort((a, b) => a[1] - b[1])[0][0];
+      
+      categorias.menosesmas = {
+        nombre: usuarioMenosEsMas,
+        longitud_promedio: longitudPromedio[usuarioMenosEsMas],
+        mensajes: usuarios[usuarioMenosEsMas].mensajes
+      };
+    }
+    
+    // Estructura final
+    return {
+      usuarios: usuarios,
+      categorias: categorias,
+      totales: {
+        mensajes: mensajes.length,
+        usuarios: participantes.size
+      },
+      formato_chat: formato,
+      success: true
+    };
+  } catch (error) {
+    console.error("Error en analizarPerfilesCompleto:", error);
+    return {
+      error: `Error en el análisis de perfiles: ${error.message}`,
+      success: false
+    };
+  }
+};
+
+// Función para extraer mensajes de las líneas del chat
+const extraerMensajes = (lineas, formato) => {
+  const mensajes = [];
+  let mensajeAnterior = null;
+  
+  for (const linea of lineas) {
+    if (!linea.trim()) continue;
+    
+    const resultado = analizarMensaje(linea, formato, mensajeAnterior);
+    
+    if (resultado === mensajeAnterior) {
+      mensajeAnterior = resultado;
+      continue;
+    }
+    
+    if (resultado) {
+      mensajes.push(resultado);
+      mensajeAnterior = resultado;
+    }
+  }
+  
+  return mensajes;
+};
+
+// Función para analizar un mensaje individual
+const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
+  linea = linea.trim();
+  
+  // Si es una continuación de mensaje anterior
+  if (mensajeAnterior && 
+      !(linea.startsWith('[') || 
+        (formato === "android" && /^\d{1,2}\/\d{1,2}\/\d{2}/.test(linea)))) {
+    mensajeAnterior.mensaje += `\n${linea}`;
+    mensajeAnterior.esMultilinea = true;
+    return mensajeAnterior;
+  }
+  
+  // Patrones para extraer componentes según el formato
+  const patronIOS = /^\[(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2}(?::\d{2})?)\]\s*([^:]+):\s*(.*)/;
+  const patronAndroid = /^(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2})\s*-\s*([^:]+):\s*(.+)/;
+  
+  let match;
+  if (formato === "ios") {
+    match = linea.match(patronIOS);
+  } else {
+    match = linea.match(patronAndroid);
+  }
+  
+  if (match) {
+    const [_, fecha, hora, nombre, mensaje] = match;
+    return {
+      fecha: fecha,
+      hora: hora,
+      nombre: nombre.trim(),
+      mensaje: mensaje.trim() || "",
+      esMultilinea: false
+    };
+  }
+  return null;
+};
 
 // Variable global para rastrear si el componente ya está renderizado
 let isAlreadyRendered = false;

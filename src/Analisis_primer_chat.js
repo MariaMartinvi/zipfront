@@ -21,8 +21,153 @@ import {
 import { useTranslation } from 'react-i18next';
 import './styles/Analisis.css';
 import './Analisis_primer_chat.css'; // Importar los estilos
-// Importar nuestro analizador de chat para el cliente
-import { analizarChat } from './chatAnalyzer';
+// Importar el detector de formato
+import { detectarFormatoArchivo } from './formatDetector.js';
+
+// Implementación simplificada de analizarChat
+const analizarChat = (contenido, formatoForzado = null) => {
+  console.log("Analizando chat directamente desde Analisis_primer_chat...");
+  
+  try {
+    // Dividir el contenido en líneas
+    const lineas = contenido.split(/\r?\n/);
+    
+    if (!lineas || lineas.length === 0) {
+      console.log("Archivo vacío");
+      return { error: "Archivo vacío", success: false };
+    }
+    
+    console.log(`Archivo leído correctamente. Total de líneas: ${lineas.length}`);
+    
+    // Determinar formato usando el detector
+    const formato = detectarFormatoArchivo(contenido, formatoForzado, true);
+    console.log(`\nFormato final a utilizar: ${formato}`);
+    
+    // Si el formato es desconocido, devolver error
+    if (formato === "desconocido") {
+      return { error: "Formato de chat no reconocido", success: false };
+    }
+    
+    // Analizar mensajes (versión simplificada para evitar dependencias)
+    const mensajes = analizarMensajesSimplificado(lineas, formato);
+    
+    if (mensajes.length === 0) {
+      return { error: "No se encontraron mensajes válidos", success: false };
+    }
+    
+    // Estructura para estadísticas
+    const stats = {
+      mensajes_por_usuario: {},
+      actividad_por_hora: {},
+      actividad_por_dia_semana: {},
+      mensajes_por_mes: {},
+      formato_chat: formato
+    };
+    
+    // Días de la semana en español
+    const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    
+    // Calcular estadísticas básicas
+    mensajes.forEach(msg => {
+      // Extraer componentes de fecha
+      const fecha = new Date(`${msg.fecha} ${msg.hora}`);
+      const hora = fecha.getHours();
+      const diaSemana = fecha.getDay();
+      const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+      
+      // Mensajes por usuario
+      stats.mensajes_por_usuario[msg.nombre] = (stats.mensajes_por_usuario[msg.nombre] || 0) + 1;
+      
+      // Actividad por hora
+      stats.actividad_por_hora[hora] = (stats.actividad_por_hora[hora] || 0) + 1;
+      
+      // Actividad por día de la semana
+      const diaSemanaStr = diasSemana[diaSemana];
+      stats.actividad_por_dia_semana[diaSemanaStr] = (stats.actividad_por_dia_semana[diaSemanaStr] || 0) + 1;
+      
+      // Mensajes por mes
+      if (!stats.mensajes_por_mes[mes]) {
+        stats.mensajes_por_mes[mes] = {};
+      }
+      stats.mensajes_por_mes[mes][msg.nombre] = (stats.mensajes_por_mes[mes][msg.nombre] || 0) + 1;
+    });
+    
+    // Añadir estadísticas globales
+    stats.total_messages = mensajes.length;
+    stats.active_participants = Object.keys(stats.mensajes_por_usuario).length;
+    stats.chat_format = formato;
+    stats.success = true;
+    
+    return stats;
+  } catch (error) {
+    console.error("Error durante el análisis:", error);
+    return {
+      error: `Error durante el análisis: ${error.message}`,
+      success: false
+    };
+  }
+};
+
+// Función simplificada para extraer mensajes
+const analizarMensajesSimplificado = (lineas, formato) => {
+  const mensajes = [];
+  let mensajeAnterior = null;
+  
+  for (const linea of lineas) {
+    if (!linea.trim()) continue;
+    
+    const resultado = analizarMensaje(linea, formato, mensajeAnterior);
+    
+    if (resultado === mensajeAnterior) {
+      mensajeAnterior = resultado;
+      continue;
+    }
+    
+    if (resultado) {
+      mensajes.push(resultado);
+      mensajeAnterior = resultado;
+    }
+  }
+  
+  return mensajes;
+};
+
+// Función para analizar un mensaje individual
+const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
+  linea = linea.trim();
+  
+  // Si es una continuación de mensaje anterior
+  if (mensajeAnterior && 
+      !(linea.startsWith('[') || 
+        (formato === "android" && /^\d{1,2}\/\d{1,2}\/\d{2}/.test(linea)))) {
+    mensajeAnterior.mensaje += `\n${linea}`;
+    mensajeAnterior.esMultilinea = true;
+    return mensajeAnterior;
+  }
+  
+  // Patrones para extraer componentes según el formato
+  const patronIOS = /^\[(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2}(?::\d{2})?)\]\s*([^:]+):\s*(.*)/;
+  const patronAndroid = /^(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2})\s*-\s*([^:]+):\s*(.+)/;
+  
+  let match;
+  if (formato === "ios") {
+    match = linea.match(patronIOS);
+  } else {
+    match = linea.match(patronAndroid);
+  }
+  
+  if (match) {
+    const [_, fecha, hora, nombre, mensaje] = match;
+    return {
+      fecha: fecha,
+      hora: hora,
+      nombre: nombre.trim(),
+      mensaje: mensaje.trim() || "",
+      esMultilinea: false
+    };
+  }
+  return null;
+};
 
 // Colores para los gráficos
 const COLORS = [

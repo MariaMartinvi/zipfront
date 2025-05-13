@@ -1,8 +1,180 @@
 import React, { useEffect, useRef, useState } from 'react';
-// Importar desde chatAnalyzer.js dentro del directorio src
-import { analizarChat, encontrarArchivosChat } from './chatAnalyzer.js';
-import './ChatAnalysis.css'; // Importamos el nuevo archivo CSS
-import AnalisisTop from './Analisis_top'; // Importar AnalisisTop
+// Importar directamente formatDetector en lugar de chatAnalyzer
+import { detectarFormatoArchivo } from './formatDetector.js';
+import './ChatAnalysis.css';
+import AnalisisTop from './Analisis_top';
+
+// Incorporar directamente las funciones necesarias de chatAnalyzer para evitar el error de importación
+const analizarChat = (contenido, formatoForzado = null) => {
+  console.log("Analizando chat directamente desde ChatAnalysisComponent...");
+  
+  try {
+    // Dividir el contenido en líneas
+    const lineas = contenido.split(/\r?\n/);
+    
+    if (!lineas || lineas.length === 0) {
+      console.log("Archivo vacío");
+      return { error: "Archivo vacío", success: false };
+    }
+    
+    console.log(`Archivo leído correctamente. Total de líneas: ${lineas.length}`);
+    
+    // Determinar formato usando el detector
+    const formato = detectarFormatoArchivo(contenido, formatoForzado, true);
+    console.log(`\nFormato final a utilizar: ${formato}`);
+    
+    // Si el formato es desconocido, devolver error
+    if (formato === "desconocido") {
+      return { error: "Formato de chat no reconocido", success: false };
+    }
+    
+    // Analizar mensajes (versión simplificada para evitar dependencias)
+    const mensajes = analizarMensajesSimplificado(lineas, formato);
+    
+    if (mensajes.length === 0) {
+      return { error: "No se encontraron mensajes válidos", success: false };
+    }
+    
+    // Calcular estadísticas básicas
+    const participantes = new Set();
+    const sender_counts = {};
+    const message_examples = {};
+    
+    // Inicializar estructura para ejemplos
+    mensajes.forEach(msg => {
+      if (!participantes.has(msg.nombre)) {
+        participantes.add(msg.nombre);
+        message_examples[msg.nombre] = [];
+      }
+      sender_counts[msg.nombre] = (sender_counts[msg.nombre] || 0) + 1;
+    });
+    
+    // Extraer ejemplos (versión simplificada)
+    Object.keys(message_examples).forEach(nombre => {
+      const mensajesUsuario = mensajes.filter(m => m.nombre === nombre && m.tipo === "texto");
+      // Tomar hasta 3 mensajes aleatorios
+      for (let i = 0; i < 3 && i < mensajesUsuario.length; i++) {
+        const msgRandom = mensajesUsuario[Math.floor(Math.random() * mensajesUsuario.length)];
+        if (msgRandom && !message_examples[nombre].includes(msgRandom.mensaje)) {
+          message_examples[nombre].push(msgRandom.mensaje.substring(0, 80));
+        }
+      }
+    });
+    
+    // Preparar datos de estadísticas
+    const data = {
+      total_messages: mensajes.length,
+      active_participants: participantes.size,
+      chat_format: formato,
+      sender_counts: sender_counts,
+      message_examples: message_examples,
+      success: true
+    };
+    
+    return data;
+  } catch (error) {
+    console.error("Error durante el análisis:", error);
+    return {
+      error: `Error durante el análisis: ${error.message}`,
+      success: false
+    };
+  }
+};
+
+// Función simplificada para extraer mensajes
+const analizarMensajesSimplificado = (lineas, formato) => {
+  const mensajes = [];
+  let mensajeAnterior = null;
+  
+  for (const linea of lineas) {
+    if (!linea.trim()) continue;
+    
+    const resultado = analizarMensaje(linea, formato, mensajeAnterior);
+    
+    if (resultado === mensajeAnterior) {
+      mensajeAnterior = resultado;
+      continue;
+    }
+    
+    if (resultado) {
+      mensajes.push(resultado);
+      mensajeAnterior = resultado;
+    }
+  }
+  
+  return mensajes;
+};
+
+// Función para analizar un mensaje (copiada de chatAnalyzer)
+const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
+  linea = linea.trim();
+  
+  // Si es una continuación de mensaje anterior
+  if (mensajeAnterior && 
+      !(linea.startsWith('[') || 
+        (formato === "android" && /^\d{1,2}\/\d{1,2}\/\d{2}/.test(linea)))) {
+    mensajeAnterior.mensaje += `\n${linea}`;
+    mensajeAnterior.esMultilinea = true;
+    return mensajeAnterior;
+  }
+  
+  // Patrones para extraer componentes según el formato
+  const patronIOS = /^\[(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2}(?::\d{2})?)\]\s*([^:]+):\s*(.*)/;
+  const patronAndroid = /^(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2})\s*-\s*([^:]+):\s*(.+)/;
+  
+  let match;
+  if (formato === "ios") {
+    match = linea.match(patronIOS);
+  } else {
+    match = linea.match(patronAndroid);
+  }
+  
+  if (match) {
+    const [_, fecha, hora, nombre, mensaje] = match;
+    try {
+      // Identificar tipo de mensaje
+      let tipoMensaje = "texto";
+      const mensajeLower = mensaje.toLowerCase();
+      
+      if (/imagen omitida|image omitted|<multimedia omitido>/.test(mensajeLower)) {
+        tipoMensaje = "imagen";
+      } else if (/video omitido|video omitted/.test(mensajeLower)) {
+        tipoMensaje = "video";
+      } else if (/audio omitido|audio omitted/.test(mensajeLower)) {
+        tipoMensaje = "audio";
+      } else if (/documento omitido|document omitted/.test(mensajeLower)) {
+        tipoMensaje = "documento";
+      } else if (/sticker omitido|sticker omitted/.test(mensajeLower)) {
+        tipoMensaje = "sticker";
+      }
+      
+      return {
+        fecha: fecha,
+        hora: hora,
+        nombre: nombre.trim(),
+        mensaje: mensaje.trim() || "",
+        tipo: tipoMensaje,
+        esMultilinea: false,
+        formato: formato
+      };
+    } catch (e) {
+      console.error(`Error al parsear fecha/hora (${fecha} ${hora}):`, e);
+      return null;
+    }
+  }
+  return null;
+};
+
+// Implementación simplificada de encontrarArchivosChat
+const encontrarArchivosChat = (files) => {
+  if (!files || files.length === 0) return null;
+  // Filtrar archivos de texto
+  return Array.from(files).filter(file => 
+    file.name.endsWith('.txt') || 
+    file.name.endsWith('.csv') || 
+    file.name.includes('chat')
+  );
+};
 
 function ChatAnalysisComponent({ operationId }) {
   const [analysisResult, setAnalysisResult] = useState(null);
