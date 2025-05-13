@@ -177,7 +177,8 @@ const encontrarArchivosChat = (files) => {
   );
 };
 
-function ChatAnalysisComponent({ operationId }) {
+// Modificar el componente para recibir chatData directamente
+function ChatAnalysisComponent({ operationId, chatData }) {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -185,11 +186,20 @@ function ChatAnalysisComponent({ operationId }) {
   const resultsContainerRef = useRef(null);
 
   useEffect(() => {
-    if (operationId) {
+    // Si tenemos chatData directamente, usarlo sin hacer llamada al backend
+    if (chatData) {
+      setChatContent(chatData);
+      return;
+    }
+    
+    // Usar operationId como fallback solo si no tenemos chatData y hay un operationId
+    if (operationId && !chatData) {
       setLoading(true);
       setError(null);
       
-      // Obtener datos del chat para analizar (esta parte se mantiene igual)
+      console.warn('DEPRECATED: Usando operationId para obtener datos. Preferir pasar chatData directamente.');
+      
+      // Obtener datos del chat para analizar (mantener como fallback)
       fetch(`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000'}/api/obtener-chat/${operationId}`)
         .then(response => {
           if (!response.ok) {
@@ -212,7 +222,7 @@ function ChatAnalysisComponent({ operationId }) {
           setLoading(false);
         });
     }
-  }, [operationId]);
+  }, [operationId, chatData]);
 
   // Renderizar los resultados del análisis cuando recibimos nuevos datos
   useEffect(() => {

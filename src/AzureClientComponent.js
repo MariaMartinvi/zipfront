@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { OpenAI } from 'openai';
+import { getEnvVariable } from './fileService';
 
 // Componente para manejar la integración directa con Azure OpenAI desde el cliente
 const AzureClientComponent = ({ chatContent, onAnalysisComplete, onError, language = 'es' }) => {
@@ -127,15 +128,19 @@ const AzureClientComponent = ({ chatContent, onAnalysisComplete, onError, langua
       // Seleccionar modelo basado en la longitud
       const model = selectOptimalModel(contentLength);
       
-      // Obtener credenciales de las variables de entorno
-      const endpoint = process.env.REACT_APP_AZURE_ENDPOINT;
-      const apiKey = process.env.REACT_APP_AZURE_API_KEY;
+      // Obtener credenciales de las variables de entorno o localStorage
+      const endpoint = getEnvVariable('REACT_APP_AZURE_ENDPOINT');
+      const apiKey = getEnvVariable('REACT_APP_AZURE_API_KEY');
       
-      console.log(`Endpoint Azure: ${endpoint}`);
-      console.log(`Clave API: ${apiKey ? "Configurada correctamente" : "No configurada"}`);
+      console.log(`Endpoint Azure: ${endpoint ? 'Configurado correctamente' : 'No configurado'}`);
+      console.log(`Clave API: ${apiKey ? 'Configurada correctamente' : 'No configurada'}`);
       
       if (!endpoint || !apiKey) {
-        onError("Faltan credenciales de Azure OpenAI. Verifica las variables de entorno.");
+        // Mostrar un mensaje de error más útil que indique cómo configurar
+        const errorMsg = 
+          "Faltan credenciales de Azure OpenAI. Presiona Ctrl+Shift+A para abrir el panel de configuración y añadir tus credenciales.";
+        console.error(errorMsg);
+        onError(errorMsg);
         setIsAnalyzing(false);
         return;
       }
@@ -145,7 +150,8 @@ const AzureClientComponent = ({ chatContent, onAnalysisComplete, onError, langua
         apiKey: apiKey,
         baseURL: `${endpoint}openai/deployments/${model}`,
         defaultQuery: { "api-version": "2024-12-01-preview" },
-        defaultHeaders: { "api-key": apiKey }
+        defaultHeaders: { "api-key": apiKey },
+        dangerouslyAllowBrowser: true
       });
       
       console.log(`Analizando chat con modelo ${model}, longitud: ${contentLength} caracteres`);
@@ -190,7 +196,7 @@ const AzureClientComponent = ({ chatContent, onAnalysisComplete, onError, langua
       if (error.status === 429 || error.statusCode === 429) {
         onError("Límite de solicitudes alcanzado. Por favor, intenta más tarde.");
       } else if (error.status === 401 || error.status === 403 || error.statusCode === 401 || error.statusCode === 403) {
-        onError("Error de autenticación con Azure OpenAI. Verifica las credenciales.");
+        onError("Error de autenticación con Azure OpenAI. Verifica las credenciales con Ctrl+Shift+A.");
       } else if (error.message && error.message.includes("network")) {
         onError("Error de conexión con Azure OpenAI. Verifica tu conexión a Internet.");
       } else {

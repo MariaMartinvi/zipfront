@@ -61,11 +61,29 @@ const analizarChat = (contenido, formatoForzado = null) => {
       actividad_por_hora: {},
       actividad_por_dia_semana: {},
       mensajes_por_mes: {},
-      formato_chat: formato
+      formato_chat: formato,
+      // Nuevas estructuras para los gráficos
+      mensajes_por_mes_usuario: {},
+      mensajes_por_mes_porcentaje: {},
+      tiempo_respuesta_por_mes: {},
+      tiempo_respuesta_promedio_mes: {}
     };
     
     // Días de la semana en español
     const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    
+    // Variables para encontrar el primer mensaje
+    let primerFecha = null;
+    
+    // Registrar el último mensaje por usuario para calcular tiempos de respuesta
+    const ultimoMensajePorUsuario = {};
+    
+    // Ordenar mensajes por fecha para procesar cronológicamente
+    mensajes.sort((a, b) => {
+      const fechaA = new Date(`${a.fecha} ${a.hora}`);
+      const fechaB = new Date(`${b.fecha} ${b.hora}`);
+      return fechaA - fechaB;
+    });
     
     // Calcular estadísticas básicas
     mensajes.forEach(msg => {
@@ -73,7 +91,13 @@ const analizarChat = (contenido, formatoForzado = null) => {
       const fecha = new Date(`${msg.fecha} ${msg.hora}`);
       const hora = fecha.getHours();
       const diaSemana = fecha.getDay();
+      // Formato YYYY-MM para el mes
       const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+      
+      // Actualizar primer fecha si es necesario
+      if (!primerFecha || fecha < primerFecha) {
+        primerFecha = fecha;
+      }
       
       // Mensajes por usuario
       stats.mensajes_por_usuario[msg.nombre] = (stats.mensajes_por_usuario[msg.nombre] || 0) + 1;
@@ -85,12 +109,122 @@ const analizarChat = (contenido, formatoForzado = null) => {
       const diaSemanaStr = diasSemana[diaSemana];
       stats.actividad_por_dia_semana[diaSemanaStr] = (stats.actividad_por_dia_semana[diaSemanaStr] || 0) + 1;
       
-      // Mensajes por mes
-      if (!stats.mensajes_por_mes[mes]) {
-        stats.mensajes_por_mes[mes] = {};
+      // Mensajes por mes y usuario (estructura para gráfico de tendencia de interés)
+      if (!stats.mensajes_por_mes_usuario[mes]) {
+        stats.mensajes_por_mes_usuario[mes] = {};
       }
-      stats.mensajes_por_mes[mes][msg.nombre] = (stats.mensajes_por_mes[mes][msg.nombre] || 0) + 1;
+      stats.mensajes_por_mes_usuario[mes][msg.nombre] = (stats.mensajes_por_mes_usuario[mes][msg.nombre] || 0) + 1;
+      
+      // Calcular tiempo de respuesta
+      const nombreActual = msg.nombre;
+      
+      // Verificar si otros usuarios ya han enviado mensajes
+      for (const otroUsuario in ultimoMensajePorUsuario) {
+        if (otroUsuario !== nombreActual) {
+          const ultimoMsg = ultimoMensajePorUsuario[otroUsuario];
+          const ultimaFecha = new Date(`${ultimoMsg.fecha} ${ultimoMsg.hora}`);
+          
+          // Calcular tiempo de respuesta en minutos
+          const tiempoRespuesta = (fecha - ultimaFecha) / (1000 * 60);
+          
+          // Solo considerar respuestas en un período razonable (menos de 24 horas)
+          if (tiempoRespuesta > 0 && tiempoRespuesta < 1440) {
+            // Guardar tiempo de respuesta por mes y usuario
+            if (!stats.tiempo_respuesta_por_mes[mes]) {
+              stats.tiempo_respuesta_por_mes[mes] = {};
+            }
+            
+            if (!stats.tiempo_respuesta_por_mes[mes][nombreActual]) {
+              stats.tiempo_respuesta_por_mes[mes][nombreActual] = [];
+            }
+            
+            stats.tiempo_respuesta_por_mes[mes][nombreActual].push(tiempoRespuesta);
+          }
+        }
+      }
+      
+      // Actualizar el último mensaje de este usuario
+      ultimoMensajePorUsuario[nombreActual] = msg;
     });
+    
+    // Calcular tiempo de respuesta promedio por mes
+    stats.tiempo_respuesta_promedio_mes = {};
+    for (const mes in stats.tiempo_respuesta_por_mes) {
+      stats.tiempo_respuesta_promedio_mes[mes] = {};
+      for (const usuario in stats.tiempo_respuesta_por_mes[mes]) {
+        const tiempos = stats.tiempo_respuesta_por_mes[mes][usuario];
+        if (tiempos && tiempos.length > 0) {
+          // Filtrar tiempos extremos (más de 24 horas)
+          const tiemposFiltrados = tiempos.filter(t => t < 1440);
+          if (tiemposFiltrados.length > 0) {
+            const promedio = tiemposFiltrados.reduce((sum, t) => sum + t, 0) / tiemposFiltrados.length;
+            stats.tiempo_respuesta_promedio_mes[mes][usuario] = promedio;
+          }
+        }
+      }
+    }
+    
+    // Convertir mensajes por mes y usuario a formato para gráficos de porcentaje
+    stats.mensajes_por_mes_porcentaje = {};
+    for (const mes in stats.mensajes_por_mes_usuario) {
+      const usuarios = stats.mensajes_por_mes_usuario[mes];
+      const totalMensajesMes = Object.values(usuarios).reduce((sum, count) => sum + count, 0);
+      
+      stats.mensajes_por_mes_porcentaje[mes] = {
+        total: totalMensajesMes,
+        usuarios: {}
+      };
+      
+      for (const usuario in usuarios) {
+        const cantidadMensajes = usuarios[usuario];
+        const porcentaje = (cantidadMensajes / totalMensajesMes) * 100;
+        
+        stats.mensajes_por_mes_porcentaje[mes].usuarios[usuario] = {
+          mensajes: cantidadMensajes,
+          porcentaje: porcentaje
+        };
+      }
+    }
+    
+    // Encontrar máximos para el resumen
+    const diaMasActivo = Object.entries(stats.actividad_por_dia_semana)
+      .reduce((max, [dia, count]) => count > max[1] ? [dia, count] : max, ["", 0]);
+    
+    const horaMasActiva = Object.entries(stats.actividad_por_hora)
+      .reduce((max, [hora, count]) => count > max[1] ? [hora, count] : max, ["", 0]);
+    
+    const usuarioMasActivo = Object.entries(stats.mensajes_por_usuario)
+      .reduce((max, [nombre, count]) => count > max[1] ? [nombre, count] : max, ["", 0]);
+    
+    // Añadir información del primer mensaje
+    stats.primer_mensaje = {
+      fecha: primerFecha ? `${primerFecha.getDate()}/${primerFecha.getMonth() + 1}/${primerFecha.getFullYear().toString().substr(2, 2)}` : "No disponible",
+      fecha_completa: primerFecha ? primerFecha.toLocaleDateString() : "No disponible",
+      timestamp: primerFecha ? primerFecha.getTime() / 1000 : 0
+    };
+    
+    // Añadir resumen
+    stats.resumen = {
+      total_mensajes: mensajes.length,
+      fecha_inicio: stats.primer_mensaje.fecha,
+      promedio_mensajes_diarios: 0, // Se calcularía con más datos históricos
+      dia_mas_activo: {
+        fecha: "N/A", // En el frontend no calculamos esto
+        mensajes: 0
+      },
+      hora_mas_activa: {
+        hora: horaMasActiva[0],
+        mensajes: horaMasActiva[1]
+      },
+      dia_semana_mas_activo: {
+        dia: diaMasActivo[0],
+        mensajes: diaMasActivo[1]
+      },
+      usuario_mas_activo: {
+        nombre: usuarioMasActivo[0],
+        mensajes: usuarioMasActivo[1]
+      }
+    };
     
     // Añadir estadísticas globales
     stats.total_messages = mensajes.length;
@@ -294,65 +428,11 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       return;
     }
     
-    // Si no hay datos directos pero hay operationId, cargar del servidor
-    if (!operationId) {
-      setError("No se ha proporcionado un ID de operación");
-      setCargando(false);
-      return;
-    }
-
-    console.log(`Cargando datos de análisis para operación: ${operationId}`);
-    const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
-
-    // Eliminar parámetro para forzar formato iOS
-    const url = `${API_URL}/api/resultados-primer-chat/${operationId}`;
-    console.log(`Cargando datos desde: ${url}`);
+    // Si no hay datos directos para analizar, mostrar un mensaje de error
+    setError(t('app.errors.no_data'));
+    setCargando(false);
     
-    // Mantener el estado de carga hasta que los datos estén completamente procesados
-    setCargando(true);
-    
-    fetch(url)
-      .then(response => {
-        console.log(`Respuesta recibida con status: ${response.status}`);
-        if (!response.ok) {
-          throw new Error(t('app.errors.loading_data', { status: response.status }));
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Datos recibidos:', data);
-        // Verificar formato
-        if (!data.formato_chat) {
-          console.warn('El formato de chat no está especificado en la respuesta');
-        } else {
-          console.log('Formato de chat detectado:', data.formato_chat);
-        }
-        
-        // Verificar que los datos no sean nulos o vacíos
-        if (!data || Object.keys(data).length === 0) {
-          throw new Error(t('app.errors.empty_data'));
-        }
-
-        // Verificar que los datos necesarios estén presentes
-        if (!data.mensajes_por_usuario || !data.actividad_por_hora || !data.actividad_por_dia_semana) {
-          throw new Error(t('app.errors.incomplete_data'));
-        }
-        
-        // Establecer los datos y DESPUÉS cambiar el estado de carga
-        setDatos(data);
-        
-        // Usar un pequeño timeout para asegurar que los datos se han procesado
-        // antes de quitar el indicador de carga
-        setTimeout(() => {
-          setCargando(false);
-        }, 500); // Aumentado a 500ms para dar más tiempo al procesamiento
-      })
-      .catch(err => {
-        console.error("Error cargando datos:", err);
-        setError(`${t('app.errors.loading')}: ${err.message}`);
-        setCargando(false);
-      });
-  }, [operationId, chatData]);
+  }, [chatData, t]);
 
   // Preparar datos para el gráfico de mensajes por día de la semana
   const prepararDatosDiaSemana = () => {
@@ -621,7 +701,22 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
     return <div className="no-data">{t('app.errors.no_data_primer_chat')}</div>;
   }
 
-  const { resumen, primer_mensaje } = datos;
+  // Extraer datos del objeto, con valores por defecto en caso de que falten
+  const resumen = datos.resumen || {
+    total_mensajes: 0,
+    fecha_inicio: 'No disponible',
+    promedio_mensajes_diarios: 0,
+    dia_mas_activo: { fecha: 'N/A', mensajes: 0 },
+    hora_mas_activa: { hora: 'N/A', mensajes: 0 },
+    dia_semana_mas_activo: { dia: 'N/A', mensajes: 0 },
+    usuario_mas_activo: { nombre: 'N/A', mensajes: 0 }
+  };
+
+  const primer_mensaje = datos.primer_mensaje || {
+    fecha: 'No disponible',
+    fecha_completa: 'No disponible',
+    timestamp: 0
+  };
 
   return (
     <div className="analisis-primer-chat-container">

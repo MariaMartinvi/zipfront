@@ -18,7 +18,7 @@ import SimplePaymentSuccess from './SimplePaymentSuccess';
 import PaymentSuccessBanner from './PaymentSuccessBanner';
 import { useAuth } from './AuthContext';
 import AuthDebug from './AuthDebug'; // Optional for debugging
-import { deleteFiles, uploadFile, getMistralResponse, startChatAnalysis } from './fileService';
+import { deleteFiles, uploadFile, getMistralResponse, startChatAnalysis, getAzureResponse } from './fileService';
 import Contact from './Paginasextra/Contact';
 import FAQ from './Paginasextra/FAQ';
 import TermsOfService from './Paginasextra/TermsOfService';
@@ -59,6 +59,220 @@ function PlansWithLocationCheck({ user }) {
   );
 }
 
+// Función para extraer contenido del chat desde un archivo ZIP
+const extractChatContent = async (zipContent) => {
+  try {
+    console.log("Extrayendo contenido del chat del archivo ZIP...");
+    
+    // Buscar archivos de chat en el ZIP (archivos de texto o con _chat en el nombre)
+    let chatContent = null;
+    let chatFileName = null;
+    
+    // Buscar archivos candidatos (_chat.txt o archivos .txt)
+    for (const zipEntry in zipContent.files) {
+      if (zipEntry.toLowerCase().includes('_chat.txt') || 
+          zipEntry.toLowerCase().endsWith('.txt')) {
+        chatFileName = zipEntry;
+        chatContent = await zipContent.files[zipEntry].async('string');
+        break;
+      }
+    }
+    
+    if (!chatContent) {
+      console.error("No se encontró archivo de chat en el ZIP");
+      return { error: "No se encontró ningún archivo de chat" };
+    }
+    
+    console.log(`Archivo de chat encontrado: ${chatFileName}`);
+    
+    // Anonimizar el contenido del chat antes de devolverlo
+    const chatAnonimizado = anonimizarChat(chatContent);
+    
+    return { 
+      chat: chatAnonimizado,
+      fileName: chatFileName,
+      success: true
+    };
+  } catch (error) {
+    console.error("Error extrayendo contenido del chat:", error);
+    return { 
+      error: `Error extrayendo contenido: ${error.message}`,
+      success: false
+    };
+  }
+};
+
+// Función para anonimizar el contenido del chat
+const anonimizarChat = (contenido) => {
+  if (!contenido) return contenido;
+  
+  console.log("Anonimizando contenido del chat...");
+  
+  try {
+    // Diccionarios para mantener consistencia en reemplazos
+    const reemplazosEmails = {};
+    const reemplazosNumeros = {};
+    
+    // Función para anonimizar números manteniendo consistencia
+    const anonimizarNumero = (numeroStr) => {
+      // Limpiar el número para mantener consistencia en reemplazos
+      const numeroLimpio = numeroStr.replace(/[\s.-]/g, '');
+      
+      // Si ya anonimizamos este número antes, usamos el mismo reemplazo
+      if (reemplazosNumeros[numeroLimpio]) {
+        return reemplazosNumeros[numeroLimpio];
+      }
+      
+      // Anonimización parcial: mantener estructura original reemplazando dígitos
+      let resultado = "";
+      let contadorDigitos = 0;
+      
+      // Determinar cuántos dígitos mantener (aproximadamente la mitad)
+      const numDigitos = numeroStr.replace(/[^\d]/g, '').length;
+      const digitosAMantener = Math.max(2, Math.floor(numDigitos / 2)); // Al menos 2 dígitos
+      
+      for (const char of numeroStr) {
+        if (/\d/.test(char)) {
+          if (contadorDigitos < digitosAMantener) {
+            resultado += char; // Mantener este dígito
+          } else {
+            resultado += 'X'; // Reemplazar con X
+          }
+          contadorDigitos++;
+        } else {
+          resultado += char; // Mantener separadores y otros caracteres
+        }
+      }
+      
+      // Guardar el reemplazo para futuras ocurrencias
+      reemplazosNumeros[numeroLimpio] = resultado;
+      return resultado;
+    };
+    
+    // Función para anonimizar emails manteniendo consistencia
+    const anonimizarEmail = (email) => {
+      // Si ya anonimizamos este email antes, usamos el mismo reemplazo
+      if (reemplazosEmails[email]) {
+        return reemplazosEmails[email];
+      }
+      
+      // Extraer dominio (mantener el dominio)
+      const dominioMatch = email.match(/@([\w.-]+)/);
+      let anonimizado;
+      
+      if (dominioMatch) {
+        const dominio = dominioMatch[1];
+        anonimizado = `email_anon@${dominio}`;
+      } else {
+        anonimizado = "email_anon@domain.com";
+      }
+      
+      // Guardar el reemplazo para futuras ocurrencias
+      reemplazosEmails[email] = anonimizado;
+      return anonimizado;
+    };
+    
+    // Detectar y anonimizar números de teléfono y similares
+    const detectarYAnonimizarNumeros = (texto) => {
+      // Función para comprobar si es una fecha
+      const esFecha = (textoMatch) => {
+        return /\d+[/:-]\d+/.test(textoMatch);
+      };
+      
+      // Patrones para números con más de 4 dígitos
+      const patrones = [
+        // Números con prefijos y dígitos: +XX123456789
+        /\+\d{1,4}\d{5,}/g,
+        
+        // Números con prefijos y separadores: +XX XXX XX XX
+        /\+\d{1,4}(?:[\s.-]+\d{1,4}){2,}/g,
+        
+        // Números de al menos 5 dígitos consecutivos
+        /\b\d{5,}\b/g,
+        
+        // Números con espacios como separadores
+        /\b\d{2,}(?:\s+\d{1,4}){2,}\b/g,
+        
+        // Números con guiones como separadores
+        /\b\d{2,}(?:-\d{1,4}){2,}\b/g,
+        
+        // Números con puntos como separadores
+        /\b\d{2,}(?:\.\d{1,4}){2,}\b/g
+      ];
+      
+      let textoAnonimizado = texto;
+      
+      for (const patron of patrones) {
+        const matches = textoAnonimizado.match(patron);
+        if (matches) {
+          for (const match of matches) {
+            // Saltar si es una fecha
+            if (esFecha(match)) {
+              continue;
+            }
+            
+            // Limpiar el número para verificar que tiene más de 4 dígitos
+            const numeroLimpio = match.replace(/[^0-9]/g, '');
+            if (numeroLimpio.length > 4) {
+              // Anonimizar el número manteniendo el formato original
+              const anonimizado = anonimizarNumero(match);
+              // Reemplazo exacto (evitar reemplazos parciales)
+              textoAnonimizado = textoAnonimizado.split(match).join(anonimizado);
+            }
+          }
+        }
+      }
+      
+      return textoAnonimizado;
+    };
+    
+    // Detectar y anonimizar correos electrónicos
+    const detectarYAnonimizarEmails = (texto) => {
+      // Patrón para emails
+      const patronEmail = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+      
+      let textoAnonimizado = texto;
+      const matches = textoAnonimizado.match(patronEmail);
+      
+      if (matches) {
+        for (const email of matches) {
+          const anonimizado = anonimizarEmail(email);
+          textoAnonimizado = textoAnonimizado.split(email).join(anonimizado);
+        }
+      }
+      
+      return textoAnonimizado;
+    };
+    
+    // Dividir el texto en líneas para procesarlo línea por línea
+    const lineas = contenido.split(/\r?\n/);
+    const lineasAnonimizadas = [];
+    
+    for (let linea of lineas) {
+      // Primero anonimizar los emails
+      linea = detectarYAnonimizarEmails(linea);
+      
+      // Luego anonimizar números
+      linea = detectarYAnonimizarNumeros(linea);
+      
+      lineasAnonimizadas.push(linea);
+    }
+    
+    // Unir las líneas en un solo texto
+    const contenidoAnonimizado = lineasAnonimizadas.join('\n');
+    
+    // Registrar las estadísticas de anonimización
+    const totalEmails = Object.keys(reemplazosEmails).length;
+    const totalNumeros = Object.keys(reemplazosNumeros).length;
+    console.log(`Anonimización completada: ${totalEmails} emails y ${totalNumeros} números anonimizados`);
+    
+    return contenidoAnonimizado;
+  } catch (error) {
+    console.error("Error al anonimizar el chat:", error);
+    return contenido; // En caso de error, devolver el contenido original
+  }
+};
+
 function App() {
   const { t, i18n } = useTranslation(); // Inicializar hook de traducción
   const [operationId, setOperationId] = useState(null);
@@ -76,6 +290,8 @@ function App() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [filesDeleted, setFilesDeleted] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  // Nuevo estado para los datos extraídos del chat
+  const [chatData, setChatData] = useState(null);
   // Nuevo estado para alerta de confirmación
   const [showRefreshConfirmation, setShowRefreshConfirmation] = useState(false);
   // Estado para controlar si mostrar el botón de ver análisis
@@ -248,78 +464,64 @@ function App() {
       
       // Limpiar cualquier operación previa
       setOperationId(null);
-      setChatGptResponse('');
-      setShowChatGptResponse(false);
+      setChatData(null);
       
-      addDebugMessage(`Procesando archivo: ${file.name} (${Math.round(file.size / 1024)} KB)`);
+      // Generar un ID de operación único para esta sesión
+      const newOperationId = `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setOperationId(newOperationId);
       
-      // Crear FormData para subir el archivo
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('user_id', user ? user.uid : 'anonymous');
+      // Intentar leer el archivo ZIP
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
       
-      // Enviar directamente a la API de extracción
-      addDebugMessage('Enviando solicitud POST a /api/extract...');
-      const response = await fetch(`${API_URL}/api/extract`, {
-        method: 'POST',
-        body: formData
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Error en la extracción: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      addDebugMessage(`Respuesta de /api/extract: ${JSON.stringify(data).substring(0, 200)}...`);
-      
-      if (!data.operation_id) {
-        throw new Error('No se recibió un ID de operación');
-      }
-      
-      // Iniciar análisis con ChatGPT/Mistral usando el idioma actual
-      const currentLanguage = i18n.language; // Obtener el idioma actual
-      addDebugMessage(`Iniciando análisis con idioma: ${currentLanguage}`);
-      
-      const analysisResult = await startChatAnalysis(data.operation_id, currentLanguage);
-      
-      if (!analysisResult.success) {
-        throw new Error(`Error al iniciar el análisis: ${analysisResult.error}`);
-      }
-      
-      // Actualizar ID de operación para seguimiento y visualización
-      handleZipExtraction(data);
-      
-      // Actualizar el contador de uso del usuario
-      if (user && user.uid) {
-        incrementChatUsage(user.uid).catch(error => {
-          console.error("Error al incrementar el uso de chat:", error);
-          addDebugMessage(`Error al incrementar estadísticas de uso: ${error.message}`);
-        });
-      }
-      
-      // Incrementar el contador de uso global (estadística general)
       try {
-        const response = await fetch(`${API_URL}/api/increment-usage`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ userId: user ? user.uid : 'anonymous' })
-        });
-        const data = await response.json();
-        addDebugMessage(`Uso global incrementado: ${JSON.stringify(data)}`);
-      } catch (usageError) {
-        addDebugMessage(`Error al incrementar uso global: ${usageError.message}`);
-        // No fallar por este error, es solo una estadística
+        // Procesar el archivo ZIP
+        const zipContent = await zip.loadAsync(file);
+        // Extraer contenido del chat
+        const extractedContent = await extractChatContent(zipContent);
+        
+        if (extractedContent && extractedContent.chat) {
+          // Guardamos el contenido del chat en el estado para usarlo en todos los análisis
+          setChatData(extractedContent.chat);
+          
+          // No es necesario enviar nada al backend ya que procesamos en el frontend
+          console.log('Archivo ZIP procesado exitosamente en el cliente.');
+          addDebugMessage('Análisis procesado exitosamente en el cliente.');
+          setShowAnalysis(true);
+          
+          // Para compatibilidad hacia atrás, mantener el flujo de operationId
+          // Esta línea actualizará todos los demás componentes que aún dependan del ID
+          setOperationId(newOperationId);
+          
+          // Simular un pequeño retraso para dar tiempo a que la UI se actualice
+          setTimeout(() => {
+            setIsLoading(false);
+            scrollToAnalysis();
+            
+            // Establecer flag para indicar que el análisis está completo (para la limpieza automática)
+            localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
+            
+            // Programar limpieza automática después de 30 minutos
+            setTimeout(() => {
+              checkAndDeleteFiles(newOperationId);
+            }, 1800000); // 30 minutos
+          }, 500);
+          
+          return true;
+        } else {
+          throw new Error(t('error.no_chat_found'));
+        }
+      } catch (error) {
+        console.error('Error procesando ZIP:', error);
+        setError(`${t('app.errors.processing_zip')}: ${error.message}`);
+        setIsLoading(false);
+        return false;
       }
-      
-      setIsLoading(false);
-      
     } catch (error) {
-      console.error('Error procesando archivo:', error);
+      console.error('Error procesando ZIP:', error);
+      setError(`${t('app.errors.processing_zip')}: ${error.message}`);
       setIsLoading(false);
-      setError(error.message);
-      addDebugMessage(`Error: ${error.message}`);
+      return false;
     }
   };
 
@@ -700,7 +902,12 @@ function App() {
 
   // Function to poll for Mistral response - Mejorada para ser más robusta
   const fetchMistralResponse = async () => {
-    if (!operationId) return;
+    // Verificar que tenemos datos del chat para analizar
+    if (!chatData) {
+      addDebugMessage('No hay datos de chat disponibles para analizar');
+      setError('No hay datos de chat disponibles para analizar');
+      return;
+    }
     
     // Evitar múltiples solicitudes simultáneas
     if (isFetchingMistral && !localStorage.getItem('whatsapp_analyzer_force_fetch')) {
@@ -715,128 +922,72 @@ function App() {
     setProgressMessage(t('app.generating_ai_analysis'));
     
     try {
-      let attempts = 0;
-      const maxAttempts = 20; // Aumentar a 20 intentos con retraso entre ellos
+      addDebugMessage('Analizando chat directamente con Azure OpenAI desde el frontend');
       
-      const checkResponse = async () => {
-        attempts++;
+      // Actualizar mensaje de progreso
+      setProgressMessage(`${t('app.generating_analysis')}: ${t('progress_phases.processing_data')}`);
+      
+      // Obtener el idioma del usuario (predeterminado a 'es')
+      const userLanguage = localStorage.getItem('i18nextLng') || 'es';
+      
+      // Enviar solicitud directamente a Azure OpenAI usando el método actualizado
+      const result = await getMistralResponse(chatData, userLanguage);
+      
+      if (result.success && result.ready && result.response) {
+        addDebugMessage('Respuesta de Azure recibida con éxito');
+        setChatGptResponse(result.response);
+        setShowChatGptResponse(true);
         
-        try {
-          // Actualizar mensaje de progreso con mensajes positivos según el avance
-          if (attempts > 1) {
-            const progressPhases = [
-              t('progress_phases.processing_data'),
-              t('progress_phases.analyzing_patterns'),
-              t('progress_phases.applying_model'),
-              t('progress_phases.generating_conclusions'),
-              t('progress_phases.finalizing_analysis')
-            ];
-            
-            // Determinar qué fase mostrar basado en el número de intentos
-            const phaseIndex = Math.min(Math.floor(attempts / 4), progressPhases.length - 1);
-            setProgressMessage(`${t('app.generating_analysis')}: ${progressPhases[phaseIndex]}`);
-          }
-          
-          addDebugMessage(`Intentando obtener respuesta de Mistral (intento ${attempts}/${maxAttempts})`);
-          const response = await fetch(`${API_URL}/api/mistral-response/${operationId}`);
-          
-          if (!response.ok) {
-            addDebugMessage(`Error en respuesta: ${response.status}`);
-            throw new Error(`Error: ${response.status}`);
-          }
-          
-          const data = await response.json();
-          
-          if (data.ready && data.response) {
-            addDebugMessage('Respuesta de Mistral recibida con éxito');
-            setChatGptResponse(data.response);
-            setShowChatGptResponse(true);
-            
-            // Guardar en localStorage que el análisis está completo
-            localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
-            
-            // Hacer scroll automático hacia arriba cuando finaliza el análisis
-            setTimeout(() => scrollToAnalysis(), 300);
-            
-            // Programar la eliminación de archivos con un retraso mayor
-            setTimeout(() => {
-              addDebugMessage('Programando eliminación de archivos tras finalizar análisis');
-              checkAndDeleteFiles(operationId);
-            }, 300000); // Esperar 5 minutos antes de programar eliminación
-            
-            setIsFetchingMistral(false);
-            return true;
-          }
-          
-          if (attempts >= maxAttempts) {
-            addDebugMessage('Máximo de intentos alcanzado esperando por Mistral');
-            setIsFetchingMistral(false);
-            
-            // Guardar en localStorage que hubo un error para recuperación posterior
-            localStorage.setItem('whatsapp_analyzer_mistral_error', 'true');
-            return false;
-          }
-          
-          // Reducir el tiempo de espera entre intentos
-          const delay = Math.min(1000 * Math.pow(1.1, attempts - 1), 5000); // Reducido de 2000 a 1000 y de 15000 a 5000
-          addDebugMessage(`Esperando ${Math.round(delay/1000)}s antes del siguiente intento...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-          return await checkResponse();
-        } catch (error) {
-          addDebugMessage(`Error al obtener respuesta de Mistral: ${error.message}`);
-          
-          if (attempts >= maxAttempts) {
-            setIsFetchingMistral(false);
-            // Guardar que hubo un error
-            localStorage.setItem('whatsapp_analyzer_mistral_error', 'true');
-            return false;
-          }
-          
-          // Reducir el tiempo de espera para errores de red
-          const delay = Math.min(2000 * Math.pow(1.2, attempts - 1), 15000); // Reducido de 5000 a 2000 y de 30000 a 15000
-          addDebugMessage(`Error de red. Esperando ${Math.round(delay/1000)}s antes del siguiente intento...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-          return await checkResponse();
-        }
-      };
-      
-      // Start checking
-      await checkResponse();
+        // Guardar en localStorage que el análisis está completo
+        localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
+        
+        // Hacer scroll automático hacia arriba cuando finaliza el análisis
+        setTimeout(() => scrollToAnalysis(), 300);
+        
+        // Programar limpieza automática después de 30 minutos
+        setTimeout(() => {
+          addDebugMessage('Programando limpieza local después de análisis completado');
+          checkAndDeleteFiles(operationId);
+        }, 1800000); // Esperar 30 minutos (1800000 ms)
+        
+        setIsFetchingMistral(false);
+        return true;
+      } else {
+        // Si hay un error, mostrar mensaje
+        addDebugMessage(`Error al obtener respuesta de Azure: ${result.error}`);
+        setError(result.error || 'Error al analizar el chat con Azure OpenAI');
+        setIsFetchingMistral(false);
+        return false;
+      }
     } catch (error) {
       addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
       setIsFetchingMistral(false);
+      setError(`Error al analizar el chat: ${error.message}`);
       // Guardar que hubo un error para poder recuperarse después
       localStorage.setItem('whatsapp_analyzer_mistral_error', 'true');
+      return false;
     }
   };
   
   // Add this new function for checking if processing is complete before deleting
   const checkAndDeleteFiles = async (operationId, retries = 5, delay = 20000) => {
     if (retries <= 0) {
-      addDebugMessage('Máximo de reintentos alcanzado, intentando eliminar archivos de todos modos');
+      addDebugMessage('Máximo de reintentos alcanzado, intentando limpiar almacenamiento local');
       tryDeleteFiles(operationId);
       return;
     }
     
     try {
-      // Check if the response file exists (since you don't have the /api/check-processing endpoint yet)
-      const response = await fetch(`${API_URL}/api/check-processing/${operationId}`);
+      // En lugar de verificar en el backend, simplemente verificamos si hay un flag local
+      const isComplete = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
       
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (data.complete) {
-          addDebugMessage('Procesamiento confirmado como completo, eliminando archivos en 60 segundos');
-          // Add a longer delay to ensure any ongoing processes are complete
-          setTimeout(() => tryDeleteFiles(operationId), 60000);
-        } else {
-          addDebugMessage(`Procesamiento no completado todavía, esperando ${delay/1000} segundos...`);
-          setTimeout(() => checkAndDeleteFiles(operationId, retries - 1, delay), delay);
-        }
-      } else {
-        addDebugMessage('Error al verificar estado del procesamiento, intentando eliminar de todos modos');
-        // Give more time
+      if (isComplete) {
+        addDebugMessage('Procesamiento confirmado como completo, limpiando almacenamiento local en 60 segundos');
+        // Add a longer delay to ensure any ongoing processes are complete
         setTimeout(() => tryDeleteFiles(operationId), 60000);
+      } else {
+        addDebugMessage(`Procesamiento no completado todavía, esperando ${delay/1000} segundos...`);
+        setTimeout(() => checkAndDeleteFiles(operationId, retries - 1, delay), delay);
       }
     } catch (error) {
       addDebugMessage(`Error en el proceso de verificación: ${error.message}`);
@@ -846,27 +997,37 @@ function App() {
 
 const tryDeleteFiles = async (operationId) => {
   try {
-    addDebugMessage('Intentando eliminar archivos');
-    const deleteResponse = await fetch(`${API_URL}/api/delete-files/${operationId}`, {
-      method: 'DELETE',
-    });
+    addDebugMessage('Limpiando datos del análisis del almacenamiento local');
     
-    if (deleteResponse.ok) {
-      addDebugMessage('Archivos eliminados con éxito');
-    } else {
-      const deleteData = await deleteResponse.json();
-      addDebugMessage(`No se pudieron eliminar los archivos: ${deleteData.error || 'Error desconocido'}`);
+    // Eliminar datos relacionados con el análisis del localStorage
+    localStorage.removeItem('whatsapp_analyzer_operation_id');
+    localStorage.removeItem('whatsapp_analyzer_loading');
+    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+    localStorage.removeItem('whatsapp_analyzer_show_analysis');
+    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+    localStorage.removeItem('whatsapp_analyzer_mistral_error');
+    localStorage.removeItem('whatsapp_analyzer_force_fetch');
+    localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+    
+    // También limpiar el estado de la aplicación
+    setZipFile(null);
+    setChatData(null);
+    if (operationId) {
+      setOperationId(null);
     }
-  } catch (deleteError) {
-    addDebugMessage(`Error al intentar eliminar archivos: ${deleteError.message}`);
+    
+    addDebugMessage('Datos eliminados exitosamente del almacenamiento local');
+  } catch (error) {
+    addDebugMessage(`Error al limpiar datos locales: ${error.message}`);
   }
 };
-  // Start polling for Mistral response when we have an operationId
+  // Start analysis when we have chat data
   useEffect(() => {
-    if (operationId && !chatGptResponse) {
+    if (chatData && !chatGptResponse) {
       fetchMistralResponse();
     }
-  }, [operationId, chatGptResponse]);
+  }, [chatData, chatGptResponse]);
 
   // Efecto para manejar compartir archivos y configurar Service Worker
   useEffect(() => {
@@ -1381,12 +1542,12 @@ const tryDeleteFiles = async (operationId) => {
                       ) : (
                         <>
                           <div className="analysis-module">
-                            <AnalisisPrimerChat operationId={operationId} />
+                            <AnalisisPrimerChat chatData={chatData} />
                           </div>
                           {/* Nuevos componentes de análisis */}
                           <div className="additional-analysis">
                             <div className="analysis-module">
-                              <AnalisisTop operationId={operationId} />
+                              <AnalisisTop chatData={chatData} />
                             </div>
                           </div>
                         </>
@@ -1536,7 +1697,7 @@ const tryDeleteFiles = async (operationId) => {
                     {t('app.refresh_confirmation.cancel')}
                   </button>
                   <button 
-                    className="refresh-confirmation-continue" 
+                    className="refresh-confirmation-confirm" 
                     onClick={handleConfirmRefresh}
                   >
                     {t('app.refresh_confirmation.confirm')}

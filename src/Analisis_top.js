@@ -4,11 +4,13 @@ import './Analisis_top.css';
 // Importar el detector de formato directamente
 import { detectarFormatoArchivo } from './formatDetector.js';
 
-// Función simplificada para analizar perfiles
+// Implementación completa de analizarPerfilesCompleto para reemplazar la versión del backend
 const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat = 'es') => {
   console.log("Analizando perfiles directamente desde Analisis_top...");
   try {
+    // Determinar formato usando el detector
     const formato = detectarFormatoArchivo(contenido, formatoForzado, true);
+    console.log(`\\nFormato final a utilizar: ${formato}`);
     
     if (formato === "desconocido") {
       return { error: "Formato de chat no reconocido", success: false };
@@ -22,13 +24,35 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       return { error: "No se encontraron mensajes válidos", success: false };
     }
     
-    // Obtener usuarios
-    const usuarios = {};
+    // Patrones para emoji y emojis de amor
+    const patronEmoji = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu;
+    const patronEmojisAmor = /[😍😘🥰😗😙😚💋❤️🧡💛💝💘💖💗💓💞💕❣️❤️‍🩹❤️‍🔥💔🩷❤️🧡💛💚🩵💙💜🖤🩶🤍🤎💟🌹🌷💐🌾🪸🥀👩‍❤️‍👩👩‍❤️‍👨👩‍❤️‍👩👨‍❤️‍👨👩‍❤️‍💋‍👨💏👨‍❤️‍💋‍👨😍🥰😘]/gu;
+
+    // Patrones de primera persona por idioma
+    const patronesPrimeraPersona = {
+      'es': /\byo\b|\bmi\b|\bme\b|\bconmigo\b/i,
+      'en': /\bi\b|\bmy\b|\bme\b|\bmyself\b|\bmine\b/i,
+      'fr': /\bje\b|\bmoi\b|\bm'|\bme\b|\bmon\b|\bma\b|\bmes\b/i,
+      'de': /\bich\b|\bmein\b|\bmir\b|\bmich\b|\bmeine\b/i,
+      'it': /\bio\b|\bmio\b|\bmi\b|\bmia\b|\bmie\b|\bmiei\b|\bme\b/i
+    };
+
+    // Función para detectar primera persona
+    const detectarPrimeraPersona = (texto, idioma) => {
+      // Si no se especifica idioma o el idioma no está soportado, usar español
+      if (!idioma || !patronesPrimeraPersona[idioma]) {
+        idioma = 'es';
+      }
+      return patronesPrimeraPersona[idioma].test(texto.toLowerCase());
+    };
+    
+    // Obtener usuarios únicos
     const participantes = new Set();
     mensajes.forEach(m => participantes.add(m.nombre));
     
     // Inicializar estadísticas para cada usuario
-    participantes.forEach(usuario => {
+    const usuarios = {};
+    Array.from(participantes).forEach(usuario => {
       usuarios[usuario] = {
         mensajes: 0,
         palabras_totales: 0,
@@ -48,30 +72,173 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       };
     });
     
-    // Calcular estadísticas básicas
-    mensajes.forEach(msg => {
-      const usuario = msg.nombre;
+    // Identificar conversaciones (separadas por más de 2 horas)
+    const conversaciones = [];
+    if (mensajes.length > 0) {
+      let conversacionActual = [mensajes[0]];
       
-      // Incrementar contadores
+      for (let i = 1; i < mensajes.length; i++) {
+        // Calcular diferencia en horas
+        const fechaActual = new Date(mensajes[i].fecha);
+        const fechaAnterior = new Date(mensajes[i-1].fecha);
+        const tiempoDiferencia = (fechaActual - fechaAnterior) / (1000 * 60 * 60); // en horas
+        
+        if (tiempoDiferencia > 2) { // Nueva conversación después de 2 horas
+          if (conversacionActual.length > 0) {
+            conversaciones.push(conversacionActual);
+          }
+          conversacionActual = [mensajes[i]];
+        } else {
+          conversacionActual.push(mensajes[i]);
+        }
+      }
+      
+      // Añadir la última conversación
+      if (conversacionActual.length > 0) {
+        conversaciones.push(conversacionActual);
+      }
+    }
+    
+    console.log(`Total de conversaciones identificadas: ${conversaciones.length}`);
+    
+    // Detectar mensajes consecutivos por usuario
+    for (const conversacion of conversaciones) {
+      let usuarioActual = null;
+      let contadorConsecutivos = 1;
+      const maxConsecutivos = {};
+      
+      for (const mensaje of conversacion) {
+        const usuario = mensaje.nombre;
+        
+        if (usuario === usuarioActual) {
+          contadorConsecutivos++;
+        } else {
+          // Cambio de usuario, reiniciar contador
+          if (usuarioActual !== null) {
+            // Actualizar el máximo para el usuario anterior
+            maxConsecutivos[usuarioActual] = Math.max(
+              maxConsecutivos[usuarioActual] || 0,
+              contadorConsecutivos
+            );
+          }
+          contadorConsecutivos = 1;
+          usuarioActual = usuario;
+        }
+      }
+      
+      // No olvidar actualizar el último usuario de la conversación
+      if (usuarioActual !== null) {
+        maxConsecutivos[usuarioActual] = Math.max(
+          maxConsecutivos[usuarioActual] || 0,
+          contadorConsecutivos
+        );
+      }
+      
+      // Actualizar estadísticas globales de mensajes consecutivos
+      for (const [usuario, maxConsec] of Object.entries(maxConsecutivos)) {
+        usuarios[usuario].max_mensajes_seguidos = Math.max(
+          usuarios[usuario].max_mensajes_seguidos,
+          maxConsec
+        );
+      }
+    }
+    
+    // Identificar inicios y finales de conversación
+    const conversacionesIniciadas = {};
+    const conversacionesTerminadas = {};
+    
+    for (const conversacion of conversaciones) {
+      if (conversacion.length > 1) {
+        const primerMensaje = conversacion[0];
+        const ultimoMensaje = conversacion[conversacion.length - 1];
+        
+        const usuarioInicio = primerMensaje.nombre;
+        const usuarioFinal = ultimoMensaje.nombre;
+        
+        usuarios[usuarioInicio].mensajes_inician_conversacion += 1;
+        usuarios[usuarioFinal].mensajes_terminan_conversacion += 1;
+        
+        conversacionesIniciadas[usuarioInicio] = (conversacionesIniciadas[usuarioInicio] || 0) + 1;
+        conversacionesTerminadas[usuarioFinal] = (conversacionesTerminadas[usuarioFinal] || 0) + 1;
+      }
+    }
+    
+    // Calcular estadísticas de cada mensaje
+    for (let i = 0; i < mensajes.length; i++) {
+      const mensaje = mensajes[i];
+      const usuario = mensaje.nombre;
+      const texto = mensaje.mensaje || '';
+      const fecha = new Date(mensaje.fecha);
+      const hora = fecha.getHours();
+      
+      // Incrementar contador de mensajes
       usuarios[usuario].mensajes++;
       
-      // Si el mensaje es entre 9PM y 6AM, es nocturno
-      const hora = parseInt(msg.hora.split(':')[0], 10);
-      if (hora >= 21 || hora < 6) {
+      // Guardar horario y longitud
+      usuarios[usuario].horario_mensajes.push(hora);
+      usuarios[usuario].longitud_mensajes.push(texto.length);
+      
+      // Contar mensajes nocturnos (22:00 - 06:00)
+      if (hora >= 22 || hora < 6) {
         usuarios[usuario].mensajes_noche++;
       }
       
-      // Registrar hora para promedio
-      usuarios[usuario].horario_mensajes.push(hora);
+      // Contar palabras y palabras únicas
+      const palabras = texto.toLowerCase().match(/[a-zñáéíóúüÁÉÍÓÚÜÑ]+/g) || [];
+      usuarios[usuario].palabras_totales += palabras.length;
+      palabras.forEach(palabra => usuarios[usuario].palabras_unicas.add(palabra));
+      usuarios[usuario].palabras_por_mensaje.push(palabras.length);
       
-      // Registrar longitud del mensaje
-      if (msg.mensaje) {
-        const longitud = msg.mensaje.length;
-        usuarios[usuario].longitud_mensajes.push(longitud);
+      // Detectar uso de primera persona
+      if (detectarPrimeraPersona(texto, idiomaChat)) {
+        usuarios[usuario].uso_primera_persona++;
       }
-    });
+      
+      // Buscar menciones a otros usuarios
+      for (const otroUsuario of Object.keys(usuarios)) {
+        if (otroUsuario !== usuario && texto.toLowerCase().includes(otroUsuario.toLowerCase())) {
+          usuarios[usuario].menciones_otros++;
+          break;
+        }
+      }
+      
+      // Calcular tiempo de respuesta
+      if (i > 0) {
+        const mensajeAnterior = mensajes[i-1];
+        const tiempoRespuesta = (fecha - new Date(mensajeAnterior.fecha)) / (1000 * 60); // en minutos
+        if (tiempoRespuesta > 0) { // Solo considerar respuestas positivas
+          usuarios[usuario].tiempo_respuesta.push(tiempoRespuesta);
+        }
+      }
+      
+      // Contar emojis
+      try {
+        const emojis = texto.match(patronEmoji) || [];
+        const numEmojis = emojis.length;
+        if (numEmojis > 0) {
+          usuarios[usuario].emojis_utilizados += numEmojis;
+          
+          // Contar emojis de amor
+          const emojisAmor = texto.match(patronEmojisAmor) || [];
+          const numEmojisAmor = emojisAmor.length;
+          if (numEmojisAmor > 0) {
+            usuarios[usuario].emojis_amor += numEmojisAmor;
+          }
+        }
+      } catch (e) {
+        console.error("Error procesando emojis:", e);
+      }
+    }
     
-    // Crear categorías con datos simplificados
+    // Calcular estadísticas agregadas
+    const horarios_promedio = {};
+    const longitudes_promedio = {};
+    const tiempo_respuesta_promedio = {};
+    const palabras_unicas_ratio = {};
+    const palabras_por_mensaje_promedio = {};
+    const menciones_yo_ratio = {};
+    
+    // Estructura para categorías
     const categorias = {
       profesor: { nombre: '--', palabras_unicas: 0, mensajes: 0, ratio: 0 },
       rollero: { nombre: '--', palabras_por_mensaje: 0, mensajes: 0 },
@@ -89,81 +256,289 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       sicopata: { nombre: '--', max_mensajes_seguidos: 0, mensajes: 0 }
     };
     
-    // Asignar categorías simplificadas basadas en las estadísticas básicas
+    // Media estadística
+    const calcularMedia = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
     
-    // Vampiro (nocturno)
-    let maxMensajesNoche = 0;
-    let usuarioVampiro = '';
-    
-    Object.entries(usuarios).forEach(([nombre, datos]) => {
-      if (datos.mensajes_noche > maxMensajesNoche) {
-        maxMensajesNoche = datos.mensajes_noche;
-        usuarioVampiro = nombre;
+    // Calcular estadísticas por usuario
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      // Horario promedio
+      if (datos.horario_mensajes.length > 0) {
+        horarios_promedio[usuario] = calcularMedia(datos.horario_mensajes);
       }
-    });
+      
+      // Longitud promedio de mensajes
+      if (datos.longitud_mensajes.length > 0) {
+        longitudes_promedio[usuario] = calcularMedia(datos.longitud_mensajes);
+      }
+      
+      // Tiempo de respuesta promedio
+      if (datos.tiempo_respuesta.length > 0) {
+        tiempo_respuesta_promedio[usuario] = calcularMedia(datos.tiempo_respuesta);
+      }
+      
+      // Palabras únicas (ratio)
+      if (datos.mensajes > 0) {
+        palabras_unicas_ratio[usuario] = [
+          datos.palabras_unicas.size,
+          datos.palabras_unicas.size / datos.mensajes
+        ];
+      }
+      
+      // Palabras por mensaje
+      if (datos.palabras_por_mensaje.length > 0) {
+        palabras_por_mensaje_promedio[usuario] = calcularMedia(datos.palabras_por_mensaje);
+      }
+      
+      // Menciones a sí mismo (ratio)
+      if (datos.mensajes > 0) {
+        menciones_yo_ratio[usuario] = [
+          datos.uso_primera_persona,
+          (datos.uso_primera_persona / datos.mensajes) * 100
+        ];
+      }
+    }
     
-    if (usuarioVampiro) {
-      const porcentaje = (maxMensajesNoche / usuarios[usuarioVampiro].mensajes) * 100;
+    // Asignar categorías
+    
+    // Profesor (más palabras únicas por mensaje)
+    if (Object.keys(palabras_unicas_ratio).length > 0) {
+      const usuarioProfesor = Object.entries(palabras_unicas_ratio)
+        .sort((a, b) => b[1][1] - a[1][1])[0][0];
+      const [cantidad, ratio] = palabras_unicas_ratio[usuarioProfesor];
+      categorias.profesor = {
+        nombre: usuarioProfesor,
+        palabras_unicas: cantidad,
+        ratio: ratio,
+        mensajes: usuarios[usuarioProfesor].mensajes
+      };
+    }
+    
+    // Rollero (más palabras por mensaje)
+    if (Object.keys(palabras_por_mensaje_promedio).length > 0) {
+      const usuarioRollero = Object.entries(palabras_por_mensaje_promedio)
+        .sort((a, b) => b[1] - a[1])[0][0];
+      categorias.rollero = {
+        nombre: usuarioRollero,
+        palabras_por_mensaje: palabras_por_mensaje_promedio[usuarioRollero],
+        mensajes: usuarios[usuarioRollero].mensajes
+      };
+    }
+    
+    // Pistolero (responde más rápido)
+    if (Object.keys(tiempo_respuesta_promedio).length > 0) {
+      const usuarioPistolero = Object.entries(tiempo_respuesta_promedio)
+        .sort((a, b) => a[1] - b[1])[0][0];
+      categorias.pistolero = {
+        nombre: usuarioPistolero,
+        tiempo_respuesta_promedio: tiempo_respuesta_promedio[usuarioPistolero],
+        mensajes: usuarios[usuarioPistolero].mensajes
+      };
+    }
+    
+    // Dejaenvisto (responde más lento)
+    if (Object.keys(tiempo_respuesta_promedio).length > 0) {
+      const usuarioDejaenvisto = Object.entries(tiempo_respuesta_promedio)
+        .sort((a, b) => b[1] - a[1])[0][0];
+      categorias.dejaenvisto = {
+        nombre: usuarioDejaenvisto,
+        tiempo_respuesta_promedio: tiempo_respuesta_promedio[usuarioDejaenvisto],
+        mensajes: usuarios[usuarioDejaenvisto].mensajes
+      };
+    }
+    
+    // Vampiro (más mensajes nocturnos)
+    const vampirosData = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0) {
+        const porcentaje = (datos.mensajes_noche / datos.mensajes) * 100;
+        vampirosData.push([usuario, datos.mensajes_noche, porcentaje]);
+      }
+    }
+    
+    if (vampirosData.length > 0) {
+      const [usuarioVampiro] = vampirosData.sort((a, b) => b[1] - a[1])[0];
+      const mensajesNoche = usuarios[usuarioVampiro].mensajes_noche;
+      const porcentaje = (mensajesNoche / usuarios[usuarioVampiro].mensajes) * 100;
       categorias.vampiro = {
         nombre: usuarioVampiro,
-        mensajes_noche: maxMensajesNoche,
+        mensajes_noche: mensajesNoche,
         porcentaje: porcentaje,
         mensajes: usuarios[usuarioVampiro].mensajes
       };
     }
     
-    // CafeConLeche (hora promedio más temprana)
-    const horasPromedio = {};
-    Object.entries(usuarios).forEach(([nombre, datos]) => {
-      if (datos.horario_mensajes.length > 0) {
-        let suma = datos.horario_mensajes.reduce((a, b) => a + b, 0);
-        horasPromedio[nombre] = suma / datos.horario_mensajes.length;
+    // Cafeconleche (se levanta más temprano)
+    if (Object.keys(horarios_promedio).length > 0) {
+      // Ajustar horas para considerar que las primeras horas del día son "más temprano"
+      const adjustedTimes = {};
+      for (const [usuario, hora] of Object.entries(horarios_promedio)) {
+        adjustedTimes[usuario] = hora >= 6 ? hora : hora + 24;
       }
-    });
-    
-    if (Object.keys(horasPromedio).length > 0) {
-      const usuarioCafeConLeche = Object.entries(horasPromedio)
+      
+      const usuarioCafeconleche = Object.entries(adjustedTimes)
         .sort((a, b) => a[1] - b[1])[0][0];
       
-      const horaPromedio = horasPromedio[usuarioCafeConLeche];
+      const horaPromedio = horarios_promedio[usuarioCafeconleche];
       const horaEntera = Math.floor(horaPromedio);
       const minutos = Math.floor((horaPromedio - horaEntera) * 60);
       
       categorias.cafeconleche = {
-        nombre: usuarioCafeConLeche,
+        nombre: usuarioCafeconleche,
         hora_promedio: horaPromedio,
         hora_formateada: `${horaEntera}:${minutos.toString().padStart(2, '0')}`,
-        mensajes: usuarios[usuarioCafeConLeche].mensajes
+        mensajes: usuarios[usuarioCafeconleche].mensajes
       };
     }
     
-    // MenosEsMas (mensajes más cortos)
-    const longitudPromedio = {};
-    Object.entries(usuarios).forEach(([nombre, datos]) => {
-      if (datos.longitud_mensajes.length > 0) {
-        let suma = datos.longitud_mensajes.reduce((a, b) => a + b, 0);
-        longitudPromedio[nombre] = suma / datos.longitud_mensajes.length;
-      }
-    });
-    
-    if (Object.keys(longitudPromedio).length > 0) {
-      const usuarioMenosEsMas = Object.entries(longitudPromedio)
+    // Menosesmas (mensajes más cortos)
+    if (Object.keys(longitudes_promedio).length > 0) {
+      const usuarioMenosesmas = Object.entries(longitudes_promedio)
         .sort((a, b) => a[1] - b[1])[0][0];
-      
       categorias.menosesmas = {
-        nombre: usuarioMenosEsMas,
-        longitud_promedio: longitudPromedio[usuarioMenosEsMas],
-        mensajes: usuarios[usuarioMenosEsMas].mensajes
+        nombre: usuarioMenosesmas,
+        longitud_promedio: longitudes_promedio[usuarioMenosesmas],
+        mensajes: usuarios[usuarioMenosesmas].mensajes
       };
     }
     
-    // Estructura final
+    // Narcicista (más menciones a sí mismo)
+    if (Object.keys(menciones_yo_ratio).length > 0) {
+      const usuarioNarcicista = Object.entries(menciones_yo_ratio)
+        .sort((a, b) => b[1][1] - a[1][1])[0][0];
+      const [menciones, porcentaje] = menciones_yo_ratio[usuarioNarcicista];
+      categorias.narcicista = {
+        nombre: usuarioNarcicista,
+        menciones_yo: menciones,
+        porcentaje: porcentaje,
+        mensajes: usuarios[usuarioNarcicista].mensajes
+      };
+    }
+    
+    // Chismoso (más menciones a otros usuarios)
+    const chismososData = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0 && datos.menciones_otros > 0) {
+        const porcentaje = (datos.menciones_otros / datos.mensajes) * 100;
+        chismososData.push([usuario, datos.menciones_otros, porcentaje]);
+      }
+    }
+    
+    if (chismososData.length > 0) {
+      const [usuarioChismoso] = chismososData.sort((a, b) => b[1] - a[1])[0];
+      const mencionesOtros = usuarios[usuarioChismoso].menciones_otros;
+      const porcentaje = (mencionesOtros / usuarios[usuarioChismoso].mensajes) * 100;
+      categorias.chismoso = {
+        nombre: usuarioChismoso,
+        menciones_otros: mencionesOtros,
+        porcentaje: porcentaje,
+        mensajes: usuarios[usuarioChismoso].mensajes
+      };
+    }
+    
+    // Puntofinal (termina más conversaciones)
+    if (Object.keys(conversacionesTerminadas).length > 0) {
+      const usuarioPuntofinal = Object.entries(conversacionesTerminadas)
+        .sort((a, b) => b[1] - a[1])[0][0];
+      categorias.puntofinal = {
+        nombre: usuarioPuntofinal,
+        conversaciones_terminadas: conversacionesTerminadas[usuarioPuntofinal],
+        mensajes: usuarios[usuarioPuntofinal].mensajes
+      };
+    }
+    
+    // Fosforo (inicia más conversaciones)
+    if (Object.keys(conversacionesIniciadas).length > 0) {
+      const usuarioFosforo = Object.entries(conversacionesIniciadas)
+        .sort((a, b) => b[1] - a[1])[0][0];
+      categorias.fosforo = {
+        nombre: usuarioFosforo,
+        conversaciones_iniciadas: conversacionesIniciadas[usuarioFosforo],
+        mensajes: usuarios[usuarioFosforo].mensajes
+      };
+    }
+    
+    // Happyflower (más emojis por mensaje)
+    const usuariosConEmojis = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0 && datos.emojis_utilizados > 0) {
+        const emojisPorMensaje = datos.emojis_utilizados / datos.mensajes;
+        usuariosConEmojis.push([usuario, datos.emojis_utilizados, emojisPorMensaje]);
+      }
+    }
+    
+    if (usuariosConEmojis.length > 0) {
+      const [usuarioHappyflower] = usuariosConEmojis.sort((a, b) => b[1] - a[1])[0];
+      const emojisTotales = usuarios[usuarioHappyflower].emojis_utilizados;
+      const emojisPorMsg = emojisTotales / usuarios[usuarioHappyflower].mensajes;
+      categorias.happyflower = {
+        nombre: usuarioHappyflower,
+        emojis_totales: emojisTotales,
+        emojis_por_mensaje: emojisPorMsg,
+        mensajes: usuarios[usuarioHappyflower].mensajes
+      };
+    }
+    
+    // Amoroso (más emojis de amor)
+    const usuariosConEmojisAmor = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0 && datos.emojis_amor > 0) {
+        let porcentajeAmor = 0;
+        if (datos.emojis_utilizados > 0) {
+          porcentajeAmor = (datos.emojis_amor / datos.emojis_utilizados) * 100;
+        }
+        usuariosConEmojisAmor.push([usuario, datos.emojis_amor, porcentajeAmor]);
+      }
+    }
+    
+    if (usuariosConEmojisAmor.length > 0) {
+      const [usuarioAmoroso] = usuariosConEmojisAmor.sort((a, b) => b[1] - a[1])[0];
+      const emojisAmorTotal = usuarios[usuarioAmoroso].emojis_amor;
+      let porcentajeAmor = 0;
+      if (usuarios[usuarioAmoroso].emojis_utilizados > 0) {
+        porcentajeAmor = (emojisAmorTotal / usuarios[usuarioAmoroso].emojis_utilizados) * 100;
+      }
+      categorias.amoroso = {
+        nombre: usuarioAmoroso,
+        emojis_amor: emojisAmorTotal,
+        porcentaje_amor: porcentajeAmor,
+        mensajes: usuarios[usuarioAmoroso].mensajes
+      };
+    }
+    
+    // Sicopata (más mensajes consecutivos)
+    const usuariosConMensajesConsecutivos = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0 && datos.max_mensajes_seguidos > 1) {
+        usuariosConMensajesConsecutivos.push([usuario, datos.max_mensajes_seguidos]);
+      }
+    }
+    
+    if (usuariosConMensajesConsecutivos.length > 0) {
+      const [usuarioSicopata] = usuariosConMensajesConsecutivos.sort((a, b) => b[1] - a[1])[0];
+      const maxMensajesSeguidos = usuarios[usuarioSicopata].max_mensajes_seguidos;
+      categorias.sicopata = {
+        nombre: usuarioSicopata,
+        max_mensajes_seguidos: maxMensajesSeguidos,
+        mensajes: usuarios[usuarioSicopata].mensajes
+      };
+    }
+    
+    // Convertir palabras_unicas de Set a contador para poder serializar
+    for (const usuario of Object.values(usuarios)) {
+      if (usuario.palabras_unicas instanceof Set) {
+        usuario.palabras_unicas = usuario.palabras_unicas.size;
+      }
+    }
+    
+    // Estructura final de resultados
     return {
       usuarios: usuarios,
       categorias: categorias,
       totales: {
         mensajes: mensajes.length,
-        usuarios: participantes.size
+        usuarios: participantes.size,
+        emojis: Object.values(usuarios).reduce((sum, u) => sum + u.emojis_utilizados, 0),
+        emojis_amor: Object.values(usuarios).reduce((sum, u) => sum + u.emojis_amor, 0)
       },
       formato_chat: formato,
       success: true
@@ -391,9 +766,11 @@ const AnalisisTop = ({ operationId, chatData }) => {
     // (Fallback a la versión original que usa el servidor)
     const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
     
+    console.log(`DEPRECATED: Cargando datos de top perfiles desde el backend: ${API_URL}/api/resultados-top/${operationId}`);
+    console.warn("Esta funcionalidad usando operationId se eliminará en futuras versiones. Use chatData en su lugar.");
+    
     // Eliminar parámetro para forzar formato iOS
     const url = `${API_URL}/api/resultados-top/${operationId}`;
-    console.log(`Cargando datos de top perfiles desde: ${url}`);
     
     // Asegurar que el estado de carga esté activo
     setCargando(true);
