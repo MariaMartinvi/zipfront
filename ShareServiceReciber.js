@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import InstallPWA from './InstallPWA';
 import ShareReceiver from './ShareReceiver';
+// Importar nuestro nuevo servicio de procesamiento de cliente
+import { processZipFile, downloadProcessedFiles, createDownloadUrl } from './src/clientProcessor';
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -9,6 +11,8 @@ function App() {
   const [error, setError] = useState('');
   const [zipFile, setZipFile] = useState(null);
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
+  // Estado para almacenar el resultado del procesamiento completo
+  const [processingResult, setProcessingResult] = useState(null);
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
 
@@ -17,29 +21,19 @@ function App() {
     console.log(`[DEBUG] ${message}`, data || '');
   };
 
-  // Procesar el archivo ZIP enviándolo al backend
-  const processZipFile = async (file) => {
-    logDebug('Enviando archivo ZIP al backend:', file.name);
-    // Crear un objeto FormData para enviar el archivo al backend
-    const formData = new FormData();
-    formData.append('zipFile', file);
+  // Procesar el archivo ZIP en el cliente (reemplaza la versión anterior)
+  const handleZipProcessing = async (file) => {
+    logDebug('Procesando archivo ZIP en el cliente:', file.name);
     
     try {
-      // Enviar el archivo al servidor
-      const response = await fetch(`${API_URL}/api/extract`, {
-        method: 'POST',
-        body: formData,
-      });
+      // Usar nuestro nuevo procesador de cliente
+      const result = await processZipFile(file);
+      logDebug('Resultado del procesamiento cliente:', result);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Error en el servidor');
-      }
+      // Guardar el resultado completo para uso posterior (incluye rawFiles)
+      setProcessingResult(result);
       
-      const result = await response.json();
-      logDebug('Respuesta del backend:', result);
-      
-      // Procesar los archivos obtenidos del backend
+      // Actualizar la lista de archivos visible - mantener formato idéntico al original
       const extractedFiles = result.files.map(file => ({
         name: file.name,
         size: file.size,
@@ -48,9 +42,10 @@ function App() {
       }));
       
       setFiles(extractedFiles);
+      return result;
     } catch (error) {
-      logDebug('Error al procesar ZIP:', error);
-      throw error; // Re-lanzar el error para manejarlo en el componente que llama
+      logDebug('Error al procesar ZIP en cliente:', error);
+      throw error;
     }
   };
 
@@ -75,7 +70,8 @@ function App() {
     setZipFile(file);
     
     try {
-      await processZipFile(file);
+      // Usar nuestra nueva función de procesamiento
+      await handleZipProcessing(file);
     } catch (err) {
       logDebug('Error al procesar archivo compartido:', err.message);
       setError(`Error al procesar el archivo compartido: ${err.message}`);
@@ -106,7 +102,8 @@ function App() {
     setZipFile(file);
     
     try {
-      await processZipFile(file);
+      // Usar nuestra nueva función de procesamiento
+      await handleZipProcessing(file);
     } catch (err) {
       console.error('Error al procesar:', err);
       setError(`Error al procesar el archivo: ${err.message}`);
@@ -115,16 +112,72 @@ function App() {
     }
   };
 
-  // Función para descargar un archivo específico
-  const downloadFile = (file) => {
-    window.location.href = `${API_URL}/api/download/${file.operationId}/${encodeURIComponent(file.path)}`;
+  // Función para descargar un archivo específico (actualizada para cliente)
+  const downloadFile = async (file) => {
+    try {
+      logDebug('Descargando archivo:', file.path);
+      
+      if (!processingResult) {
+        throw new Error('No hay resultados de procesamiento disponibles');
+      }
+      
+      // Buscar el archivo en los resultados del procesamiento
+      const fileToDownload = processingResult.rawFiles.find(f => f.path === file.path);
+      
+      if (!fileToDownload) {
+        throw new Error(`Archivo no encontrado: ${file.path}`);
+      }
+      
+      // Crear URL para descarga
+      const downloadInfo = createDownloadUrl(fileToDownload);
+      
+      // Crear un enlace temporal y hacer clic en él para descargar
+      const a = document.createElement('a');
+      a.href = downloadInfo.url;
+      a.download = downloadInfo.filename;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Limpiar
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(downloadInfo.url);
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error al descargar archivo:', error);
+      setError(`Error al descargar: ${error.message}`);
+    }
   };
 
-  // Función para descargar todos los archivos
-  const downloadAll = () => {
-    if (files.length > 0) {
-      const operationId = files[0].operationId;
-      window.location.href = `${API_URL}/api/download-all/${operationId}`;
+  // Función para descargar todos los archivos (actualizada para cliente)
+  const downloadAll = async () => {
+    try {
+      if (!processingResult) {
+        throw new Error('No hay resultados de procesamiento disponibles');
+      }
+      
+      logDebug('Descargando todos los archivos...');
+      
+      // Generar el ZIP con todos los archivos procesados
+      const downloadInfo = await downloadProcessedFiles(processingResult);
+      
+      // Crear un enlace temporal y hacer clic en él para descargar
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(downloadInfo.blob);
+      a.download = downloadInfo.filename;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Limpiar
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error al descargar todos los archivos:', error);
+      setError(`Error al descargar: ${error.message}`);
     }
   };
 
