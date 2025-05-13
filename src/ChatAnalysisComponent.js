@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { detectarFormatoArchivo } from './formatDetector.js';
 import './ChatAnalysis.css';
 import AnalisisTop from './Analisis_top';
+import AzureClientComponent from './AzureClientComponent';
 
 // Incorporar directamente las funciones necesarias de chatAnalyzer para evitar el error de importación
 const analizarChat = (contenido, formatoForzado = null) => {
@@ -188,7 +189,7 @@ function ChatAnalysisComponent({ operationId }) {
       setLoading(true);
       setError(null);
       
-      // Obtener datos del chat para analizar
+      // Obtener datos del chat para analizar (esta parte se mantiene igual)
       fetch(`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000'}/api/obtener-chat/${operationId}`)
         .then(response => {
           if (!response.ok) {
@@ -198,20 +199,16 @@ function ChatAnalysisComponent({ operationId }) {
         })
         .then(data => {
           if (data && data.content) {
-            // Guardar el contenido del chat para compartirlo con otros componentes
+            // Guardar el contenido del chat para pasarlo al componente AzureClientComponent
             setChatContent(data.content);
-            
-            // Analizar el contenido del chat con analizarChat
-            const resultado = analizarChat(data.content);
-            setAnalysisResult(resultado);
+            // Ya no hacemos el análisis aquí, lo hará AzureClientComponent
           } else {
             throw new Error('No se recibió contenido de chat para analizar');
           }
-          setLoading(false);
         })
         .catch(err => {
-          console.error('Error al analizar el chat:', err);
-          setError(err.message || 'Error al analizar la conversación');
+          console.error('Error al obtener el chat:', err);
+          setError(err.message || 'Error al obtener la conversación');
           setLoading(false);
         });
     }
@@ -220,13 +217,21 @@ function ChatAnalysisComponent({ operationId }) {
   // Renderizar los resultados del análisis cuando recibimos nuevos datos
   useEffect(() => {
     if (analysisResult && resultsContainerRef.current) {
-      // Podemos usar la función render del objeto ChatAnalyzer si queremos
-      // ChatAnalyzer.renderResults(analysisResult, 'analysisResultsContainer');
-      
-      // O podemos manejarlo directamente en el componente
       renderAnalysisResults();
     }
   }, [analysisResult]);
+
+  // Manejador para cuando el análisis de Azure se complete
+  const handleAnalysisComplete = (result) => {
+    setAnalysisResult(result);
+    setLoading(false);
+  };
+
+  // Manejador de errores del componente Azure
+  const handleAnalysisError = (errorMessage) => {
+    setError(errorMessage);
+    setLoading(false);
+  };
 
   // Función para renderizar los resultados de análisis en formato React
   const renderAnalysisResults = () => {
@@ -370,28 +375,33 @@ function ChatAnalysisComponent({ operationId }) {
   };
 
   return (
-    <div className="chat-analysis-component">
+    <div className="chat-analysis-container">
       {loading && (
-        <div className="loading-indicator">
+        <div className="loading-container">
           <div className="spinner"></div>
-          <p>Analizando conversación...</p>
+          <p>Analizando conversación, por favor espera...</p>
         </div>
       )}
       
       {error && (
-        <div className="error-message">
-          <p>Error: {error}</p>
+        <div className="error-container">
+          <h3>Error al analizar la conversación</h3>
+          <p>{error}</p>
         </div>
       )}
       
-      <div id="analysisResultsContainer" ref={resultsContainerRef}>
-        {!loading && !error && renderAnalysisResults()}
-      </div>
+      {chatContent && !analysisResult && !error && (
+        <AzureClientComponent 
+          chatContent={chatContent}
+          onAnalysisComplete={handleAnalysisComplete}
+          onError={handleAnalysisError}
+          language="es" // O pasar el idioma como prop desde un nivel superior
+        />
+      )}
       
-      {/* Renderizar AnalisisTop con los datos del chat */}
-      {chatContent && (
-        <div className="top-analysis-section">
-          <AnalisisTop operationId={operationId} chatData={chatContent} />
+      {analysisResult && (
+        <div className="analysis-results" ref={resultsContainerRef}>
+          <div dangerouslySetInnerHTML={{ __html: analysisResult }} />
         </div>
       )}
     </div>
