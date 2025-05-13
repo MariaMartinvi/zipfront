@@ -5,7 +5,7 @@
  * backend original de Python.
  */
 
-import { detectarFormatoArchivo, isProbableChatFile } from './formatDetector.js';
+import { detectarFormatoArchivo, isProbableChatFile } from './formatDetector';
 
 /**
  * Analiza un mensaje individual según el formato del chat
@@ -249,197 +249,161 @@ export const analizarChat = (contenido, formatoForzado = null) => {
         stats.mensajes_por_mes_usuario[mesClave][resultado.nombre] = 
           (stats.mensajes_por_mes_usuario[mesClave][resultado.nombre] || 0) + 1;
         
-        mensajesTotales++;
+        // Registrar usuario
         participantes.add(resultado.nombre);
+        mensajesTotales++;
         
-        // Calcular tiempo de respuesta
-        const nombreActual = resultado.nombre;
+        // Calcular tiempos de respuesta
+        const usuarioActual = resultado.nombre;
+        const ultimoMensajeFecha = ultimaVezUsuario[usuarioActual] || null;
         
-        // Verificar si otros usuarios ya han enviado mensajes
-        for (const [otroUsuario, ultimaVez] of Object.entries(ultimaVezUsuario)) {
-          // Solo calcular tiempo de respuesta para usuarios diferentes al actual
-          if (otroUsuario !== nombreActual) {
-            // Verificar si este mensaje es una respuesta a ese usuario
-            const ultimaVezDt = ultimaVez.fechaHora;
-            const tiempoRespuesta = (fechaHora - ultimaVezDt) / (1000 * 60); // en minutos
+        // Para cada usuario diferente al actual, calcular su tiempo de respuesta
+        Object.entries(ultimaVezUsuario).forEach(([usuario, fechaUltimoMensaje]) => {
+          if (usuario !== usuarioActual) {
+            // Calcular tiempo de respuesta en minutos
+            const tiempoRespuesta = (fechaHora - fechaUltimoMensaje) / 1000 / 60;
             
-            // Solo considerar respuestas en un período razonable (menos de 24 horas)
-            if (tiempoRespuesta > 0 && tiempoRespuesta < 1440) {
-              // Guardar tiempo de respuesta por mes y usuario
-              if (!stats.tiempo_respuesta_por_mes[mesClave]) {
-                stats.tiempo_respuesta_por_mes[mesClave] = {};
+            // Considerar solo respuestas dentro de 24 horas
+            if (tiempoRespuesta <= 1440) {
+              // Obtener el mes para esta respuesta
+              const mesRespuesta = formatDate(fechaHora, "YYYY-MM");
+              
+              if (!stats.tiempo_respuesta_por_mes[mesRespuesta]) {
+                stats.tiempo_respuesta_por_mes[mesRespuesta] = {};
               }
-              if (!stats.tiempo_respuesta_por_mes[mesClave][nombreActual]) {
-                stats.tiempo_respuesta_por_mes[mesClave][nombreActual] = [];
+              
+              if (!stats.tiempo_respuesta_por_mes[mesRespuesta][usuarioActual]) {
+                stats.tiempo_respuesta_por_mes[mesRespuesta][usuarioActual] = [];
               }
-              stats.tiempo_respuesta_por_mes[mesClave][nombreActual].push(tiempoRespuesta);
+              
+              // Almacenar tiempo de respuesta para este usuario en este mes
+              stats.tiempo_respuesta_por_mes[mesRespuesta][usuarioActual].push(tiempoRespuesta);
             }
           }
+        });
+        
+        // Actualizar último mensaje para este usuario
+        ultimaVezUsuario[usuarioActual] = fechaHora;
+      }
+    }
+    
+    // Calcular estadísticas finales
+    stats.total_messages = mensajesTotales;
+    stats.active_participants = participantes.size;
+    stats.chat_format = formato;
+    
+    // Extraer ejemplos de mensajes por usuario
+    const sender_counts = {};
+    const message_examples = {};
+    
+    // Ordenar mensajes por usuario
+    const mensajesPorUsuario = {};
+    participantes.forEach(usuario => {
+      mensajesPorUsuario[usuario] = [];
+      message_examples[usuario] = [];
+    });
+    
+    // Agrupar mensajes por usuario
+    mensajes.forEach(msg => {
+      sender_counts[msg.nombre] = (sender_counts[msg.nombre] || 0) + 1;
+      
+      if (mensajesPorUsuario[msg.nombre] && msg.tipo === "texto" && msg.mensaje.length > 5) {
+        mensajesPorUsuario[msg.nombre].push(msg);
+      }
+    });
+    
+    // Seleccionar ejemplos aleatorios para cada usuario (máximo 3)
+    Object.keys(mensajesPorUsuario).forEach(usuario => {
+      const mensajesUsuario = mensajesPorUsuario[usuario];
+      
+      // Solo considerar usuarios con al menos 5 mensajes
+      if (mensajesUsuario.length >= 5) {
+        // Elegir 3 mensajes al azar
+        const indices = new Set();
+        while (indices.size < 3 && indices.size < mensajesUsuario.length) {
+          const indice = Math.floor(Math.random() * mensajesUsuario.length);
+          indices.add(indice);
         }
         
-        // Actualizar la última vez que este usuario envió un mensaje
-        ultimaVezUsuario[nombreActual] = {
-          fechaHora: fechaHora,
-          resultado: resultado
-        };
+        // Extraer los mensajes seleccionados
+        indices.forEach(i => {
+          const msgEjemplo = mensajesUsuario[i].mensaje;
+          if (msgEjemplo.length <= 80) {
+            message_examples[usuario].push(msgEjemplo);
+          } else {
+            message_examples[usuario].push(msgEjemplo.substring(0, 80) + "...");
+          }
+        });
       }
-    }
+    });
     
-    if (mensajes.length === 0) {
-      return { error: "No se encontraron mensajes válidos", success: false };
-    }
-    
-    // Calcular estadísticas adicionales
-    const diasConActividad = Object.keys(stats.mensajes_por_dia).length;
-    const promedioMensajesDiarios = diasConActividad > 0 ? mensajesTotales / diasConActividad : 0;
-    
-    // Encontrar máximos
-    const diaMasActivo = encontrarMaximo(stats.mensajes_por_dia);
-    const horaMasActiva = encontrarMaximo(stats.actividad_por_hora);
-    const diaSemanaMasActivo = encontrarMaximo(stats.actividad_por_dia_semana);
-    const usuarioMasActivo = encontrarMaximo(stats.mensajes_por_usuario);
-    
-    // Crear resumen
-    stats.resumen = {
-      total_mensajes: mensajesTotales,
-      fecha_inicio: primerFechaStr,
-      promedio_mensajes_diarios: Math.round(promedioMensajesDiarios * 100) / 100,
-      dia_mas_activo: {
-        fecha: diaMasActivo.clave || "N/A",
-        mensajes: diaMasActivo.valor || 0
-      },
-      hora_mas_activa: {
-        hora: horaMasActiva.clave !== undefined ? horaMasActiva.clave : "N/A",
-        mensajes: horaMasActiva.valor || 0
-      },
-      dia_semana_mas_activo: {
-        dia: diaSemanaMasActivo.clave || "N/A",
-        mensajes: diaSemanaMasActivo.valor || 0
-      },
-      usuario_mas_activo: {
-        nombre: usuarioMasActivo.clave || "N/A",
-        mensajes: usuarioMasActivo.valor || 0
-      }
+    // Preparar datos de estadísticas
+    const data = {
+      total_messages: mensajesTotales,
+      active_participants: participantes.size,
+      chat_format: formato,
+      sender_counts: sender_counts,
+      message_examples: message_examples,
+      success: true
     };
     
-    // Calcular tiempo de respuesta promedio por mes
-    const tiempoRespuestaPromedioMes = {};
-    for (const [mes, usuarios] of Object.entries(stats.tiempo_respuesta_por_mes)) {
-      tiempoRespuestaPromedioMes[mes] = {};
-      for (const [usuario, tiempos] of Object.entries(usuarios)) {
-        if (tiempos && tiempos.length > 0) {
-          // Filtrar tiempos extremos (más de 24 horas)
-          const tiemposFiltrados = tiempos.filter(t => t < 1440);
-          if (tiemposFiltrados.length > 0) {
-            const promedio = tiemposFiltrados.reduce((sum, t) => sum + t, 0) / tiemposFiltrados.length;
-            tiempoRespuestaPromedioMes[mes][usuario] = promedio;
-          }
-        }
-      }
-    }
-    stats.tiempo_respuesta_promedio_mes = tiempoRespuestaPromedioMes;
-    
-    // Convertir mensajes por mes y usuario a formato para gráficos de porcentaje
-    const mensajesPorMesPorcentaje = {};
-    for (const [mes, usuarios] of Object.entries(stats.mensajes_por_mes_usuario)) {
-      const totalMensajesMes = Object.values(usuarios).reduce((sum, n) => sum + n, 0);
-      mensajesPorMesPorcentaje[mes] = {
-        total: totalMensajesMes,
-        usuarios: {}
-      };
-      for (const [usuario, cantidad] of Object.entries(usuarios)) {
-        const porcentaje = totalMensajesMes > 0 ? (cantidad / totalMensajesMes) * 100 : 0;
-        mensajesPorMesPorcentaje[mes].usuarios[usuario] = {
-          mensajes: cantidad,
-          porcentaje: porcentaje
-        };
-      }
-    }
-    stats.mensajes_por_mes_porcentaje = mensajesPorMesPorcentaje;
-    
-    // Añadir flag de éxito
-    stats.success = true;
-    
-    return stats;
-  } catch (e) {
-    console.error("Error durante el análisis:", e);
-    return { error: `Error durante el análisis: ${e.message}`, success: false };
+    return data;
+  } catch (error) {
+    console.error("Error durante el análisis:", error);
+    return {
+      error: `Error durante el análisis: ${error.message}`,
+      success: false
+    };
   }
 };
 
 /**
- * Encuentra la clave con el valor máximo en un objeto
+ * Encuentra el valor máximo en un objeto
  * 
- * @param {Object} obj - Objeto con claves y valores numéricos
- * @returns {Object} - Objeto con clave y valor máximo
+ * @param {Object} obj - Objeto con valores numéricos
+ * @returns {Array} - [clave, valor] del máximo
  */
 const encontrarMaximo = (obj) => {
   if (!obj || Object.keys(obj).length === 0) {
-    return { clave: null, valor: 0 };
+    return [null, 0];
   }
-  let maxClave = null;
-  let maxValor = -Infinity;
-  for (const [clave, valor] of Object.entries(obj)) {
-    if (valor > maxValor) {
-      maxValor = valor;
-      maxClave = clave;
-    }
-  }
-  return { clave: maxClave, valor: maxValor };
+  
+  return Object.entries(obj).reduce((max, actual) => {
+    return actual[1] > max[1] ? actual : max;
+  }, [null, -Infinity]);
 };
 
 /**
- * Formatea una fecha según el patrón especificado
+ * Formatea una fecha según un patrón específico
  * 
  * @param {Date} date - Objeto Date a formatear
- * @param {string} pattern - Patrón de formato (YYYY, MM, DD, HH, MM, SS)
+ * @param {string} pattern - Patrón de formato (YYYY-MM-DD, DD/MM/YYYY, etc.)
  * @returns {string} - Fecha formateada
  */
 const formatDate = (date, pattern) => {
   if (!date) return '';
   
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
   
-  return pattern
-    .replace('YYYY', year)
-    .replace('MM', month)
-    .replace('DD', day)
-    .replace('HH', hours)
-    .replace('MM', minutes)
-    .replace('SS', seconds);
+  pattern = pattern.replace('YYYY', year);
+  pattern = pattern.replace('MM', month);
+  pattern = pattern.replace('DD', day);
+  pattern = pattern.replace('HH', hours);
+  pattern = pattern.replace('MM', minutes);
+  
+  return pattern;
 };
 
 /**
- * Encuentra un archivo de chat adecuado entre los archivos extraídos
+ * Filtra los archivos para encontrar posibles archivos de chat
  * 
- * @param {Array} files - Lista de archivos extraídos
- * @returns {Object|null} - Archivo de chat encontrado o null
+ * @param {Array} files - Lista de archivos a analizar
+ * @returns {Array} - Lista de archivos que parecen ser chats
  */
 export const encontrarArchivosChat = (files) => {
-  if (!files || files.length === 0) return null;
-  
-  // Priorizar archivos con _chat.txt en el nombre
-  const priorityFiles = files.filter(f => f.name.includes('_chat.txt'));
-  if (priorityFiles.length > 0) {
-    return priorityFiles[0];
-  }
-  
-  // Buscar archivos de texto que probablemente sean chats
-  const chatFiles = files.filter(f => isProbableChatFile(f.name));
-  if (chatFiles.length > 0) {
-    return chatFiles[0];
-  }
-  
-  // Si no hay archivos específicos, usar cualquier .txt o .csv
-  const textFiles = files.filter(f => f.name.endsWith('.txt') || f.name.endsWith('.csv'));
-  if (textFiles.length > 0) {
-    return textFiles[0];
-  }
-  
-  return null;
+  return Array.from(files).filter(file => isProbableChatFile(file));
 }; 
