@@ -3,6 +3,45 @@ import { useTranslation } from 'react-i18next';
 import './Analisis_top.css';
 // Importar el detector de formato directamente
 import { detectarFormatoArchivo } from './formatDetector.js';
+// Importar utilidades de fecha
+import { parseDateTime, esDateValido } from './dateUtils.js';
+
+// Función para parsear correctamente fechas de diferentes formatos
+// const parseDateTime = (fechaStr, horaStr, formato) => {
+//   try {
+//     // Formatear la entrada para crear un objeto Date válido
+//     const partesFecha = fechaStr.split('/');
+//     
+//     if (partesFecha.length !== 3) {
+//       return new Date(); // Fecha inválida, devolver fecha actual
+//     }
+//     
+//     let dia = parseInt(partesFecha[0], 10);
+//     let mes = parseInt(partesFecha[1], 10) - 1; // Meses en JS son 0-11
+//     let anio = parseInt(partesFecha[2], 10);
+//     
+//     // Ajustar año si es formato de 2 dígitos
+//     if (anio < 100) {
+//       anio += 2000; // Asumimos años 2000+
+//     }
+//     
+//     // Parsear la hora
+//     const partesHora = horaStr.split(':');
+//     let hora = parseInt(partesHora[0], 10) || 0;
+//     let minutos = parseInt(partesHora[1], 10) || 0;
+//     let segundos = 0;
+//     
+//     if (partesHora.length > 2) {
+//       segundos = parseInt(partesHora[2], 10) || 0;
+//     }
+//     
+//     // Crear objeto Date
+//     return new Date(anio, mes, dia, hora, minutos, segundos);
+//   } catch (error) {
+//     console.error(`Error parseando fecha/hora (${fechaStr} ${horaStr}): ${error.message}`);
+//     return new Date(); // En caso de error, devolver fecha actual
+//   }
+// };
 
 // Implementación completa de analizarPerfilesCompleto para reemplazar la versión del backend
 const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat = 'es') => {
@@ -79,8 +118,8 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       
       for (let i = 1; i < mensajes.length; i++) {
         // Calcular diferencia en horas
-        const fechaActual = new Date(mensajes[i].fecha);
-        const fechaAnterior = new Date(mensajes[i-1].fecha);
+        const fechaActual = mensajes[i].fechaObj;
+        const fechaAnterior = mensajes[i-1].fechaObj;
         const tiempoDiferencia = (fechaActual - fechaAnterior) / (1000 * 60 * 60); // en horas
         
         if (tiempoDiferencia > 2) { // Nueva conversación después de 2 horas
@@ -168,7 +207,8 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       const mensaje = mensajes[i];
       const usuario = mensaje.nombre;
       const texto = mensaje.mensaje || '';
-      const fecha = new Date(mensaje.fecha);
+      // Usar el objeto fechaObj que ya creamos en analizarMensaje
+      const fecha = mensaje.fechaObj;
       const hora = fecha.getHours();
       
       // Incrementar contador de mensajes
@@ -205,7 +245,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       // Calcular tiempo de respuesta
       if (i > 0) {
         const mensajeAnterior = mensajes[i-1];
-        const tiempoRespuesta = (fecha - new Date(mensajeAnterior.fecha)) / (1000 * 60); // en minutos
+        const tiempoRespuesta = (fecha - mensajeAnterior.fechaObj) / (1000 * 60); // en minutos
         if (tiempoRespuesta > 0) { // Solo considerar respuestas positivas
           usuarios[usuario].tiempo_respuesta.push(tiempoRespuesta);
         }
@@ -292,8 +332,8 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       // Menciones a sí mismo (ratio)
       if (datos.mensajes > 0) {
         menciones_yo_ratio[usuario] = [
-          datos.uso_primera_persona,
-          (datos.uso_primera_persona / datos.mensajes) * 100
+          datos.uso_primera_persona || 0,
+          datos.mensajes > 0 ? ((datos.uso_primera_persona || 0) / datos.mensajes) * 100 : 0
         ];
       }
     }
@@ -357,13 +397,14 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     
     if (vampirosData.length > 0) {
       const [usuarioVampiro] = vampirosData.sort((a, b) => b[1] - a[1])[0];
-      const mensajesNoche = usuarios[usuarioVampiro].mensajes_noche;
-      const porcentaje = (mensajesNoche / usuarios[usuarioVampiro].mensajes) * 100;
+      const mensajesNoche = usuarios[usuarioVampiro].mensajes_noche || 0;
+      const totalMensajes = usuarios[usuarioVampiro].mensajes || 1; // Evitar división por cero
+      const porcentaje = totalMensajes > 0 ? (mensajesNoche / totalMensajes) * 100 : 0;
       categorias.vampiro = {
         nombre: usuarioVampiro,
         mensajes_noche: mensajesNoche,
         porcentaje: porcentaje,
-        mensajes: usuarios[usuarioVampiro].mensajes
+        mensajes: totalMensajes
       };
     }
     
@@ -378,14 +419,24 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       const usuarioCafeconleche = Object.entries(adjustedTimes)
         .sort((a, b) => a[1] - b[1])[0][0];
       
-      const horaPromedio = horarios_promedio[usuarioCafeconleche];
-      const horaEntera = Math.floor(horaPromedio);
-      const minutos = Math.floor((horaPromedio - horaEntera) * 60);
+      const horaPromedio = horarios_promedio[usuarioCafeconleche] || 0;
+      
+      // Asegurarse de que la hora y los minutos son válidos
+      let horaEntera = 0;
+      let minutos = 0;
+      
+      if (!isNaN(horaPromedio)) {
+        horaEntera = Math.floor(horaPromedio);
+        minutos = Math.floor((horaPromedio - horaEntera) * 60);
+      }
+      
+      // Formato de hora con ceros a la izquierda
+      const horaFormateada = `${horaEntera}:${minutos.toString().padStart(2, '0')}`;
       
       categorias.cafeconleche = {
         nombre: usuarioCafeconleche,
         hora_promedio: horaPromedio,
-        hora_formateada: `${horaEntera}:${minutos.toString().padStart(2, '0')}`,
+        hora_formateada: horaFormateada,
         mensajes: usuarios[usuarioCafeconleche].mensajes
       };
     }
@@ -602,9 +653,13 @@ const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
   
   if (match) {
     const [_, fecha, hora, nombre, mensaje] = match;
+    // Crear un objeto Date válido usando parseDateTime
+    const fechaObj = parseDateTime(fecha, hora, formato);
+    
     return {
       fecha: fecha,
       hora: hora,
+      fechaObj: fechaObj, // Añadir el objeto Date
       nombre: nombre.trim(),
       mensaje: mensaje.trim() || "",
       esMultilinea: false
@@ -851,12 +906,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
               vampiro: {
                 nombre: data.categorias?.vampiro?.nombre || 'Sin datos',
                 mensajes_noche: data.categorias?.vampiro?.mensajes_noche || 0,
-                porcentaje: data.categorias?.vampiro?.porcentaje || 0,
+                porcentaje: (data.categorias?.vampiro?.porcentaje !== undefined && !isNaN(data.categorias?.vampiro?.porcentaje)) ? data.categorias?.vampiro?.porcentaje : 0,
                 mensajes: data.categorias?.vampiro?.mensajes || 0
               },
               cafeconleche: {
                 nombre: data.categorias?.cafeconleche?.nombre || 'Sin datos',
-                hora_formateada: data.categorias?.cafeconleche?.hora_formateada || '00:00',
+                hora_formateada: (data.categorias?.cafeconleche?.hora_formateada && data.categorias?.cafeconleche?.hora_formateada !== 'NaN:NaN') ? data.categorias?.cafeconleche?.hora_formateada : '00:00',
                 mensajes: data.categorias?.cafeconleche?.mensajes || 0
               },
               dejaenvisto: {
@@ -944,7 +999,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
     let detalleEspecifico = null;
 
     const formatNumber = (num) => {
-      return num !== undefined ? Number(num).toFixed(1) : '0.0';
+      return (num !== undefined && !isNaN(num)) ? Number(num).toFixed(1) : '0.0';
     };
 
     switch (categoria) {
@@ -986,7 +1041,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
               <span className="label">{t('app.top_profiles.vampire.night_messages')}</span>
             </div>
             <div className="estadistica">
-              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
+              <span className="valor">{catData.porcentaje !== undefined && !isNaN(catData.porcentaje) ? formatNumber(catData.porcentaje) : '0.0'}%</span>
               <span className="label">{t('app.top_profiles.vampire.percentage')}</span>
             </div>
           </>
@@ -995,7 +1050,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
       case 'cafeconleche':
         detalleEspecifico = (
           <div className="estadistica">
-            <span className="valor">{catData.hora_formateada || '00:00'}</span>
+            <span className="valor">{catData.hora_formateada && catData.hora_formateada !== 'NaN:NaN' ? catData.hora_formateada : '00:00'}</span>
             <span className="label">{t('app.top_profiles.morning.avg_time')}</span>
           </div>
         );

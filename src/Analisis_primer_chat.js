@@ -23,6 +23,8 @@ import './styles/Analisis.css';
 import './Analisis_primer_chat.css'; // Importar los estilos
 // Importar el detector de formato
 import { detectarFormatoArchivo } from './formatDetector.js';
+// Importar utilidades de fecha
+import { parseDateTime, esDateValido } from './dateUtils.js';
 
 // Implementación simplificada de analizarChat
 const analizarChat = (contenido, formatoForzado = null) => {
@@ -81,15 +83,13 @@ const analizarChat = (contenido, formatoForzado = null) => {
     
     // Ordenar mensajes por fecha para procesar cronológicamente
     mensajes.sort((a, b) => {
-      const fechaA = new Date(`${a.fecha} ${a.hora}`);
-      const fechaB = new Date(`${b.fecha} ${b.hora}`);
-      return fechaA - fechaB;
+      return a.fechaObj - b.fechaObj;
     });
     
     // Calcular estadísticas básicas
     mensajes.forEach(msg => {
       // Extraer componentes de fecha
-      const fecha = new Date(`${msg.fecha} ${msg.hora}`);
+      const fecha = msg.fechaObj;
       const hora = fecha.getHours();
       const diaSemana = fecha.getDay();
       // Formato YYYY-MM para el mes
@@ -128,7 +128,7 @@ const analizarChat = (contenido, formatoForzado = null) => {
       for (const otroUsuario in ultimoMensajePorUsuario) {
         if (otroUsuario !== nombreActual) {
           const ultimoMsg = ultimoMensajePorUsuario[otroUsuario];
-          const ultimaFecha = new Date(`${ultimoMsg.fecha} ${ultimoMsg.hora}`);
+          const ultimaFecha = ultimoMsg.fechaObj;
           
           // Calcular tiempo de respuesta en minutos
           const tiempoRespuesta = (fecha - ultimaFecha) / (1000 * 60);
@@ -223,16 +223,16 @@ const analizarChat = (contenido, formatoForzado = null) => {
         mensajes: 0
       },
       hora_mas_activa: {
-        hora: horaMasActiva[0],
-        mensajes: horaMasActiva[1]
+        hora: horaMasActiva && horaMasActiva[0] ? horaMasActiva[0] : "0",
+        mensajes: horaMasActiva && horaMasActiva[1] ? horaMasActiva[1] : 0
       },
       dia_semana_mas_activo: {
-        dia: diaMasActivo[0],
-        mensajes: diaMasActivo[1]
+        dia: diaMasActivo && diaMasActivo[0] ? diaMasActivo[0] : "Lunes",
+        mensajes: diaMasActivo && diaMasActivo[1] ? diaMasActivo[1] : 0
       },
       usuario_mas_activo: {
-        nombre: usuarioMasActivo[0],
-        mensajes: usuarioMasActivo[1]
+        nombre: usuarioMasActivo && usuarioMasActivo[0] ? usuarioMasActivo[0] : "N/A",
+        mensajes: usuarioMasActivo && usuarioMasActivo[1] ? usuarioMasActivo[1] : 0
       }
     };
     
@@ -302,9 +302,13 @@ const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
   
   if (match) {
     const [_, fecha, hora, nombre, mensaje] = match;
+    // Crear un objeto Date válido usando parseDateTime
+    const fechaObj = parseDateTime(fecha, hora, formato);
+    
     return {
       fecha: fecha,
       hora: hora,
+      fechaObj: fechaObj, // Añadir el objeto Date
       nombre: nombre.trim(),
       mensaje: mensaje.trim() || "",
       esMultilinea: false
@@ -779,7 +783,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
             </div>
             <div className="activity-item">
               <div className="activity-label">{t('app.primer_chat.most_active_hour')}</div>
-              <div className="activity-value">{resumen.hora_mas_activa.hora}:00</div>
+              <div className="activity-value">{resumen.hora_mas_activa.hora ? `${resumen.hora_mas_activa.hora}:00` : "00:00"}</div>
             </div>
           </div>
         </div>
