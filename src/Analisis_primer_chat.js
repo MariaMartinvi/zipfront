@@ -25,6 +25,7 @@ import './Analisis_primer_chat.css'; // Importar los estilos
 import { detectarFormatoArchivo } from './formatDetector.js';
 // Importar utilidades de fecha
 import { parseDateTime, esDateValido } from './dateUtils.js';
+import { formatMinutesToHoursAndMinutes } from './utils/timeUtils';
 
 // Implementación simplificada de analizarChat
 const analizarChat = (contenido, formatoForzado = null) => {
@@ -1294,13 +1295,13 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                 <div className="tendencia-detalles">
                   <div className="tendencia-valor">
                     <span className="tendencia-etiqueta">{tendencia.mesesAnalizados[0]}:</span>
-                    <span className="tendencia-numero">{valorInicial} min</span>
+                    <span className="tendencia-numero">{formatMinutesToHoursAndMinutes(valorInicial)}</span>
                   </div>
                   <div className="tendencia-flecha">→</div>
                   <div className="tendencia-valor">
                     <span className="tendencia-etiqueta">{tendencia.mesesAnalizados[1]}:</span>
                     <span className="tendencia-numero" style={{ color: tendencia.esIncremento ? '#e74c3c' : '#2ecc71' }}>
-                      {valorFinal} min
+                      {formatMinutesToHoursAndMinutes(valorFinal)}
                     </span>
                   </div>
                 </div>
@@ -1327,7 +1328,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
               domain={['auto', 'auto']}
             />
             <Tooltip 
-              formatter={(value, name) => [`${value} ${t('app.top_profiles.gunslinger.response_time').toLowerCase()}`, acortarNombre(name)]}
+              formatter={(value, name) => [`${formatMinutesToHoursAndMinutes(value)}`, acortarNombre(name)]}
               labelFormatter={(label) => `${t('app.primer_chat.response_time_trend')}: ${label}`}
             />
             <Legend 

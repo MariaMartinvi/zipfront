@@ -5,6 +5,7 @@ import './Analisis_top.css';
 import { detectarFormatoArchivo } from './formatDetector.js';
 // Importar utilidades de fecha
 import { parseDateTime, esDateValido } from './dateUtils.js';
+import { formatMinutesToHoursAndMinutes } from './utils/timeUtils';
 
 // Función para parsear correctamente fechas de diferentes formatos
 // const parseDateTime = (fechaStr, horaStr, formato) => {
@@ -1499,8 +1500,8 @@ const AnalisisTop = ({ operationId, chatData }) => {
       case 'pistolero':
         detalleEspecifico = (
           <div className="estadistica">
-            <span className="valor">{formatNumber(catData.tiempo_respuesta_promedio)}</span>
-            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_tiempo_respuesta_resto)}</span></span>
+            <span className="valor">{formatMinutesToHoursAndMinutes(catData.tiempo_respuesta_promedio)}</span>
+            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatMinutesToHoursAndMinutes(catData.media_tiempo_respuesta_resto)}</span></span>
             <span className="label">{t('app.top_profiles.gunslinger.response_time')}</span>
           </div>
         );
@@ -1533,8 +1534,8 @@ const AnalisisTop = ({ operationId, chatData }) => {
       case 'dejaenvisto':
         detalleEspecifico = (
           <div className="estadistica">
-            <span className="valor">{formatNumber(catData.tiempo_respuesta_promedio)}</span>
-            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_tiempo_respuesta_resto)}</span></span>
+            <span className="valor">{formatMinutesToHoursAndMinutes(catData.tiempo_respuesta_promedio)}</span>
+            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatMinutesToHoursAndMinutes(catData.media_tiempo_respuesta_resto)}</span></span>
             <span className="label">{t('app.top_profiles.ghost.response_time')}</span>
           </div>
         );
