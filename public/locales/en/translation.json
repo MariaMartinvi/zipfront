@@ -31,7 +31,10 @@
       "top_users": "Top 5 Most Active Users",
       "response_time_trend": "Response Time Trend (minutes)",
       "interest_trend": "Interest Trend (Messages by User per Month)",
-      "insufficient_data": "Not enough data to display response times."
+      "insufficient_data": "Not enough data to display response times.",
+      "morning_pattern": "{{emoji}} This is an early bird group: {{percentage}}% of messages are sent before noon.",
+      "afternoon_pattern": "{{emoji}} This is a daytime group: {{percentage}}% of messages are sent between 12:00 and 8:00 PM.",
+      "night_pattern": "{{emoji}} This is a night owl group: {{percentage}}% of messages are sent after 8:00 PM."
     },
     "top_profiles": {
       "title": "Highlighted Chat Profiles",

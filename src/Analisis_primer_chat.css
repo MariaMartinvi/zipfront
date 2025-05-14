@@ -2,7 +2,11 @@
     font-family: Arial, sans-serif;
     max-width: 100%;
     margin: 0 auto;
-    padding: 10px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
   }
   
   .analisis-primer-chat-container h2 {
@@ -11,12 +15,19 @@
     margin-bottom: 20px;
   }
   
+  .analisis-primer-chat-container h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+  }
+  
   .resumen-card {
-    background-color: #fff;
+    background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
     padding: 20px;
-    margin-bottom: 30px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .resumen-header {
@@ -35,45 +46,48 @@
   .resumen-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
   }
   
   .stat-highlight {
-    text-align: center;
-    padding: 15px;
-    background-color: #f0f7ff;
+    background-color: #e3f2fd;
     border-radius: 8px;
+    padding: 15px;
+    text-align: center;
   }
   
   .stats-row {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     flex-wrap: wrap;
     gap: 15px;
   }
   
   .stat-item {
-    text-align: center;
+    flex: 1;
     min-width: 120px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
   }
   
   .stat-value {
     font-size: 24px;
-    font-weight: bold;
-    color: #25D366;
+    font-weight: 700;
+    color: #333;
     margin-bottom: 5px;
   }
   
   .stat-label {
-    font-size: 14px;
-    color: #555;
+    font-size: 13px;
+    color: #666;
   }
   
   .highlight-box {
-    background-color: #f9f9f9;
+    background-color: #f5f5f5;
     border-radius: 8px;
     padding: 15px;
-    border-left: 4px solid #25D366;
   }
   
   .highlight-title {
@@ -81,18 +95,19 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 10px;
-    font-weight: bold;
-    color: #444;
+    font-weight: 600;
+    color: #333;
   }
   
   .highlight-icon {
-    font-size: 20px;
+    font-size: 18px;
   }
   
   .highlight-value {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 600;
     color: #333;
+    margin-bottom: 5px;
   }
   
   .highlight-detail {
@@ -102,37 +117,37 @@
   
   .activity-highlights {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
-    gap: 10px;
+    gap: 15px;
+    flex-wrap: wrap;
   }
   
   .activity-item {
-    background-color: #f5f5f5;
-    padding: 10px 15px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    flex: 1;
+    min-width: 120px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
   }
   
   .activity-label {
-    font-size: 14px;
-    color: #555;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 5px;
   }
   
   .activity-value {
-    font-size: 16px;
-    font-weight: bold;
-    color: #444;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
   }
   
   .chart-container {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .chart-container h3 {
@@ -185,17 +200,12 @@
   
   /* Responsive adjustments */
   @media (max-width: 768px) {
-    .stat-value {
-      font-size: 20px;
-    }
-    
-    .highlight-value {
-      font-size: 16px;
-    }
-    
-    .stats-row {
+    .stats-row, .activity-highlights {
       flex-direction: column;
-      align-items: center;
+    }
+    
+    .stat-item, .activity-item {
+      width: 100%;
     }
     
     .tiempo-respuesta-chart {
@@ -288,4 +298,123 @@
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  .patron-horario-mensaje {
+    background-color: #f5f5f5;
+    border-left: 4px solid #25D366;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .patron-horario-mensaje p {
+    margin: 0;
+    color: #444;
+    font-weight: 500;
+  }
+
+  /* Estilos para el componente de análisis de tendencia */
+  .tendencia-destacada {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-left: 4px solid #3498db;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin: 10px 0 20px;
+    padding: 15px;
+    position: relative;
+  }
+
+  .tendencia-titulo {
+    align-items: center;
+    color: #2c3e50;
+    display: flex;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .tendencia-icono {
+    font-size: 18px;
+    margin-right: 8px;
+  }
+
+  .tendencia-mensaje {
+    color: #34495e;
+    font-size: 16px;
+    line-height: 1.4;
+    margin: 0;
+    margin-bottom: 10px;
+  }
+
+  /* Nuevos estilos para los detalles de tendencia */
+  .tendencia-detalles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+  }
+
+  .tendencia-valor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .tendencia-etiqueta {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 2px;
+  }
+
+  .tendencia-numero {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+
+  .tendencia-flecha {
+    margin: 0 15px;
+    font-size: 18px;
+    color: #95a5a6;
+  }
+
+  /* Estilos específicos para incremento y decremento */
+  .tendencia-destacada.incremento {
+    border-left-color: #e74c3c;
+  }
+
+  .tendencia-destacada.decremento {
+    border-left-color: #2ecc71;
+  }
+
+  /* Media queries para dispositivos móviles */
+  @media (max-width: 768px) {
+    .tendencia-destacada {
+      padding: 12px;
+    }
+    
+    .tendencia-mensaje {
+      font-size: 14px;
+    }
+    
+    .tendencia-detalles {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .tendencia-flecha {
+      margin: 0 8px;
+      font-size: 16px;
+    }
+    
+    .tendencia-numero {
+      font-size: 14px;
+    }
   }

@@ -30,7 +30,15 @@
       "top_users": "Top 5 Usuarios más Activos",
       "response_time_trend": "Tendencia del Tiempo de Respuesta (minutos)",
       "interest_trend": "Tendencia de Interés (Mensajes por Usuario por Mes)",
-      "insufficient_data": "No hay datos suficientes para mostrar tiempos de respuesta"
+      "trend_highlight": "Dato más destacado",
+      "increased": "ha incrementado su tiempo de respuesta un",
+      "decreased": "ha reducido su tiempo de respuesta un",
+      "response_time_trend_msg": "en su tiempo de respuesta entre",
+      "and": "y",
+      "insufficient_data": "No hay datos suficientes para mostrar tiempos de respuesta",
+      "morning_pattern": "{{emoji}} Este es un grupo de madrugadores: el {{percentage}}% de los mensajes se envían antes del mediodía.",
+      "afternoon_pattern": "{{emoji}} Este es un grupo diurno: el {{percentage}}% de los mensajes se envían entre las 12:00h y las 20:00h.",
+      "night_pattern": "{{emoji}} Este es un grupo de nocturnos: el {{percentage}}% de los mensajes se envían después de las 20:00h."
     },
     "top_profiles": {
       "title": "Perfiles Destacados del Chat",

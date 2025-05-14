@@ -381,6 +381,57 @@ const formatearMes = (fechaMes, t) => {
   return `${meses[parseInt(mes) - 1]} ${anio}`;
 };
 
+// Función para analizar el patrón horario de los mensajes
+const obtenerPatronHorario = (datosHora) => {
+  if (!datosHora || datosHora.length === 0) return null;
+  
+  // Contar mensajes por franja horaria
+  let mensajesMañana = 0; // 0-11
+  let mensajesTarde = 0;  // 12-19
+  let mensajesNoche = 0;  // 20-23
+  let totalMensajes = 0;
+  
+  datosHora.forEach(dato => {
+    const hora = dato.hora;
+    const mensajes = dato.mensajes || 0;
+    totalMensajes += mensajes;
+    
+    if (hora >= 0 && hora < 12) {
+      mensajesMañana += mensajes;
+    } else if (hora >= 12 && hora < 20) {
+      mensajesTarde += mensajes;
+    } else {
+      mensajesNoche += mensajes;
+    }
+  });
+  
+  // Calcular porcentajes
+  const porcentajeMañana = totalMensajes > 0 ? (mensajesMañana / totalMensajes) * 100 : 0;
+  const porcentajeTarde = totalMensajes > 0 ? (mensajesTarde / totalMensajes) * 100 : 0;
+  const porcentajeNoche = totalMensajes > 0 ? (mensajesNoche / totalMensajes) * 100 : 0;
+  
+  // Determinar el patrón predominante
+  if (porcentajeMañana > porcentajeTarde && porcentajeMañana > porcentajeNoche) {
+    return {
+      tipo: 'madrugadores',
+      icono: '🌞',
+      porcentaje: porcentajeMañana.toFixed(1)
+    };
+  } else if (porcentajeNoche > porcentajeMañana && porcentajeNoche > porcentajeTarde) {
+    return {
+      tipo: 'nocturnos',
+      icono: '🌙',
+      porcentaje: porcentajeNoche.toFixed(1)
+    };
+  } else {
+    return {
+      tipo: 'diurnos',
+      icono: '⏱️',
+      porcentaje: porcentajeTarde.toFixed(1)
+    };
+  }
+};
+
 const AnalisisPrimerChat = ({ operationId, chatData }) => {
   const { t, i18n } = useTranslation();
   const [datos, setDatos] = useState(null);
@@ -589,6 +640,133 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
     } catch (error) {
       console.error("Error al preparar datos de tiempo de respuesta:", error);
       return [];
+    }
+  };
+
+  // Analizar tendencia de tiempos de respuesta
+  const analizarTendenciaTiempoRespuesta = () => {
+    try {
+      const datosGrafico = prepararDatosTiempoRespuesta();
+      
+      if (!datosGrafico || datosGrafico.length < 3) {
+        // Necesitamos al menos 3 meses para analizar tendencias
+        return null;
+      }
+      
+      // Obtener los usuarios principales que aparecen en la gráfica
+      const usuariosPrincipales = obtenerUsuariosUnicos();
+      console.log("Usuarios principales para analizar tendencia:", usuariosPrincipales);
+      
+      if (!usuariosPrincipales || usuariosPrincipales.length === 0) {
+        return null;
+      }
+      
+      // Para cada usuario principal, calcular la tendencia en los últimos 3 meses
+      const tendencias = [];
+      
+      usuariosPrincipales.forEach(usuario => {
+        // Obtener los meses con datos para este usuario
+        let mesesConDatos = [];
+        
+        for (let i = 0; i < datosGrafico.length; i++) {
+          const dato = datosGrafico[i];
+          if (dato[usuario] !== undefined) {
+            mesesConDatos.push({
+              mes: dato.mes,
+              mesFormateado: dato.mesFormateado,
+              tiempo: dato[usuario],
+              indice: i
+            });
+          }
+        }
+        
+        // Necesitamos al menos 3 meses con datos para este usuario
+        if (mesesConDatos.length >= 3) {
+          // Ordenar por índice para asegurar orden cronológico
+          mesesConDatos.sort((a, b) => a.indice - b.indice);
+          
+          // Analizar múltiples ventanas de 3 meses para encontrar tendencias significativas
+          for (let i = 0; i <= mesesConDatos.length - 3; i++) {
+            const ventanaTresMeses = mesesConDatos.slice(i, i + 3);
+            
+            // Si los meses son consecutivos (o casi), calcular tendencia
+            const esConsecutivo = ventanaTresMeses[2].indice - ventanaTresMeses[0].indice <= 4;
+            
+            if (esConsecutivo) {
+              const primerValor = ventanaTresMeses[0].tiempo;
+              const ultimoValor = ventanaTresMeses[2].tiempo;
+              
+              // Calcular variación porcentual
+              const variacionPorcentual = ((ultimoValor - primerValor) / primerValor) * 100;
+              
+              // Si hay una variación significativa (>5%), registrar tendencia
+              if (Math.abs(variacionPorcentual) >= 5) {
+                // Comprobar si la tendencia es consistente (siempre creciente o decreciente)
+                let esConsistente = true;
+                for (let j = 1; j < ventanaTresMeses.length; j++) {
+                  const cambioConsistente = variacionPorcentual > 0 ? 
+                    ventanaTresMeses[j].tiempo >= ventanaTresMeses[j-1].tiempo :
+                    ventanaTresMeses[j].tiempo <= ventanaTresMeses[j-1].tiempo;
+                  
+                  if (!cambioConsistente) {
+                    esConsistente = false;
+                    break;
+                  }
+                }
+                
+                tendencias.push({
+                  usuario,
+                  variacionPorcentual,
+                  mesesAnalizados: ventanaTresMeses.map(m => m.mesFormateado),
+                  primerValor,
+                  ultimoValor,
+                  esIncremento: variacionPorcentual > 0,
+                  esConsistente,
+                  esReciente: i + 3 === mesesConDatos.length // Si es la ventana más reciente
+                });
+              }
+            }
+          }
+        }
+      });
+      
+      if (tendencias.length === 0) {
+        return null;
+      }
+      
+      // Priorizar según estos criterios:
+      // 1. Tendencias recientes
+      // 2. Tendencias consistentes
+      // 3. Magnitud de la variación
+      
+      // Primero intentar encontrar tendencias recientes y consistentes
+      const tendenciasRecientesConsistentes = tendencias.filter(t => t.esReciente && t.esConsistente);
+      if (tendenciasRecientesConsistentes.length > 0) {
+        // Ordenar por magnitud de variación
+        tendenciasRecientesConsistentes.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
+        return tendenciasRecientesConsistentes[0];
+      }
+      
+      // Luego intentar con tendencias recientes
+      const tendenciasRecientes = tendencias.filter(t => t.esReciente);
+      if (tendenciasRecientes.length > 0) {
+        tendenciasRecientes.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
+        return tendenciasRecientes[0];
+      }
+      
+      // Finalmente, tendencias consistentes o cualquiera ordenada por magnitud
+      const tendenciasConsistentes = tendencias.filter(t => t.esConsistente);
+      if (tendenciasConsistentes.length > 0) {
+        tendenciasConsistentes.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
+        return tendenciasConsistentes[0];
+      }
+      
+      // Si no hay tendencias que cumplan los criterios anteriores, usar la tendencia con mayor variación
+      tendencias.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
+      return tendencias[0];
+    } catch (error) {
+      console.error("Error al analizar tendencia de tiempo de respuesta:", error);
+      return null;
     }
   };
 
@@ -824,6 +1002,42 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       {/* Gráfico de actividad por hora del día */}
       <div className="chart-container">
         <h3>{t('app.primer_chat.activity_by_hour')}</h3>
+        
+        {/* Añadir el mensaje de patrón horario */}
+        {(() => {
+          const datosHora = prepararDatosHora();
+          const patronHorario = obtenerPatronHorario(datosHora);
+          
+          if (patronHorario) {
+            let mensaje = '';
+            
+            if (patronHorario.tipo === 'madrugadores') {
+              mensaje = t('app.primer_chat.morning_pattern', { 
+                percentage: patronHorario.porcentaje,
+                emoji: patronHorario.icono
+              }) || `${patronHorario.icono} Este es un grupo de madrugadores: el ${patronHorario.porcentaje}% de los mensajes se envían antes del mediodía.`;
+            } else if (patronHorario.tipo === 'nocturnos') {
+              mensaje = t('app.primer_chat.night_pattern', { 
+                percentage: patronHorario.porcentaje,
+                emoji: patronHorario.icono
+              }) || `${patronHorario.icono} Este es un grupo de nocturnos: el ${patronHorario.porcentaje}% de los mensajes se envían después de las 20:00h.`;
+            } else {
+              mensaje = t('app.primer_chat.afternoon_pattern', { 
+                percentage: patronHorario.porcentaje,
+                emoji: patronHorario.icono
+              }) || `${patronHorario.icono} Este es un grupo diurno: el ${patronHorario.porcentaje}% de los mensajes se envían entre las 12:00h y las 20:00h.`;
+            }
+            
+            return (
+              <div className="patron-horario-mensaje">
+                <p>{mensaje}</p>
+              </div>
+            );
+          }
+          
+          return null;
+        })()}
+        
         <ResponsiveContainer width="100%" height={300}>
           <LineChart
             data={prepararDatosHora()}
@@ -893,6 +1107,65 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       {/* NUEVO: Gráfico de tendencia mes a mes del tiempo de respuesta */}
       <div className="chart-container tiempo-respuesta-chart">
         <h3>{t('app.primer_chat.response_time_trend')}</h3>
+        
+        {/* Mostrar tendencia destacada si existe */}
+        {(() => {
+          const tendencia = analizarTendenciaTiempoRespuesta();
+          
+          if (tendencia) {
+            const porcentaje = Math.abs(tendencia.variacionPorcentual).toFixed(0);
+            const nombreUsuario = tendencia.usuario;
+            const accion = tendencia.esIncremento ? t('app.primer_chat.increased') : t('app.primer_chat.decreased');
+            const icono = tendencia.esIncremento ? '⏱️' : '⚡';
+            
+            // Valores iniciales y finales redondeados a 1 decimal
+            const valorInicial = Math.round(tendencia.primerValor * 10) / 10;
+            const valorFinal = Math.round(tendencia.ultimoValor * 10) / 10;
+            
+            // Obtener el índice del usuario para usar el mismo color que en la gráfica
+            const usuariosActivos = obtenerUsuariosUnicos();
+            const usuarioIndex = usuariosActivos.indexOf(nombreUsuario);
+            const colorUsuario = usuarioIndex >= 0 ? COLORS[usuarioIndex % COLORS.length] : '#3498db';
+            
+            // Estilo personalizado para el borde con el color del usuario
+            const estiloPersonalizado = {
+              borderLeftColor: colorUsuario,
+              borderLeftWidth: '4px'
+            };
+            
+            return (
+              <div 
+                className={`tendencia-destacada ${tendencia.esIncremento ? 'incremento' : 'decremento'}`}
+                style={estiloPersonalizado}
+              >
+                <div className="tendencia-titulo">
+                  <span className="tendencia-icono">{icono}</span>
+                  <span>{t('app.primer_chat.trend_highlight')}</span>
+                </div>
+                <p className="tendencia-mensaje">
+                  <strong style={{ color: colorUsuario }}>{nombreUsuario}</strong>
+                  {` ${accion} ${porcentaje}% ${t('app.primer_chat.response_time_trend_msg')} ${tendencia.mesesAnalizados[0]} ${t('app.primer_chat.and')} ${tendencia.mesesAnalizados[2]}.`}
+                </p>
+                <div className="tendencia-detalles">
+                  <div className="tendencia-valor">
+                    <span className="tendencia-etiqueta">{tendencia.mesesAnalizados[0]}:</span>
+                    <span className="tendencia-numero">{valorInicial} min</span>
+                  </div>
+                  <div className="tendencia-flecha">→</div>
+                  <div className="tendencia-valor">
+                    <span className="tendencia-etiqueta">{tendencia.mesesAnalizados[2]}:</span>
+                    <span className="tendencia-numero" style={{ color: tendencia.esIncremento ? '#e74c3c' : '#2ecc71' }}>
+                      {valorFinal} min
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          
+          return null;
+        })()}
+        
         <ResponsiveContainer width="100%" height={450}>
           <LineChart
             data={prepararDatosTiempoRespuesta()}
