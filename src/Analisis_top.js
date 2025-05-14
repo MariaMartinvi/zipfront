@@ -1505,6 +1505,56 @@ const AnalisisTop = ({ operationId, chatData }) => {
           ) : null
         ))}
       </div>
+      
+      {/* Sección de participantes bajo el radar */}
+      {datos && datos.usuarios && datos.categorias && (() => {
+        // Recopilar todos los nombres que aparecen en alguna categoría
+        const nombresEnCategorias = new Set();
+        Object.values(datos.categorias).forEach(categoria => {
+          if (categoria && categoria.nombre && categoria.nombre !== '--' && categoria.nombre !== 'Sin datos') {
+            nombresEnCategorias.add(categoria.nombre);
+          }
+        });
+        
+        // Filtrar usuarios que no aparecen en categorías
+        const participantesBajoRadar = Object.keys(datos.usuarios).filter(
+          nombre => !nombresEnCategorias.has(nombre)
+        );
+        
+        // Solo mostrar la sección si hay participantes bajo el radar
+        if (participantesBajoRadar.length === 0) {
+          return null;
+        }
+        
+        return (
+          <div className="bajo-radar-container" style={{ marginTop: '30px', textAlign: 'center' }}>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '15px' }}>
+              Y volando bajo del radar tenemos a:
+            </h3>
+            <div className="bajo-radar-participantes" style={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              justifyContent: 'center',
+              gap: '10px' 
+            }}>
+              {participantesBajoRadar.map(nombre => (
+                <div key={nombre} style={{
+                  background: '#f2f2f2',
+                  padding: '8px 15px',
+                  borderRadius: '20px',
+                  fontWeight: 'bold',
+                  fontSize: '0.9rem'
+                }}>
+                  {nombre} ({datos.usuarios[nombre].mensajes} {t('app.top_profiles.total_messages')})
+                </div>
+              ))}
+            </div>
+            <p style={{ marginTop: '20px', fontStyle: 'italic', fontWeight: 'bold' }}>
+              Próxima vez será
+            </p>
+          </div>
+        );
+      })()}
     </div>
   );
 };
