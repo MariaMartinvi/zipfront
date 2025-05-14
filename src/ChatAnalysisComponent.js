@@ -410,29 +410,18 @@ function ChatAnalysisComponent({ operationId, chatData }) {
         </div>
       )}
       
-      {error && (
-        <div className="error-container">
-          <h3>Error al analizar la conversación</h3>
-          <p>{error}</p>
-          <button onClick={() => window.location.reload()}>Reintentar</button>
-        </div>
-      )}
+    
       
       {chatContent && (
         <>
           <AzureClientComponent 
             chatContent={chatContent} 
             onAnalysisComplete={handleAnalysisComplete} 
-            onError={handleAnalysisError}
           />
         </>
       )}
       
-      {analysisResult && (
-        <div className="analysis-results" ref={resultsContainerRef}>
-          {renderAnalysisResults()}
-        </div>
-      )}
+      
       
       {/* Análisis Top - Resultados estadísticos */}
       {chatContent && <AnalisisTop chatContent={chatContent} />}

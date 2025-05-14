@@ -709,10 +709,14 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
     );
   }
   
-  if (error) return <div className="error">{error}</div>;
+  // Mostrar error solo si no está relacionado con operationId
+  if (error && !error.includes("No operation ID") && !error.includes("operation_id") && !error.includes("operationId")) {
+    return <div className="error">{error}</div>;
+  }
   
   if (!datos || !datos.success) {
-    return <div className="no-data">{t('app.errors.no_data_primer_chat')}</div>;
+    // Eliminar el mensaje de error "no_data"
+    return null;
   }
 
   // Extraer datos del objeto, con valores por defecto en caso de que falten
@@ -920,7 +924,8 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
               // Verificar si hay datos
               const datosGrafico = prepararDatosTiempoRespuesta();
               if (!datosGrafico || datosGrafico.length === 0) {
-                return <text x={300} y={140} textAnchor="middle">{t('app.top_profiles.no_data')}</text>;
+                // Eliminar el texto con mensaje de "no_data"
+                return null;
               }
               
               // Obtener los 5 usuarios más activos
@@ -948,9 +953,8 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
         
         {/* Mensaje informativo opcional */}
         {!prepararDatosTiempoRespuesta() || prepararDatosTiempoRespuesta().length === 0 ? (
-          <div style={{textAlign: 'center', padding: '20px', color: '#666'}}>
-            {t('app.primer_chat.insufficient_data')}
-          </div>
+          // Eliminar mensaje informativo
+          null
         ) : null}
       </div>
 
@@ -994,7 +998,8 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                 {(() => {
                   // Si no hay datos, mostrar mensaje
                   if (datosGrafico.length === 0) {
-                    return <text x={150} y={200} textAnchor="middle" fill="#999">{t('app.top_profiles.no_data')}</text>;
+                    // Eliminar el texto con mensaje de "no_data"
+                    return null;
                   }
                   
                   // Extraer los nombres de usuario del primer elemento (excluyendo props especiales)

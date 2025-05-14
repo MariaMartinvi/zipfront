@@ -66,12 +66,6 @@ function HumoristicAnalysis({ statistics }) {
       
       {loading && renderLoadingState()}
       
-      {error && (
-        <div className="analysis-error">
-          <p>{error}</p>
-        </div>
-      )}
-      
       {!loading && analysis && (
         <div 
           className="analysis-content"

@@ -1485,234 +1485,235 @@ const tryDeleteFiles = async (operationId) => {
 
   // Main app component UI with routing
   return (
-    <Router>
-      <div className="App">
-        <Header user={user} />
-        <UserPlanBanner userProfile={userProfile} />
-        
-        {/* Indicador de progreso flotante para todos los dispositivos */}
-        {(isLoading || isFetchingMistral) && (
-          <div className="mobile-progress-indicator">
-            <div className="progress-content">
-              <div className="spinner-small"></div>
-              <span>{progressMessage || (isLoading ? t('app.progress.processing') : t('app.progress.generating'))}</span>
-            </div>
-            <div className="progress-bar">
-              <div className="progress-value"></div>
-            </div>
-          </div>
-        )}
-        
-        {/* Botón flotante para ver análisis */}
-        {operationId && showViewAnalysisButton && !(isLoading || isFetchingMistral) && (
-          <button 
-            className="view-analysis-button"
-            onClick={scrollToAnalysis}
-          >
-            <span className="icon">📊</span>
-            {t('app.buttons.view_analysis')}
-          </button>
-        )}
-        
-        <main className="App-main">
-        {showPaymentSuccess && (
-            <PaymentSuccessBanner 
-              show={showPaymentSuccess} 
-              onClose={() => setShowPaymentSuccess(false)}
-            />
-          )}
-          {showUpgradeModal && <UpgradeModal />}
+    <div className="app-container">
+      <Router>
+        <div className="App">
+          <Header user={user} />
+          <UserPlanBanner userProfile={userProfile} />
           
-          <Routes>
-            {/* Home/Upload Page */}
-            <Route 
-              path="/"
-              element={
-                <>
-                  {/* Mostrar componentes de análisis estadístico */}
-                  {operationId && (
-                    <div className="analysis-container" ref={analysisRef}>
-                      <h2>{t('app.analysis.statistical')}</h2>
-                      
-                      {/* Reemplazar el spinner individual con un contenedor simple */}
-                      {isLoading ? (
-                        <div className="empty-placeholder-container">
-                          <p>{t('app.analysis.preparing_statistical')}</p>
-                        </div>
+          {/* Indicador de progreso flotante para todos los dispositivos */}
+          {(isLoading || isFetchingMistral) && (
+            <div className="mobile-progress-indicator">
+              <div className="progress-content">
+                <div className="spinner-small"></div>
+                <span>{progressMessage || (isLoading ? t('app.progress.processing') : t('app.progress.generating'))}</span>
+              </div>
+              <div className="progress-bar">
+                <div className="progress-value"></div>
+              </div>
+            </div>
+          )}
+          
+          {/* Botón flotante para ver análisis */}
+          {operationId && showViewAnalysisButton && !(isLoading || isFetchingMistral) && (
+            <button 
+              className="view-analysis-button"
+              onClick={scrollToAnalysis}
+            >
+              <span className="icon">📊</span>
+              {t('app.buttons.view_analysis')}
+            </button>
+          )}
+          
+          <main className="App-main">
+            {showPaymentSuccess && (
+              <PaymentSuccessBanner 
+                show={showPaymentSuccess} 
+                onClose={() => setShowPaymentSuccess(false)}
+              />
+            )}
+            {showUpgradeModal && <UpgradeModal />}
+            
+            <Routes>
+              {/* Home/Upload Page */}
+              <Route 
+                path="/"
+                element={
+                  <>
+                    {/* Mostrar componentes de análisis estadístico */}
+                    {operationId && (
+                      <div className="analysis-container" ref={analysisRef}>
+                        <h2>{t('app.analysis.statistical')}</h2>
+                        
+                        {/* Reemplazar el spinner individual con un contenedor simple */}
+                        {isLoading ? (
+                          <div className="empty-placeholder-container">
+                            <p>{t('app.analysis.preparing_statistical')}</p>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="analysis-module">
+                              <AnalisisPrimerChat chatData={chatData} />
+                            </div>
+                            {/* Nuevos componentes de análisis */}
+                            <div className="additional-analysis">
+                              <div className="analysis-module">
+                                <AnalisisTop chatData={chatData} />
+                              </div>
+                              <div className="analysis-module">
+                                <ChatAnalysisComponent chatData={chatData} />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Mostrar componentes de análisis psicológico */}
+                    {operationId && (
+                      <div className="chat-analysis-section">
+                        <h2>{t('app.analysis.psychological')}</h2>
+                        
+                        {isFetchingMistral ? (
+                          <div className="empty-placeholder-container">
+                            <p>{t('app.analysis.preparing_psychological')}</p>
+                          </div>
+                        ) : (
+                          chatGptResponse && <Chatgptresultados chatGptResponse={chatGptResponse} />
+                        )}
+                      </div>
+                    )}
+
+                    {/* Sección de carga de archivos */}
+                    <div id="upload-section" className="upload-section">
+                      {!user ? (
+                        <>
+                          {/* Componente de vista previa de la aplicación ANTES del login */}
+                          <AppPreview />
+                          
+                          <div className="login-required">
+                            <h2>{t('app.login_required.title')}</h2>
+                            <p>{t('app.login_required.description')}</p>
+                            <div className="auth-buttons">
+                              <button 
+                                className="login-button"
+                                onClick={() => window.location.href = '/login'}
+                              >
+                                {t('app.login_required.login')}
+                              </button>
+                              <button 
+                                className="register-button"
+                                onClick={() => window.location.href = '/register'}
+                              >
+                                {t('app.login_required.register')}
+                              </button>
+                            </div>
+                          </div>
+                        </>
                       ) : (
                         <>
-                          <div className="analysis-module">
-                            <AnalisisPrimerChat chatData={chatData} />
-                          </div>
-                          {/* Nuevos componentes de análisis */}
-                          <div className="additional-analysis">
-                            <div className="analysis-module">
-                              <AnalisisTop chatData={chatData} />
-                            </div>
-                            {/* Análisis psicológico en cliente */}
-                            <div className="analysis-module">
-                              <ChatAnalysisComponent chatData={chatData} />
-                            </div>
+                          <h2>{showAnalysis ? t('app.upload.another') : t('app.upload.title') + " "}<span className="whatsapp-text">WhatsApp</span></h2>
+                          
+                          {/* Carrusel de instrucciones de WhatsApp separado del botón */}
+                          <WhatsappInstructions />
+                          
+                          {/* User subscription status card */}
+                          
+                          <div className="file-upload-container">
+                            <label className="file-upload-label">
+                              <input 
+                                type="file" 
+                                className="file-upload-input" 
+                                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
+                                onChange={handleFileUpload} 
+                              />
+                              <div className="file-upload-text">
+                                <span className="upload-icon">📂</span>
+                                <span>{t('app.upload.button')}</span>
+                                <span className="file-upload-subtext">{t('app.upload.subtext')}</span>
+                              </div>
+                            </label>
                           </div>
                         </>
                       )}
                     </div>
-                  )}
 
-                  {/* Mostrar componentes de análisis psicológico */}
-                  {operationId && (
-                    <div className="chat-analysis-section">
-                      <h2>{t('app.analysis.psychological')}</h2>
-                      
-                      {isFetchingMistral ? (
-                        <div className="empty-placeholder-container">
-                          <p>{t('app.analysis.preparing_psychological')}</p>
-                        </div>
-                      ) : (
-                        chatGptResponse && <Chatgptresultados chatGptResponse={chatGptResponse} />
-                      )}
-                    </div>
-                  )}
-
-                  {/* Sección de carga de archivos */}
-                  <div id="upload-section" className="upload-section">
-                    {!user ? (
-                      <>
-                        {/* Componente de vista previa de la aplicación ANTES del login */}
-                        <AppPreview />
-                        
-                        <div className="login-required">
-                          <h2>{t('app.login_required.title')}</h2>
-                          <p>{t('app.login_required.description')}</p>
-                          <div className="auth-buttons">
-                            <button 
-                              className="login-button"
-                              onClick={() => window.location.href = '/login'}
-                            >
-                              {t('app.login_required.login')}
-                            </button>
-                            <button 
-                              className="register-button"
-                              onClick={() => window.location.href = '/register'}
-                            >
-                              {t('app.login_required.register')}
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <h2>{showAnalysis ? t('app.upload.another') : t('app.upload.title') + " "}<span className="whatsapp-text">WhatsApp</span></h2>
-                        
-                        {/* Carrusel de instrucciones de WhatsApp separado del botón */}
-                        <WhatsappInstructions />
-                        
-                        {/* User subscription status card */}
-                        
-                        <div className="file-upload-container">
-                          <label className="file-upload-label">
-                            <input 
-                              type="file" 
-                              className="file-upload-input" 
-                              accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
-                              onChange={handleFileUpload} 
-                            />
-                            <div className="file-upload-text">
-                              <span className="upload-icon">📂</span>
-                              <span>{t('app.upload.button')}</span>
-                              <span className="file-upload-subtext">{t('app.upload.subtext')}</span>
-                            </div>
-                          </label>
-                        </div>
-                      </>
+                    {error && (
+                      <div className="error-message">
+                        <p>{error}</p>
+                      </div>
                     )}
-                  </div>
 
-                  {error && (
-                    <div className="error-message">
-                      <p>{error}</p>
-                    </div>
-                  )}
+                    {isLoading && (
+                      <div className="loading-indicator-minimal">
+                        <div className="spinner"></div>
+                      </div>
+                    )}
+                  </>
+                }
+              />
+              
+              {/* Authentication Routes */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/reset-password" element={<PasswordReset />} />
+              
+              {/* Subscription Plan Routes - Now correctly passing user prop */}
+              <Route path="/plans" element={
+                <ProtectedRoute>
+                  <PlansWithLocationCheck user={user} />
+                </ProtectedRoute>
+              } />
 
-                  {isLoading && (
-                    <div className="loading-indicator-minimal">
-                      <div className="spinner"></div>
-                    </div>
-                  )}
-                </>
-              }
-            />
+              <Route path="/payment-success" element={
+                <ProtectedRoute>
+                  <SimplePaymentSuccess />
+                </ProtectedRoute>
+              } />
+
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            < Route path="/privacy" element={<PrivacyPolicy />} />
+            </Routes>
             
-            {/* Authentication Routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/reset-password" element={<PasswordReset />} />
+            {/* Componente de footer */}
+            <Footer/>
+            {/* Componente de instalación de PWA */}
+            <InstallPWA />
             
-            {/* Subscription Plan Routes - Now correctly passing user prop */}
-            <Route path="/plans" element={
-              <ProtectedRoute>
-                <PlansWithLocationCheck user={user} />
-              </ProtectedRoute>
-            } />
+            
+            {/* Optional: Add AuthDebug component for debugging */}
+            {process.env.NODE_ENV === 'development' && <AuthDebug />}
 
-            <Route path="/payment-success" element={
-              <ProtectedRoute>
-                <SimplePaymentSuccess />
-              </ProtectedRoute>
-            } />
-
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          < Route path="/privacy" element={<PrivacyPolicy />} />
-          </Routes>
-          
-          {/* Componente de footer */}
-          <Footer/>
-          {/* Componente de instalación de PWA */}
-          <InstallPWA />
-          
-          
-          {/* Optional: Add AuthDebug component for debugging */}
-          {process.env.NODE_ENV === 'development' && <AuthDebug />}
-
-          {/* Reemplazar la advertencia de no refrescar con un indicador de carga más sutil */}
-          {(isLoading || isFetchingMistral) && (
-            <div className="loading-status-indicator">
-              <div className="spinner-small"></div>
-              <div className="loading-status-text">
-                {t('app.loading_status')}
-              </div>
-            </div>
-          )}
-          
-          {/* Alerta de confirmación cuando el usuario intenta salir con análisis completo */}
-          {showRefreshConfirmation && (
-            <div className="refresh-confirmation">
-              <div className="refresh-confirmation-icon">⚠️</div>
-              <div className="refresh-confirmation-content">
-                <h3>{t('app.refresh_confirmation.title')}</h3>
-                <p>{t('app.refresh_confirmation.message')}</p>
-                <div className="refresh-confirmation-buttons">
-                  <button 
-                    className="refresh-confirmation-cancel" 
-                    onClick={handleCancelRefresh}
-                  >
-                    {t('app.refresh_confirmation.cancel')}
-                  </button>
-                  <button 
-                    className="refresh-confirmation-confirm" 
-                    onClick={handleConfirmRefresh}
-                  >
-                    {t('app.refresh_confirmation.confirm')}
-                  </button>
+            {/* Reemplazar la advertencia de no refrescar con un indicador de carga más sutil */}
+            {(isLoading || isFetchingMistral) && (
+              <div className="loading-status-indicator">
+                <div className="spinner-small"></div>
+                <div className="loading-status-text">
+                  {t('app.loading_status')}
                 </div>
               </div>
-            </div>
-          )}
-        </main>
-      </div>
-    </Router>
+            )}
+            
+            {/* Alerta de confirmación cuando el usuario intenta salir con análisis completo */}
+            {showRefreshConfirmation && (
+              <div className="refresh-confirmation">
+                <div className="refresh-confirmation-icon">⚠️</div>
+                <div className="refresh-confirmation-content">
+                  <h3>{t('app.refresh_confirmation.title')}</h3>
+                  <p>{t('app.refresh_confirmation.message')}</p>
+                  <div className="refresh-confirmation-buttons">
+                    <button 
+                      className="refresh-confirmation-cancel" 
+                      onClick={handleCancelRefresh}
+                    >
+                      {t('app.refresh_confirmation.cancel')}
+                    </button>
+                    <button 
+                      className="refresh-confirmation-confirm" 
+                      onClick={handleConfirmRefresh}
+                    >
+                      {t('app.refresh_confirmation.confirm')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </main>
+        </div>
+      </Router>
+    </div>
   );
 } 
 

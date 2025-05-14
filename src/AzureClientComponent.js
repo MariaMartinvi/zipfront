@@ -160,7 +160,12 @@ const AzureClientComponent = ({
   // Función principal para analizar el chat
   const analyzeChat = async () => {
     if (!chatContent) {
-      onError("No hay contenido de chat para analizar");
+      // Verificar si onError es una función antes de llamarla
+      if (typeof onError === 'function') {
+        onError("No hay contenido de chat para analizar");
+      } else {
+        console.error("No hay contenido de chat para analizar");
+      }
       return;
     }
 
@@ -189,7 +194,10 @@ const AzureClientComponent = ({
         const errorMsg = 
           "Faltan credenciales de Azure OpenAI. Presiona Ctrl+Shift+A para abrir el panel de configuración y añadir tus credenciales.";
         console.error(errorMsg);
-        onError(errorMsg);
+        // Verificar si onError es una función antes de llamarla
+        if (typeof onError === 'function') {
+          onError(errorMsg);
+        }
         setIsAnalyzing(false);
         return;
       }
@@ -227,7 +235,9 @@ const AzureClientComponent = ({
       const analysisResult = response.choices[0].message.content;
       
       // Pasar los resultados al componente padre
-      onAnalysisComplete(analysisResult);
+      if (typeof onAnalysisComplete === 'function') {
+        onAnalysisComplete(analysisResult);
+      }
       
     } catch (error) {
       console.error("Error al analizar el chat con Azure OpenAI:", error);
@@ -242,14 +252,23 @@ const AzureClientComponent = ({
       });
       
       // Manejar errores específicos
+      let errorMessage = "Error desconocido al analizar el chat";
+      
       if (error.status === 429 || error.statusCode === 429) {
-        onError("Límite de solicitudes alcanzado. Por favor, intenta más tarde.");
+        errorMessage = "Límite de solicitudes alcanzado. Por favor, intenta más tarde.";
       } else if (error.status === 401 || error.status === 403 || error.statusCode === 401 || error.statusCode === 403) {
-        onError("Error de autenticación con Azure OpenAI. Verifica las credenciales con Ctrl+Shift+A.");
+        errorMessage = "Error de autenticación con Azure OpenAI. Verifica las credenciales con Ctrl+Shift+A.";
       } else if (error.message && error.message.includes("network")) {
-        onError("Error de conexión con Azure OpenAI. Verifica tu conexión a Internet.");
+        errorMessage = "Error de conexión con Azure OpenAI. Verifica tu conexión a Internet.";
       } else {
-        onError(`Error al analizar el chat: ${error.message || "Error desconocido"}`);
+        errorMessage = `Error al analizar el chat con Azure OpenAI: ${error.message || "Error desconocido"}`;
+      }
+      
+      // Verificar si onError es una función antes de llamarla
+      if (typeof onError === 'function') {
+        onError(errorMessage);
+      } else {
+        console.error(errorMessage);
       }
     } finally {
       setIsAnalyzing(false);

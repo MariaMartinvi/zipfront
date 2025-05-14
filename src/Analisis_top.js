@@ -1197,9 +1197,11 @@ const AnalisisTop = ({ operationId, chatData }) => {
       `}</style>
     </div>
   );
-  if (error) return <div className="error">{t('app.errors.generic')}: {error}</div>;
+  if (error && !error.includes("No operation ID") && !error.includes("operation_id") && !error.includes("operationId")) {
+    return <div className="error">{t('app.errors.generic')}: {error}</div>;
+  }
   if (!datos || !datos.categorias || Object.keys(datos.categorias).length === 0) {
-    return <div className="no-data">{t('app.top_profiles.no_data')}</div>;
+    return null;
   }
 
   return (
