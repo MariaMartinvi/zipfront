@@ -35,6 +35,7 @@
     },
     "top_profiles": {
       "title": "Profils Marquants du Chat",
+      "group_average": "Les autres",
       "professor": {
         "title": "Le Professeur",
         "description": "Plus de mots distincts, vocabulaire plus riche",

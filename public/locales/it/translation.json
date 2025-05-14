@@ -379,7 +379,8 @@
         "description": "Usa molti emoji",
         "total_emojis": "Emoji Totali",
         "emojis_per_message": "Emoji per Messaggio"
-      }
+      },
+      "group_average": "Gli altri"
     },
     "primer_chat": {
       "title": "Analisi del Primo Chat",

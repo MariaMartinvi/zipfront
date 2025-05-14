@@ -35,6 +35,7 @@
     },
     "top_profiles": {
       "title": "Highlighted Chat Profiles",
+      "group_average": "The others",
       "professor": {
         "title": "The Professor",
         "description": "Most unique words, larger vocabulary",

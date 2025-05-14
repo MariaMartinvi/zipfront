@@ -345,11 +345,30 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       const usuarioProfesor = Object.entries(palabras_unicas_ratio)
         .sort((a, b) => b[1][1] - a[1][1])[0][0];
       const [cantidad, ratio] = palabras_unicas_ratio[usuarioProfesor];
+      
+      // Calcular la media del resto del grupo sin el profesor
+      let totalPalabrasUnicasResto = 0;
+      let totalMensajesResto = 0;
+      let cantidadUsuariosResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioProfesor) {
+          totalPalabrasUnicasResto += datos.palabras_unicas.size;
+          totalMensajesResto += datos.mensajes;
+          cantidadUsuariosResto++;
+        }
+      }
+      
+      const mediaPalabrasUnicasResto = cantidadUsuariosResto > 0 ? totalPalabrasUnicasResto / cantidadUsuariosResto : 0;
+      const mediaRatioResto = totalMensajesResto > 0 ? totalPalabrasUnicasResto / totalMensajesResto : 0;
+      
       categorias.profesor = {
         nombre: usuarioProfesor,
         palabras_unicas: cantidad,
         ratio: ratio,
-        mensajes: usuarios[usuarioProfesor].mensajes
+        mensajes: usuarios[usuarioProfesor].mensajes,
+        media_palabras_unicas_resto: mediaPalabrasUnicasResto,
+        media_ratio_resto: mediaRatioResto
       };
     }
     
@@ -357,10 +376,25 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     if (Object.keys(palabras_por_mensaje_promedio).length > 0) {
       const usuarioRollero = Object.entries(palabras_por_mensaje_promedio)
         .sort((a, b) => b[1] - a[1])[0][0];
+      
+      // Calcular la media del resto del grupo sin el rollero
+      let totalPalabrasPorMensajeResto = 0;
+      let cantidadUsuariosResto = 0;
+      
+      for (const [usuario, valor] of Object.entries(palabras_por_mensaje_promedio)) {
+        if (usuario !== usuarioRollero) {
+          totalPalabrasPorMensajeResto += valor;
+          cantidadUsuariosResto++;
+        }
+      }
+      
+      const mediaPalabrasPorMensajeResto = cantidadUsuariosResto > 0 ? totalPalabrasPorMensajeResto / cantidadUsuariosResto : 0;
+      
       categorias.rollero = {
         nombre: usuarioRollero,
         palabras_por_mensaje: palabras_por_mensaje_promedio[usuarioRollero],
-        mensajes: usuarios[usuarioRollero].mensajes
+        mensajes: usuarios[usuarioRollero].mensajes,
+        media_palabras_por_mensaje_resto: mediaPalabrasPorMensajeResto
       };
     }
     
@@ -368,10 +402,25 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     if (Object.keys(tiempo_respuesta_promedio).length > 0) {
       const usuarioPistolero = Object.entries(tiempo_respuesta_promedio)
         .sort((a, b) => a[1] - b[1])[0][0];
+      
+      // Calcular la media del resto del grupo sin el pistolero
+      let totalTiempoRespuestaResto = 0;
+      let cantidadUsuariosResto = 0;
+      
+      for (const [usuario, valor] of Object.entries(tiempo_respuesta_promedio)) {
+        if (usuario !== usuarioPistolero) {
+          totalTiempoRespuestaResto += valor;
+          cantidadUsuariosResto++;
+        }
+      }
+      
+      const mediaTiempoRespuestaResto = cantidadUsuariosResto > 0 ? totalTiempoRespuestaResto / cantidadUsuariosResto : 0;
+      
       categorias.pistolero = {
         nombre: usuarioPistolero,
         tiempo_respuesta_promedio: tiempo_respuesta_promedio[usuarioPistolero],
-        mensajes: usuarios[usuarioPistolero].mensajes
+        mensajes: usuarios[usuarioPistolero].mensajes,
+        media_tiempo_respuesta_resto: mediaTiempoRespuestaResto
       };
     }
     
@@ -379,10 +428,25 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     if (Object.keys(tiempo_respuesta_promedio).length > 0) {
       const usuarioDejaenvisto = Object.entries(tiempo_respuesta_promedio)
         .sort((a, b) => b[1] - a[1])[0][0];
+      
+      // Calcular la media del resto del grupo sin el dejaenvisto
+      let totalTiempoRespuestaResto = 0;
+      let cantidadUsuariosResto = 0;
+      
+      for (const [usuario, valor] of Object.entries(tiempo_respuesta_promedio)) {
+        if (usuario !== usuarioDejaenvisto) {
+          totalTiempoRespuestaResto += valor;
+          cantidadUsuariosResto++;
+        }
+      }
+      
+      const mediaTiempoRespuestaResto = cantidadUsuariosResto > 0 ? totalTiempoRespuestaResto / cantidadUsuariosResto : 0;
+      
       categorias.dejaenvisto = {
         nombre: usuarioDejaenvisto,
         tiempo_respuesta_promedio: tiempo_respuesta_promedio[usuarioDejaenvisto],
-        mensajes: usuarios[usuarioDejaenvisto].mensajes
+        mensajes: usuarios[usuarioDejaenvisto].mensajes,
+        media_tiempo_respuesta_resto: mediaTiempoRespuestaResto
       };
     }
     
@@ -400,11 +464,27 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       const mensajesNoche = usuarios[usuarioVampiro].mensajes_noche || 0;
       const totalMensajes = usuarios[usuarioVampiro].mensajes || 1; // Evitar división por cero
       const porcentaje = totalMensajes > 0 ? (mensajesNoche / totalMensajes) * 100 : 0;
+      
+      // Calcular la media del resto del grupo sin el vampiro
+      let totalMensajesNocheResto = 0;
+      let totalMensajesResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioVampiro) {
+          totalMensajesNocheResto += datos.mensajes_noche;
+          totalMensajesResto += datos.mensajes;
+        }
+      }
+      
+      const porcentajeResto = totalMensajesResto > 0 ? (totalMensajesNocheResto / totalMensajesResto) * 100 : 0;
+      
       categorias.vampiro = {
         nombre: usuarioVampiro,
         mensajes_noche: mensajesNoche,
         porcentaje: porcentaje,
-        mensajes: totalMensajes
+        mensajes: totalMensajes,
+        media_mensajes_noche_resto: totalMensajesNocheResto / (Object.keys(usuarios).length - 1),
+        media_porcentaje_resto: porcentajeResto
       };
     }
     
@@ -433,11 +513,37 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       // Formato de hora con ceros a la izquierda
       const horaFormateada = `${horaEntera}:${minutos.toString().padStart(2, '0')}`;
       
+      // Calcular la media del resto del grupo sin el cafeconleche
+      let totalHorariosResto = 0;
+      let cantidadUsuariosResto = 0;
+      
+      for (const [usuario, hora] of Object.entries(horarios_promedio)) {
+        if (usuario !== usuarioCafeconleche) {
+          totalHorariosResto += hora;
+          cantidadUsuariosResto++;
+        }
+      }
+      
+      const mediaHorariosResto = cantidadUsuariosResto > 0 ? totalHorariosResto / cantidadUsuariosResto : 0;
+      
+      // Convertir media a formato hora:minutos
+      let horaMediaResto = 0;
+      let minutosMediaResto = 0;
+      
+      if (!isNaN(mediaHorariosResto)) {
+        horaMediaResto = Math.floor(mediaHorariosResto);
+        minutosMediaResto = Math.floor((mediaHorariosResto - horaMediaResto) * 60);
+      }
+      
+      const horaFormateadaResto = `${horaMediaResto}:${minutosMediaResto.toString().padStart(2, '0')}`;
+      
       categorias.cafeconleche = {
         nombre: usuarioCafeconleche,
         hora_promedio: horaPromedio,
         hora_formateada: horaFormateada,
-        mensajes: usuarios[usuarioCafeconleche].mensajes
+        mensajes: usuarios[usuarioCafeconleche].mensajes,
+        media_hora_resto: mediaHorariosResto,
+        hora_formateada_resto: horaFormateadaResto
       };
     }
     
@@ -445,10 +551,25 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     if (Object.keys(longitudes_promedio).length > 0) {
       const usuarioMenosesmas = Object.entries(longitudes_promedio)
         .sort((a, b) => a[1] - b[1])[0][0];
+      
+      // Calcular la media del resto del grupo sin menosesmas
+      let totalLongitudesResto = 0;
+      let cantidadUsuariosResto = 0;
+      
+      for (const [usuario, longitud] of Object.entries(longitudes_promedio)) {
+        if (usuario !== usuarioMenosesmas) {
+          totalLongitudesResto += longitud;
+          cantidadUsuariosResto++;
+        }
+      }
+      
+      const mediaLongitudesResto = cantidadUsuariosResto > 0 ? totalLongitudesResto / cantidadUsuariosResto : 0;
+      
       categorias.menosesmas = {
         nombre: usuarioMenosesmas,
         longitud_promedio: longitudes_promedio[usuarioMenosesmas],
-        mensajes: usuarios[usuarioMenosesmas].mensajes
+        mensajes: usuarios[usuarioMenosesmas].mensajes,
+        media_longitud_resto: mediaLongitudesResto
       };
     }
     
@@ -457,11 +578,29 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       const usuarioNarcicista = Object.entries(menciones_yo_ratio)
         .sort((a, b) => b[1][1] - a[1][1])[0][0];
       const [menciones, porcentaje] = menciones_yo_ratio[usuarioNarcicista];
+      
+      // Calcular la media del resto del grupo sin el narcicista
+      let totalMencionesResto = 0;
+      let totalMensajesResto = 0;
+      
+      for (const [usuario, [mencionesUsuario, _]] of Object.entries(menciones_yo_ratio)) {
+        if (usuario !== usuarioNarcicista) {
+          totalMencionesResto += mencionesUsuario;
+          totalMensajesResto += usuarios[usuario].mensajes;
+        }
+      }
+      
+      const mediaMencionesResto = Object.keys(menciones_yo_ratio).length > 1 ? 
+        totalMencionesResto / (Object.keys(menciones_yo_ratio).length - 1) : 0;
+      const porcentajeResto = totalMensajesResto > 0 ? (totalMencionesResto / totalMensajesResto) * 100 : 0;
+      
       categorias.narcicista = {
         nombre: usuarioNarcicista,
         menciones_yo: menciones,
         porcentaje: porcentaje,
-        mensajes: usuarios[usuarioNarcicista].mensajes
+        mensajes: usuarios[usuarioNarcicista].mensajes,
+        media_menciones_resto: mediaMencionesResto,
+        media_porcentaje_resto: porcentajeResto
       };
     }
     
@@ -478,11 +617,29 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       const [usuarioChismoso] = chismososData.sort((a, b) => b[1] - a[1])[0];
       const mencionesOtros = usuarios[usuarioChismoso].menciones_otros;
       const porcentaje = (mencionesOtros / usuarios[usuarioChismoso].mensajes) * 100;
+      
+      // Calcular la media del resto del grupo sin el chismoso
+      let totalMencionesOtrosResto = 0;
+      let totalMensajesResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioChismoso && datos.mensajes > 0) {
+          totalMencionesOtrosResto += datos.menciones_otros;
+          totalMensajesResto += datos.mensajes;
+        }
+      }
+      
+      const mediaMencionesOtrosResto = Object.keys(usuarios).length > 1 ? 
+        totalMencionesOtrosResto / (Object.keys(usuarios).length - 1) : 0;
+      const porcentajeResto = totalMensajesResto > 0 ? (totalMencionesOtrosResto / totalMensajesResto) * 100 : 0;
+      
       categorias.chismoso = {
         nombre: usuarioChismoso,
         menciones_otros: mencionesOtros,
         porcentaje: porcentaje,
-        mensajes: usuarios[usuarioChismoso].mensajes
+        mensajes: usuarios[usuarioChismoso].mensajes,
+        media_menciones_otros_resto: mediaMencionesOtrosResto,
+        media_porcentaje_resto: porcentajeResto
       };
     }
     
@@ -490,10 +647,26 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     if (Object.keys(conversacionesTerminadas).length > 0) {
       const usuarioPuntofinal = Object.entries(conversacionesTerminadas)
         .sort((a, b) => b[1] - a[1])[0][0];
+      
+      // Calcular la media del resto del grupo sin puntofinal
+      let totalConversacionesTerminadasResto = 0;
+      let cantidadUsuariosResto = 0;
+      
+      for (const [usuario, terminaciones] of Object.entries(conversacionesTerminadas)) {
+        if (usuario !== usuarioPuntofinal) {
+          totalConversacionesTerminadasResto += terminaciones;
+          cantidadUsuariosResto++;
+        }
+      }
+      
+      const mediaTerminacionesResto = cantidadUsuariosResto > 0 ? 
+        totalConversacionesTerminadasResto / cantidadUsuariosResto : 0;
+      
       categorias.puntofinal = {
         nombre: usuarioPuntofinal,
         conversaciones_terminadas: conversacionesTerminadas[usuarioPuntofinal],
-        mensajes: usuarios[usuarioPuntofinal].mensajes
+        mensajes: usuarios[usuarioPuntofinal].mensajes,
+        media_conversaciones_terminadas_resto: mediaTerminacionesResto
       };
     }
     
@@ -501,10 +674,26 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     if (Object.keys(conversacionesIniciadas).length > 0) {
       const usuarioFosforo = Object.entries(conversacionesIniciadas)
         .sort((a, b) => b[1] - a[1])[0][0];
+      
+      // Calcular la media del resto del grupo sin fosforo
+      let totalConversacionesIniciadasResto = 0;
+      let cantidadUsuariosResto = 0;
+      
+      for (const [usuario, iniciaciones] of Object.entries(conversacionesIniciadas)) {
+        if (usuario !== usuarioFosforo) {
+          totalConversacionesIniciadasResto += iniciaciones;
+          cantidadUsuariosResto++;
+        }
+      }
+      
+      const mediaIniciacionesResto = cantidadUsuariosResto > 0 ? 
+        totalConversacionesIniciadasResto / cantidadUsuariosResto : 0;
+      
       categorias.fosforo = {
         nombre: usuarioFosforo,
         conversaciones_iniciadas: conversacionesIniciadas[usuarioFosforo],
-        mensajes: usuarios[usuarioFosforo].mensajes
+        mensajes: usuarios[usuarioFosforo].mensajes,
+        media_conversaciones_iniciadas_resto: mediaIniciacionesResto
       };
     }
     
@@ -521,11 +710,30 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       const [usuarioHappyflower] = usuariosConEmojis.sort((a, b) => b[1] - a[1])[0];
       const emojisTotales = usuarios[usuarioHappyflower].emojis_utilizados;
       const emojisPorMsg = emojisTotales / usuarios[usuarioHappyflower].mensajes;
+      
+      // Calcular la media del resto del grupo sin happyflower
+      let totalEmojisResto = 0;
+      let totalMensajesResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioHappyflower) {
+          totalEmojisResto += datos.emojis_utilizados;
+          totalMensajesResto += datos.mensajes;
+        }
+      }
+      
+      const mediaEmojisTotalesResto = Object.keys(usuarios).length > 1 ? 
+        totalEmojisResto / (Object.keys(usuarios).length - 1) : 0;
+      const mediaEmojisPorMensajeResto = totalMensajesResto > 0 ? 
+        totalEmojisResto / totalMensajesResto : 0;
+      
       categorias.happyflower = {
         nombre: usuarioHappyflower,
         emojis_totales: emojisTotales,
         emojis_por_mensaje: emojisPorMsg,
-        mensajes: usuarios[usuarioHappyflower].mensajes
+        mensajes: usuarios[usuarioHappyflower].mensajes,
+        media_emojis_totales_resto: mediaEmojisTotalesResto,
+        media_emojis_por_mensaje_resto: mediaEmojisPorMensajeResto
       };
     }
     
@@ -548,11 +756,30 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       if (usuarios[usuarioAmoroso].emojis_utilizados > 0) {
         porcentajeAmor = (emojisAmorTotal / usuarios[usuarioAmoroso].emojis_utilizados) * 100;
       }
+      
+      // Calcular la media del resto del grupo sin amoroso
+      let totalEmojisAmorResto = 0;
+      let totalEmojisResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioAmoroso) {
+          totalEmojisAmorResto += datos.emojis_amor;
+          totalEmojisResto += datos.emojis_utilizados;
+        }
+      }
+      
+      const mediaEmojisAmorResto = Object.keys(usuarios).length > 1 ? 
+        totalEmojisAmorResto / (Object.keys(usuarios).length - 1) : 0;
+      const mediaPorcentajeAmorResto = totalEmojisResto > 0 ? 
+        (totalEmojisAmorResto / totalEmojisResto) * 100 : 0;
+      
       categorias.amoroso = {
         nombre: usuarioAmoroso,
         emojis_amor: emojisAmorTotal,
         porcentaje_amor: porcentajeAmor,
-        mensajes: usuarios[usuarioAmoroso].mensajes
+        mensajes: usuarios[usuarioAmoroso].mensajes,
+        media_emojis_amor_resto: mediaEmojisAmorResto,
+        media_porcentaje_amor_resto: mediaPorcentajeAmorResto
       };
     }
     
@@ -567,10 +794,26 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     if (usuariosConMensajesConsecutivos.length > 0) {
       const [usuarioSicopata] = usuariosConMensajesConsecutivos.sort((a, b) => b[1] - a[1])[0];
       const maxMensajesSeguidos = usuarios[usuarioSicopata].max_mensajes_seguidos;
+      
+      // Calcular la media del resto del grupo sin sicopata
+      let totalMensajesSeguidosResto = 0;
+      let cantidadUsuariosResto = 0;
+      
+      for (const [usuario, mensajesSeguidos] of usuariosConMensajesConsecutivos) {
+        if (usuario !== usuarioSicopata) {
+          totalMensajesSeguidosResto += mensajesSeguidos;
+          cantidadUsuariosResto++;
+        }
+      }
+      
+      const mediaMensajesSeguidosResto = cantidadUsuariosResto > 0 ? 
+        totalMensajesSeguidosResto / cantidadUsuariosResto : 0;
+      
       categorias.sicopata = {
         nombre: usuarioSicopata,
         max_mensajes_seguidos: maxMensajesSeguidos,
-        mensajes: usuarios[usuarioSicopata].mensajes
+        mensajes: usuarios[usuarioSicopata].mensajes,
+        media_mensajes_seguidos_resto: mediaMensajesSeguidosResto
       };
     }
     
@@ -1008,10 +1251,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.palabras_unicas || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_palabras_unicas_resto)}</span></span>
               <span className="label">{t('app.top_profiles.professor.unique_words')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.ratio)}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_ratio_resto)}</span></span>
               <span className="label">{t('app.top_profiles.professor.unique_ratio')}</span>
             </div>
           </>
@@ -1021,6 +1266,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.palabras_por_mensaje)}</span>
+            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_palabras_por_mensaje_resto)}</span></span>
             <span className="label">{t('app.top_profiles.verbose.words_per_message')}</span>
           </div>
         );
@@ -1029,6 +1275,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.tiempo_respuesta_promedio)}</span>
+            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_tiempo_respuesta_resto)}</span></span>
             <span className="label">{t('app.top_profiles.gunslinger.response_time')}</span>
           </div>
         );
@@ -1038,10 +1285,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.mensajes_noche || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_noche_resto)}</span></span>
               <span className="label">{t('app.top_profiles.vampire.night_messages')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{catData.porcentaje !== undefined && !isNaN(catData.porcentaje) ? formatNumber(catData.porcentaje) : '0.0'}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.top_profiles.vampire.percentage')}</span>
             </div>
           </>
@@ -1051,6 +1300,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{catData.hora_formateada && catData.hora_formateada !== 'NaN:NaN' ? catData.hora_formateada : '00:00'}</span>
+            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{catData.hora_formateada_resto || '00:00'}</span></span>
             <span className="label">{t('app.top_profiles.morning.avg_time')}</span>
           </div>
         );
@@ -1059,6 +1309,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.tiempo_respuesta_promedio)}</span>
+            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_tiempo_respuesta_resto)}</span></span>
             <span className="label">{t('app.top_profiles.ghost.response_time')}</span>
           </div>
         );
@@ -1068,10 +1319,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.menciones_yo || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_menciones_resto)}</span></span>
               <span className="label">{t('app.top_profiles.narcissist.self_mentions')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.top_profiles.narcissist.percentage')}</span>
             </div>
           </>
@@ -1082,10 +1335,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.menciones_otros || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_menciones_otros_resto)}</span></span>
               <span className="label">{t('app.top_profiles.gossip.others_mentions')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.top_profiles.gossip.percentage')}</span>
             </div>
           </>
@@ -1096,10 +1351,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.emojis_totales || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_emojis_totales_resto)}</span></span>
               <span className="label">{t('app.top_profiles.emoji.total_emojis')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.emojis_por_mensaje)}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_emojis_por_mensaje_resto)}</span></span>
               <span className="label">{t('app.top_profiles.emoji.emojis_per_message')}</span>
             </div>
           </>
@@ -1110,10 +1367,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.emojis_amor || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_emojis_amor_resto)}</span></span>
               <span className="label">{t('app.top_profiles.amoroso.love_emojis')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje_amor)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_amor_resto)}%</span></span>
               <span className="label">{t('app.top_profiles.amoroso.percentage')}</span>
             </div>
           </>
@@ -1123,6 +1382,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{catData.conversaciones_terminadas || 0}</span>
+            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_conversaciones_terminadas_resto)}</span></span>
             <span className="label">{t('app.top_profiles.finisher.conversations_ended')}</span>
           </div>
         );
@@ -1131,6 +1391,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{catData.conversaciones_iniciadas || 0}</span>
+            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_conversaciones_iniciadas_resto)}</span></span>
             <span className="label">{t('app.top_profiles.initiator.conversations_started')}</span>
           </div>
         );
@@ -1139,6 +1400,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.longitud_promedio)}</span>
+            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_longitud_resto)}</span></span>
             <span className="label">{t('app.top_profiles.concise.avg_length')}</span>
           </div>
         );
@@ -1148,10 +1410,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.max_mensajes_seguidos || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_seguidos_resto)}</span></span>
               <span className="label">{t('app.top_profiles.sicopata.consecutive_messages')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{catData.max_mensajes_seguidos || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_seguidos_resto)}</span></span>
               <span className="label">{t('app.top_profiles.sicopata.record')}</span>
             </div>
           </>

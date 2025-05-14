@@ -35,6 +35,7 @@
     },
     "top_profiles": {
       "title": "Hervorgehobene Chat-Profile",
+      "group_average": "Die anderen",
       "professor": {
         "title": "Der Professor",
         "description": "Meiste einzigartige Wörter, größerer Wortschatz",

@@ -34,6 +34,7 @@
     },
     "top_profiles": {
       "title": "Perfiles Destacados del Chat",
+      "group_average": "Los otros",
       "professor": {
         "title": "El Profesor",
         "description": "Más palabras distintas, más vocabulario",
