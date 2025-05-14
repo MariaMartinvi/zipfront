@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './HumoristicAnalysis.css';
 import { useTranslation } from 'react-i18next';
 import { useTensorFlowAnalyzer } from './TensorFlowAnalyzer';
@@ -10,6 +10,19 @@ import { useTensorFlowAnalyzer } from './TensorFlowAnalyzer';
 function HumoristicAnalysis({ statistics }) {
   const { t } = useTranslation();
   const { analysis, loading, error } = useTensorFlowAnalyzer(statistics);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      const startTime = performance.now();
+      console.log('Iniciando análisis psicológico local');
+      console.log('Tamaño de estadísticas:', JSON.stringify(statistics).length, 'bytes');
+      
+      return () => {
+        const endTime = performance.now();
+        console.log(`Análisis psicológico completado en ${(endTime - startTime).toFixed(2)}ms`);
+      };
+    }
+  }, [statistics]);
 
   // Función para convertir markdown a HTML
   const markdownToHtml = (markdown) => {

@@ -1324,7 +1324,6 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
               height={80}
             />
             <YAxis 
-              label={{ value: t('app.top_profiles.gunslinger.response_time'), angle: -90, position: 'insideLeft', offset: -5 }}
               domain={['auto', 'auto']}
             />
             <Tooltip 
@@ -1467,7 +1466,6 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                 <YAxis 
                   tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
                   domain={[0, 1]}
-                  label={{ value: t('app.top_profiles.vampire.percentage'), angle: -90, position: 'insideLeft' }}
                 />
                 <Tooltip 
                   formatter={(value, name) => [`${(value * 100).toFixed(1)}%`, acortarNombre(name)]}

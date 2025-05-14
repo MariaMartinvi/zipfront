@@ -7,7 +7,78 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   min-height: 400px;
-  max-height: 500px;
+  height: auto !important;
+  position: relative;
+}
+
+/* Ajustes específicos para el gráfico de Activity by Day of the Week */
+.analysis-module > div > div:nth-child(3) {
+  min-height: 350px !important;
+}
+
+.analysis-module > div > div:nth-child(3) .recharts-responsive-container {
+  height: 300px !important;
+  min-height: 300px !important;
+}
+
+.analysis-module > div > div:nth-child(3) .recharts-wrapper {
+  height: 300px !important;
+  min-height: 300px !important;
+}
+
+/* Ocultar leyendas para gráficos específicos */
+.analysis-module > div > div:nth-child(3) .recharts-legend-wrapper,
+.analysis-module > div > div:nth-child(4) .recharts-legend-wrapper,
+.analysis-module > div > div:nth-child(5) .recharts-legend-wrapper {
+  display: none !important;
+}
+
+/* Ajustar el título para incluir "Mensajes" */
+.analysis-module > div > div:nth-child(3) h3::after,
+.analysis-module > div > div:nth-child(4) h3::after,
+.analysis-module > div > div:nth-child(5) h3::after {
+  content: " (Mensajes)";
+  font-size: 0.9em;
+  color: #666;
+  margin-left: 5px;
+}
+
+.chart-container .recharts-responsive-container {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 400px;
+  margin-bottom: 30px !important;
+}
+
+.chart-container .recharts-wrapper {
+  margin: 0 auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 400px !important;
+}
+
+.chart-container .recharts-legend-wrapper {
+  position: absolute !important;
+  width: 100% !important;
+  left: 0 !important;
+  bottom: -25px !important;
+  padding: 0 !important;
+}
+
+.chart-container .recharts-default-legend {
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+}
+
+.chart-container .recharts-legend-item {
+  display: inline-block !important;
+  margin-right: 10px !important;
+  margin-bottom: 0 !important;
+}
+
+.chart-container .recharts-surface {
+  overflow: visible !important;
 }
 
 .chart-container h3 {
@@ -110,12 +181,291 @@
     margin: 20px 0;
   }
   
+  .analysis-module > div > div:nth-child(3) {
+    min-height: 300px !important;
+  }
+  
+  .analysis-module > div > div:nth-child(3) .recharts-responsive-container {
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+  
+  .analysis-module > div > div:nth-child(3) .recharts-wrapper {
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+  
+  .chart-container .recharts-legend-wrapper {
+    bottom: -20px !important;
+  }
+  
   .chart-container h3 {
     font-size: 16px;
   }
   
-  /* Ajustes específicos para móvil */
-  .recharts-label-list text {
+  .chart-container .recharts-label-list text {
+    font-size: 9px;
+  }
+}
+
+/* Estilos específicos para el gráfico de tiempo de respuesta */
+.tiempo-respuesta-chart {
+  margin-bottom: 60px;
+}
+
+/* Estilos específicos para el séptimo gráfico */
+.analysis-module > div > div:nth-child(7) {
+  margin-bottom: 60px;
+}
+
+.analysis-module > div > div:nth-child(7) .recharts-legend-wrapper {
+  bottom: 0 !important;
+  position: absolute !important;
+  width: 100% !important;
+  left: 0 !important;
+  padding-top: 5px !important;
+}
+
+/* Estilos para el gráfico de tendencia de interés */
+.chart-container:has(h3:contains('Interest Trend')) {
+  margin-bottom: 100px !important;
+}
+
+.chart-container:has(h3:contains('Interest Trend')) .recharts-wrapper {
+  margin-bottom: 40px !important;
+}
+
+.chart-container:has(h3:contains('Interest Trend')) .recharts-legend-wrapper {
+  bottom: -40px !important;
+}
+
+.chart-container:has(h3:contains('Interest Trend')) .recharts-surface {
+  overflow: visible !important;
+  margin-bottom: 20px !important;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+  .chart-container:has(h3:contains('Interest Trend')) {
+    padding: 15px;
+    margin: 20px 0;
+  }
+  
+  .chart-container:has(h3:contains('Interest Trend')) h3 {
+    font-size: 16px;
+  }
+  
+  .chart-container:has(h3:contains('Interest Trend')) .recharts-label-list text {
+    font-size: 9px;
+  }
+}
+
+/* Estilos específicos para el gráfico de Activity by Day of the Week */
+.chart-container:has(h3:contains('Activity by Day of the Week')) {
+  margin-bottom: 60px;
+}
+
+.chart-container:has(h3:contains('Activity by Day of the Week')) .recharts-responsive-container {
+  margin-bottom: 30px !important;
+}
+
+.chart-container:has(h3:contains('Activity by Day of the Week')) .recharts-legend-wrapper {
+  bottom: -25px !important;
+  position: absolute !important;
+  width: 100% !important;
+  left: 0 !important;
+  padding: 0 !important;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+  .chart-container:has(h3:contains('Activity by Day of the Week')) {
+    padding: 15px;
+    margin: 20px 0;
+  }
+  
+  .chart-container:has(h3:contains('Activity by Day of the Week')) .recharts-legend-wrapper {
+    bottom: -20px !important;
+  }
+  
+  .chart-container:has(h3:contains('Activity by Day of the Week')) h3 {
+    font-size: 16px;
+  }
+  
+  .chart-container:has(h3:contains('Activity by Day of the Week')) .recharts-label-list text {
+    font-size: 9px;
+  }
+}
+
+/* Estilos específicos para el cuarto gráfico */
+.analysis-module > div > div:nth-child(4) {
+  margin-bottom: 60px;
+}
+
+.analysis-module > div > div:nth-child(4) .recharts-responsive-container {
+  margin-bottom: 30px !important;
+}
+
+.analysis-module > div > div:nth-child(4) .recharts-legend-wrapper {
+  bottom: -25px !important;
+  position: absolute !important;
+  width: 100% !important;
+  left: 0 !important;
+  padding: 0 !important;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+  .chart-container {
+    padding: 15px;
+    margin: 20px 0;
+  }
+  
+  .chart-container .recharts-legend-wrapper {
+    bottom: -20px !important;
+  }
+  
+  .analysis-module > div > div:nth-child(4) .recharts-legend-wrapper {
+    bottom: -20px !important;
+  }
+  
+  .chart-container h3 {
+    font-size: 16px;
+  }
+  
+  .chart-container .recharts-label-list text {
+    font-size: 9px;
+  }
+}
+
+/* Ajustes específicos para el gráfico de Activity by Hour of the Day */
+.analysis-module > div > div:nth-child(4) {
+  min-height: 350px !important;
+}
+
+.analysis-module > div > div:nth-child(4) .recharts-responsive-container {
+  height: 300px !important;
+  min-height: 300px !important;
+}
+
+.analysis-module > div > div:nth-child(4) .recharts-wrapper {
+  height: 300px !important;
+  min-height: 300px !important;
+}
+
+/* Ocultar leyendas para gráficos específicos */
+.analysis-module > div > div:nth-child(3) .recharts-legend-wrapper,
+.analysis-module > div > div:nth-child(4) .recharts-legend-wrapper,
+.analysis-module > div > div:nth-child(5) .recharts-legend-wrapper {
+  display: none !important;
+}
+
+/* Ajustar el título para incluir "Mensajes" */
+.analysis-module > div > div:nth-child(3) h3::after,
+.analysis-module > div > div:nth-child(4) h3::after,
+.analysis-module > div > div:nth-child(5) h3::after {
+  content: " (Mensajes)";
+  font-size: 0.9em;
+  color: #666;
+  margin-left: 5px;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+  .chart-container {
+    padding: 15px;
+    margin: 20px 0;
+  }
+  
+  .analysis-module > div > div:nth-child(4) {
+    min-height: 300px !important;
+  }
+  
+  .analysis-module > div > div:nth-child(4) .recharts-responsive-container {
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+  
+  .analysis-module > div > div:nth-child(4) .recharts-wrapper {
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+  
+  .chart-container .recharts-legend-wrapper {
+    bottom: -20px !important;
+  }
+  
+  .chart-container h3 {
+    font-size: 16px;
+  }
+  
+  .chart-container .recharts-label-list text {
+    font-size: 9px;
+  }
+}
+
+/* Ajustes específicos para el gráfico de Top 5 Most Active Users */
+.analysis-module > div > div:nth-child(5) {
+  min-height: 350px !important;
+}
+
+.analysis-module > div > div:nth-child(5) .recharts-responsive-container {
+  height: 300px !important;
+  min-height: 300px !important;
+}
+
+.analysis-module > div > div:nth-child(5) .recharts-wrapper {
+  height: 300px !important;
+  min-height: 300px !important;
+}
+
+/* Ocultar leyendas para gráficos específicos */
+.analysis-module > div > div:nth-child(3) .recharts-legend-wrapper,
+.analysis-module > div > div:nth-child(4) .recharts-legend-wrapper,
+.analysis-module > div > div:nth-child(5) .recharts-legend-wrapper {
+  display: none !important;
+}
+
+/* Ajustar el título para incluir "Mensajes" */
+.analysis-module > div > div:nth-child(3) h3::after,
+.analysis-module > div > div:nth-child(4) h3::after,
+.analysis-module > div > div:nth-child(5) h3::after {
+  content: " (Mensajes)";
+  font-size: 0.9em;
+  color: #666;
+  margin-left: 5px;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+  .chart-container {
+    padding: 15px;
+    margin: 20px 0;
+  }
+  
+  .analysis-module > div > div:nth-child(5) {
+    min-height: 300px !important;
+  }
+  
+  .analysis-module > div > div:nth-child(5) .recharts-responsive-container {
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+  
+  .analysis-module > div > div:nth-child(5) .recharts-wrapper {
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+  
+  .chart-container .recharts-legend-wrapper {
+    bottom: -20px !important;
+  }
+  
+  .chart-container h3 {
+    font-size: 16px;
+  }
+  
+  .chart-container .recharts-label-list text {
     font-size: 9px;
   }
 } 

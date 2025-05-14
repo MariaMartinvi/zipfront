@@ -8,11 +8,13 @@ import HumoristicAnalysis from './HumoristicAnalysis'; // Nuevo componente
 
 // Incorporar directamente las funciones necesarias de chatAnalyzer para evitar el error de importación
 const analizarChat = (contenido, formatoForzado = null) => {
+  const startTime = performance.now();
   console.log("Analizando chat directamente desde ChatAnalysisComponent...");
   
   try {
     // Dividir el contenido en líneas
     const lineas = contenido.split(/\r?\n/);
+    console.log(`Tiempo de división de líneas: ${performance.now() - startTime}ms`);
     
     if (!lineas || lineas.length === 0) {
       console.log("Archivo vacío");
@@ -22,7 +24,9 @@ const analizarChat = (contenido, formatoForzado = null) => {
     console.log(`Archivo leído correctamente. Total de líneas: ${lineas.length}`);
     
     // Determinar formato usando el detector
+    const formatoStartTime = performance.now();
     const formato = detectarFormatoArchivo(contenido, formatoForzado, true);
+    console.log(`Tiempo de detección de formato: ${performance.now() - formatoStartTime}ms`);
     console.log(`\nFormato final a utilizar: ${formato}`);
     
     // Si el formato es desconocido, devolver error
@@ -31,13 +35,16 @@ const analizarChat = (contenido, formatoForzado = null) => {
     }
     
     // Analizar mensajes (versión simplificada para evitar dependencias)
+    const mensajesStartTime = performance.now();
     const mensajes = analizarMensajesSimplificado(lineas, formato);
+    console.log(`Tiempo de análisis de mensajes: ${performance.now() - mensajesStartTime}ms`);
     
     if (mensajes.length === 0) {
       return { error: "No se encontraron mensajes válidos", success: false };
     }
     
     // Calcular estadísticas básicas
+    const statsStartTime = performance.now();
     const participantes = new Set();
     const sender_counts = {};
     const message_examples = {};
@@ -63,6 +70,8 @@ const analizarChat = (contenido, formatoForzado = null) => {
       }
     });
     
+    console.log(`Tiempo de cálculo de estadísticas: ${performance.now() - statsStartTime}ms`);
+    
     // Preparar datos de estadísticas
     const data = {
       total_messages: mensajes.length,
@@ -73,6 +82,7 @@ const analizarChat = (contenido, formatoForzado = null) => {
       success: true
     };
     
+    console.log(`Tiempo total de análisis: ${performance.now() - startTime}ms`);
     console.log("Análisis completado, estadísticas generadas:", data);
     return data;
   } catch (error) {
@@ -189,6 +199,7 @@ function ChatAnalysisComponent({ operationId, chatData }) {
   const resultsContainerRef = useRef(null);
 
   useEffect(() => {
+    const startTime = performance.now();
     // Si tenemos chatData directamente, usarlo sin hacer llamada al backend
     if (chatData) {
       console.log("ChatData proporcionado directamente, analizando...");
@@ -199,6 +210,7 @@ function ChatAnalysisComponent({ operationId, chatData }) {
       if (stats && stats.success) {
         setChatStatistics(stats);
       }
+      console.log(`Tiempo total de procesamiento inicial: ${performance.now() - startTime}ms`);
       return;
     }
     
@@ -426,7 +438,7 @@ function ChatAnalysisComponent({ operationId, chatData }) {
       {/* Análisis Top - Resultados estadísticos */}
       {chatContent && <AnalisisTop chatContent={chatContent} />}
       
-      {/* Nuevo componente de análisis psicológico local */}
+      {/* Análisis psicológico local - Comentado temporalmente para pruebas de rendimiento
       {chatStatistics ? (
         <div id="psychological-analysis">
           <HumoristicAnalysis statistics={chatStatistics} />
@@ -438,9 +450,10 @@ function ChatAnalysisComponent({ operationId, chatData }) {
           </div>
         )
       )}
+      */}
       
       {/* Debug info - Solo visible en desarrollo */}
-      {process.env.NODE_ENV === 'development' && (
+      {/*
         <div className="debug-info" style={{margin: '20px 0', padding: '10px', background: '#f8f9fa', borderRadius: '5px', fontSize: '12px'}}>
           <h4>Debug Info</h4>
           <p>chatContent: {chatContent ? '✅ Disponible' : '❌ No disponible'}</p>
@@ -452,8 +465,16 @@ function ChatAnalysisComponent({ operationId, chatData }) {
               <pre>{JSON.stringify(chatStatistics, null, 2)}</pre>
             </details>
           )}
+          <details>
+            <summary>Logs de rendimiento</summary>
+            <pre>
+              {`Tiempo de carga inicial: ${performance.now().toFixed(2)}ms
+              Tamaño de chatContent: ${chatContent ? JSON.stringify(chatContent).length : 0} bytes
+              Tamaño de chatStatistics: ${chatStatistics ? JSON.stringify(chatStatistics).length : 0} bytes`}
+            </pre>
+          </details>
         </div>
-      )}
+      */}
     </div>
   );
 }

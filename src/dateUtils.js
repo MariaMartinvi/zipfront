@@ -11,8 +11,6 @@
  */
 export const parseDateTime = (fechaStr, horaStr, formato) => {
   try {
-    console.log(`Analizando fecha: ${fechaStr}, hora: ${horaStr}, formato: ${formato}`);
-    
     // Formatear la entrada para crear un objeto Date válido
     const partesFecha = fechaStr.split('/');
     
@@ -21,12 +19,10 @@ export const parseDateTime = (fechaStr, horaStr, formato) => {
       return new Date(); // Fecha inválida, devolver fecha actual
     }
     
-    // Extraer componentes como string primero para debug
+    // Extraer componentes
     const parte1 = partesFecha[0];
     const parte2 = partesFecha[1];
     const parte3 = partesFecha[2];
-    
-    console.log(`Partes de fecha: ${parte1}/${parte2}/${parte3}`);
     
     // Convertir a números
     let diaOrMes1 = parseInt(parte1, 10);
@@ -49,43 +45,32 @@ export const parseDateTime = (fechaStr, horaStr, formato) => {
     }
     
     const ahora = new Date();
-    console.log(`Fecha actual: ${ahora.toISOString()}`);
     
     // Casos no ambiguos primero
     if (diaOrMes1 > 12 && diaOrMes2 <= 12) {
       // Definitivamente DD/MM/YYYY
-      console.log(`Formato no ambiguo DD/MM: ${diaOrMes1}/${diaOrMes2}/${anio}`);
       return new Date(anio, diaOrMes2 - 1, diaOrMes1, hora, minutos, segundos);
     } 
     else if (diaOrMes1 <= 12 && diaOrMes2 > 12) {
       // Definitivamente MM/DD/YYYY
-      console.log(`Formato no ambiguo MM/DD: ${diaOrMes1}/${diaOrMes2}/${anio}`);
       return new Date(anio, diaOrMes1 - 1, diaOrMes2, hora, minutos, segundos);
     }
     
     // Casos ambiguos - ambos valores pueden ser día o mes
-    console.log(`Formato ambiguo: ${diaOrMes1}/${diaOrMes2}/${anio}`);
-    
     // Probar formato DD/MM/YYYY
     const fechaDDMM = new Date(anio, diaOrMes2 - 1, diaOrMes1, hora, minutos, segundos);
-    console.log(`Interpretación DD/MM: ${fechaDDMM.toISOString()}`);
     
     // Probar formato MM/DD/YYYY
     const fechaMMDD = new Date(anio, diaOrMes1 - 1, diaOrMes2, hora, minutos, segundos);
-    console.log(`Interpretación MM/DD: ${fechaMMDD.toISOString()}`);
     
     // Verificar cuál está en el futuro
     const esDDMMFuturo = fechaDDMM > ahora;
     const esMMDDFuturo = fechaMMDD > ahora;
     
-    console.log(`¿DD/MM en futuro? ${esDDMMFuturo}, ¿MM/DD en futuro? ${esMMDDFuturo}`);
-    
     // Si una fecha está en el futuro y la otra no, elegir la que no está en el futuro
     if (esDDMMFuturo && !esMMDDFuturo) {
-      console.log(`Eligiendo MM/DD porque DD/MM está en futuro`);
       return fechaMMDD;
     } else if (!esDDMMFuturo && esMMDDFuturo) {
-      console.log(`Eligiendo DD/MM porque MM/DD está en futuro`);
       return fechaDDMM;
     }
     
@@ -93,13 +78,7 @@ export const parseDateTime = (fechaStr, horaStr, formato) => {
     const diffDDMM = Math.abs(fechaDDMM.getTime() - ahora.getTime());
     const diffMMDD = Math.abs(fechaMMDD.getTime() - ahora.getTime());
     
-    if (diffDDMM <= diffMMDD) {
-      console.log(`Eligiendo DD/MM por proximidad (diff=${diffDDMM})`);
-      return fechaDDMM;
-    } else {
-      console.log(`Eligiendo MM/DD por proximidad (diff=${diffMMDD})`);
-      return fechaMMDD;
-    }
+    return diffDDMM <= diffMMDD ? fechaDDMM : fechaMMDD;
   } catch (error) {
     console.error(`Error parseando fecha/hora (${fechaStr} ${horaStr}): ${error.message}`);
     return new Date(); // En caso de error, devolver fecha actual

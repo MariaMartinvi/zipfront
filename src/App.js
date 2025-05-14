@@ -4,7 +4,7 @@ import './App.css';
 import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import Chatgptresultados from './Chatgptresultados';
-import ChatAnalysisComponent from './ChatAnalysisComponent';
+// import ChatAnalysisComponent from './ChatAnalysisComponent';
 import WhatsappInstructions from './WhatsappInstructions';
 import AnalisisPrimerChat from './Analisis_primer_chat';
 import AnalisisTop from './Analisis_top';
@@ -1572,9 +1572,9 @@ const tryDeleteFiles = async (operationId) => {
                               <div className="analysis-module">
                                 <AnalisisTop chatData={chatData} />
                               </div>
-                              <div className="analysis-module">
+                              {/* <div className="analysis-module">
                                 <ChatAnalysisComponent chatData={chatData} />
-                              </div>
+                              </div> */}
                             </div>
                           </>
                         )}
