@@ -107,7 +107,11 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
         menciones_otros: 0,
         emojis_utilizados: 0,
         emojis_amor: 0,
-        max_mensajes_seguidos: 0
+        max_mensajes_seguidos: 0,
+        mensajes_risa: 0,       // Para el cómico: mensajes que generan risas
+        mensajes_agradece: 0,   // Para el agradecido: mensajes de agradecimiento
+        mensajes_disculpa: 0,   // Para el disculpón: mensajes de disculpa
+        mensajes_pregunta: 0    // Para el curioso: mensajes con preguntas
       };
     });
     
@@ -268,6 +272,42 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       } catch (e) {
         console.error("Error procesando emojis:", e);
       }
+      
+      // Detectar mensajes con preguntas (Para la categoría "curioso")
+      if (texto.includes('?') || 
+          /\b(qu[eéè]|c[oó]mo|cu[aá]ndo|d[oó]nde|por qu[eé]|qui[eé]n|cu[aá]l)\b/i.test(texto.toLowerCase())) {
+        usuarios[usuario].mensajes_pregunta++;
+      }
+      
+      // Detectar mensajes de agradecimiento (Para la categoría "agradecido")
+      if (/\b(gracias|agradec|agradezco|agradecid|thank|thx)\b/i.test(texto.toLowerCase()) || 
+          texto.includes('🙏')) {
+        usuarios[usuario].mensajes_agradece++;
+      }
+      
+      // Detectar mensajes de disculpa (Para la categoría "disculpón")
+      if (/\b(perd[oó]n|disculpa|lo siento|sorry|my bad|me equivoqu[eé])\b/i.test(texto.toLowerCase())) {
+        usuarios[usuario].mensajes_disculpa++;
+      }
+      
+      // Detectar si el mensaje anterior fue una risa (Para la categoría "cómico")
+      if (i > 0) {
+        const mensajeAnterior = mensajes[i-1];
+        const usuarioAnterior = mensajeAnterior.nombre;
+        const textoAnterior = mensajeAnterior.mensaje || '';
+        
+        // Si el mensaje actual contiene risas
+        if (/\b(jaja|jeje|jiji|haha|lol|lmao)\b/i.test(texto.toLowerCase()) || 
+            texto.includes('😂') || texto.includes('🤣') || texto.includes('😆') || 
+            texto.includes('😄') || texto.includes('😅')) {
+          
+          // Atribuir la "capacidad de hacer reír" al usuario del mensaje anterior
+          // (Solo si son usuarios diferentes para evitar contar autorisas)
+          if (usuario !== usuarioAnterior) {
+            usuarios[usuarioAnterior].mensajes_risa++;
+          }
+        }
+      }
     }
     
     // Calcular estadísticas agregadas
@@ -293,7 +333,11 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       chismoso: { nombre: '--', menciones_otros: 0, porcentaje: 0, mensajes: 0 },
       happyflower: { nombre: '--', emojis_totales: 0, emojis_por_mensaje: 0, mensajes: 0 },
       amoroso: { nombre: '--', emojis_amor: 0, porcentaje_amor: 0, mensajes: 0 },
-      sicopata: { nombre: '--', max_mensajes_seguidos: 0, mensajes: 0 }
+      sicopata: { nombre: '--', max_mensajes_seguidos: 0, mensajes: 0 },
+      comico: { nombre: '--', mensajes_risa: 0, porcentaje: 0, mensajes: 0 },
+      agradecido: { nombre: '--', mensajes_agradece: 0, porcentaje: 0, mensajes: 0 },
+      disculpon: { nombre: '--', mensajes_disculpa: 0, porcentaje: 0, mensajes: 0 },
+      curioso: { nombre: '--', mensajes_pregunta: 0, porcentaje: 0, mensajes: 0 }
     };
     
     // Media estadística
@@ -817,6 +861,166 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       };
     }
     
+    // Cómico (genera más risas)
+    const usuariosConRisas = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0 && datos.mensajes_risa > 0) {
+        const porcentaje = (datos.mensajes_risa / datos.mensajes) * 100;
+        usuariosConRisas.push([usuario, datos.mensajes_risa, porcentaje]);
+      }
+    }
+    
+    if (usuariosConRisas.length > 0) {
+      const [usuarioComico] = usuariosConRisas.sort((a, b) => b[1] - a[1])[0];
+      const mensajesRisa = usuarios[usuarioComico].mensajes_risa;
+      const porcentaje = (mensajesRisa / usuarios[usuarioComico].mensajes) * 100;
+      
+      // Calcular la media del resto del grupo sin el cómico
+      let totalMensajesRisaResto = 0;
+      let totalMensajesResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioComico) {
+          totalMensajesRisaResto += datos.mensajes_risa;
+          totalMensajesResto += datos.mensajes;
+        }
+      }
+      
+      const mediaMensajesRisaResto = Object.keys(usuarios).length > 1 ? 
+        totalMensajesRisaResto / (Object.keys(usuarios).length - 1) : 0;
+      const mediaPorcentajeResto = totalMensajesResto > 0 ? 
+        (totalMensajesRisaResto / totalMensajesResto) * 100 : 0;
+      
+      categorias.comico = {
+        nombre: usuarioComico,
+        mensajes_risa: mensajesRisa,
+        porcentaje: porcentaje,
+        mensajes: usuarios[usuarioComico].mensajes,
+        media_mensajes_risa_resto: mediaMensajesRisaResto,
+        media_porcentaje_resto: mediaPorcentajeResto
+      };
+    }
+    
+    // Agradecido (da más las gracias)
+    const usuariosConAgradecimiento = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0 && datos.mensajes_agradece > 0) {
+        const porcentaje = (datos.mensajes_agradece / datos.mensajes) * 100;
+        usuariosConAgradecimiento.push([usuario, datos.mensajes_agradece, porcentaje]);
+      }
+    }
+    
+    if (usuariosConAgradecimiento.length > 0) {
+      const [usuarioAgradecido] = usuariosConAgradecimiento.sort((a, b) => b[1] - a[1])[0];
+      const mensajesAgradece = usuarios[usuarioAgradecido].mensajes_agradece;
+      const porcentaje = (mensajesAgradece / usuarios[usuarioAgradecido].mensajes) * 100;
+      
+      // Calcular la media del resto del grupo sin el agradecido
+      let totalMensajesAgradecimientoResto = 0;
+      let totalMensajesResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioAgradecido) {
+          totalMensajesAgradecimientoResto += datos.mensajes_agradece;
+          totalMensajesResto += datos.mensajes;
+        }
+      }
+      
+      const mediaMensajesAgradecimientoResto = Object.keys(usuarios).length > 1 ? 
+        totalMensajesAgradecimientoResto / (Object.keys(usuarios).length - 1) : 0;
+      const mediaPorcentajeResto = totalMensajesResto > 0 ? 
+        (totalMensajesAgradecimientoResto / totalMensajesResto) * 100 : 0;
+      
+      categorias.agradecido = {
+        nombre: usuarioAgradecido,
+        mensajes_agradece: mensajesAgradece,
+        porcentaje: porcentaje,
+        mensajes: usuarios[usuarioAgradecido].mensajes,
+        media_mensajes_agradecimiento_resto: mediaMensajesAgradecimientoResto,
+        media_porcentaje_resto: mediaPorcentajeResto
+      };
+    }
+    
+    // Disculpón (pide más perdón)
+    const usuariosConDisculpas = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0 && datos.mensajes_disculpa > 0) {
+        const porcentaje = (datos.mensajes_disculpa / datos.mensajes) * 100;
+        usuariosConDisculpas.push([usuario, datos.mensajes_disculpa, porcentaje]);
+      }
+    }
+    
+    if (usuariosConDisculpas.length > 0) {
+      const [usuarioDisculpon] = usuariosConDisculpas.sort((a, b) => b[1] - a[1])[0];
+      const mensajesDisculpa = usuarios[usuarioDisculpon].mensajes_disculpa;
+      const porcentaje = (mensajesDisculpa / usuarios[usuarioDisculpon].mensajes) * 100;
+      
+      // Calcular la media del resto del grupo sin el disculpón
+      let totalMensajesDisculpaResto = 0;
+      let totalMensajesResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioDisculpon) {
+          totalMensajesDisculpaResto += datos.mensajes_disculpa;
+          totalMensajesResto += datos.mensajes;
+        }
+      }
+      
+      const mediaMensajesDisculpaResto = Object.keys(usuarios).length > 1 ? 
+        totalMensajesDisculpaResto / (Object.keys(usuarios).length - 1) : 0;
+      const mediaPorcentajeResto = totalMensajesResto > 0 ? 
+        (totalMensajesDisculpaResto / totalMensajesResto) * 100 : 0;
+      
+      categorias.disculpon = {
+        nombre: usuarioDisculpon,
+        mensajes_disculpa: mensajesDisculpa,
+        porcentaje: porcentaje,
+        mensajes: usuarios[usuarioDisculpon].mensajes,
+        media_mensajes_disculpa_resto: mediaMensajesDisculpaResto,
+        media_porcentaje_resto: mediaPorcentajeResto
+      };
+    }
+    
+    // Curioso (hace más preguntas)
+    const usuariosConPreguntas = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0 && datos.mensajes_pregunta > 0) {
+        const porcentaje = (datos.mensajes_pregunta / datos.mensajes) * 100;
+        usuariosConPreguntas.push([usuario, datos.mensajes_pregunta, porcentaje]);
+      }
+    }
+    
+    if (usuariosConPreguntas.length > 0) {
+      const [usuarioCurioso] = usuariosConPreguntas.sort((a, b) => b[1] - a[1])[0];
+      const mensajesPregunta = usuarios[usuarioCurioso].mensajes_pregunta;
+      const porcentaje = (mensajesPregunta / usuarios[usuarioCurioso].mensajes) * 100;
+      
+      // Calcular la media del resto del grupo sin el curioso
+      let totalMensajesPreguntaResto = 0;
+      let totalMensajesResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioCurioso) {
+          totalMensajesPreguntaResto += datos.mensajes_pregunta;
+          totalMensajesResto += datos.mensajes;
+        }
+      }
+      
+      const mediaMensajesPreguntaResto = Object.keys(usuarios).length > 1 ? 
+        totalMensajesPreguntaResto / (Object.keys(usuarios).length - 1) : 0;
+      const mediaPorcentajeResto = totalMensajesResto > 0 ? 
+        (totalMensajesPreguntaResto / totalMensajesResto) * 100 : 0;
+      
+      categorias.curioso = {
+        nombre: usuarioCurioso,
+        mensajes_pregunta: mensajesPregunta,
+        porcentaje: porcentaje,
+        mensajes: usuarios[usuarioCurioso].mensajes,
+        media_mensajes_pregunta_resto: mediaMensajesPreguntaResto,
+        media_porcentaje_resto: mediaPorcentajeResto
+      };
+    }
+    
     // Convertir palabras_unicas de Set a contador para poder serializar
     for (const usuario of Object.values(usuarios)) {
       if (usuario.palabras_unicas instanceof Set) {
@@ -1016,6 +1220,26 @@ const AnalisisTop = ({ operationId, chatData }) => {
       icono: '🔪', 
       titulo: () => t('app.top_profiles.sicopata.title'), 
       descripcion: () => t('app.top_profiles.sicopata.description') 
+    },
+    'comico': { 
+      icono: '🤡', 
+      titulo: () => 'El cómico', 
+      descripcion: () => 'Tiene el don de hacer reír a los demás' 
+    },
+    'agradecido': { 
+      icono: '🙏', 
+      titulo: () => 'El agradecido', 
+      descripcion: () => 'Siempre da las gracias por todo' 
+    },
+    'disculpon': { 
+      icono: '🙇', 
+      titulo: () => 'El disculpón', 
+      descripcion: () => 'Pide perdón más que nadie' 
+    },
+    'curioso': { 
+      icono: '🧐', 
+      titulo: () => 'El curioso', 
+      descripcion: () => 'Siempre haciendo preguntas' 
     }
   };
 
@@ -1081,7 +1305,8 @@ const AnalisisTop = ({ operationId, chatData }) => {
       const categoriasRequeridas = [
         'profesor', 'rollero', 'pistolero', 'vampiro', 'cafeconleche',
         'dejaenvisto', 'narcicista', 'chismoso', 'happyflower',
-        'puntofinal', 'fosforo', 'menosesmas', 'amoroso', 'sicopata'
+        'puntofinal', 'fosforo', 'menosesmas', 'amoroso', 'sicopata',
+        'comico', 'agradecido', 'disculpon', 'curioso'
       ];
       
       return categoriasRequeridas.every(categoria => 
@@ -1417,6 +1642,70 @@ const AnalisisTop = ({ operationId, chatData }) => {
               <span className="valor">{catData.max_mensajes_seguidos || 0}</span>
               <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_seguidos_resto)}</span></span>
               <span className="label">{t('app.top_profiles.sicopata.record')}</span>
+            </div>
+          </>
+        );
+        break;
+      case 'comico':
+        detalleEspecifico = (
+          <>
+            <div className="estadistica">
+              <span className="valor">{catData.mensajes_risa || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_risa_resto)}</span></span>
+              <span className="label">Mensajes que provocan risa</span>
+            </div>
+            <div className="estadistica">
+              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="label">% de mensajes que hacen reír</span>
+            </div>
+          </>
+        );
+        break;
+      case 'agradecido':
+        detalleEspecifico = (
+          <>
+            <div className="estadistica">
+              <span className="valor">{catData.mensajes_agradece || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_agradecimiento_resto)}</span></span>
+              <span className="label">Veces que da las gracias</span>
+            </div>
+            <div className="estadistica">
+              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="label">% de mensajes con agradecimientos</span>
+            </div>
+          </>
+        );
+        break;
+      case 'disculpon':
+        detalleEspecifico = (
+          <>
+            <div className="estadistica">
+              <span className="valor">{catData.mensajes_disculpa || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_disculpa_resto)}</span></span>
+              <span className="label">Veces que pide perdón</span>
+            </div>
+            <div className="estadistica">
+              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="label">% de mensajes con disculpas</span>
+            </div>
+          </>
+        );
+        break;
+      case 'curioso':
+        detalleEspecifico = (
+          <>
+            <div className="estadistica">
+              <span className="valor">{catData.mensajes_pregunta || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_pregunta_resto)}</span></span>
+              <span className="label">Preguntas realizadas</span>
+            </div>
+            <div className="estadistica">
+              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="label">% de mensajes con preguntas</span>
             </div>
           </>
         );
