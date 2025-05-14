@@ -894,9 +894,26 @@ function App() {
 
   // Función para el manejo de extracción de ZIP
   const handleZipExtraction = (data) => {
-    if (data.operation_id) {
-      setOperationId(data.operation_id);
+    if (data && data.chat) {
+      console.log("Chat extraído con éxito. Preparando para análisis...");
+      // Guardar los datos del chat para que estén disponibles para los componentes
+      setChatData(data.chat);
+      // También guardar en localStorage para persistencia entre refrescos
+      try {
+        localStorage.setItem('whatsapp_analyzer_chat_data', data.chat);
+        localStorage.setItem('whatsapp_analyzer_has_chat_data', 'true');
+      } catch (error) {
+        console.error("Error al guardar chatData en localStorage:", error);
+      }
+      
+      // Activar la visualización del análisis
       setShowAnalysis(true);
+      
+      // Proceder con el análisis AI
+      fetchMistralResponse();
+    } else {
+      console.error("Error: No se pudo extraer el chat del archivo");
+      setError("No se pudo extraer el chat del archivo. Verifica que sea un archivo ZIP válido de WhatsApp.");
     }
   };
 
@@ -1171,6 +1188,8 @@ const tryDeleteFiles = async (operationId) => {
     const savedAnalysisComplete = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
     const hadMistralError = localStorage.getItem('whatsapp_analyzer_mistral_error') === 'true';
     const wasRefreshed = localStorage.getItem('whatsapp_analyzer_page_refreshed') === 'true';
+    const savedChatData = localStorage.getItem('whatsapp_analyzer_chat_data');
+    const hasChatData = localStorage.getItem('whatsapp_analyzer_has_chat_data') === 'true';
     
     // Si hay un operationId guardado, hacer scroll automático hacia arriba después de un refresh
     if (savedOperationId) {
@@ -1185,7 +1204,7 @@ const tryDeleteFiles = async (operationId) => {
       
       // Mostrar confirmación antes de borrar
       setTimeout(() => {
-        if (window.confirm(t('app.refresh_confirmation.message'))) {
+        if (window.confirm("La página se ha recargado y hay un análisis previo guardado. Si continúas, se perderán todos los datos del análisis actual (tanto estadístico como psicológico). ¿Deseas continuar?")) {
           // Si confirma, limpiar todos los datos guardados
           localStorage.removeItem('whatsapp_analyzer_operation_id');
           localStorage.removeItem('whatsapp_analyzer_loading');
@@ -1194,63 +1213,48 @@ const tryDeleteFiles = async (operationId) => {
           localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
           localStorage.removeItem('whatsapp_analyzer_analysis_complete');
           localStorage.removeItem('whatsapp_analyzer_mistral_error');
+          localStorage.removeItem('whatsapp_analyzer_chat_data');
+          localStorage.removeItem('whatsapp_analyzer_has_chat_data');
           
           // Recargar nuevamente para actualizar la interfaz
           window.location.reload();
-        } else {
-          // Si no confirma, mantener los datos pero quitar la marca de refrescado
-          localStorage.removeItem('whatsapp_analyzer_page_refreshed');
         }
-      }, 500);
+      }, 100);
     }
     
-    // Limpiar explícitamente la marca de refrescado si no es un análisis completo
-    if (!savedAnalysisComplete) {
-      localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-    }
-    
+    // Restaurar el estado desde localStorage
     if (savedOperationId) {
-      console.log('Recuperando sesión guardada:', savedOperationId);
       setOperationId(savedOperationId);
-      setShowAnalysis(savedShowAnalysis || false);
       
-      // Si había una respuesta de ChatGPT guardada, recuperarla
+      // Restaurar datos de análisis
       if (savedChatGptResponse) {
         setChatGptResponse(savedChatGptResponse);
         setShowChatGptResponse(true);
       }
       
-      // Si estaba en proceso de carga al refrescar, continuar donde estaba
-      if ((savedIsLoading || savedIsFetchingMistral) && !savedAnalysisComplete) {
-        // Importante: mostrar los spinners de carga correctamente
-        if (savedIsLoading) {
-          setIsLoading(true);
-          
-          // Establecer un temporizador para quitar el estado de carga si tarda demasiado
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 15000); // 15 segundos máximo de espera
-        }
-        
-        // No reiniciar el estado de carga, sino continuar donde se quedó
-        setTimeout(() => {
-          // Reiniciar la carga del análisis para continuar el procesamiento
-          if (savedOperationId) {
-            console.log('Continuando el análisis después de la recarga de la página');
-            
-            // Si hubo un error con Mistral, forzar un nuevo intento
-            if (hadMistralError) {
-              console.log('Detectado error previo con Mistral, forzando nuevo intento');
-              localStorage.removeItem('whatsapp_analyzer_mistral_error');
-              localStorage.setItem('whatsapp_analyzer_force_fetch', 'true');
-            }
-            
-            // Continuar con el polling para Mistral si estaba en proceso
-            if ((savedIsFetchingMistral || hadMistralError) && !savedChatGptResponse) {
-              console.log('Retomando la obtención de la respuesta de IA');
-              setIsFetchingMistral(true);
-              setTimeout(() => fetchMistralResponse(), 2000);
-            }
+      // Restaurar chatData si está disponible
+      if (savedChatData && hasChatData) {
+        setChatData(savedChatData);
+      }
+      
+      // Restaurar otros estados
+      setIsLoading(savedIsLoading);
+      setIsFetchingMistral(savedIsFetchingMistral);
+      setShowAnalysis(savedShowAnalysis || !!savedChatGptResponse);
+      
+      // Si hay un error registrado con Mistral, mostrar mensaje
+      if (hadMistralError) {
+        setError(t('app.errors.mistral'));
+      }
+      
+      // Si estábamos en medio de la carga, continuar donde lo dejamos
+      if (savedIsLoading || savedIsFetchingMistral) {
+        // Intentar recuperar la operación si estaba en progreso
+        const continuarAnalisis = setTimeout(() => {
+          if (savedIsFetchingMistral) {
+            console.log('Retomando la obtención de la respuesta de IA');
+            setIsFetchingMistral(true);
+            setTimeout(() => fetchMistralResponse(), 2000);
           }
         }, 1000);
       }
@@ -1300,25 +1304,38 @@ const tryDeleteFiles = async (operationId) => {
       // Marcar que el análisis está completo cuando tengamos respuesta
       localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
     }
-  }, [operationId, isLoading, isFetchingMistral, showAnalysis, chatGptResponse]);
+    
+    // Guardar chatData en localStorage para persistir entre refrescos
+    if (chatData) {
+      try {
+        localStorage.setItem('whatsapp_analyzer_chat_data', chatData);
+        // Marcar que tenemos datos de análisis
+        localStorage.setItem('whatsapp_analyzer_has_chat_data', 'true');
+      } catch (error) {
+        console.error("Error al guardar chatData en localStorage:", error);
+        // El chatData puede ser muy grande, intentar comprimir o limitar si es necesario
+      }
+    }
+  }, [operationId, isLoading, isFetchingMistral, showAnalysis, chatGptResponse, chatData]);
 
   // Modificar el efecto de beforeunload para mostrar advertencia cuando el análisis esté completo
   useEffect(() => {
     const isAnalysisComplete = chatGptResponse && operationId && !isLoading && !isFetchingMistral;
+    const hasAnalysisData = chatData || chatGptResponse;
     
-    // Si el análisis está completo, registrar este estado
-    if (isAnalysisComplete) {
+    // Si el análisis está completo o hay datos de análisis, registrar este estado
+    if (isAnalysisComplete || hasAnalysisData) {
       localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
     }
     
-    // Función para advertir al usuario antes de refrescar o cerrar la página cuando el análisis está completo
+    // Función para advertir al usuario antes de refrescar o cerrar la página cuando hay datos de análisis
     const handleBeforeUnload = (e) => {
-      if (isAnalysisComplete) {
-        // Marcar que el usuario está refrescando la página con análisis completo
+      if (isAnalysisComplete || hasAnalysisData) {
+        // Marcar que el usuario está refrescando la página con análisis
         localStorage.setItem('whatsapp_analyzer_page_refreshed', 'true');
         
         // Mensaje que se mostrará
-        const message = "¿Estás seguro que quieres salir? Se perderán todos los datos del análisis.";
+        const message = "¿Estás seguro que quieres salir? Se perderán todos los datos del análisis estadístico y psicológico.";
         e.preventDefault();
         e.returnValue = message;
         return message;
@@ -1327,14 +1344,14 @@ const tryDeleteFiles = async (operationId) => {
     
     // Marcar siempre refrescado en pagetransition o unload
     const handlePageHide = () => {
-      if (isAnalysisComplete) {
+      if (isAnalysisComplete || hasAnalysisData) {
         localStorage.setItem('whatsapp_analyzer_page_refreshed', 'true');
       }
     };
     
     // Monitorear clicks en enlaces y botones que puedan causar navegación
     const handleLinkClick = (e) => {
-      if (isAnalysisComplete && e.target.tagName === 'A' && !e.target.getAttribute('href')?.startsWith('#')) {
+      if ((isAnalysisComplete || hasAnalysisData) && e.target.tagName === 'A' && !e.target.getAttribute('href')?.startsWith('#')) {
         e.preventDefault();
         e.stopPropagation();
         setShowRefreshConfirmation(true);
@@ -1345,13 +1362,13 @@ const tryDeleteFiles = async (operationId) => {
     // Monitorear clicks en elementos que puedan causar recarga
     const handleNavClick = (e) => {
       // Detectar clics en la esquina superior derecha (donde suele estar el botón de recarga)
-      if (isAnalysisComplete && e.clientY < 50 && e.clientX > window.innerWidth - 100) {
+      if ((isAnalysisComplete || hasAnalysisData) && e.clientY < 50 && e.clientX > window.innerWidth - 100) {
         setShowRefreshConfirmation(true);
       }
     };
 
-    // Activar las advertencias solo cuando el análisis esté completo
-    if (isAnalysisComplete) {
+    // Activar las advertencias solo cuando hay datos de análisis
+    if (isAnalysisComplete || hasAnalysisData) {
       window.addEventListener('beforeunload', handleBeforeUnload);
       window.addEventListener('pagehide', handlePageHide);
       window.addEventListener('unload', handlePageHide);
@@ -1366,9 +1383,9 @@ const tryDeleteFiles = async (operationId) => {
       document.removeEventListener('click', handleLinkClick, true);
       document.removeEventListener('mousedown', handleNavClick, true);
     };
-  }, [chatGptResponse, operationId, isLoading, isFetchingMistral]);
+  }, [chatGptResponse, operationId, isLoading, isFetchingMistral, chatData]);
 
-  // Función para continuar con la acción después de la confirmación
+  // Função para continuar con la acción después de la confirmación
   const handleConfirmRefresh = () => {
     // Limpiar el localStorage antes de refrescar
     localStorage.removeItem('whatsapp_analyzer_operation_id');
@@ -1379,6 +1396,8 @@ const tryDeleteFiles = async (operationId) => {
     localStorage.removeItem('whatsapp_analyzer_analysis_complete');
     localStorage.removeItem('whatsapp_analyzer_mistral_error');
     localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+    localStorage.removeItem('whatsapp_analyzer_chat_data');
+    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
     
     // Recargar la página
     window.location.reload();
@@ -1400,6 +1419,7 @@ const tryDeleteFiles = async (operationId) => {
     setChatGptResponse("");
     setShowChatGptResponse(false);
     setOperationId(null);
+    setChatData(null); // Limpiar chatData
     
     // Limpiar la persistencia
     localStorage.removeItem('whatsapp_analyzer_operation_id');
@@ -1408,6 +1428,8 @@ const tryDeleteFiles = async (operationId) => {
     localStorage.removeItem('whatsapp_analyzer_show_analysis');
     localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
     localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+    localStorage.removeItem('whatsapp_analyzer_chat_data');
+    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
   };
 
   // Component to render when user needs to upgrade
@@ -1691,20 +1713,20 @@ const tryDeleteFiles = async (operationId) => {
               <div className="refresh-confirmation">
                 <div className="refresh-confirmation-icon">⚠️</div>
                 <div className="refresh-confirmation-content">
-                  <h3>{t('app.refresh_confirmation.title')}</h3>
-                  <p>{t('app.refresh_confirmation.message')}</p>
+                  <h3>¿Estás seguro?</h3>
+                  <p>Si continúas, se perderán todos los datos del análisis actual (tanto estadístico como psicológico). ¿Deseas continuar?</p>
                   <div className="refresh-confirmation-buttons">
                     <button 
                       className="refresh-confirmation-cancel" 
                       onClick={handleCancelRefresh}
                     >
-                      {t('app.refresh_confirmation.cancel')}
+                      Cancelar
                     </button>
                     <button 
                       className="refresh-confirmation-confirm" 
                       onClick={handleConfirmRefresh}
                     >
-                      {t('app.refresh_confirmation.confirm')}
+                      Sí, continuar
                     </button>
                   </div>
                 </div>
