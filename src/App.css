@@ -1020,3 +1020,49 @@ li {
 .mobile-nav-link.mobile-logout:hover {
   color: #b71c1c;
 }
+
+/* Estilos para el componente de análisis psicológico */
+#psychological-analysis {
+  margin: 15px 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Sección de debug info */
+.debug-info {
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  font-size: 12px;
+  border: 1px dashed #dee2e6;
+}
+
+.debug-info h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #495057;
+}
+
+.debug-info details {
+  margin-top: 10px;
+}
+
+.debug-info pre {
+  max-height: 200px;
+  overflow: auto;
+  background-color: #f1f3f5;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.analysis-message {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-left: 3px solid #6c757d;
+  margin: 10px 0;
+  color: #6c757d;
+  font-style: italic;
+}

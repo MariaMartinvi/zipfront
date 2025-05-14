@@ -4,6 +4,7 @@ import { detectarFormatoArchivo } from './formatDetector.js';
 import './ChatAnalysis.css';
 import AnalisisTop from './Analisis_top';
 import AzureClientComponent from './AzureClientComponent';
+import HumoristicAnalysis from './HumoristicAnalysis'; // Nuevo componente
 
 // Incorporar directamente las funciones necesarias de chatAnalyzer para evitar el error de importación
 const analizarChat = (contenido, formatoForzado = null) => {
@@ -72,6 +73,7 @@ const analizarChat = (contenido, formatoForzado = null) => {
       success: true
     };
     
+    console.log("Análisis completado, estadísticas generadas:", data);
     return data;
   } catch (error) {
     console.error("Error durante el análisis:", error);
@@ -183,17 +185,26 @@ function ChatAnalysisComponent({ operationId, chatData }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [chatContent, setChatContent] = useState(null); // Almacenar el contenido del chat
+  const [chatStatistics, setChatStatistics] = useState(null); // Para análisis humorístico local
   const resultsContainerRef = useRef(null);
 
   useEffect(() => {
     // Si tenemos chatData directamente, usarlo sin hacer llamada al backend
     if (chatData) {
+      console.log("ChatData proporcionado directamente, analizando...");
       setChatContent(chatData);
+      // Realizar análisis local para el componente humorístico
+      const stats = analizarChat(chatData);
+      console.log("Estadísticas obtenidas:", stats);
+      if (stats && stats.success) {
+        setChatStatistics(stats);
+      }
       return;
     }
     
     // Usar operationId como fallback solo si no tenemos chatData y hay un operationId
     if (operationId && !chatData) {
+      console.log("Usando operationId para obtener chat:", operationId);
       setLoading(true);
       setError(null);
       
@@ -209,9 +220,15 @@ function ChatAnalysisComponent({ operationId, chatData }) {
         })
         .then(data => {
           if (data && data.content) {
+            console.log("Datos obtenidos del servidor, analizando...");
             // Guardar el contenido del chat para pasarlo al componente AzureClientComponent
             setChatContent(data.content);
-            // Ya no hacemos el análisis aquí, lo hará AzureClientComponent
+            // Realizar análisis local para el componente humorístico
+            const stats = analizarChat(data.content);
+            console.log("Estadísticas obtenidas:", stats);
+            if (stats && stats.success) {
+              setChatStatistics(stats);
+            }
           } else {
             throw new Error('No se recibió contenido de chat para analizar');
           }
@@ -386,10 +403,10 @@ function ChatAnalysisComponent({ operationId, chatData }) {
 
   return (
     <div className="chat-analysis-container">
-      {loading && (
+      {loading && !analysisResult && (
         <div className="loading-container">
           <div className="spinner"></div>
-          <p>Analizando conversación, por favor espera...</p>
+          <p>Analizando la conversación...</p>
         </div>
       )}
       
@@ -397,21 +414,55 @@ function ChatAnalysisComponent({ operationId, chatData }) {
         <div className="error-container">
           <h3>Error al analizar la conversación</h3>
           <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Reintentar</button>
         </div>
       )}
       
-      {chatContent && !analysisResult && !error && (
-        <AzureClientComponent 
-          chatContent={chatContent}
-          onAnalysisComplete={handleAnalysisComplete}
-          onError={handleAnalysisError}
-          language="es" // O pasar el idioma como prop desde un nivel superior
-        />
+      {chatContent && (
+        <>
+          <AzureClientComponent 
+            chatContent={chatContent} 
+            onAnalysisComplete={handleAnalysisComplete} 
+            onError={handleAnalysisError}
+          />
+        </>
       )}
       
       {analysisResult && (
         <div className="analysis-results" ref={resultsContainerRef}>
-          <div dangerouslySetInnerHTML={{ __html: analysisResult }} />
+          {renderAnalysisResults()}
+        </div>
+      )}
+      
+      {/* Análisis Top - Resultados estadísticos */}
+      {chatContent && <AnalisisTop chatContent={chatContent} />}
+      
+      {/* Nuevo componente de análisis psicológico local */}
+      {chatStatistics ? (
+        <div id="psychological-analysis">
+          <HumoristicAnalysis statistics={chatStatistics} />
+        </div>
+      ) : (
+        chatContent && (
+          <div className="analysis-message">
+            <p>No se pudieron generar estadísticas para el análisis psicológico</p>
+          </div>
+        )
+      )}
+      
+      {/* Debug info - Solo visible en desarrollo */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="debug-info" style={{margin: '20px 0', padding: '10px', background: '#f8f9fa', borderRadius: '5px', fontSize: '12px'}}>
+          <h4>Debug Info</h4>
+          <p>chatContent: {chatContent ? '✅ Disponible' : '❌ No disponible'}</p>
+          <p>chatStatistics: {chatStatistics ? '✅ Disponible' : '❌ No disponible'}</p>
+          <p>analysisResult: {analysisResult ? '✅ Disponible' : '❌ No disponible'}</p>
+          {chatStatistics && (
+            <details>
+              <summary>Ver estadísticas</summary>
+              <pre>{JSON.stringify(chatStatistics, null, 2)}</pre>
+            </details>
+          )}
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 import ProtectedRoute from './ProtectedRoute';
@@ -1548,6 +1548,10 @@ const tryDeleteFiles = async (operationId) => {
                           <div className="additional-analysis">
                             <div className="analysis-module">
                               <AnalisisTop chatData={chatData} />
+                            </div>
+                            {/* Análisis psicológico en cliente */}
+                            <div className="analysis-module">
+                              <ChatAnalysisComponent chatData={chatData} />
                             </div>
                           </div>
                         </>
