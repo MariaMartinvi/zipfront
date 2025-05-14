@@ -649,7 +649,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       const datosGrafico = prepararDatosTiempoRespuesta();
       
       if (!datosGrafico || datosGrafico.length < 3) {
-        // Necesitamos al menos 3 meses para analizar tendencias
+        // Necesitamos al menos 3 meses para analizar tendencias sostenidas
         return null;
       }
       
@@ -661,7 +661,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
         return null;
       }
       
-      // Para cada usuario principal, calcular la tendencia en los últimos 3 meses
+      // Para cada usuario principal, analizar tendencias sostenidas durante múltiples meses
       const tendencias = [];
       
       usuariosPrincipales.forEach(usuario => {
@@ -685,44 +685,51 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
           // Ordenar por índice para asegurar orden cronológico
           mesesConDatos.sort((a, b) => a.indice - b.indice);
           
-          // Analizar múltiples ventanas de 3 meses para encontrar tendencias significativas
-          for (let i = 0; i <= mesesConDatos.length - 3; i++) {
-            const ventanaTresMeses = mesesConDatos.slice(i, i + 3);
-            
-            // Si los meses son consecutivos (o casi), calcular tendencia
-            const esConsecutivo = ventanaTresMeses[2].indice - ventanaTresMeses[0].indice <= 4;
-            
-            if (esConsecutivo) {
-              const primerValor = ventanaTresMeses[0].tiempo;
-              const ultimoValor = ventanaTresMeses[2].tiempo;
+          // Analizar diferentes ventanas de tiempo (mínimo 3 meses)
+          for (let inicio = 0; inicio < mesesConDatos.length - 2; inicio++) {
+            for (let fin = inicio + 2; fin < mesesConDatos.length; fin++) {
+              // Obtener los datos del mes inicial y final
+              const mesInicial = mesesConDatos[inicio];
+              const mesFinal = mesesConDatos[fin];
               
-              // Calcular variación porcentual
-              const variacionPorcentual = ((ultimoValor - primerValor) / primerValor) * 100;
+              // Calcular la variación porcentual total
+              const variacionPorcentual = ((mesFinal.tiempo - mesInicial.tiempo) / mesInicial.tiempo) * 100;
               
-              // Si hay una variación significativa (>5%), registrar tendencia
-              if (Math.abs(variacionPorcentual) >= 5) {
-                // Comprobar si la tendencia es consistente (siempre creciente o decreciente)
-                let esConsistente = true;
-                for (let j = 1; j < ventanaTresMeses.length; j++) {
-                  const cambioConsistente = variacionPorcentual > 0 ? 
-                    ventanaTresMeses[j].tiempo >= ventanaTresMeses[j-1].tiempo :
-                    ventanaTresMeses[j].tiempo <= ventanaTresMeses[j-1].tiempo;
-                  
-                  if (!cambioConsistente) {
-                    esConsistente = false;
-                    break;
-                  }
-                }
+              // Verificar si la tendencia es consistente (siempre creciente o decreciente)
+              let esConsistente = true;
+              const esCreciente = variacionPorcentual > 0;
+              
+              // Verificar cada mes intermedio para confirmar la consistencia de la tendencia
+              for (let i = inicio + 1; i <= fin; i++) {
+                if (i === inicio) continue; // Saltar el primer mes
                 
+                const mesPrevio = mesesConDatos[i-1];
+                const mesActual = mesesConDatos[i];
+                
+                const cambioMensual = mesActual.tiempo - mesPrevio.tiempo;
+                
+                // Si la tendencia general es creciente, cada cambio mensual debería ser >= 0
+                // Si la tendencia general es decreciente, cada cambio mensual debería ser <= 0
+                // Permitimos pequeñas fluctuaciones (1% del valor)
+                const umbralTolerancia = mesPrevio.tiempo * 0.01;
+                if ((esCreciente && cambioMensual < -umbralTolerancia) || 
+                    (!esCreciente && cambioMensual > umbralTolerancia)) {
+                  esConsistente = false;
+                  break;
+                }
+              }
+              
+              // Solo registrar tendencias significativas (>5%) y consistentes
+              if (Math.abs(variacionPorcentual) >= 5 && esConsistente) {
                 tendencias.push({
                   usuario,
                   variacionPorcentual,
-                  mesesAnalizados: ventanaTresMeses.map(m => m.mesFormateado),
-                  primerValor,
-                  ultimoValor,
+                  mesesAnalizados: [mesInicial.mesFormateado, mesFinal.mesFormateado],
+                  primerValor: mesInicial.tiempo,
+                  ultimoValor: mesFinal.tiempo,
                   esIncremento: variacionPorcentual > 0,
-                  esConsistente,
-                  esReciente: i + 3 === mesesConDatos.length // Si es la ventana más reciente
+                  duracionMeses: fin - inicio + 1, // Número de meses en la tendencia
+                  esReciente: fin === mesesConDatos.length - 1 // Si incluye el mes más reciente
                 });
               }
             }
@@ -734,36 +741,42 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
         return null;
       }
       
-      // Priorizar según estos criterios:
-      // 1. Tendencias recientes
-      // 2. Tendencias consistentes
-      // 3. Magnitud de la variación
+      // Ordenar tendencias según estos criterios:
+      // 1. Priorizar tendencias más largas (más meses)
+      // 2. Priorizar tendencias recientes
+      // 3. Priorizar tendencias con mayor variación porcentual
       
-      // Primero intentar encontrar tendencias recientes y consistentes
-      const tendenciasRecientesConsistentes = tendencias.filter(t => t.esReciente && t.esConsistente);
-      if (tendenciasRecientesConsistentes.length > 0) {
-        // Ordenar por magnitud de variación
-        tendenciasRecientesConsistentes.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
-        return tendenciasRecientesConsistentes[0];
+      // Primero, encontrar la duración máxima de las tendencias
+      const maxDuracion = Math.max(...tendencias.map(t => t.duracionMeses));
+      
+      // Filtrar tendencias con la duración máxima o casi máxima (máximo - 1)
+      const tendenciasLargas = tendencias.filter(t => t.duracionMeses >= maxDuracion - 1);
+      
+      // Entre las tendencias largas, priorizar las recientes
+      const tendenciasLargasRecientes = tendenciasLargas.filter(t => t.esReciente);
+      if (tendenciasLargasRecientes.length > 0) {
+        tendenciasLargasRecientes.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
+        return tendenciasLargasRecientes[0];
       }
       
-      // Luego intentar con tendencias recientes
-      const tendenciasRecientes = tendencias.filter(t => t.esReciente);
-      if (tendenciasRecientes.length > 0) {
-        tendenciasRecientes.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
-        return tendenciasRecientes[0];
+      // Si no hay tendencias largas recientes, usar la tendencia larga con mayor variación
+      if (tendenciasLargas.length > 0) {
+        tendenciasLargas.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
+        return tendenciasLargas[0];
       }
       
-      // Finalmente, tendencias consistentes o cualquiera ordenada por magnitud
-      const tendenciasConsistentes = tendencias.filter(t => t.esConsistente);
-      if (tendenciasConsistentes.length > 0) {
-        tendenciasConsistentes.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
-        return tendenciasConsistentes[0];
-      }
+      // Si no hay tendencias largas, usar la tendencia con mayor duración
+      tendencias.sort((a, b) => {
+        // Primero por duración
+        if (b.duracionMeses !== a.duracionMeses) {
+          return b.duracionMeses - a.duracionMeses;
+        }
+        // Luego por magnitud de variación
+        return Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual);
+      });
       
-      // Si no hay tendencias que cumplan los criterios anteriores, usar la tendencia con mayor variación
-      tendencias.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
       return tendencias[0];
+      
     } catch (error) {
       console.error("Error al analizar tendencia de tiempo de respuesta:", error);
       return null;
@@ -816,6 +829,130 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       
       return resultado;
     });
+  };
+
+  // Analizar tendencia de frecuencia de mensajes por usuario
+  const analizarTendenciaInteres = () => {
+    try {
+      const datosGrafico = prepararDatosMensajesPorMes();
+      
+      if (!datosGrafico || datosGrafico.length < 3) {
+        // Necesitamos al menos 3 meses para analizar tendencias sostenidas
+        return null;
+      }
+      
+      // Obtener usuarios disponibles (excluyendo propiedades especiales)
+      const usuariosDisponibles = Object.keys(datosGrafico[0]).filter(
+        key => !['mes', 'mesFormateado', 'total', 'Otros'].includes(key)
+      );
+      
+      if (usuariosDisponibles.length === 0) {
+        return null;
+      }
+      
+      // Para cada usuario, analizar tendencias sostenidas durante múltiples meses
+      const tendencias = [];
+      
+      usuariosDisponibles.forEach(usuario => {
+        // Analizar diferentes ventanas de tiempo (mínimo 3 meses)
+        for (let inicio = 0; inicio < datosGrafico.length - 2; inicio++) {
+          for (let fin = inicio + 2; fin < datosGrafico.length; fin++) {
+            // Obtener los datos del mes inicial y final
+            const mesInicial = datosGrafico[inicio];
+            const mesFinal = datosGrafico[fin];
+            
+            // Verificar que ambos meses tienen datos para este usuario
+            if (mesInicial[usuario] !== undefined && mesFinal[usuario] !== undefined) {
+              // Calcular la variación total en puntos porcentuales
+              const variacionPuntosPorcentuales = (mesFinal[usuario] - mesInicial[usuario]) * 100;
+              
+              // Verificar si la tendencia es consistente (siempre creciente o decreciente)
+              let esConsistente = true;
+              const esCreciente = variacionPuntosPorcentuales > 0;
+              
+              // Verificar cada mes intermedio para confirmar la consistencia de la tendencia
+              for (let i = inicio + 1; i < fin; i++) {
+                const mesPrevio = datosGrafico[i-1];
+                const mesActual = datosGrafico[i];
+                
+                if (mesPrevio[usuario] === undefined || mesActual[usuario] === undefined) {
+                  esConsistente = false;
+                  break;
+                }
+                
+                const cambioMensual = mesActual[usuario] - mesPrevio[usuario];
+                
+                // Si la tendencia general es creciente, cada cambio mensual debería ser >= 0
+                // Si la tendencia general es decreciente, cada cambio mensual debería ser <= 0
+                if ((esCreciente && cambioMensual < -0.01) || (!esCreciente && cambioMensual > 0.01)) {
+                  esConsistente = false;
+                  break;
+                }
+              }
+              
+              // Solo registrar tendencias significativas (>5 puntos porcentuales) y consistentes
+              if (Math.abs(variacionPuntosPorcentuales) >= 5 && esConsistente) {
+                tendencias.push({
+                  usuario,
+                  variacionPuntosPorcentuales,
+                  mesInicial: mesInicial.mesFormateado,
+                  mesFinal: mesFinal.mesFormateado,
+                  valorInicial: mesInicial[usuario] * 100, // Convertir a porcentaje
+                  valorFinal: mesFinal[usuario] * 100, // Convertir a porcentaje
+                  esIncremento: variacionPuntosPorcentuales > 0,
+                  duracionMeses: fin - inicio + 1, // Número de meses en la tendencia
+                  esReciente: fin === datosGrafico.length - 1 // Si incluye el mes más reciente
+                });
+              }
+            }
+          }
+        }
+      });
+      
+      if (tendencias.length === 0) {
+        return null;
+      }
+      
+      // Ordenar tendencias según estos criterios:
+      // 1. Priorizar tendencias más largas (más meses)
+      // 2. Priorizar tendencias recientes
+      // 3. Priorizar tendencias con mayor variación porcentual
+      
+      // Primero, encontrar la duración máxima de las tendencias
+      const maxDuracion = Math.max(...tendencias.map(t => t.duracionMeses));
+      
+      // Filtrar tendencias con la duración máxima o casi máxima (máximo - 1)
+      const tendenciasLargas = tendencias.filter(t => t.duracionMeses >= maxDuracion - 1);
+      
+      // Entre las tendencias largas, priorizar las recientes
+      const tendenciasLargasRecientes = tendenciasLargas.filter(t => t.esReciente);
+      if (tendenciasLargasRecientes.length > 0) {
+        tendenciasLargasRecientes.sort((a, b) => Math.abs(b.variacionPuntosPorcentuales) - Math.abs(a.variacionPuntosPorcentuales));
+        return tendenciasLargasRecientes[0];
+      }
+      
+      // Si no hay tendencias largas recientes, usar la tendencia larga con mayor variación
+      if (tendenciasLargas.length > 0) {
+        tendenciasLargas.sort((a, b) => Math.abs(b.variacionPuntosPorcentuales) - Math.abs(a.variacionPuntosPorcentuales));
+        return tendenciasLargas[0];
+      }
+      
+      // Si no hay tendencias largas, usar la tendencia con mayor duración
+      tendencias.sort((a, b) => {
+        // Primero por duración
+        if (b.duracionMeses !== a.duracionMeses) {
+          return b.duracionMeses - a.duracionMeses;
+        }
+        // Luego por magnitud de variación
+        return Math.abs(b.variacionPuntosPorcentuales) - Math.abs(a.variacionPuntosPorcentuales);
+      });
+      
+      return tendencias[0];
+      
+    } catch (error) {
+      console.error("Error al analizar tendencia de interés:", error);
+      return null;
+    }
   };
 
   // Obtener una lista de usuarios únicos para las leyendas
@@ -1133,6 +1270,12 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
               borderLeftWidth: '4px'
             };
             
+            // Texto que indica la duración de la tendencia
+            const duracionMeses = tendencia.duracionMeses;
+            const textoTendencia = duracionMeses > 3 
+              ? t('app.primer_chat.sustained_trend', { count: duracionMeses }) 
+              : '';
+            
             return (
               <div 
                 className={`tendencia-destacada ${tendencia.esIncremento ? 'incremento' : 'decremento'}`}
@@ -1144,7 +1287,9 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                 </div>
                 <p className="tendencia-mensaje">
                   <strong style={{ color: colorUsuario }}>{nombreUsuario}</strong>
-                  {` ${accion} ${porcentaje}% ${t('app.primer_chat.response_time_trend_msg')} ${tendencia.mesesAnalizados[0]} ${t('app.primer_chat.and')} ${tendencia.mesesAnalizados[2]}.`}
+                  {` ${accion} ${porcentaje}% ${t('app.primer_chat.response_time_trend_msg')} ${tendencia.mesesAnalizados[0]} ${t('app.primer_chat.to')} ${tendencia.mesesAnalizados[1]}`}
+                  {textoTendencia && <span className="tendencia-duracion"> ({textoTendencia})</span>}
+                  {'.'}
                 </p>
                 <div className="tendencia-detalles">
                   <div className="tendencia-valor">
@@ -1153,7 +1298,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                   </div>
                   <div className="tendencia-flecha">→</div>
                   <div className="tendencia-valor">
-                    <span className="tendencia-etiqueta">{tendencia.mesesAnalizados[2]}:</span>
+                    <span className="tendencia-etiqueta">{tendencia.mesesAnalizados[1]}:</span>
                     <span className="tendencia-numero" style={{ color: tendencia.esIncremento ? '#e74c3c' : '#2ecc71' }}>
                       {valorFinal} min
                     </span>
@@ -1234,6 +1379,73 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       {/* NUEVO: Gráfico de porcentaje de mensajes por usuario por mes */}
       <div className="chart-container">
         <h3>{t('app.primer_chat.interest_trend')}</h3>
+        
+        {/* Mostrar tendencia destacada de interés si existe */}
+        {(() => {
+          const tendencia = analizarTendenciaInteres();
+          
+          if (tendencia) {
+            const puntosPorcentuales = Math.abs(tendencia.variacionPuntosPorcentuales).toFixed(1);
+            const nombreUsuario = tendencia.usuario;
+            const accion = tendencia.esIncremento ? t('app.primer_chat.increased_msgs') : t('app.primer_chat.decreased_msgs');
+            const icono = tendencia.esIncremento ? '📈' : '📉';
+            
+            // Valores iniciales y finales redondeados a 1 decimal
+            const valorInicialInteres = Math.round(tendencia.valorInicial * 10) / 10;
+            const valorFinalInteres = Math.round(tendencia.valorFinal * 10) / 10;
+            
+            // Obtener el índice del usuario para usar el mismo color que en la gráfica
+            const usuariosActivos = obtenerUsuariosUnicos();
+            const usuarioIndex = usuariosActivos.indexOf(nombreUsuario);
+            const colorUsuario = usuarioIndex >= 0 ? COLORS[usuarioIndex % COLORS.length] : '#3498db';
+            
+            // Estilo personalizado para el borde con el color del usuario
+            const estiloPersonalizado = {
+              borderLeftColor: colorUsuario,
+              borderLeftWidth: '4px'
+            };
+            
+            // Texto que indica la duración de la tendencia
+            const duracionMeses = tendencia.duracionMeses;
+            const textoTendencia = duracionMeses > 3 
+              ? t('app.primer_chat.sustained_trend', { count: duracionMeses }) 
+              : '';
+            
+            return (
+              <div 
+                className={`tendencia-destacada ${tendencia.esIncremento ? 'incremento' : 'decremento'}`}
+                style={estiloPersonalizado}
+              >
+                <div className="tendencia-titulo">
+                  <span className="tendencia-icono">{icono}</span>
+                  <span>{t('app.primer_chat.trend_highlight')}</span>
+                </div>
+                <p className="tendencia-mensaje">
+                  <strong style={{ color: colorUsuario }}>{nombreUsuario}</strong>
+                  {` ${accion} ${puntosPorcentuales} ${t('app.primer_chat.percentage_points')} ${t('app.primer_chat.from')} ${tendencia.mesInicial} ${t('app.primer_chat.to')} ${tendencia.mesFinal}`}
+                  {textoTendencia && <span className="tendencia-duracion"> ({textoTendencia})</span>}
+                  {'.'}
+                </p>
+                <div className="tendencia-detalles">
+                  <div className="tendencia-valor">
+                    <span className="tendencia-etiqueta">{tendencia.mesInicial}:</span>
+                    <span className="tendencia-numero">{valorInicialInteres}%</span>
+                  </div>
+                  <div className="tendencia-flecha">→</div>
+                  <div className="tendencia-valor">
+                    <span className="tendencia-etiqueta">{tendencia.mesFinal}:</span>
+                    <span className="tendencia-numero" style={{ color: tendencia.esIncremento ? '#2ecc71' : '#e74c3c' }}>
+                      {valorFinalInteres}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          
+          return null;
+        })()}
+        
         {(() => {
           const datosGrafico = prepararDatosMensajesPorMes();
           console.log("Datos para el gráfico de porcentajes:", datosGrafico);

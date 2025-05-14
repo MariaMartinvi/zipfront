@@ -349,6 +349,12 @@
     margin-bottom: 10px;
   }
 
+  .tendencia-duracion {
+    font-style: italic;
+    color: #7f8c8d;
+    font-weight: 500;
+  }
+
   /* Nuevos estilos para los detalles de tendencia */
   .tendencia-detalles {
     display: flex;
