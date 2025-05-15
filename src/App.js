@@ -1029,6 +1029,18 @@ function App() {
       return;
     }
     
+    // Verificar si la operación ya está completa
+    const isComplete = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
+    const storedResponse = localStorage.getItem('whatsapp_analyzer_chatgpt_response');
+
+    // Si ya tenemos una respuesta almacenada y el análisis está marcado como completo
+    if (isComplete && storedResponse && !isFetchingMistral) {
+      console.log('Restaurando análisis previo completado desde localStorage');
+      setChatGptResponse(storedResponse);
+      setShowChatGptResponse(true);
+      return;
+    }
+    
     // Evitar múltiples solicitudes simultáneas
     if (isFetchingMistral && !localStorage.getItem('whatsapp_analyzer_force_fetch')) {
       console.log('Ya hay una solicitud en curso para obtener la respuesta de Mistral');
@@ -1037,6 +1049,8 @@ function App() {
     
     // Limpiar el flag de forzar fetch si existe
     localStorage.removeItem('whatsapp_analyzer_force_fetch');
+    
+    console.log(`INICIANDO ANÁLISIS DE IA - Tenemos chatData: ${!!chatData}, Longitud: ${chatData?.length || 0}`);
     
     setIsFetchingMistral(true);
     setProgressMessage(t('app.generating_ai_analysis'));
@@ -1051,8 +1065,17 @@ function App() {
       // Obtener el idioma del usuario (predeterminado a 'es')
       const userLanguage = localStorage.getItem('i18nextLng') || 'es';
       
+      console.log(`Enviando solicitud a Azure OpenAI - Idioma: ${userLanguage}`);
+      
       // Enviar solicitud directamente a Azure OpenAI usando el método actualizado
       const result = await getMistralResponse(chatData, userLanguage);
+      
+      console.log('Respuesta del servicio de IA recibida:', { 
+        success: result.success, 
+        ready: result.ready,
+        tieneRespuesta: !!result.response,
+        longitudRespuesta: result.response?.length || 0
+      });
       
       if (result.success && result.ready && result.response) {
         addDebugMessage('Respuesta de Azure recibida con éxito');
@@ -1061,6 +1084,7 @@ function App() {
         
         // Guardar en localStorage que el análisis está completo
         localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
+        localStorage.setItem('whatsapp_analyzer_chatgpt_response', result.response);
         
         // Hacer scroll automático hacia arriba cuando finaliza el análisis
         setTimeout(() => scrollToAnalysis(), 300);
@@ -1075,12 +1099,14 @@ function App() {
         return true;
       } else {
         // Si hay un error, mostrar mensaje
+        console.error('Error en respuesta de IA:', result.error || 'Error desconocido');
         addDebugMessage(`Error al obtener respuesta de Azure: ${result.error}`);
         setError(result.error || 'Error al analizar el chat con Azure OpenAI');
         setIsFetchingMistral(false);
         return false;
       }
     } catch (error) {
+      console.error('Excepción en fetchMistralResponse:', error);
       addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
       setIsFetchingMistral(false);
       setError(`Error al analizar el chat: ${error.message}`);
@@ -1145,8 +1171,29 @@ const tryDeleteFiles = async (operationId) => {
 };
   // Start analysis when we have chat data
   useEffect(() => {
-    if (chatData && !chatGptResponse && !isLoadingFromIndexedDB) {
-      fetchMistralResponse();
+    // Solo ejecutar este efecto si no estamos cargando desde IndexedDB
+    if (isLoadingFromIndexedDB) {
+      console.log('Aún cargando desde IndexedDB, postponiendo análisis...');
+      return;
+    }
+    
+    // Si tenemos datos de chat pero no respuesta de IA, iniciar análisis
+    if (chatData) {
+      // Crear un pequeño retraso para asegurar que todos los estados están actualizados
+      console.log('Tenemos datos de chat, programando análisis en 500ms...');
+      const timer = setTimeout(() => {
+        // Verificar nuevamente si tenemos respuesta para evitar duplicados
+        if (!chatGptResponse) {
+          console.log('Iniciando fetchMistralResponse desde useEffect...');
+          fetchMistralResponse();
+        } else {
+          console.log('Ya tenemos chatGptResponse, omitiendo fetchMistralResponse');
+        }
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    } else {
+      console.log('No hay datos de chat disponibles para análisis');
     }
   }, [chatData, chatGptResponse, isLoadingFromIndexedDB]);
 
@@ -1185,37 +1232,69 @@ const tryDeleteFiles = async (operationId) => {
   useEffect(() => {
     const processFiles = async () => {
       if (zipFile && isProcessingSharedFile) {
+        console.log(`Iniciando procesamiento de archivo: ${zipFile.name}`);
+        
+        // Limpiar estados previos
+        setChatGptResponse("");
+        setShowChatGptResponse(false);
+        setOperationId(null); // Asegurar que operationId se resetea
+        setChatData(null); // Resetear chatData explícitamente
+        
+        // Limpiar localStorage relacionado con análisis previos
+        localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+        localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+        localStorage.removeItem('whatsapp_analyzer_chat_data');
+        localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+        
         setIsLoading(true);
         setError('');
         console.log(`Procesando archivo: ${zipFile.name}`);
         
         try {
           // Usar nuestro procesador cliente para extraer y anonimizar
+          console.log('Llamando a processZipFile...');
           const result = await processZipFile(zipFile);
+          console.log('Resultado de processZipFile:', result);
           
-          if (result.success) {
-            console.log("Procesamiento completado con éxito:", result);
-            setFiles(result.processedFiles || []);
-            setProcessingResult(result);
-            
-            // Buscar el archivo de chat para análisis
-            const chatFile = encontrarArchivosChat(result.processedFiles);
-            if (chatFile) {
-              console.log("Archivo de chat encontrado para análisis:", chatFile.name);
-              // Usar FileReader para leer el contenido del archivo de chat
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                const content = e.target.result;
-                setChatContent(content);
-              };
-              reader.readAsText(chatFile.data);
+          if (result === true || (result && result.success)) {
+            console.log("Procesamiento completado con éxito");
+            if (result.processedFiles) {
+              setFiles(result.processedFiles);
+              setProcessingResult(result);
+              
+              // Buscar el archivo de chat para análisis
+              console.log('Buscando archivo de chat entre los procesados...');
+              const chatFile = encontrarArchivosChat(result.processedFiles);
+              if (chatFile) {
+                console.log("Archivo de chat encontrado para análisis:", chatFile.name);
+                // Usar FileReader para leer el contenido del archivo de chat
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  const content = e.target.result;
+                  console.log(`Contenido de chat leído, longitud: ${content.length}`);
+                  setChatContent(content);
+                  
+                  // Si chatData no se estableció en processZipFile, establecerlo aquí
+                  if (!chatData) {
+                    console.log("Estableciendo chatData desde FileReader");
+                    setChatData(content);
+                    // También guardar en localStorage
+                    localStorage.setItem('whatsapp_analyzer_chat_data', content);
+                    localStorage.setItem('whatsapp_analyzer_has_chat_data', 'true');
+                  }
+                };
+                reader.readAsText(chatFile.data);
+              } else {
+                console.warn('No se encontró ningún archivo de chat');
+              }
             }
             
             // Una vez procesado con éxito, eliminar el archivo pendiente de IndexedDB
+            console.log('Eliminando archivo de IndexedDB después de procesamiento exitoso');
             await removeSharedFile();
           } else {
-            console.error("Error en el procesamiento:", result.error);
-            setError(result.error || "Error procesando el archivo");
+            console.error("Error en el procesamiento:", result?.error || "Error desconocido");
+            setError(result?.error || "Error procesando el archivo");
           }
         } catch (err) {
           console.error("Error durante el procesamiento:", err);
@@ -1807,7 +1886,21 @@ const tryDeleteFiles = async (operationId) => {
                             <p>{t('app.analysis.preparing_psychological')}</p>
                           </div>
                         ) : (
-                          chatGptResponse && <Chatgptresultados chatGptResponse={chatGptResponse} />
+                          chatGptResponse ? <Chatgptresultados chatGptResponse={chatGptResponse} /> :
+                          // Si no hay respuesta y no está cargando, mostrar botón para reintentar
+                          <div className="retry-analysis-container">
+                            <p>No se ha podido completar el análisis psicológico.</p>
+                            <button 
+                              className="retry-analysis-button"
+                              onClick={() => {
+                                console.log("Forzando análisis psicológico");
+                                localStorage.setItem('whatsapp_analyzer_force_fetch', 'true');
+                                fetchMistralResponse();
+                              }}
+                            >
+                              Reintentar análisis psicológico
+                            </button>
+                          </div>
                         )}
                       </div>
                     )}
