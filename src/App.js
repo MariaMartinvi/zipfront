@@ -1392,7 +1392,21 @@ const tryDeleteFiles = async (operationId) => {
   // Função para continuar con la acción después de la confirmación
   const handleConfirmRefresh = () => {
     // Comprobar si tenemos un archivo ZIP pendiente de procesar
+    console.log("[DIAGNÓSTICO] Iniciando handleConfirmRefresh");
+    console.log("[DIAGNÓSTICO] Estado del archivo pendiente:", pendingZipFile ? "EXISTE" : "NO EXISTE");
+    
+    // Primero ocultar el diálogo de confirmación para evitar clics múltiples
+    setShowRefreshConfirmation(false);
+    
     if (pendingZipFile) {
+      console.log("[DIAGNÓSTICO] Archivo pendiente detectado:", pendingZipFile.name, "Tipo:", pendingZipFile.type, "Tamaño:", pendingZipFile.size);
+      
+      // Guardar una copia local del archivo pendiente para evitar problemas con el estado asíncrono
+      const fileToProccess = pendingZipFile;
+      
+      // IMPORTANTE: Mantener una referencia al archivo en una variable global para depuración
+      window._debugPendingFile = fileToProccess;
+      
       // Limpiar el localStorage
       localStorage.removeItem('whatsapp_analyzer_operation_id');
       localStorage.removeItem('whatsapp_analyzer_loading');
@@ -1403,11 +1417,12 @@ const tryDeleteFiles = async (operationId) => {
       localStorage.removeItem('whatsapp_analyzer_mistral_error');
       localStorage.removeItem('whatsapp_analyzer_page_refreshed');
       
-      // Resetear el estado de la aplicación
+      console.log("[DIAGNÓSTICO] LocalStorage limpiado");
+      
+      // Resetear el estado de la aplicación - IMPORTANTE: Hacer esto antes de la operación asíncrona
       setIsProcessingSharedFile(false);
       isProcessingRef.current = false;
       setError('');
-      setIsLoading(false);
       setDebugMessages([]);
       processedShareIds.current.clear();
       setChatGptResponse("");
@@ -1416,56 +1431,75 @@ const tryDeleteFiles = async (operationId) => {
       setOperationId(null);
       setChatData(null);
       
-      // Ocultar el diálogo de confirmación
-      setShowRefreshConfirmation(false);
+      console.log("[DIAGNÓSTICO] Estado de la aplicación reseteado");
       
-      // Procesar el nuevo archivo ZIP
-      addDebugMessage('Procesando nuevo archivo ZIP después de confirmación');
+      // Procesar el nuevo archivo ZIP inmediatamente, sin setTimeout
+      console.log("[DIAGNÓSTICO] Iniciando procesamiento del nuevo archivo ZIP sin setTimeout");
       
-      // Establecer un pequeño retraso para asegurar que la UI se ha actualizado
-      setTimeout(async () => {
-        try {
-          // Iniciar el procesamiento del nuevo archivo
-          setIsLoading(true);
-          setZipFile(pendingZipFile);
-          setProgressMessage("Procesando nuevo chat: Extrayendo mensajes y participantes...");
-          
-          // Procesar el nuevo archivo
-          await processZipFile(pendingZipFile);
-          
-          // Hacer scroll hacia la sección de análisis
-          scrollToAnalysis();
-          
-          // Incrementar el contador de uso
-          if (user) {
-            try {
-              addDebugMessage(`Incrementando contador para usuario: ${user.uid} - Método de carga: Nueva carga confirmada`);
-              await incrementChatUsage(user.uid);
-              
-              // Actualizar datos locales del perfil
-              if (userProfile) {
-                const newPeriodUsage = (userProfile.currentPeriodUsage || 0) + 1;
-                const newTotalUploads = (userProfile.totalUploads || 0) + 1;
-                
-                setUserProfile({
-                  ...userProfile,
-                  currentPeriodUsage: newPeriodUsage,
-                  totalUploads: newTotalUploads
+      try {
+        // Iniciar el procesamiento del nuevo archivo
+        console.log("[DIAGNÓSTICO] Activando indicador de carga");
+        setIsLoading(true);
+        
+        console.log("[DIAGNÓSTICO] Guardando el archivo pendiente como archivo activo");
+        setZipFile(fileToProccess);
+        
+        console.log("[DIAGNÓSTICO] Estableciendo mensaje de progreso");
+        setProgressMessage("Procesando nuevo chat: Extrayendo mensajes y participantes...");
+        
+        console.log("[DIAGNÓSTICO] Llamando directamente a processZipFile");
+        
+        // Llamada directa a processZipFile sin usar await dentro de un callback
+        processZipFile(fileToProccess)
+          .then(() => {
+            console.log("[DIAGNÓSTICO] processZipFile completado con éxito");
+            // Hacer scroll hacia la sección de análisis
+            scrollToAnalysis();
+            
+            // Incrementar el contador de uso
+            if (user) {
+              console.log("[DIAGNÓSTICO] Incrementando contador para usuario:", user.uid);
+              incrementChatUsage(user.uid)
+                .then(() => {
+                  console.log("[DIAGNÓSTICO] Contador incrementado con éxito");
+                  // Actualizar datos locales del perfil
+                  if (userProfile) {
+                    const newPeriodUsage = (userProfile.currentPeriodUsage || 0) + 1;
+                    const newTotalUploads = (userProfile.totalUploads || 0) + 1;
+                    
+                    setUserProfile({
+                      ...userProfile,
+                      currentPeriodUsage: newPeriodUsage,
+                      totalUploads: newTotalUploads
+                    });
+                    console.log("[DIAGNÓSTICO] Perfil de usuario actualizado localmente");
+                  }
+                })
+                .catch(error => {
+                  console.error("[DIAGNÓSTICO] Error al incrementar contador:", error.message);
+                  addDebugMessage(`Error al incrementar contador: ${error.message}`);
                 });
-              }
-            } catch (error) {
-              addDebugMessage(`Error al incrementar contador: ${error.message}`);
             }
-          }
-        } catch (error) {
-          setError(`Error al procesar el nuevo archivo: ${error.message}`);
-        } finally {
-          // Limpiar el archivo pendiente
-          setPendingZipFile(null);
-          setIsLoading(false);
-        }
-      }, 100);
+          })
+          .catch(error => {
+            console.error("[DIAGNÓSTICO] Error en processZipFile:", error.message);
+            setError(`Error al procesar el nuevo archivo: ${error.message}`);
+          })
+          .finally(() => {
+            // Limpiar el archivo pendiente
+            console.log("[DIAGNÓSTICO] Limpiando archivo pendiente");
+            setPendingZipFile(null);
+            console.log("[DIAGNÓSTICO] Desactivando indicador de carga");
+            setIsLoading(false);
+          });
+      } catch (error) {
+        console.error("[DIAGNÓSTICO] Error general en handleConfirmRefresh:", error.message);
+        setError(`Error al procesar el nuevo archivo: ${error.message}`);
+        setPendingZipFile(null);
+        setIsLoading(false);
+      }
     } else {
+      console.log("[DIAGNÓSTICO] No hay archivo pendiente, simplemente limpiando y recargando");
       // Si no hay archivo pendiente, simplemente limpiar y recargar
       localStorage.removeItem('whatsapp_analyzer_operation_id');
       localStorage.removeItem('whatsapp_analyzer_loading');
@@ -1485,6 +1519,7 @@ const tryDeleteFiles = async (operationId) => {
   
   // Función para cancelar la acción
   const handleCancelRefresh = () => {
+    console.log('[FUNCIÓN] Ejecutando handleCancelRefresh');
     setShowRefreshConfirmation(false);
   };
 
@@ -1798,13 +1833,24 @@ const tryDeleteFiles = async (operationId) => {
                   <div className="refresh-confirmation-buttons">
                     <button 
                       className="refresh-confirmation-cancel" 
-                      onClick={handleCancelRefresh}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('[BOTÓN] Clic en botón Cancelar');
+                        handleCancelRefresh();
+                      }}
                     >
                       Cancelar
                     </button>
                     <button 
                       className="refresh-confirmation-confirm" 
-                      onClick={handleConfirmRefresh}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('[BOTÓN] Clic en botón Confirmar');
+                        console.log('[BOTÓN] Estado pendingZipFile:', pendingZipFile ? 'EXISTE' : 'NO EXISTE');
+                        handleConfirmRefresh();
+                      }}
                     >
                       Sí, continuar
                     </button>
