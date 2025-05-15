@@ -280,6 +280,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [zipFile, setZipFile] = useState(null);
+  // Nuevo estado para almacenar el archivo ZIP pendiente de procesar
+  const [pendingZipFile, setPendingZipFile] = useState(null);
   const [isProcessingSharedFile, setIsProcessingSharedFile] = useState(false);
   const [debugMessages, setDebugMessages] = useState([]);
   const [chatGptResponse, setChatGptResponse] = useState("");
@@ -565,17 +567,6 @@ function App() {
     
     console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
     
-    // Hacer scroll inmediatamente al seleccionar el archivo, sin esperar al procesamiento
-    setTimeout(() => scrollToAnalysis(), 100);
-    
-    // Limpiar los datos anteriores al iniciar un nuevo análisis
-    setOperationId(null);
-    setChatGptResponse("");
-    setShowChatGptResponse(false);
-    localStorage.removeItem('whatsapp_analyzer_operation_id');
-    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-    
     // Verificación extremadamente permisiva - aceptar cualquier archivo con extensión .zip
     // o cualquier archivo con tipo MIME que pueda ser un ZIP
     const isZipFile = file.name.toLowerCase().endsWith('.zip') || 
@@ -592,6 +583,15 @@ function App() {
     
     // Analizar y corregir el archivo si es necesario
     const analyzedFile = analyzeFile(file);
+    
+    // Si ya hay un análisis en curso, guardar el nuevo archivo y mostrar confirmación
+    if (operationId && (chatData || chatGptResponse)) {
+      // Guardar el archivo pendiente para procesarlo después de la confirmación
+      setPendingZipFile(analyzedFile);
+      // Mostrar el diálogo de confirmación
+      setShowRefreshConfirmation(true);
+      return;
+    }
     
     // Check if user is logged in and has available uploads
     const isEligible = await checkUploadEligibility();
@@ -1387,20 +1387,96 @@ const tryDeleteFiles = async (operationId) => {
 
   // Função para continuar con la acción después de la confirmación
   const handleConfirmRefresh = () => {
-    // Limpiar el localStorage antes de refrescar
-    localStorage.removeItem('whatsapp_analyzer_operation_id');
-    localStorage.removeItem('whatsapp_analyzer_loading');
-    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-    localStorage.removeItem('whatsapp_analyzer_show_analysis');
-    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-    localStorage.removeItem('whatsapp_analyzer_mistral_error');
-    localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-    localStorage.removeItem('whatsapp_analyzer_chat_data');
-    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-    
-    // Recargar la página
-    window.location.reload();
+    // Comprobar si tenemos un archivo ZIP pendiente de procesar
+    if (pendingZipFile) {
+      // Limpiar el localStorage
+      localStorage.removeItem('whatsapp_analyzer_operation_id');
+      localStorage.removeItem('whatsapp_analyzer_loading');
+      localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+      localStorage.removeItem('whatsapp_analyzer_show_analysis');
+      localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+      localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+      localStorage.removeItem('whatsapp_analyzer_mistral_error');
+      localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+      
+      // Resetear el estado de la aplicación
+      setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
+      setError('');
+      setIsLoading(false);
+      setDebugMessages([]);
+      processedShareIds.current.clear();
+      setChatGptResponse("");
+      setShowChatGptResponse(false);
+      setShowAnalysis(false);
+      setOperationId(null);
+      setChatData(null);
+      
+      // Ocultar el diálogo de confirmación
+      setShowRefreshConfirmation(false);
+      
+      // Procesar el nuevo archivo ZIP
+      addDebugMessage('Procesando nuevo archivo ZIP después de confirmación');
+      
+      // Establecer un pequeño retraso para asegurar que la UI se ha actualizado
+      setTimeout(async () => {
+        try {
+          // Iniciar el procesamiento del nuevo archivo
+          setIsLoading(true);
+          setZipFile(pendingZipFile);
+          setProgressMessage("Procesando nuevo chat: Extrayendo mensajes y participantes...");
+          
+          // Procesar el nuevo archivo
+          await processZipFile(pendingZipFile);
+          
+          // Hacer scroll hacia la sección de análisis
+          scrollToAnalysis();
+          
+          // Incrementar el contador de uso
+          if (user) {
+            try {
+              addDebugMessage(`Incrementando contador para usuario: ${user.uid} - Método de carga: Nueva carga confirmada`);
+              await incrementChatUsage(user.uid);
+              
+              // Actualizar datos locales del perfil
+              if (userProfile) {
+                const newPeriodUsage = (userProfile.currentPeriodUsage || 0) + 1;
+                const newTotalUploads = (userProfile.totalUploads || 0) + 1;
+                
+                setUserProfile({
+                  ...userProfile,
+                  currentPeriodUsage: newPeriodUsage,
+                  totalUploads: newTotalUploads
+                });
+              }
+            } catch (error) {
+              addDebugMessage(`Error al incrementar contador: ${error.message}`);
+            }
+          }
+        } catch (error) {
+          setError(`Error al procesar el nuevo archivo: ${error.message}`);
+        } finally {
+          // Limpiar el archivo pendiente
+          setPendingZipFile(null);
+          setIsLoading(false);
+        }
+      }, 100);
+    } else {
+      // Si no hay archivo pendiente, simplemente limpiar y recargar
+      localStorage.removeItem('whatsapp_analyzer_operation_id');
+      localStorage.removeItem('whatsapp_analyzer_loading');
+      localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+      localStorage.removeItem('whatsapp_analyzer_show_analysis');
+      localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+      localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+      localStorage.removeItem('whatsapp_analyzer_mistral_error');
+      localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+      localStorage.removeItem('whatsapp_analyzer_chat_data');
+      localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+      
+      // Recargar la página como último recurso si no hay archivo pendiente
+      window.location.reload();
+    }
   };
   
   // Función para cancelar la acción
