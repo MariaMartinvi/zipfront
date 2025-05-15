@@ -382,6 +382,8 @@ function App() {
   const [processingResult, setProcessingResult] = useState(null);
   // Estado para el contenido del chat
   const [chatContent, setChatContent] = useState(null);
+  // Estado para controlar la carga desde IndexedDB
+  const [isLoadingFromIndexedDB, setIsLoadingFromIndexedDB] = useState(false);
   // Referencias para secciones de análisis - usadas para scroll automático
   const analysisRef = useRef(null);
   // Get user-related state from AuthContext instead of managing locally
@@ -566,7 +568,16 @@ function App() {
         
         if (extractedContent && extractedContent.chat) {
           // Guardamos el contenido del chat en el estado para usarlo en todos los análisis
+          console.log("Estableciendo chatData:", extractedContent.chat.substring(0, 50) + "...");
           setChatData(extractedContent.chat);
+          
+          // También guardar en localStorage para persistencia entre refrescos
+          try {
+            localStorage.setItem('whatsapp_analyzer_chat_data', extractedContent.chat);
+            localStorage.setItem('whatsapp_analyzer_has_chat_data', 'true');
+          } catch (storageError) {
+            console.error("Error al guardar chatData en localStorage:", storageError);
+          }
           
           // No es necesario enviar nada al backend ya que procesamos en el frontend
           console.log('Archivo ZIP procesado exitosamente en el cliente.');
@@ -783,9 +794,16 @@ function App() {
     setOperationId(null);
     setChatGptResponse("");
     setShowChatGptResponse(false);
+    setChatData(null);  // Asegurar que chatData se limpia
     localStorage.removeItem('whatsapp_analyzer_operation_id');
+    localStorage.removeItem('whatsapp_analyzer_loading');
+    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+    localStorage.removeItem('whatsapp_analyzer_show_analysis');
     localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
     localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+    localStorage.removeItem('whatsapp_analyzer_mistral_error');
+    localStorage.removeItem('whatsapp_analyzer_chat_data');
+    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
     
     if (!file) {
       setError('No se pudo recibir el archivo');
@@ -1005,6 +1023,7 @@ function App() {
   const fetchMistralResponse = async () => {
     // Verificar que tenemos datos del chat para analizar
     if (!chatData) {
+      console.log('fetchMistralResponse: No hay datos de chat disponibles para analizar');
       addDebugMessage('No hay datos de chat disponibles para analizar');
       setError('No hay datos de chat disponibles para analizar');
       return;
@@ -1024,6 +1043,7 @@ function App() {
     
     try {
       addDebugMessage('Analizando chat directamente con Azure OpenAI desde el frontend');
+      console.log('Iniciando análisis con chatData de longitud:', chatData.length);
       
       // Actualizar mensaje de progreso
       setProgressMessage(`${t('app.generating_analysis')}: ${t('progress_phases.processing_data')}`);
@@ -1125,10 +1145,10 @@ const tryDeleteFiles = async (operationId) => {
 };
   // Start analysis when we have chat data
   useEffect(() => {
-    if (chatData && !chatGptResponse) {
+    if (chatData && !chatGptResponse && !isLoadingFromIndexedDB) {
       fetchMistralResponse();
     }
-  }, [chatData, chatGptResponse]);
+  }, [chatData, chatGptResponse, isLoadingFromIndexedDB]);
 
   // Gestionar archivos recibidos por compartición (simulado, ya que no tenemos ShareReceiver)
   const handleSharedFiles = (sharedFiles) => {
@@ -1286,15 +1306,26 @@ const tryDeleteFiles = async (operationId) => {
     // Verificar si hay archivos pendientes en IndexedDB al iniciar
     const checkPendingFiles = async () => {
       try {
+        setIsLoadingFromIndexedDB(true); // Marcar inicio de carga
         const pendingFile = await getSharedFile();
         if (pendingFile) {
           console.log('Archivo pendiente encontrado en IndexedDB:', pendingFile.name);
+          
+          // Limpiar análisis previo antes de cargar nuevo archivo
+          setChatGptResponse("");
+          setShowChatGptResponse(false);
+          setOperationId(null);
+          setChatData(null);
+          
           // Procesar el archivo pendiente
           setZipFile(pendingFile);
           setIsProcessingSharedFile(true);
         }
       } catch (error) {
         console.error('Error al verificar archivos pendientes:', error);
+      } finally {
+        // Añadir pequeño delay para asegurar la sincronización
+        setTimeout(() => setIsLoadingFromIndexedDB(false), 300);
       }
     };
     
