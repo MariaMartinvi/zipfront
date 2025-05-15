@@ -1041,11 +1041,26 @@ function App() {
       return;
     }
     
-    // Evitar múltiples solicitudes simultáneas
+    // Evitar múltiples solicitudes simultáneas pero con protección contra bloqueos
     if (isFetchingMistral && !localStorage.getItem('whatsapp_analyzer_force_fetch')) {
-      console.log('Ya hay una solicitud en curso para obtener la respuesta de Mistral');
-      return;
+      // Verificar si ha pasado demasiado tiempo desde el último intento
+      const lastFetchTime = parseInt(localStorage.getItem('whatsapp_analyzer_last_fetch_time') || '0');
+      const currentTime = Date.now();
+      const timeSinceLastFetch = currentTime - lastFetchTime;
+      
+      // Si han pasado más de 30 segundos, podemos asumir que se bloqueó
+      if (lastFetchTime === 0 || timeSinceLastFetch > 30000) {
+        console.log(`⚠️ Reiniciando estado de fetchMistral por posible bloqueo (${timeSinceLastFetch/1000}s sin respuesta)`);
+        // Resetear el estado para poder reintentar
+        localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+      } else {
+        console.log(`Ya hay una solicitud en curso para obtener la respuesta de Mistral (hace ${timeSinceLastFetch/1000}s)`);
+        return;
+      }
     }
+    
+    // Registrar tiempo de inicio para control de timeout
+    localStorage.setItem('whatsapp_analyzer_last_fetch_time', Date.now().toString());
     
     // Limpiar el flag de forzar fetch si existe
     localStorage.removeItem('whatsapp_analyzer_force_fetch');
@@ -1096,6 +1111,8 @@ function App() {
         }, 1800000); // Esperar 30 minutos (1800000 ms)
         
         setIsFetchingMistral(false);
+        // Eliminar marca de tiempo al completar
+        localStorage.removeItem('whatsapp_analyzer_last_fetch_time');
         return true;
       } else {
         // Si hay un error, mostrar mensaje
@@ -1103,6 +1120,8 @@ function App() {
         addDebugMessage(`Error al obtener respuesta de Azure: ${result.error}`);
         setError(result.error || 'Error al analizar el chat con Azure OpenAI');
         setIsFetchingMistral(false);
+        // Eliminar marca de tiempo al completar (incluso con error)
+        localStorage.removeItem('whatsapp_analyzer_last_fetch_time');
         return false;
       }
     } catch (error) {
@@ -1112,6 +1131,8 @@ function App() {
       setError(`Error al analizar el chat: ${error.message}`);
       // Guardar que hubo un error para poder recuperarse después
       localStorage.setItem('whatsapp_analyzer_mistral_error', 'true');
+      // Eliminar marca de tiempo al completar (incluso con error)
+      localStorage.removeItem('whatsapp_analyzer_last_fetch_time');
       return false;
     }
   };
@@ -1171,10 +1192,20 @@ const tryDeleteFiles = async (operationId) => {
 };
   // Start analysis when we have chat data
   useEffect(() => {
-    // Solo ejecutar este efecto si no estamos cargando desde IndexedDB
+    // Verificar si estamos cargando desde IndexedDB
     if (isLoadingFromIndexedDB) {
       console.log('Aún cargando desde IndexedDB, postponiendo análisis...');
-      return;
+      // Añadir un timeout de respaldo en caso de que se quede bloqueado
+      const backupTimer = setTimeout(() => {
+        console.log('⚠️ Forzando análisis a pesar de carga de IndexedDB por timeout');
+        // Verificar nuevamente si tenemos datos del chat
+        if (chatData && !chatGptResponse) {
+          console.log('Iniciando fetchMistralResponse desde timeout de respaldo...');
+          fetchMistralResponse();
+        }
+      }, 15000); // 15 segundos de espera máxima
+      
+      return () => clearTimeout(backupTimer);
     }
     
     // Si tenemos datos de chat pero no respuesta de IA, iniciar análisis
@@ -1386,11 +1417,41 @@ const tryDeleteFiles = async (operationId) => {
     const checkPendingFiles = async () => {
       try {
         setIsLoadingFromIndexedDB(true); // Marcar inicio de carga
+        // Añadir un timeout de seguridad para resetear el estado de carga
+        const loadingTimeout = setTimeout(() => {
+          console.log('⚠️ Reiniciando estado de carga desde IndexedDB por timeout de seguridad');
+          setIsLoadingFromIndexedDB(false);
+        }, 10000); // 10 segundos de timeout
+
         const pendingFile = await getSharedFile();
         if (pendingFile) {
           console.log('Archivo pendiente encontrado en IndexedDB:', pendingFile.name);
           
-          // Limpiar análisis previo antes de cargar nuevo archivo
+          // Verificar primero si el usuario está logueado
+          if (!user) {
+            console.log('Usuario no logueado pero hay archivo pendiente, redirigiendo a login');
+            setError('Debes iniciar sesión para analizar conversaciones');
+            // Redirigir a la página de login después de un breve retraso
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 2000);
+            clearTimeout(loadingTimeout); // Limpiar el timeout si salimos antes
+            setIsLoadingFromIndexedDB(false); // Importante: resetear el estado
+            return;
+          }
+          
+          // Limpiar cualquier análisis anterior
+          localStorage.removeItem('whatsapp_analyzer_operation_id');
+          localStorage.removeItem('whatsapp_analyzer_loading');
+          localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+          localStorage.removeItem('whatsapp_analyzer_show_analysis');
+          localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+          localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+          localStorage.removeItem('whatsapp_analyzer_mistral_error');
+          localStorage.removeItem('whatsapp_analyzer_chat_data');
+          localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+          
+          // Limpiar estados
           setChatGptResponse("");
           setShowChatGptResponse(false);
           setOperationId(null);
@@ -1400,11 +1461,13 @@ const tryDeleteFiles = async (operationId) => {
           setZipFile(pendingFile);
           setIsProcessingSharedFile(true);
         }
+        
+        // Siempre resetear el estado de carga, éxito o fallo
+        clearTimeout(loadingTimeout); // Limpiar timeout ya que terminamos
+        setIsLoadingFromIndexedDB(false);
       } catch (error) {
         console.error('Error al verificar archivos pendientes:', error);
-      } finally {
-        // Añadir pequeño delay para asegurar la sincronización
-        setTimeout(() => setIsLoadingFromIndexedDB(false), 300);
+        setIsLoadingFromIndexedDB(false); // Importante: resetear también en caso de error
       }
     };
     
@@ -1445,6 +1508,19 @@ const tryDeleteFiles = async (operationId) => {
         
         if (event.data.shareId) {
           processedShareIds.current.add(event.data.shareId);
+        }
+        
+        // Verificar primero si el usuario está logueado
+        if (!user) {
+          console.log('Usuario no logueado, guardando archivo y mostrando mensaje');
+          saveSharedFile(event.data.file).then(() => {
+            setError('Debes iniciar sesión para analizar conversaciones');
+            // Redirigir a la página de login después de un breve retraso
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 2000);
+          });
+          return;
         }
         
         // Primero guardar el archivo en IndexedDB
@@ -1541,6 +1617,17 @@ const tryDeleteFiles = async (operationId) => {
         const pendingFile = await getSharedFile();
         if (pendingFile) {
           console.log('Archivo pendiente encontrado en IndexedDB al iniciar:', pendingFile.name);
+          
+          // Verificar primero si el usuario está logueado
+          if (!user) {
+            console.log('Usuario no logueado pero hay archivo pendiente, redirigiendo a login');
+            setError('Debes iniciar sesión para analizar conversaciones');
+            // Redirigir a la página de login después de un breve retraso
+            setTimeout(() => {
+              window.location.href = '/login';
+            }, 2000);
+            return;
+          }
           
           // Limpiar cualquier análisis anterior
           localStorage.removeItem('whatsapp_analyzer_operation_id');
