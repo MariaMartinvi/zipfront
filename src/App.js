@@ -1447,8 +1447,26 @@ const tryDeleteFiles = async (operationId) => {
           processedShareIds.current.add(event.data.shareId);
         }
         
-        // Guardar el archivo en IndexedDB antes de procesarlo
+        // Primero guardar el archivo en IndexedDB
         saveSharedFile(event.data.file).then(() => {
+          // Borrar datos del análisis anterior automáticamente
+          localStorage.removeItem('whatsapp_analyzer_operation_id');
+          localStorage.removeItem('whatsapp_analyzer_loading');
+          localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+          localStorage.removeItem('whatsapp_analyzer_show_analysis');
+          localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+          localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+          localStorage.removeItem('whatsapp_analyzer_mistral_error');
+          localStorage.removeItem('whatsapp_analyzer_chat_data');
+          localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+          
+          // Limpiar estados
+          setChatGptResponse("");
+          setShowChatGptResponse(false);
+          setOperationId(null);
+          setChatData(null);
+          
+          // Iniciar procesamiento del nuevo archivo
           handleSharedFile(event.data.file);
         }).catch(error => {
           console.error('Error al guardar archivo en IndexedDB:', error);
@@ -1517,6 +1535,42 @@ const tryDeleteFiles = async (operationId) => {
       }, 100);
     }
     
+    // Verificar si hay archivos pendientes en IndexedDB al iniciar
+    const checkPendingFiles = async () => {
+      try {
+        const pendingFile = await getSharedFile();
+        if (pendingFile) {
+          console.log('Archivo pendiente encontrado en IndexedDB al iniciar:', pendingFile.name);
+          
+          // Limpiar cualquier análisis anterior
+          localStorage.removeItem('whatsapp_analyzer_operation_id');
+          localStorage.removeItem('whatsapp_analyzer_loading');
+          localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+          localStorage.removeItem('whatsapp_analyzer_show_analysis');
+          localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+          localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+          localStorage.removeItem('whatsapp_analyzer_mistral_error');
+          localStorage.removeItem('whatsapp_analyzer_chat_data');
+          localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+          
+          // Limpiar estados
+          setChatGptResponse("");
+          setShowChatGptResponse(false);
+          setOperationId(null);
+          setChatData(null);
+          
+          // Procesar el archivo pendiente
+          setZipFile(pendingFile);
+          setIsProcessingSharedFile(true);
+        }
+      } catch (error) {
+        console.error('Error al verificar archivos pendientes:', error);
+      }
+    };
+    
+    // Comprobar archivos pendientes al inicio
+    checkPendingFiles();
+    
     // Restaurar el estado desde localStorage
     if (savedOperationId) {
       setOperationId(savedOperationId);
@@ -1583,6 +1637,102 @@ const tryDeleteFiles = async (operationId) => {
       return () => window.removeEventListener('keydown', handleReset);
     }
   }, []);
+
+  // Función para continuar con la acción después de la confirmación
+  const handleConfirmRefresh = () => {
+    // Limpiar el localStorage antes de refrescar
+    localStorage.removeItem('whatsapp_analyzer_operation_id');
+    localStorage.removeItem('whatsapp_analyzer_loading');
+    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+    localStorage.removeItem('whatsapp_analyzer_show_analysis');
+    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+    localStorage.removeItem('whatsapp_analyzer_mistral_error');
+    localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+    localStorage.removeItem('whatsapp_analyzer_chat_data');
+    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+    
+    // Recargar la página
+    window.location.reload();
+  };
+  
+  // Función para cancelar la acción
+  const handleCancelRefresh = () => {
+    setShowRefreshConfirmation(false);
+  };
+  
+  // Component to render when user needs to upgrade
+  const UpgradeModal = () => (
+    <div className="upgrade-modal">
+      <div className="upgrade-modal-content">
+        <h2>{t('app.upgrade_modal.title')}</h2>
+        <p>{t('app.upgrade_modal.message')}</p>
+        <p>{t('app.upgrade_modal.upgrade')}</p>
+        <div className="upgrade-buttons">
+          <button 
+            className="view-plans-button"
+            onClick={() => window.location.href = '/plans'}
+          >
+            {t('app.upgrade_modal.view_plans')}
+          </button>
+          <button 
+            className="close-button"
+            onClick={() => setShowUpgradeModal(false)}
+          >
+            {t('app.upgrade_modal.close')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Actualizar visibilidad del botón de Ver Análisis basado en la posición de scroll
+  useEffect(() => {
+    if (!operationId) return;
+    
+    const checkScrollPosition = () => {
+      if (analysisRef.current) {
+        const rect = analysisRef.current.getBoundingClientRect();
+        // Si la sección de análisis está fuera de la vista (por debajo de la ventana),
+        // mostrar el botón flotante
+        if (rect.top > window.innerHeight) {
+          setShowViewAnalysisButton(true);
+        } else {
+          setShowViewAnalysisButton(false);
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', checkScrollPosition);
+    // Comprobar inicialmente
+    checkScrollPosition();
+    
+    return () => {
+      window.removeEventListener('scroll', checkScrollPosition);
+    };
+  }, [operationId]);
+
+  // Añadir un efecto para manejar cuando el usuario vuelve a la aplicación después de cambiar de pestaña
+  useEffect(() => {
+    // No hacer nada si no hay análisis
+    if (!operationId) return;
+    
+    // Función para manejar cuando el usuario vuelve a la página
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && operationId) {
+        // Si el usuario vuelve a la página y hay un análisis, hacer scroll
+        setTimeout(() => scrollToAnalysis(), 300);
+      }
+    };
+    
+    // Añadir listener para cambios de visibilidad
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Limpiar listener al desmontar
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [operationId]);
 
   // Guardar datos críticos en localStorage cuando cambien
   useEffect(() => {
@@ -1679,126 +1829,6 @@ const tryDeleteFiles = async (operationId) => {
       document.removeEventListener('mousedown', handleNavClick, true);
     };
   }, [chatGptResponse, operationId, isLoading, isFetchingMistral, chatData]);
-
-  // Função para continuar con la acción después de la confirmación
-  const handleConfirmRefresh = () => {
-    // Limpiar el localStorage antes de refrescar
-    localStorage.removeItem('whatsapp_analyzer_operation_id');
-    localStorage.removeItem('whatsapp_analyzer_loading');
-    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-    localStorage.removeItem('whatsapp_analyzer_show_analysis');
-    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-    localStorage.removeItem('whatsapp_analyzer_mistral_error');
-    localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-    localStorage.removeItem('whatsapp_analyzer_chat_data');
-    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-    
-    // Recargar la página
-    window.location.reload();
-  };
-  
-  // Función para cancelar la acción
-  const handleCancelRefresh = () => {
-    setShowRefreshConfirmation(false);
-  };
-
-  // Limpieza cuando el usuario finaliza explícitamente el análisis o reinicia
-  const handleReset = () => {
-    setIsProcessingSharedFile(false);
-    isProcessingRef.current = false;
-    setError('');
-    setIsLoading(false);
-    setDebugMessages([]);
-    processedShareIds.current.clear();
-    setChatGptResponse("");
-    setShowChatGptResponse(false);
-    setOperationId(null);
-    setChatData(null); // Limpiar chatData
-    
-    // Limpiar la persistencia
-    localStorage.removeItem('whatsapp_analyzer_operation_id');
-    localStorage.removeItem('whatsapp_analyzer_loading');
-    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-    localStorage.removeItem('whatsapp_analyzer_show_analysis');
-    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-    localStorage.removeItem('whatsapp_analyzer_chat_data');
-    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-  };
-
-  // Component to render when user needs to upgrade
-  const UpgradeModal = () => (
-    <div className="upgrade-modal">
-      <div className="upgrade-modal-content">
-        <h2>{t('app.upgrade_modal.title')}</h2>
-        <p>{t('app.upgrade_modal.message')}</p>
-        <p>{t('app.upgrade_modal.upgrade')}</p>
-        <div className="upgrade-buttons">
-          <button 
-            className="view-plans-button"
-            onClick={() => window.location.href = '/plans'}
-          >
-            {t('app.upgrade_modal.view_plans')}
-          </button>
-          <button 
-            className="close-button"
-            onClick={() => setShowUpgradeModal(false)}
-          >
-            {t('app.upgrade_modal.close')}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Actualizar visibilidad del botón de Ver Análisis basado en la posición de scroll
-  useEffect(() => {
-    if (!operationId) return;
-    
-    const checkScrollPosition = () => {
-      if (analysisRef.current) {
-        const rect = analysisRef.current.getBoundingClientRect();
-        // Si la sección de análisis está fuera de la vista (por debajo de la ventana),
-        // mostrar el botón flotante
-        if (rect.top > window.innerHeight) {
-          setShowViewAnalysisButton(true);
-        } else {
-          setShowViewAnalysisButton(false);
-        }
-      }
-    };
-    
-    window.addEventListener('scroll', checkScrollPosition);
-    // Comprobar inicialmente
-    checkScrollPosition();
-    
-    return () => {
-      window.removeEventListener('scroll', checkScrollPosition);
-    };
-  }, [operationId]);
-
-  // Añadir un efecto para manejar cuando el usuario vuelve a la aplicación después de cambiar de pestaña
-  useEffect(() => {
-    // No hacer nada si no hay análisis
-    if (!operationId) return;
-    
-    // Función para manejar cuando el usuario vuelve a la página
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && operationId) {
-        // Si el usuario vuelve a la página y hay un análisis, hacer scroll
-        setTimeout(() => scrollToAnalysis(), 300);
-      }
-    };
-    
-    // Añadir listener para cambios de visibilidad
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Limpiar listener al desmontar
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [operationId]);
 
   // Main app component UI with routing
   return (
