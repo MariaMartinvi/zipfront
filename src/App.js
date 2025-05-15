@@ -695,14 +695,6 @@ function App() {
   const handleSharedFile = async (file) => {
     addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
     
-    // Limpiar los datos anteriores al iniciar un nuevo análisis
-    setOperationId(null);
-    setChatGptResponse("");
-    setShowChatGptResponse(false);
-    localStorage.removeItem('whatsapp_analyzer_operation_id');
-    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-    
     if (!file) {
       setError('No se pudo recibir el archivo');
       setIsProcessingSharedFile(false);
@@ -731,6 +723,18 @@ function App() {
     addDebugMessage('Analizando y corrigiendo tipo MIME del archivo');
     const analyzedFile = analyzeFile(file);
     
+    // Si ya hay un análisis en curso, guardar el nuevo archivo y mostrar confirmación
+    if (operationId && (chatData || chatGptResponse)) {
+      addDebugMessage(`Se detectó un análisis existente. Guardando archivo compartido como pendiente y mostrando confirmación`);
+      // Guardar el archivo pendiente para procesarlo después de la confirmación
+      setPendingZipFile(analyzedFile);
+      // Mostrar el diálogo de confirmación
+      setShowRefreshConfirmation(true);
+      setIsProcessingSharedFile(false);
+      isProcessingRef.current = false;
+      return;
+    }
+
     // Check if user is logged in and has available uploads
     addDebugMessage('Verificando elegibilidad del usuario para subir');
     const isEligible = await checkUploadEligibility();
