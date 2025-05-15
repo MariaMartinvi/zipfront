@@ -695,29 +695,30 @@ function App() {
   const handleSharedFile = async (file) => {
     addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
     
-    // NUEVO: Limpieza agresiva del localStorage al inicio para evitar problemas
+    // MODIFICADO: Limpieza selectiva del localStorage al inicio para evitar problemas
+    // pero mantener datos críticos para el análisis
     try {
-      addDebugMessage('Limpieza agresiva del localStorage para archivos de WhatsApp');
-      // Eliminar TODOS los datos de análisis previos del localStorage
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('whatsapp_analyzer_')) {
-          localStorage.removeItem(key);
-          addDebugMessage(`Eliminada clave de localStorage: ${key}`);
-        }
-      }
-      // Asegurar que estas claves específicas se eliminan
-      localStorage.removeItem('whatsapp_analyzer_operation_id');
-      localStorage.removeItem('whatsapp_analyzer_loading');
-      localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-      localStorage.removeItem('whatsapp_analyzer_show_analysis');
-      localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-      localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-      localStorage.removeItem('whatsapp_analyzer_mistral_error');
-      localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-      localStorage.removeItem('whatsapp_analyzer_chat_data');
-      localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-      addDebugMessage('Limpieza de localStorage completada');
+      addDebugMessage('Limpieza selectiva del localStorage para archivos de WhatsApp');
+      
+      // Lista de claves que queremos eliminar (no incluye chat_data)
+      const keysToRemove = [
+        'whatsapp_analyzer_operation_id',
+        'whatsapp_analyzer_loading',
+        'whatsapp_analyzer_fetching_mistral',
+        'whatsapp_analyzer_show_analysis',
+        'whatsapp_analyzer_chatgpt_response',
+        'whatsapp_analyzer_analysis_complete',
+        'whatsapp_analyzer_mistral_error',
+        'whatsapp_analyzer_page_refreshed'
+      ];
+      
+      // Eliminar solo las claves específicas
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        addDebugMessage(`Eliminada clave de localStorage: ${key}`);
+      });
+      
+      addDebugMessage('Limpieza selectiva de localStorage completada (manteniendo datos del chat)');
     } catch (err) {
       addDebugMessage(`Error al limpiar localStorage: ${err.message}`);
     }
