@@ -723,17 +723,14 @@ function App() {
     addDebugMessage('Analizando y corrigiendo tipo MIME del archivo');
     const analyzedFile = analyzeFile(file);
     
-    // Si ya hay un análisis en curso, guardar el nuevo archivo y mostrar confirmación
-    if (operationId && (chatData || chatGptResponse)) {
-      addDebugMessage(`Se detectó un análisis existente. Guardando archivo compartido como pendiente y mostrando confirmación`);
-      // Guardar el archivo pendiente para procesarlo después de la confirmación
-      setPendingZipFile(analyzedFile);
-      // Mostrar el diálogo de confirmación
-      setShowRefreshConfirmation(true);
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
-      return;
-    }
+    // Limpiar el estado anterior para un nuevo análisis
+    addDebugMessage('Limpiando estado para nuevo análisis (WhatsApp)');
+    // Limpiar cualquier análisis anterior
+    setOperationId(null);
+    setChatGptResponse("");
+    setShowChatGptResponse(false);
+    setChatData(null);
+    setShowAnalysis(false);
 
     // Check if user is logged in and has available uploads
     addDebugMessage('Verificando elegibilidad del usuario para subir');
