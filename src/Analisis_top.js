@@ -1839,9 +1839,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
                 </div>
               ))}
             </div>
-            <p style={{ marginTop: '20px', fontStyle: 'italic', fontWeight: 'bold' }}>
-              Próxima vez será
-            </p>
+            
           </div>
         );
       })()}

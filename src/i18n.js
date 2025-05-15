@@ -13,7 +13,7 @@ i18n
   // Inicializar i18next
   .init({
     fallbackLng: 'es',
-    debug: true, // Solo para desarrollo
+    debug: false, // Desactivado en producción
     interpolation: {
       escapeValue: false, // No es necesario escapar los valores con React
     },
