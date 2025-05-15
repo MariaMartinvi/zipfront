@@ -1021,6 +1021,16 @@ function App() {
 
   // Function to poll for Mistral response - Mejorada para ser más robusta
   const fetchMistralResponse = async () => {
+    // No ejecutar en páginas de autenticación
+    const isAuthPage = window.location.pathname.includes('/login') || 
+                       window.location.pathname.includes('/register') ||
+                       window.location.pathname.includes('/reset-password');
+    
+    if (isAuthPage) {
+      console.log('En página de autenticación, omitiendo fetchMistralResponse');
+      return;
+    }
+    
     // Verificar que tenemos datos del chat para analizar
     if (!chatData) {
       console.log('fetchMistralResponse: No hay datos de chat disponibles para analizar');
@@ -1192,6 +1202,16 @@ const tryDeleteFiles = async (operationId) => {
 };
   // Start analysis when we have chat data
   useEffect(() => {
+    // Detectar si estamos en páginas de autenticación
+    const isAuthPage = window.location.pathname.includes('/login') || 
+                       window.location.pathname.includes('/register') ||
+                       window.location.pathname.includes('/reset-password');
+    
+    // No realizar análisis si estamos en páginas de autenticación
+    if (isAuthPage) {
+      return;
+    }
+    
     // Verificar si estamos cargando desde IndexedDB
     if (isLoadingFromIndexedDB) {
       console.log('Aún cargando desde IndexedDB, postponiendo análisis...');
@@ -1418,9 +1438,17 @@ const tryDeleteFiles = async (operationId) => {
       try {
         setIsLoadingFromIndexedDB(true); // Marcar inicio de carga
         // Añadir un timeout de seguridad para resetear el estado de carga
+        // pero solo si estamos en la página principal (no en login/register)
+        const isAuthPage = window.location.pathname.includes('/login') || 
+                           window.location.pathname.includes('/register') ||
+                           window.location.pathname.includes('/reset-password');
+        
         const loadingTimeout = setTimeout(() => {
-          console.log('⚠️ Reiniciando estado de carga desde IndexedDB por timeout de seguridad');
-          setIsLoadingFromIndexedDB(false);
+          // No resetear si estamos en páginas de autenticación
+          if (!isAuthPage) {
+            console.log('⚠️ Reiniciando estado de carga desde IndexedDB por timeout de seguridad');
+            setIsLoadingFromIndexedDB(false);
+          }
         }, 10000); // 10 segundos de timeout
 
         const pendingFile = await getSharedFile();
@@ -1463,16 +1491,28 @@ const tryDeleteFiles = async (operationId) => {
         }
         
         // Siempre resetear el estado de carga, éxito o fallo
-        clearTimeout(loadingTimeout); // Limpiar timeout ya que terminamos
-        setIsLoadingFromIndexedDB(false);
+        // pero solo si NO estamos en páginas de autenticación
+        if (!isAuthPage) {
+          clearTimeout(loadingTimeout); // Limpiar timeout ya que terminamos
+          setIsLoadingFromIndexedDB(false);
+        }
       } catch (error) {
         console.error('Error al verificar archivos pendientes:', error);
         setIsLoadingFromIndexedDB(false); // Importante: resetear también en caso de error
       }
     };
     
-    // Comprobar archivos pendientes al inicio
-    checkPendingFiles();
+    // Comprobar archivos pendientes solo si NO estamos en páginas de autenticación
+    const isAuthPage = window.location.pathname.includes('/login') || 
+                       window.location.pathname.includes('/register') ||
+                       window.location.pathname.includes('/reset-password');
+    
+    if (!isAuthPage) {
+      checkPendingFiles();
+    } else {
+      // Si estamos en página de autenticación, asegurarse de que isLoadingFromIndexedDB sea false
+      setIsLoadingFromIndexedDB(false);
+    }
     
     // Configurar el Service Worker si está disponible
     if ('serviceWorker' in navigator) {
