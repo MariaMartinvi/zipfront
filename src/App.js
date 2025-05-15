@@ -26,86 +26,6 @@ import PrivacyPolicy from './Paginasextra/PrivacyPolicy';
 import AppPreview from './AppPreview';
 import { useTranslation } from 'react-i18next'; // Importar useTranslation
 
-// Constantes para IndexedDB
-const DB_NAME = 'SharedFilesDB';
-const STORE_NAME = 'pendingFiles';
-
-// Función para inicializar la base de datos IndexedDB
-const initDB = () => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
-    
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME);
-      }
-    };
-    
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-};
-
-// Guardar archivo en IndexedDB
-const saveSharedFile = async (file) => {
-  try {
-    const db = await initDB();
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    // Guardar el archivo con una clave fija
-    return new Promise((resolve, reject) => {
-      const request = store.put(file, 'pendingFile');
-      request.onsuccess = () => {
-        console.log('Archivo guardado en IndexedDB:', file.name);
-        resolve();
-      };
-      request.onerror = () => reject(request.error);
-    });
-  } catch (error) {
-    console.error('Error guardando archivo en IndexedDB:', error);
-  }
-};
-
-// Recuperar archivo de IndexedDB
-const getSharedFile = async () => {
-  try {
-    const db = await initDB();
-    const transaction = db.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    return new Promise((resolve, reject) => {
-      const request = store.get('pendingFile');
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  } catch (error) {
-    console.error('Error recuperando archivo de IndexedDB:', error);
-    return null;
-  }
-};
-
-// Eliminar archivo de IndexedDB
-const removeSharedFile = async () => {
-  try {
-    const db = await initDB();
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    return new Promise((resolve, reject) => {
-      const request = store.delete('pendingFile');
-      request.onsuccess = () => {
-        console.log('Archivo eliminado de IndexedDB');
-        resolve();
-      };
-      request.onerror = () => reject(request.error);
-    });
-  } catch (error) {
-    console.error('Error eliminando archivo de IndexedDB:', error);
-  }
-};
-
 // LoginPage component with useNavigate hook
 function LoginPage() {
   const navigate = useNavigate();
@@ -378,12 +298,6 @@ function App() {
   const [showViewAnalysisButton, setShowViewAnalysisButton] = useState(false);
   // Estado para mensajes de progreso
   const [progressMessage, setProgressMessage] = useState("");
-  // Estado para guardar resultados del procesamiento
-  const [processingResult, setProcessingResult] = useState(null);
-  // Estado para el contenido del chat
-  const [chatContent, setChatContent] = useState(null);
-  // Estado para controlar la carga desde IndexedDB
-  const [isLoadingFromIndexedDB, setIsLoadingFromIndexedDB] = useState(false);
   // Referencias para secciones de análisis - usadas para scroll automático
   const analysisRef = useRef(null);
   // Get user-related state from AuthContext instead of managing locally
@@ -568,16 +482,7 @@ function App() {
         
         if (extractedContent && extractedContent.chat) {
           // Guardamos el contenido del chat en el estado para usarlo en todos los análisis
-          console.log("Estableciendo chatData:", extractedContent.chat.substring(0, 50) + "...");
           setChatData(extractedContent.chat);
-          
-          // También guardar en localStorage para persistencia entre refrescos
-          try {
-            localStorage.setItem('whatsapp_analyzer_chat_data', extractedContent.chat);
-            localStorage.setItem('whatsapp_analyzer_has_chat_data', 'true');
-          } catch (storageError) {
-            console.error("Error al guardar chatData en localStorage:", storageError);
-          }
           
           // No es necesario enviar nada al backend ya que procesamos en el frontend
           console.log('Archivo ZIP procesado exitosamente en el cliente.');
@@ -794,16 +699,9 @@ function App() {
     setOperationId(null);
     setChatGptResponse("");
     setShowChatGptResponse(false);
-    setChatData(null);  // Asegurar que chatData se limpia
     localStorage.removeItem('whatsapp_analyzer_operation_id');
-    localStorage.removeItem('whatsapp_analyzer_loading');
-    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-    localStorage.removeItem('whatsapp_analyzer_show_analysis');
     localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
     localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-    localStorage.removeItem('whatsapp_analyzer_mistral_error');
-    localStorage.removeItem('whatsapp_analyzer_chat_data');
-    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
     
     if (!file) {
       setError('No se pudo recibir el archivo');
@@ -1021,68 +919,27 @@ function App() {
 
   // Function to poll for Mistral response - Mejorada para ser más robusta
   const fetchMistralResponse = async () => {
-    // No ejecutar en páginas de autenticación
-    const isAuthPage = window.location.pathname.includes('/login') || 
-                       window.location.pathname.includes('/register') ||
-                       window.location.pathname.includes('/reset-password');
-    
-    if (isAuthPage) {
-      console.log('En página de autenticación, omitiendo fetchMistralResponse');
-      return;
-    }
-    
     // Verificar que tenemos datos del chat para analizar
     if (!chatData) {
-      console.log('fetchMistralResponse: No hay datos de chat disponibles para analizar');
       addDebugMessage('No hay datos de chat disponibles para analizar');
       setError('No hay datos de chat disponibles para analizar');
       return;
     }
     
-    // Verificar si la operación ya está completa
-    const isComplete = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
-    const storedResponse = localStorage.getItem('whatsapp_analyzer_chatgpt_response');
-
-    // Si ya tenemos una respuesta almacenada y el análisis está marcado como completo
-    if (isComplete && storedResponse && !isFetchingMistral) {
-      console.log('Restaurando análisis previo completado desde localStorage');
-      setChatGptResponse(storedResponse);
-      setShowChatGptResponse(true);
+    // Evitar múltiples solicitudes simultáneas
+    if (isFetchingMistral && !localStorage.getItem('whatsapp_analyzer_force_fetch')) {
+      console.log('Ya hay una solicitud en curso para obtener la respuesta de Mistral');
       return;
     }
     
-    // Evitar múltiples solicitudes simultáneas pero con protección contra bloqueos
-    if (isFetchingMistral && !localStorage.getItem('whatsapp_analyzer_force_fetch')) {
-      // Verificar si ha pasado demasiado tiempo desde el último intento
-      const lastFetchTime = parseInt(localStorage.getItem('whatsapp_analyzer_last_fetch_time') || '0');
-      const currentTime = Date.now();
-      const timeSinceLastFetch = currentTime - lastFetchTime;
-      
-      // Si han pasado más de 30 segundos, podemos asumir que se bloqueó
-      if (lastFetchTime === 0 || timeSinceLastFetch > 30000) {
-        console.log(`⚠️ Reiniciando estado de fetchMistral por posible bloqueo (${timeSinceLastFetch/1000}s sin respuesta)`);
-        // Resetear el estado para poder reintentar
-        localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-      } else {
-        console.log(`Ya hay una solicitud en curso para obtener la respuesta de Mistral (hace ${timeSinceLastFetch/1000}s)`);
-        return;
-      }
-    }
-    
-    // Registrar tiempo de inicio para control de timeout
-    localStorage.setItem('whatsapp_analyzer_last_fetch_time', Date.now().toString());
-    
     // Limpiar el flag de forzar fetch si existe
     localStorage.removeItem('whatsapp_analyzer_force_fetch');
-    
-    console.log(`INICIANDO ANÁLISIS DE IA - Tenemos chatData: ${!!chatData}, Longitud: ${chatData?.length || 0}`);
     
     setIsFetchingMistral(true);
     setProgressMessage(t('app.generating_ai_analysis'));
     
     try {
       addDebugMessage('Analizando chat directamente con Azure OpenAI desde el frontend');
-      console.log('Iniciando análisis con chatData de longitud:', chatData.length);
       
       // Actualizar mensaje de progreso
       setProgressMessage(`${t('app.generating_analysis')}: ${t('progress_phases.processing_data')}`);
@@ -1090,17 +947,8 @@ function App() {
       // Obtener el idioma del usuario (predeterminado a 'es')
       const userLanguage = localStorage.getItem('i18nextLng') || 'es';
       
-      console.log(`Enviando solicitud a Azure OpenAI - Idioma: ${userLanguage}`);
-      
       // Enviar solicitud directamente a Azure OpenAI usando el método actualizado
       const result = await getMistralResponse(chatData, userLanguage);
-      
-      console.log('Respuesta del servicio de IA recibida:', { 
-        success: result.success, 
-        ready: result.ready,
-        tieneRespuesta: !!result.response,
-        longitudRespuesta: result.response?.length || 0
-      });
       
       if (result.success && result.ready && result.response) {
         addDebugMessage('Respuesta de Azure recibida con éxito');
@@ -1109,7 +957,6 @@ function App() {
         
         // Guardar en localStorage que el análisis está completo
         localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
-        localStorage.setItem('whatsapp_analyzer_chatgpt_response', result.response);
         
         // Hacer scroll automático hacia arriba cuando finaliza el análisis
         setTimeout(() => scrollToAnalysis(), 300);
@@ -1121,28 +968,20 @@ function App() {
         }, 1800000); // Esperar 30 minutos (1800000 ms)
         
         setIsFetchingMistral(false);
-        // Eliminar marca de tiempo al completar
-        localStorage.removeItem('whatsapp_analyzer_last_fetch_time');
         return true;
       } else {
         // Si hay un error, mostrar mensaje
-        console.error('Error en respuesta de IA:', result.error || 'Error desconocido');
         addDebugMessage(`Error al obtener respuesta de Azure: ${result.error}`);
         setError(result.error || 'Error al analizar el chat con Azure OpenAI');
         setIsFetchingMistral(false);
-        // Eliminar marca de tiempo al completar (incluso con error)
-        localStorage.removeItem('whatsapp_analyzer_last_fetch_time');
         return false;
       }
     } catch (error) {
-      console.error('Excepción en fetchMistralResponse:', error);
       addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
       setIsFetchingMistral(false);
       setError(`Error al analizar el chat: ${error.message}`);
       // Guardar que hubo un error para poder recuperarse después
       localStorage.setItem('whatsapp_analyzer_mistral_error', 'true');
-      // Eliminar marca de tiempo al completar (incluso con error)
-      localStorage.removeItem('whatsapp_analyzer_last_fetch_time');
       return false;
     }
   };
@@ -1202,163 +1041,70 @@ const tryDeleteFiles = async (operationId) => {
 };
   // Start analysis when we have chat data
   useEffect(() => {
-    // Detectar si estamos en páginas de autenticación
-    const isAuthPage = window.location.pathname.includes('/login') || 
-                       window.location.pathname.includes('/register') ||
-                       window.location.pathname.includes('/reset-password');
-    
-    // No realizar análisis si estamos en páginas de autenticación
-    if (isAuthPage) {
-      return;
+    if (chatData && !chatGptResponse) {
+      fetchMistralResponse();
     }
-    
-    // Verificar si estamos cargando desde IndexedDB
-    if (isLoadingFromIndexedDB) {
-      console.log('Aún cargando desde IndexedDB, postponiendo análisis...');
-      // Añadir un timeout de respaldo en caso de que se quede bloqueado
-      const backupTimer = setTimeout(() => {
-        console.log('⚠️ Forzando análisis a pesar de carga de IndexedDB por timeout');
-        // Verificar nuevamente si tenemos datos del chat
-        if (chatData && !chatGptResponse) {
-          console.log('Iniciando fetchMistralResponse desde timeout de respaldo...');
-          fetchMistralResponse();
-        }
-      }, 15000); // 15 segundos de espera máxima
-      
-      return () => clearTimeout(backupTimer);
-    }
-    
-    // Si tenemos datos de chat pero no respuesta de IA, iniciar análisis
-    if (chatData) {
-      // Crear un pequeño retraso para asegurar que todos los estados están actualizados
-      console.log('Tenemos datos de chat, programando análisis en 500ms...');
-      const timer = setTimeout(() => {
-        // Verificar nuevamente si tenemos respuesta para evitar duplicados
-        if (!chatGptResponse) {
-          console.log('Iniciando fetchMistralResponse desde useEffect...');
-          fetchMistralResponse();
-        } else {
-          console.log('Ya tenemos chatGptResponse, omitiendo fetchMistralResponse');
-        }
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    } else {
-      console.log('No hay datos de chat disponibles para análisis');
-    }
-  }, [chatData, chatGptResponse, isLoadingFromIndexedDB]);
+  }, [chatData, chatGptResponse]);
 
-  // Gestionar archivos recibidos por compartición (simulado, ya que no tenemos ShareReceiver)
-  const handleSharedFiles = (sharedFiles) => {
-    if (sharedFiles && sharedFiles.length > 0) {
-      console.log("Archivos compartidos recibidos:", sharedFiles);
-      setZipFile(sharedFiles[0]);
-      setIsProcessingSharedFile(true);
-    }
-  };
-
-  // Función para encontrar archivos de chat entre los archivos procesados
-  const encontrarArchivosChat = (archivos) => {
-    if (!archivos || archivos.length === 0) return null;
-    
-    // Buscar archivos con nombres que indiquen que son chats
-    const posiblesChats = archivos.filter(file => {
-      const nombre = file.name.toLowerCase();
-      return nombre.includes('chat') || 
-             nombre.endsWith('.txt') || 
-             nombre.includes('whatsapp') ||
-             nombre.includes('_chat');
-    });
-    
-    // Si encontramos alguno, devolver el primero
-    if (posiblesChats.length > 0) {
-      console.log("Archivo de chat encontrado:", posiblesChats[0].name);
-      return posiblesChats[0];
-    }
-    
-    return null;
-  };
-
-  // Procesar archivos de forma asíncrona
+  // Efecto para manejar compartir archivos y configurar Service Worker
   useEffect(() => {
-    const processFiles = async () => {
-      if (zipFile && isProcessingSharedFile) {
-        console.log(`Iniciando procesamiento de archivo: ${zipFile.name}`);
-        
-        // Limpiar estados previos
-        setChatGptResponse("");
-        setShowChatGptResponse(false);
-        setOperationId(null); // Asegurar que operationId se resetea
-        setChatData(null); // Resetear chatData explícitamente
-        
-        // Limpiar localStorage relacionado con análisis previos
-        localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-        localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-        localStorage.removeItem('whatsapp_analyzer_chat_data');
-        localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-        
-        setIsLoading(true);
-        setError('');
-        console.log(`Procesando archivo: ${zipFile.name}`);
-        
+    // Configurar el Service Worker si está disponible
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
         try {
-          // Usar nuestro procesador cliente para extraer y anonimizar
-          console.log('Llamando a processZipFile...');
-          const result = await processZipFile(zipFile);
-          console.log('Resultado de processZipFile:', result);
+          const registration = await navigator.serviceWorker.register('/service-worker.js');
+          addDebugMessage('Service Worker registrado correctamente');
           
-          if (result === true || (result && result.success)) {
-            console.log("Procesamiento completado con éxito");
-            if (result.processedFiles) {
-              setFiles(result.processedFiles);
-              setProcessingResult(result);
-              
-              // Buscar el archivo de chat para análisis
-              console.log('Buscando archivo de chat entre los procesados...');
-              const chatFile = encontrarArchivosChat(result.processedFiles);
-              if (chatFile) {
-                console.log("Archivo de chat encontrado para análisis:", chatFile.name);
-                // Usar FileReader para leer el contenido del archivo de chat
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                  const content = e.target.result;
-                  console.log(`Contenido de chat leído, longitud: ${content.length}`);
-                  setChatContent(content);
-                  
-                  // Si chatData no se estableció en processZipFile, establecerlo aquí
-                  if (!chatData) {
-                    console.log("Estableciendo chatData desde FileReader");
-                    setChatData(content);
-                    // También guardar en localStorage
-                    localStorage.setItem('whatsapp_analyzer_chat_data', content);
-                    localStorage.setItem('whatsapp_analyzer_has_chat_data', 'true');
-                  }
-                };
-                reader.readAsText(chatFile.data);
-              } else {
-                console.warn('No se encontró ningún archivo de chat');
-              }
-            }
-            
-            // Una vez procesado con éxito, eliminar el archivo pendiente de IndexedDB
-            console.log('Eliminando archivo de IndexedDB después de procesamiento exitoso');
-            await removeSharedFile();
+          // Comprobar si el Service Worker está activo
+          if (navigator.serviceWorker.controller) {
+            addDebugMessage('Service Worker está controlando la página');
           } else {
-            console.error("Error en el procesamiento:", result?.error || "Error desconocido");
-            setError(result?.error || "Error procesando el archivo");
+            addDebugMessage('Service Worker registrado pero aún no controla la página');
+            // Recargar la página para activar el Service Worker si es necesario
+            if (window.location.search.includes('shared=')) {
+              window.location.reload();
+            }
           }
-        } catch (err) {
-          console.error("Error durante el procesamiento:", err);
-          setError(`Error: ${err.message}`);
-        } finally {
-          setIsLoading(false);
-          setIsProcessingSharedFile(false);
+        } catch (error) {
+          addDebugMessage(`Error al registrar Service Worker: ${error.message}`);
         }
+      });
+    }
+
+    // Función para manejar los mensajes del Service Worker
+    const handleServiceWorkerMessage = (event) => {
+      addDebugMessage(`Mensaje recibido del Service Worker: ${event.data?.type}`);
+      
+      if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
+        addDebugMessage(`Archivo recibido del Service Worker: ${event.data.file.name}`);
+        
+        // Evitar procesamiento duplicado
+        if (event.data.shareId && processedShareIds.current.has(event.data.shareId)) {
+          addDebugMessage(`ShareID ${event.data.shareId} ya procesado, ignorando`);
+          return;
+        }
+        
+        if (event.data.shareId) {
+          processedShareIds.current.add(event.data.shareId);
+        }
+        
+        handleSharedFile(event.data.file);
+      } else if (event.data && event.data.type === 'SHARED_FILE_ERROR') {
+        setError(`Error al recibir archivo: ${event.data.error || 'Error desconocido'}`);
+        setIsProcessingSharedFile(false);
+        isProcessingRef.current = false;
+      } else if (event.data && event.data.type === 'PONG') {
+        addDebugMessage('Service Worker está activo (respuesta PONG)');
       }
     };
-
-    processFiles();
-  }, [zipFile, isProcessingSharedFile]);
+    
+    // Registrar el listener para mensajes del Service Worker
+    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+    
+    return () => {
+      navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
+    };
+  }, []);
 
   // Efecto para procesar parámetros de URL
   useEffect(() => {
@@ -1431,181 +1177,6 @@ const tryDeleteFiles = async (operationId) => {
     }
   }, []);
 
-  // Efecto para manejar Service Worker y verificar archivos pendientes
-  useEffect(() => {
-    // Verificar si hay archivos pendientes en IndexedDB al iniciar
-    const checkPendingFiles = async () => {
-      try {
-        setIsLoadingFromIndexedDB(true); // Marcar inicio de carga
-        // Añadir un timeout de seguridad para resetear el estado de carga
-        // pero solo si estamos en la página principal (no en login/register)
-        const isAuthPage = window.location.pathname.includes('/login') || 
-                           window.location.pathname.includes('/register') ||
-                           window.location.pathname.includes('/reset-password');
-        
-        const loadingTimeout = setTimeout(() => {
-          // No resetear si estamos en páginas de autenticación
-          if (!isAuthPage) {
-            console.log('⚠️ Reiniciando estado de carga desde IndexedDB por timeout de seguridad');
-            setIsLoadingFromIndexedDB(false);
-          }
-        }, 10000); // 10 segundos de timeout
-
-        const pendingFile = await getSharedFile();
-        if (pendingFile) {
-          console.log('Archivo pendiente encontrado en IndexedDB:', pendingFile.name);
-          
-          // Verificar primero si el usuario está logueado
-          if (!user) {
-            console.log('Usuario no logueado pero hay archivo pendiente, redirigiendo a login');
-            setError('Debes iniciar sesión para analizar conversaciones');
-            // Redirigir a la página de login después de un breve retraso
-            setTimeout(() => {
-              window.location.href = '/login';
-            }, 2000);
-            clearTimeout(loadingTimeout); // Limpiar el timeout si salimos antes
-            setIsLoadingFromIndexedDB(false); // Importante: resetear el estado
-            return;
-          }
-          
-          // Limpiar cualquier análisis anterior
-          localStorage.removeItem('whatsapp_analyzer_operation_id');
-          localStorage.removeItem('whatsapp_analyzer_loading');
-          localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-          localStorage.removeItem('whatsapp_analyzer_show_analysis');
-          localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-          localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-          localStorage.removeItem('whatsapp_analyzer_mistral_error');
-          localStorage.removeItem('whatsapp_analyzer_chat_data');
-          localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-          
-          // Limpiar estados
-          setChatGptResponse("");
-          setShowChatGptResponse(false);
-          setOperationId(null);
-          setChatData(null);
-          
-          // Procesar el archivo pendiente
-          setZipFile(pendingFile);
-          setIsProcessingSharedFile(true);
-        }
-        
-        // Siempre resetear el estado de carga, éxito o fallo
-        // pero solo si NO estamos en páginas de autenticación
-        if (!isAuthPage) {
-          clearTimeout(loadingTimeout); // Limpiar timeout ya que terminamos
-          setIsLoadingFromIndexedDB(false);
-        }
-      } catch (error) {
-        console.error('Error al verificar archivos pendientes:', error);
-        setIsLoadingFromIndexedDB(false); // Importante: resetear también en caso de error
-      }
-    };
-    
-    // Comprobar archivos pendientes solo si NO estamos en páginas de autenticación
-    const isAuthPage = window.location.pathname.includes('/login') || 
-                       window.location.pathname.includes('/register') ||
-                       window.location.pathname.includes('/reset-password');
-    
-    if (!isAuthPage) {
-      checkPendingFiles();
-    } else {
-      // Si estamos en página de autenticación, asegurarse de que isLoadingFromIndexedDB sea false
-      setIsLoadingFromIndexedDB(false);
-    }
-    
-    // Configurar el Service Worker si está disponible
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          const registration = await navigator.serviceWorker.register('/service-worker.js');
-          addDebugMessage('Service Worker registrado correctamente');
-          
-          // Comprobar si el Service Worker está activo
-          if (navigator.serviceWorker.controller) {
-            addDebugMessage('Service Worker está controlando la página');
-          } else {
-            addDebugMessage('Service Worker registrado pero aún no controla la página');
-          }
-        } catch (error) {
-          addDebugMessage(`Error al registrar Service Worker: ${error.message}`);
-        }
-      });
-    }
-    
-    // Función para manejar los mensajes del Service Worker
-    const handleServiceWorkerMessage = (event) => {
-      addDebugMessage(`Mensaje recibido del Service Worker: ${event.data?.type}`);
-      
-      if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
-        addDebugMessage(`Archivo recibido del Service Worker: ${event.data.file.name}`);
-        
-        // Evitar procesamiento duplicado
-        if (event.data.shareId && processedShareIds.current.has(event.data.shareId)) {
-          addDebugMessage(`ShareID ${event.data.shareId} ya procesado, ignorando`);
-          return;
-        }
-        
-        if (event.data.shareId) {
-          processedShareIds.current.add(event.data.shareId);
-        }
-        
-        // Verificar primero si el usuario está logueado
-        if (!user) {
-          console.log('Usuario no logueado, guardando archivo y mostrando mensaje');
-          saveSharedFile(event.data.file).then(() => {
-            setError('Debes iniciar sesión para analizar conversaciones');
-            // Redirigir a la página de login después de un breve retraso
-            setTimeout(() => {
-              window.location.href = '/login';
-            }, 2000);
-          });
-          return;
-        }
-        
-        // Primero guardar el archivo en IndexedDB
-        saveSharedFile(event.data.file).then(() => {
-          // Borrar datos del análisis anterior automáticamente
-          localStorage.removeItem('whatsapp_analyzer_operation_id');
-          localStorage.removeItem('whatsapp_analyzer_loading');
-          localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-          localStorage.removeItem('whatsapp_analyzer_show_analysis');
-          localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-          localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-          localStorage.removeItem('whatsapp_analyzer_mistral_error');
-          localStorage.removeItem('whatsapp_analyzer_chat_data');
-          localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-          
-          // Limpiar estados
-          setChatGptResponse("");
-          setShowChatGptResponse(false);
-          setOperationId(null);
-          setChatData(null);
-          
-          // Iniciar procesamiento del nuevo archivo
-          handleSharedFile(event.data.file);
-        }).catch(error => {
-          console.error('Error al guardar archivo en IndexedDB:', error);
-          // Si falla el guardado en IndexedDB, intentar procesar directamente
-          handleSharedFile(event.data.file);
-        });
-      } else if (event.data && event.data.type === 'SHARED_FILE_ERROR') {
-        setError(`Error al recibir archivo: ${event.data.error || 'Error desconocido'}`);
-        setIsProcessingSharedFile(false);
-        isProcessingRef.current = false;
-      } else if (event.data && event.data.type === 'PONG') {
-        addDebugMessage('Service Worker está activo (respuesta PONG)');
-      }
-    };
-    
-    // Registrar el listener para mensajes del Service Worker
-    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
-    
-    return () => {
-      navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
-    };
-  }, []);
-
   // Cargar datos persistentes al iniciar la aplicación
   useEffect(() => {
     // Intentar recuperar el operationId del localStorage
@@ -1650,53 +1221,6 @@ const tryDeleteFiles = async (operationId) => {
         }
       }, 100);
     }
-    
-    // Verificar si hay archivos pendientes en IndexedDB al iniciar
-    const checkPendingFiles = async () => {
-      try {
-        const pendingFile = await getSharedFile();
-        if (pendingFile) {
-          console.log('Archivo pendiente encontrado en IndexedDB al iniciar:', pendingFile.name);
-          
-          // Verificar primero si el usuario está logueado
-          if (!user) {
-            console.log('Usuario no logueado pero hay archivo pendiente, redirigiendo a login');
-            setError('Debes iniciar sesión para analizar conversaciones');
-            // Redirigir a la página de login después de un breve retraso
-            setTimeout(() => {
-              window.location.href = '/login';
-            }, 2000);
-            return;
-          }
-          
-          // Limpiar cualquier análisis anterior
-          localStorage.removeItem('whatsapp_analyzer_operation_id');
-          localStorage.removeItem('whatsapp_analyzer_loading');
-          localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-          localStorage.removeItem('whatsapp_analyzer_show_analysis');
-          localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-          localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-          localStorage.removeItem('whatsapp_analyzer_mistral_error');
-          localStorage.removeItem('whatsapp_analyzer_chat_data');
-          localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-          
-          // Limpiar estados
-          setChatGptResponse("");
-          setShowChatGptResponse(false);
-          setOperationId(null);
-          setChatData(null);
-          
-          // Procesar el archivo pendiente
-          setZipFile(pendingFile);
-          setIsProcessingSharedFile(true);
-        }
-      } catch (error) {
-        console.error('Error al verificar archivos pendientes:', error);
-      }
-    };
-    
-    // Comprobar archivos pendientes al inicio
-    checkPendingFiles();
     
     // Restaurar el estado desde localStorage
     if (savedOperationId) {
@@ -1764,102 +1288,6 @@ const tryDeleteFiles = async (operationId) => {
       return () => window.removeEventListener('keydown', handleReset);
     }
   }, []);
-
-  // Función para continuar con la acción después de la confirmación
-  const handleConfirmRefresh = () => {
-    // Limpiar el localStorage antes de refrescar
-    localStorage.removeItem('whatsapp_analyzer_operation_id');
-    localStorage.removeItem('whatsapp_analyzer_loading');
-    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-    localStorage.removeItem('whatsapp_analyzer_show_analysis');
-    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-    localStorage.removeItem('whatsapp_analyzer_mistral_error');
-    localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-    localStorage.removeItem('whatsapp_analyzer_chat_data');
-    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-    
-    // Recargar la página
-    window.location.reload();
-  };
-  
-  // Función para cancelar la acción
-  const handleCancelRefresh = () => {
-    setShowRefreshConfirmation(false);
-  };
-  
-  // Component to render when user needs to upgrade
-  const UpgradeModal = () => (
-    <div className="upgrade-modal">
-      <div className="upgrade-modal-content">
-        <h2>{t('app.upgrade_modal.title')}</h2>
-        <p>{t('app.upgrade_modal.message')}</p>
-        <p>{t('app.upgrade_modal.upgrade')}</p>
-        <div className="upgrade-buttons">
-          <button 
-            className="view-plans-button"
-            onClick={() => window.location.href = '/plans'}
-          >
-            {t('app.upgrade_modal.view_plans')}
-          </button>
-          <button 
-            className="close-button"
-            onClick={() => setShowUpgradeModal(false)}
-          >
-            {t('app.upgrade_modal.close')}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Actualizar visibilidad del botón de Ver Análisis basado en la posición de scroll
-  useEffect(() => {
-    if (!operationId) return;
-    
-    const checkScrollPosition = () => {
-      if (analysisRef.current) {
-        const rect = analysisRef.current.getBoundingClientRect();
-        // Si la sección de análisis está fuera de la vista (por debajo de la ventana),
-        // mostrar el botón flotante
-        if (rect.top > window.innerHeight) {
-          setShowViewAnalysisButton(true);
-        } else {
-          setShowViewAnalysisButton(false);
-        }
-      }
-    };
-    
-    window.addEventListener('scroll', checkScrollPosition);
-    // Comprobar inicialmente
-    checkScrollPosition();
-    
-    return () => {
-      window.removeEventListener('scroll', checkScrollPosition);
-    };
-  }, [operationId]);
-
-  // Añadir un efecto para manejar cuando el usuario vuelve a la aplicación después de cambiar de pestaña
-  useEffect(() => {
-    // No hacer nada si no hay análisis
-    if (!operationId) return;
-    
-    // Función para manejar cuando el usuario vuelve a la página
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && operationId) {
-        // Si el usuario vuelve a la página y hay un análisis, hacer scroll
-        setTimeout(() => scrollToAnalysis(), 300);
-      }
-    };
-    
-    // Añadir listener para cambios de visibilidad
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Limpiar listener al desmontar
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [operationId]);
 
   // Guardar datos críticos en localStorage cuando cambien
   useEffect(() => {
@@ -1957,6 +1385,126 @@ const tryDeleteFiles = async (operationId) => {
     };
   }, [chatGptResponse, operationId, isLoading, isFetchingMistral, chatData]);
 
+  // Função para continuar con la acción después de la confirmación
+  const handleConfirmRefresh = () => {
+    // Limpiar el localStorage antes de refrescar
+    localStorage.removeItem('whatsapp_analyzer_operation_id');
+    localStorage.removeItem('whatsapp_analyzer_loading');
+    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+    localStorage.removeItem('whatsapp_analyzer_show_analysis');
+    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+    localStorage.removeItem('whatsapp_analyzer_mistral_error');
+    localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+    localStorage.removeItem('whatsapp_analyzer_chat_data');
+    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+    
+    // Recargar la página
+    window.location.reload();
+  };
+  
+  // Función para cancelar la acción
+  const handleCancelRefresh = () => {
+    setShowRefreshConfirmation(false);
+  };
+
+  // Limpieza cuando el usuario finaliza explícitamente el análisis o reinicia
+  const handleReset = () => {
+    setIsProcessingSharedFile(false);
+    isProcessingRef.current = false;
+    setError('');
+    setIsLoading(false);
+    setDebugMessages([]);
+    processedShareIds.current.clear();
+    setChatGptResponse("");
+    setShowChatGptResponse(false);
+    setOperationId(null);
+    setChatData(null); // Limpiar chatData
+    
+    // Limpiar la persistencia
+    localStorage.removeItem('whatsapp_analyzer_operation_id');
+    localStorage.removeItem('whatsapp_analyzer_loading');
+    localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+    localStorage.removeItem('whatsapp_analyzer_show_analysis');
+    localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+    localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+    localStorage.removeItem('whatsapp_analyzer_chat_data');
+    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+  };
+
+  // Component to render when user needs to upgrade
+  const UpgradeModal = () => (
+    <div className="upgrade-modal">
+      <div className="upgrade-modal-content">
+        <h2>{t('app.upgrade_modal.title')}</h2>
+        <p>{t('app.upgrade_modal.message')}</p>
+        <p>{t('app.upgrade_modal.upgrade')}</p>
+        <div className="upgrade-buttons">
+          <button 
+            className="view-plans-button"
+            onClick={() => window.location.href = '/plans'}
+          >
+            {t('app.upgrade_modal.view_plans')}
+          </button>
+          <button 
+            className="close-button"
+            onClick={() => setShowUpgradeModal(false)}
+          >
+            {t('app.upgrade_modal.close')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Actualizar visibilidad del botón de Ver Análisis basado en la posición de scroll
+  useEffect(() => {
+    if (!operationId) return;
+    
+    const checkScrollPosition = () => {
+      if (analysisRef.current) {
+        const rect = analysisRef.current.getBoundingClientRect();
+        // Si la sección de análisis está fuera de la vista (por debajo de la ventana),
+        // mostrar el botón flotante
+        if (rect.top > window.innerHeight) {
+          setShowViewAnalysisButton(true);
+        } else {
+          setShowViewAnalysisButton(false);
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', checkScrollPosition);
+    // Comprobar inicialmente
+    checkScrollPosition();
+    
+    return () => {
+      window.removeEventListener('scroll', checkScrollPosition);
+    };
+  }, [operationId]);
+
+  // Añadir un efecto para manejar cuando el usuario vuelve a la aplicación después de cambiar de pestaña
+  useEffect(() => {
+    // No hacer nada si no hay análisis
+    if (!operationId) return;
+    
+    // Función para manejar cuando el usuario vuelve a la página
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && operationId) {
+        // Si el usuario vuelve a la página y hay un análisis, hacer scroll
+        setTimeout(() => scrollToAnalysis(), 300);
+      }
+    };
+    
+    // Añadir listener para cambios de visibilidad
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Limpiar listener al desmontar
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [operationId]);
+
   // Main app component UI with routing
   return (
     <div className="app-container">
@@ -2043,21 +1591,7 @@ const tryDeleteFiles = async (operationId) => {
                             <p>{t('app.analysis.preparing_psychological')}</p>
                           </div>
                         ) : (
-                          chatGptResponse ? <Chatgptresultados chatGptResponse={chatGptResponse} /> :
-                          // Si no hay respuesta y no está cargando, mostrar botón para reintentar
-                          <div className="retry-analysis-container">
-                            <p>No se ha podido completar el análisis psicológico.</p>
-                            <button 
-                              className="retry-analysis-button"
-                              onClick={() => {
-                                console.log("Forzando análisis psicológico");
-                                localStorage.setItem('whatsapp_analyzer_force_fetch', 'true');
-                                fetchMistralResponse();
-                              }}
-                            >
-                              Reintentar análisis psicológico
-                            </button>
-                          </div>
+                          chatGptResponse && <Chatgptresultados chatGptResponse={chatGptResponse} />
                         )}
                       </div>
                     )}
