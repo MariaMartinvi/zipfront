@@ -26,6 +26,86 @@ import PrivacyPolicy from './Paginasextra/PrivacyPolicy';
 import AppPreview from './AppPreview';
 import { useTranslation } from 'react-i18next'; // Importar useTranslation
 
+// Constantes para IndexedDB
+const DB_NAME = 'SharedFilesDB';
+const STORE_NAME = 'pendingFiles';
+
+// Función para inicializar la base de datos IndexedDB
+const initDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME);
+      }
+    };
+    
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+};
+
+// Guardar archivo en IndexedDB
+const saveSharedFile = async (file) => {
+  try {
+    const db = await initDB();
+    const transaction = db.transaction(STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    
+    // Guardar el archivo con una clave fija
+    return new Promise((resolve, reject) => {
+      const request = store.put(file, 'pendingFile');
+      request.onsuccess = () => {
+        console.log('Archivo guardado en IndexedDB:', file.name);
+        resolve();
+      };
+      request.onerror = () => reject(request.error);
+    });
+  } catch (error) {
+    console.error('Error guardando archivo en IndexedDB:', error);
+  }
+};
+
+// Recuperar archivo de IndexedDB
+const getSharedFile = async () => {
+  try {
+    const db = await initDB();
+    const transaction = db.transaction(STORE_NAME, 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    
+    return new Promise((resolve, reject) => {
+      const request = store.get('pendingFile');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  } catch (error) {
+    console.error('Error recuperando archivo de IndexedDB:', error);
+    return null;
+  }
+};
+
+// Eliminar archivo de IndexedDB
+const removeSharedFile = async () => {
+  try {
+    const db = await initDB();
+    const transaction = db.transaction(STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    
+    return new Promise((resolve, reject) => {
+      const request = store.delete('pendingFile');
+      request.onsuccess = () => {
+        console.log('Archivo eliminado de IndexedDB');
+        resolve();
+      };
+      request.onerror = () => reject(request.error);
+    });
+  } catch (error) {
+    console.error('Error eliminando archivo de IndexedDB:', error);
+  }
+};
+
 // LoginPage component with useNavigate hook
 function LoginPage() {
   const navigate = useNavigate();
@@ -298,6 +378,10 @@ function App() {
   const [showViewAnalysisButton, setShowViewAnalysisButton] = useState(false);
   // Estado para mensajes de progreso
   const [progressMessage, setProgressMessage] = useState("");
+  // Estado para guardar resultados del procesamiento
+  const [processingResult, setProcessingResult] = useState(null);
+  // Estado para el contenido del chat
+  const [chatContent, setChatContent] = useState(null);
   // Referencias para secciones de análisis - usadas para scroll automático
   const analysisRef = useRef(null);
   // Get user-related state from AuthContext instead of managing locally
@@ -1046,65 +1130,85 @@ const tryDeleteFiles = async (operationId) => {
     }
   }, [chatData, chatGptResponse]);
 
-  // Efecto para manejar compartir archivos y configurar Service Worker
-  useEffect(() => {
-    // Configurar el Service Worker si está disponible
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          const registration = await navigator.serviceWorker.register('/service-worker.js');
-          addDebugMessage('Service Worker registrado correctamente');
-          
-          // Comprobar si el Service Worker está activo
-          if (navigator.serviceWorker.controller) {
-            addDebugMessage('Service Worker está controlando la página');
-          } else {
-            addDebugMessage('Service Worker registrado pero aún no controla la página');
-            // Recargar la página para activar el Service Worker si es necesario
-            if (window.location.search.includes('shared=')) {
-              window.location.reload();
-            }
-          }
-        } catch (error) {
-          addDebugMessage(`Error al registrar Service Worker: ${error.message}`);
-        }
-      });
+  // Gestionar archivos recibidos por compartición (simulado, ya que no tenemos ShareReceiver)
+  const handleSharedFiles = (sharedFiles) => {
+    if (sharedFiles && sharedFiles.length > 0) {
+      console.log("Archivos compartidos recibidos:", sharedFiles);
+      setZipFile(sharedFiles[0]);
+      setIsProcessingSharedFile(true);
     }
+  };
 
-    // Función para manejar los mensajes del Service Worker
-    const handleServiceWorkerMessage = (event) => {
-      addDebugMessage(`Mensaje recibido del Service Worker: ${event.data?.type}`);
-      
-      if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
-        addDebugMessage(`Archivo recibido del Service Worker: ${event.data.file.name}`);
+  // Función para encontrar archivos de chat entre los archivos procesados
+  const encontrarArchivosChat = (archivos) => {
+    if (!archivos || archivos.length === 0) return null;
+    
+    // Buscar archivos con nombres que indiquen que son chats
+    const posiblesChats = archivos.filter(file => {
+      const nombre = file.name.toLowerCase();
+      return nombre.includes('chat') || 
+             nombre.endsWith('.txt') || 
+             nombre.includes('whatsapp') ||
+             nombre.includes('_chat');
+    });
+    
+    // Si encontramos alguno, devolver el primero
+    if (posiblesChats.length > 0) {
+      console.log("Archivo de chat encontrado:", posiblesChats[0].name);
+      return posiblesChats[0];
+    }
+    
+    return null;
+  };
+
+  // Procesar archivos de forma asíncrona
+  useEffect(() => {
+    const processFiles = async () => {
+      if (zipFile && isProcessingSharedFile) {
+        setIsLoading(true);
+        setError('');
+        console.log(`Procesando archivo: ${zipFile.name}`);
         
-        // Evitar procesamiento duplicado
-        if (event.data.shareId && processedShareIds.current.has(event.data.shareId)) {
-          addDebugMessage(`ShareID ${event.data.shareId} ya procesado, ignorando`);
-          return;
+        try {
+          // Usar nuestro procesador cliente para extraer y anonimizar
+          const result = await processZipFile(zipFile);
+          
+          if (result.success) {
+            console.log("Procesamiento completado con éxito:", result);
+            setFiles(result.processedFiles || []);
+            setProcessingResult(result);
+            
+            // Buscar el archivo de chat para análisis
+            const chatFile = encontrarArchivosChat(result.processedFiles);
+            if (chatFile) {
+              console.log("Archivo de chat encontrado para análisis:", chatFile.name);
+              // Usar FileReader para leer el contenido del archivo de chat
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                const content = e.target.result;
+                setChatContent(content);
+              };
+              reader.readAsText(chatFile.data);
+            }
+            
+            // Una vez procesado con éxito, eliminar el archivo pendiente de IndexedDB
+            await removeSharedFile();
+          } else {
+            console.error("Error en el procesamiento:", result.error);
+            setError(result.error || "Error procesando el archivo");
+          }
+        } catch (err) {
+          console.error("Error durante el procesamiento:", err);
+          setError(`Error: ${err.message}`);
+        } finally {
+          setIsLoading(false);
+          setIsProcessingSharedFile(false);
         }
-        
-        if (event.data.shareId) {
-          processedShareIds.current.add(event.data.shareId);
-        }
-        
-        handleSharedFile(event.data.file);
-      } else if (event.data && event.data.type === 'SHARED_FILE_ERROR') {
-        setError(`Error al recibir archivo: ${event.data.error || 'Error desconocido'}`);
-        setIsProcessingSharedFile(false);
-        isProcessingRef.current = false;
-      } else if (event.data && event.data.type === 'PONG') {
-        addDebugMessage('Service Worker está activo (respuesta PONG)');
       }
     };
-    
-    // Registrar el listener para mensajes del Service Worker
-    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
-    
-    return () => {
-      navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
-    };
-  }, []);
+
+    processFiles();
+  }, [zipFile, isProcessingSharedFile]);
 
   // Efecto para procesar parámetros de URL
   useEffect(() => {
@@ -1175,6 +1279,87 @@ const tryDeleteFiles = async (operationId) => {
       // Limpiar URL después de procesar
       window.history.replaceState({}, document.title, window.location.pathname);
     }
+  }, []);
+
+  // Efecto para manejar Service Worker y verificar archivos pendientes
+  useEffect(() => {
+    // Verificar si hay archivos pendientes en IndexedDB al iniciar
+    const checkPendingFiles = async () => {
+      try {
+        const pendingFile = await getSharedFile();
+        if (pendingFile) {
+          console.log('Archivo pendiente encontrado en IndexedDB:', pendingFile.name);
+          // Procesar el archivo pendiente
+          setZipFile(pendingFile);
+          setIsProcessingSharedFile(true);
+        }
+      } catch (error) {
+        console.error('Error al verificar archivos pendientes:', error);
+      }
+    };
+    
+    // Comprobar archivos pendientes al inicio
+    checkPendingFiles();
+    
+    // Configurar el Service Worker si está disponible
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const registration = await navigator.serviceWorker.register('/service-worker.js');
+          addDebugMessage('Service Worker registrado correctamente');
+          
+          // Comprobar si el Service Worker está activo
+          if (navigator.serviceWorker.controller) {
+            addDebugMessage('Service Worker está controlando la página');
+          } else {
+            addDebugMessage('Service Worker registrado pero aún no controla la página');
+          }
+        } catch (error) {
+          addDebugMessage(`Error al registrar Service Worker: ${error.message}`);
+        }
+      });
+    }
+    
+    // Función para manejar los mensajes del Service Worker
+    const handleServiceWorkerMessage = (event) => {
+      addDebugMessage(`Mensaje recibido del Service Worker: ${event.data?.type}`);
+      
+      if (event.data && event.data.type === 'SHARED_FILE' && event.data.file) {
+        addDebugMessage(`Archivo recibido del Service Worker: ${event.data.file.name}`);
+        
+        // Evitar procesamiento duplicado
+        if (event.data.shareId && processedShareIds.current.has(event.data.shareId)) {
+          addDebugMessage(`ShareID ${event.data.shareId} ya procesado, ignorando`);
+          return;
+        }
+        
+        if (event.data.shareId) {
+          processedShareIds.current.add(event.data.shareId);
+        }
+        
+        // Guardar el archivo en IndexedDB antes de procesarlo
+        saveSharedFile(event.data.file).then(() => {
+          handleSharedFile(event.data.file);
+        }).catch(error => {
+          console.error('Error al guardar archivo en IndexedDB:', error);
+          // Si falla el guardado en IndexedDB, intentar procesar directamente
+          handleSharedFile(event.data.file);
+        });
+      } else if (event.data && event.data.type === 'SHARED_FILE_ERROR') {
+        setError(`Error al recibir archivo: ${event.data.error || 'Error desconocido'}`);
+        setIsProcessingSharedFile(false);
+        isProcessingRef.current = false;
+      } else if (event.data && event.data.type === 'PONG') {
+        addDebugMessage('Service Worker está activo (respuesta PONG)');
+      }
+    };
+    
+    // Registrar el listener para mensajes del Service Worker
+    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+    
+    return () => {
+      navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
+    };
   }, []);
 
   // Cargar datos persistentes al iniciar la aplicación
