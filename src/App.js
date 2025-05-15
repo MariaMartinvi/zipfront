@@ -695,6 +695,33 @@ function App() {
   const handleSharedFile = async (file) => {
     addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
     
+    // NUEVO: Limpieza agresiva del localStorage al inicio para evitar problemas
+    try {
+      addDebugMessage('Limpieza agresiva del localStorage para archivos de WhatsApp');
+      // Eliminar TODOS los datos de análisis previos del localStorage
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('whatsapp_analyzer_')) {
+          localStorage.removeItem(key);
+          addDebugMessage(`Eliminada clave de localStorage: ${key}`);
+        }
+      }
+      // Asegurar que estas claves específicas se eliminan
+      localStorage.removeItem('whatsapp_analyzer_operation_id');
+      localStorage.removeItem('whatsapp_analyzer_loading');
+      localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+      localStorage.removeItem('whatsapp_analyzer_show_analysis');
+      localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+      localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+      localStorage.removeItem('whatsapp_analyzer_mistral_error');
+      localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+      localStorage.removeItem('whatsapp_analyzer_chat_data');
+      localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+      addDebugMessage('Limpieza de localStorage completada');
+    } catch (err) {
+      addDebugMessage(`Error al limpiar localStorage: ${err.message}`);
+    }
+    
     if (!file) {
       setError('No se pudo recibir el archivo');
       setIsProcessingSharedFile(false);
@@ -1192,6 +1219,9 @@ const tryDeleteFiles = async (operationId) => {
     const savedChatData = localStorage.getItem('whatsapp_analyzer_chat_data');
     const hasChatData = localStorage.getItem('whatsapp_analyzer_has_chat_data') === 'true';
     
+    // Verificar si estamos procesando un archivo compartido desde WhatsApp
+    const isProcessingShared = isProcessingSharedFile || isProcessingRef.current;
+    
     // Si hay un operationId guardado, hacer scroll automático hacia arriba después de un refresh
     if (savedOperationId) {
       // Usar un pequeño retraso para asegurarse de que el componente se ha renderizado
@@ -1199,7 +1229,8 @@ const tryDeleteFiles = async (operationId) => {
     }
     
     // Si el análisis estaba completo y la página se recargó, mostrar alerta de confirmación
-    if (savedAnalysisComplete && wasRefreshed) {
+    // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
+    if (savedAnalysisComplete && wasRefreshed && !isProcessingShared) {
       // Quitar inmediatamente la marca de refrescado para evitar bucles
       localStorage.removeItem('whatsapp_analyzer_page_refreshed');
       
@@ -1323,15 +1354,19 @@ const tryDeleteFiles = async (operationId) => {
   useEffect(() => {
     const isAnalysisComplete = chatGptResponse && operationId && !isLoading && !isFetchingMistral;
     const hasAnalysisData = chatData || chatGptResponse;
+    // Verificar si estamos procesando un archivo compartido desde WhatsApp
+    const isProcessingShared = isProcessingSharedFile || isProcessingRef.current;
     
     // Si el análisis está completo o hay datos de análisis, registrar este estado
-    if (isAnalysisComplete || hasAnalysisData) {
+    // MODIFICADO: No establecer el flag si estamos procesando un archivo compartido desde WhatsApp
+    if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared) {
       localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
     }
     
     // Función para advertir al usuario antes de refrescar o cerrar la página cuando hay datos de análisis
     const handleBeforeUnload = (e) => {
-      if (isAnalysisComplete || hasAnalysisData) {
+      // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
+      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared) {
         // Marcar que el usuario está refrescando la página con análisis
         localStorage.setItem('whatsapp_analyzer_page_refreshed', 'true');
         
@@ -1345,14 +1380,16 @@ const tryDeleteFiles = async (operationId) => {
     
     // Marcar siempre refrescado en pagetransition o unload
     const handlePageHide = () => {
-      if (isAnalysisComplete || hasAnalysisData) {
+      // MODIFICADO: No marcar refrescado si estamos procesando un archivo compartido desde WhatsApp
+      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared) {
         localStorage.setItem('whatsapp_analyzer_page_refreshed', 'true');
       }
     };
     
     // Monitorear clicks en enlaces y botones que puedan causar navegación
     const handleLinkClick = (e) => {
-      if ((isAnalysisComplete || hasAnalysisData) && e.target.tagName === 'A' && !e.target.getAttribute('href')?.startsWith('#')) {
+      // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
+      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && e.target.tagName === 'A' && !e.target.getAttribute('href')?.startsWith('#')) {
         e.preventDefault();
         e.stopPropagation();
         setShowRefreshConfirmation(true);
@@ -1363,7 +1400,8 @@ const tryDeleteFiles = async (operationId) => {
     // Monitorear clicks en elementos que puedan causar recarga
     const handleNavClick = (e) => {
       // Detectar clics en la esquina superior derecha (donde suele estar el botón de recarga)
-      if ((isAnalysisComplete || hasAnalysisData) && e.clientY < 50 && e.clientX > window.innerWidth - 100) {
+      // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
+      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && e.clientY < 50 && e.clientX > window.innerWidth - 100) {
         setShowRefreshConfirmation(true);
       }
     };
