@@ -1289,6 +1289,39 @@ const tryDeleteFiles = async (operationId) => {
             // Simplemente restaurar el estado de espera sin volver a llamar a fetchMistralResponse
             setIsFetchingMistral(true);
             setProgressMessage(t('app.generating_ai_analysis'));
+            
+            // NUEVO: Implementar polling para verificar periódicamente si hay respuesta
+            // Esta función verificará cada 5 segundos si hay respuesta disponible en localStorage
+            const pollingInterval = setInterval(() => {
+              // Verificar si tenemos respuesta en localStorage
+              const savedResponse = localStorage.getItem('whatsapp_analyzer_chatgpt_response');
+              
+              if (savedResponse) {
+                console.log('Respuesta encontrada en polling');
+                // Limpiar el intervalo
+                clearInterval(pollingInterval);
+                
+                // Actualizar el estado con la respuesta encontrada
+                setChatGptResponse(savedResponse);
+                setShowChatGptResponse(true);
+                setIsFetchingMistral(false);
+                
+                // Hacer scroll hacia la sección de análisis
+                setTimeout(() => scrollToAnalysis(), 300);
+              } else {
+                console.log('Polling: aún no hay respuesta disponible');
+              }
+            }, 5000); // Verificar cada 5 segundos
+            
+            // Detener el polling después de 5 minutos (como timeout)
+            setTimeout(() => {
+              clearInterval(pollingInterval);
+              // Si después de 5 minutos no hay respuesta, mostrar mensaje
+              if (!localStorage.getItem('whatsapp_analyzer_chatgpt_response')) {
+                setIsFetchingMistral(false);
+                setError('No se pudo recuperar la respuesta del análisis. Por favor, intenta nuevamente.');
+              }
+            }, 300000); // 5 minutos (300000 ms)
           }
         }, 1000);
       }
