@@ -324,4 +324,4 @@ export const deleteFiles = async (operationId) => {
       error: error.message || 'Error al limpiar datos locales'
     };
   }
-};
+}; 

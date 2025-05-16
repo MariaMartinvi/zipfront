@@ -567,6 +567,36 @@ function App() {
     
     console.log("Archivo recibido:", file.name, "Tipo:", file.type, "Tamaño:", file.size);
     
+    // NUEVO: Limpieza selectiva del localStorage al inicio para evitar problemas
+    // (igual que en handleSharedFile para unificar comportamiento)
+    try {
+      addDebugMessage('Limpieza selectiva del localStorage para carga manual de archivos');
+      
+      // Lista de claves que queremos eliminar (no incluye chat_data)
+      const keysToRemove = [
+        'whatsapp_analyzer_operation_id',
+        'whatsapp_analyzer_loading',
+        'whatsapp_analyzer_fetching_mistral',
+        'whatsapp_analyzer_show_analysis',
+        'whatsapp_analyzer_chatgpt_response',
+        'whatsapp_analyzer_analysis_complete',
+        'whatsapp_analyzer_mistral_error',
+        'whatsapp_analyzer_page_refreshed',
+        'whatsapp_analyzer_is_processing_shared', // NUEVO: Asegurar que no hay conflicto con archivo compartido
+        'whatsapp_analyzer_force_fetch'
+      ];
+      
+      // Eliminar solo las claves específicas
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        addDebugMessage(`Eliminada clave de localStorage: ${key}`);
+      });
+      
+      addDebugMessage('Limpieza selectiva de localStorage completada (manteniendo datos del chat)');
+    } catch (err) {
+      addDebugMessage(`Error al limpiar localStorage: ${err.message}`);
+    }
+    
     // Verificación extremadamente permisiva - aceptar cualquier archivo con extensión .zip
     // o cualquier archivo con tipo MIME que pueda ser un ZIP
     const isZipFile = file.name.toLowerCase().endsWith('.zip') || 
@@ -695,12 +725,12 @@ function App() {
   const handleSharedFile = async (file) => {
     addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
     
-    // MODIFICADO: Limpieza selectiva del localStorage al inicio para evitar problemas
-    // pero mantener datos críticos para el análisis
+    // MODIFICADO: Limpieza COMPLETA del localStorage al inicio para evitar problemas
+    // Esto asegura que no haya datos previos que puedan causar comportamiento inconsistente
     try {
-      addDebugMessage('Limpieza selectiva del localStorage para archivos de WhatsApp');
+      addDebugMessage('Limpieza completa del localStorage para archivos de WhatsApp');
       
-      // Lista de claves que queremos eliminar (no incluye chat_data)
+      // Lista ampliada de claves que queremos eliminar (incluyendo todas las relacionadas con análisis previos)
       const keysToRemove = [
         'whatsapp_analyzer_operation_id',
         'whatsapp_analyzer_loading',
@@ -709,16 +739,23 @@ function App() {
         'whatsapp_analyzer_chatgpt_response',
         'whatsapp_analyzer_analysis_complete',
         'whatsapp_analyzer_mistral_error',
-        'whatsapp_analyzer_page_refreshed'
+        'whatsapp_analyzer_page_refreshed',
+        'whatsapp_analyzer_chat_data',
+        'whatsapp_analyzer_has_chat_data',
+        'whatsapp_analyzer_force_fetch'
       ];
       
-      // Eliminar solo las claves específicas
+      // Eliminar todas las claves específicas
       keysToRemove.forEach(key => {
         localStorage.removeItem(key);
         addDebugMessage(`Eliminada clave de localStorage: ${key}`);
       });
       
-      addDebugMessage('Limpieza selectiva de localStorage completada (manteniendo datos del chat)');
+      // NUEVO: Guardar el flag isProcessingShared en localStorage para que persista tras refrescos
+      localStorage.setItem('whatsapp_analyzer_is_processing_shared', 'true');
+      addDebugMessage('Flag isProcessingShared guardado en localStorage para persistencia');
+      
+      addDebugMessage('Limpieza completa de localStorage completada');
     } catch (err) {
       addDebugMessage(`Error al limpiar localStorage: ${err.message}`);
     }
@@ -727,6 +764,8 @@ function App() {
       setError('No se pudo recibir el archivo');
       setIsProcessingSharedFile(false);
       isProcessingRef.current = false;
+      // Asegurar que el flag en localStorage también se elimine
+      localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
       return;
     }
     
@@ -744,6 +783,8 @@ function App() {
       setError(`Por favor, comparte un archivo ZIP válido. Tipo recibido: ${file.type}`);
       setIsProcessingSharedFile(false);
       isProcessingRef.current = false;
+      // Asegurar que el flag en localStorage también se elimine
+      localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
       return;
     }
     
@@ -799,6 +840,10 @@ function App() {
       
       // Si llegamos aquí, el procesamiento fue exitoso
       processingSuccess = true;
+      
+      // NUEVO: Limpiar el flag de procesamiento de archivo compartido una vez completado con éxito
+      localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
+      addDebugMessage('Procesamiento exitoso - eliminado flag isProcessingShared del localStorage');
       
       // If processing was successful, increment usage counter with retry mechanism
       if (user) {
@@ -864,6 +909,10 @@ function App() {
       addDebugMessage(`Error procesando archivo: ${err.message}. Inténtalo más tarde.`);
       setError(`Error al procesar el archivo: ${err.message}. Inténtalo más tarde.`);
       
+      // NUEVO: Limpiar el flag isProcessingShared en caso de error
+      localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
+      addDebugMessage('Error en procesamiento - eliminado flag isProcessingShared del localStorage');
+      
       // Último recurso - intentar procesar el archivo original si el corregido falló
       if (file !== analyzedFile) {
         addDebugMessage('Intentando procesar el archivo original como último recurso');
@@ -899,12 +948,16 @@ function App() {
         }
       }
     } finally {
+      // Asegurar que se resetean los flags de procesamiento
       setIsLoading(false);
       setIsProcessingSharedFile(false);
       isProcessingRef.current = false;
       
-      if (processingSuccess) {
-        addDebugMessage("Procesamiento completado con éxito");
+      // NUEVO: Asegurar que el flag en localStorage se elimina al finalizar (exitoso o fallido)
+      // Solo si no fue exitoso (si fue exitoso ya se eliminó antes)
+      if (!processingSuccess) {
+        localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
+        addDebugMessage('Finalizado procesamiento sin éxito - eliminado flag isProcessingShared del localStorage');
       }
     }
   };
@@ -986,6 +1039,11 @@ function App() {
         
         // Guardar en localStorage que el análisis está completo
         localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
+        
+        // NUEVO: Limpiamos el flag de isProcessingShared ya que el análisis está completo
+        localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
+        setIsProcessingSharedFile(false);
+        isProcessingRef.current = false;
         
         // Hacer scroll automático hacia arriba cuando finaliza el análisis
         setTimeout(() => scrollToAnalysis(), 300);
@@ -1220,8 +1278,27 @@ const tryDeleteFiles = async (operationId) => {
     const savedChatData = localStorage.getItem('whatsapp_analyzer_chat_data');
     const hasChatData = localStorage.getItem('whatsapp_analyzer_has_chat_data') === 'true';
     
-    // Verificar si estamos procesando un archivo compartido desde WhatsApp
-    const isProcessingShared = isProcessingSharedFile || isProcessingRef.current;
+    // MODIFICADO: Recuperar flag isProcessingShared desde localStorage
+    const savedIsProcessingShared = localStorage.getItem('whatsapp_analyzer_is_processing_shared') === 'true';
+    console.log('DIAGNÓSTICO: Flag isProcessingShared recuperado de localStorage:', savedIsProcessingShared);
+    
+    // Si se detecta que estamos procesando un archivo desde WhatsApp, actualizar el estado
+    if (savedIsProcessingShared) {
+      addDebugMessage('Detectada sesión de archivo compartido desde WhatsApp - actualizando estado');
+      setIsProcessingSharedFile(true);
+      isProcessingRef.current = true;
+      
+      // NUEVO: Si estamos procesando un archivo compartido desde WhatsApp,
+      // limpiamos cualquier análisis previo para evitar interferencia
+      if (savedAnalysisComplete) {
+        addDebugMessage('Detectado análisis previo con archivo compartido - limpiando datos conflictivos');
+        localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+        localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+      }
+    }
+    
+    // Verificar si estamos procesando un archivo compartido desde WhatsApp (cualquier fuente)
+    const isProcessingShared = isProcessingSharedFile || isProcessingRef.current || savedIsProcessingShared;
     
     // Si hay un operationId guardado, hacer scroll automático hacia arriba después de un refresh
     if (savedOperationId) {
@@ -1234,10 +1311,12 @@ const tryDeleteFiles = async (operationId) => {
     if (savedAnalysisComplete && wasRefreshed && !isProcessingShared) {
       // Quitar inmediatamente la marca de refrescado para evitar bucles
       localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+      addDebugMessage('Detectada recarga con análisis previo - mostrando confirmación');
       
       // Mostrar confirmación antes de borrar
       setTimeout(() => {
         if (window.confirm("La página se ha recargado y hay un análisis previo guardado. Si continúas, se perderán todos los datos del análisis actual (tanto estadístico como psicológico). ¿Deseas continuar?")) {
+          addDebugMessage('Usuario confirmó borrar análisis previo - limpiando localStorage');
           // Si confirma, limpiar todos los datos guardados
           localStorage.removeItem('whatsapp_analyzer_operation_id');
           localStorage.removeItem('whatsapp_analyzer_loading');
@@ -1248,9 +1327,12 @@ const tryDeleteFiles = async (operationId) => {
           localStorage.removeItem('whatsapp_analyzer_mistral_error');
           localStorage.removeItem('whatsapp_analyzer_chat_data');
           localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+          localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
           
           // Recargar nuevamente para actualizar la interfaz
           window.location.reload();
+        } else {
+          addDebugMessage('Usuario canceló borrado - manteniendo análisis previo');
         }
       }, 100);
     }
@@ -1292,14 +1374,47 @@ const tryDeleteFiles = async (operationId) => {
             
             // NUEVO: Implementar polling para verificar periódicamente si hay respuesta
             // Esta función verificará cada 5 segundos si hay respuesta disponible en localStorage
+            
+            // Función para registrar estado completo del localStorage
+            const logLocalStorageState = () => {
+              console.log('--- DIAGNÓSTICO: ESTADO COMPLETO DE LOCALSTORAGE ---');
+              const storageSnapshot = {};
+              for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('whatsapp_analyzer_')) {
+                  let value = localStorage.getItem(key);
+                  if (value && value.length > 100) {
+                    value = value.substring(0, 50) + '... [truncado]';
+                  }
+                  storageSnapshot[key] = value;
+                  console.log(`${key}: ${value}`);
+                }
+              }
+              console.log('--- FIN DIAGNÓSTICO LOCALSTORAGE ---');
+              return storageSnapshot;
+            };
+            
+            // Registrar estado inicial
+            console.log('DIAGNÓSTICO: Estado inicial antes del polling');
+            const initialState = logLocalStorageState();
+            const savedOperationId = localStorage.getItem('whatsapp_analyzer_operation_id');
+            console.log(`DIAGNÓSTICO: Polling iniciado con operationId=${savedOperationId}`);
+            
             const pollingInterval = setInterval(() => {
               // Verificar si tenemos respuesta en localStorage
               const savedResponse = localStorage.getItem('whatsapp_analyzer_chatgpt_response');
+              const currentOperationId = localStorage.getItem('whatsapp_analyzer_operation_id');
+              
+              console.log(`DIAGNÓSTICO: Polling check - operationId=${currentOperationId}, responseExists=${!!savedResponse}`);
               
               if (savedResponse) {
-                console.log('Respuesta encontrada en polling');
+                console.log('DIAGNÓSTICO: Respuesta encontrada en polling');
                 // Limpiar el intervalo
                 clearInterval(pollingInterval);
+                
+                // Registrar estado final
+                console.log('DIAGNÓSTICO: Estado final después de encontrar respuesta');
+                const finalState = logLocalStorageState();
                 
                 // Actualizar el estado con la respuesta encontrada
                 setChatGptResponse(savedResponse);
@@ -1486,6 +1601,8 @@ const tryDeleteFiles = async (operationId) => {
       localStorage.removeItem('whatsapp_analyzer_analysis_complete');
       localStorage.removeItem('whatsapp_analyzer_mistral_error');
       localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+      // NUEVO: Eliminar también el flag de procesamiento compartido
+      localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
       
       console.log("[DIAGNÓSTICO] LocalStorage limpiado");
       
@@ -1615,6 +1732,8 @@ const tryDeleteFiles = async (operationId) => {
     localStorage.removeItem('whatsapp_analyzer_analysis_complete');
     localStorage.removeItem('whatsapp_analyzer_chat_data');
     localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+    // NUEVO: Eliminar también el flag de procesamiento compartido
+    localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
   };
 
   // Component to render when user needs to upgrade
