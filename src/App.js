@@ -725,6 +725,10 @@ function App() {
   const handleSharedFile = async (file) => {
     addDebugMessage(`Procesando archivo compartido: ${file.name}, tipo: ${file.type}`);
     
+    // NUEVO: Establecer explícitamente el flag de procesamiento compartido al inicio
+    localStorage.setItem('whatsapp_analyzer_is_processing_shared', 'true');
+    addDebugMessage('Flag de procesamiento de archivos compartidos establecido (whatsapp_analyzer_is_processing_shared)');
+    
     // MODIFICADO: Limpieza COMPLETA del localStorage al inicio para evitar problemas
     // Esto asegura que no haya datos previos que puedan causar comportamiento inconsistente
     try {
@@ -1308,7 +1312,12 @@ const tryDeleteFiles = async (operationId) => {
     
     // Si el análisis estaba completo y la página se recargó, mostrar alerta de confirmación
     // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
-    if (savedAnalysisComplete && wasRefreshed && !isProcessingShared) {
+    const isProcessingSharedAtConfirmation = isProcessingSharedFile || isProcessingRef.current || savedIsProcessingShared;
+    console.log('[DIAGNÓSTICO] Estado de isProcessingShared antes de mostrar confirmación:', isProcessingSharedAtConfirmation, 
+      '(isProcessingSharedFile:', isProcessingSharedFile, ', isProcessingRef.current:', isProcessingRef.current, 
+      ', savedIsProcessingShared:', savedIsProcessingShared, ')');
+    
+    if (savedAnalysisComplete && wasRefreshed && !isProcessingSharedAtConfirmation) {
       // Quitar inmediatamente la marca de refrescado para evitar bucles
       localStorage.removeItem('whatsapp_analyzer_page_refreshed');
       addDebugMessage('Detectada recarga con análisis previo - mostrando confirmación');
@@ -1707,7 +1716,17 @@ const tryDeleteFiles = async (operationId) => {
   // Función para cancelar la acción
   const handleCancelRefresh = () => {
     console.log('[FUNCIÓN] Ejecutando handleCancelRefresh');
+    // MODIFICADO: Solo ocultamos el diálogo de confirmación sin alterar ningún otro estado
     setShowRefreshConfirmation(false);
+    
+    // NUEVO: Registramos un mensaje de diagnóstico para seguimiento
+    console.log('[DIAGNÓSTICO] Acción cancelada por el usuario - continuando con procesamiento previo');
+    
+    // NUEVO: Verificar si hay un análisis de archivo compartido en curso
+    const isProcessingShared = localStorage.getItem('whatsapp_analyzer_is_processing_shared') === 'true';
+    if (isProcessingShared) {
+      console.log('[DIAGNÓSTICO] Detectado procesamiento de archivo compartido en curso - preservando estado');
+    }
   };
 
   // Limpieza cuando el usuario finaliza explícitamente el análisis o reinicia
