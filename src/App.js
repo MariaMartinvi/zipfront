@@ -1285,9 +1285,10 @@ const tryDeleteFiles = async (operationId) => {
         // Intentar recuperar la operación si estaba en progreso
         const continuarAnalisis = setTimeout(() => {
           if (savedIsFetchingMistral) {
-            console.log('Retomando la obtención de la respuesta de IA');
+            console.log('Restaurando estado de espera de respuesta de IA');
+            // Simplemente restaurar el estado de espera sin volver a llamar a fetchMistralResponse
             setIsFetchingMistral(true);
-            setTimeout(() => fetchMistralResponse(), 2000);
+            setProgressMessage(t('app.generating_ai_analysis'));
           }
         }, 1000);
       }
