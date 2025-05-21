@@ -12,7 +12,7 @@ const ALTERNATIVE_APIS = [
     "name": "Principal (gpt-4o-mini)",
     "endpoint": null, // Se tomará de la configuración
     "model": "gpt-4o-mini",
-    "apiVersion": "2024-12-01-preview",
+    "apiVersion": "2025-01-01-preview",
     "useMaxCompletionTokens": false,
     "useTemperature": true
   },
@@ -20,7 +20,7 @@ const ALTERNATIVE_APIS = [
     "name": "o3-mini",
     "endpoint": null, // Se tomará de la configuración
     "model": "o3-mini",
-    "apiVersion": "2024-12-01-preview",
+    "apiVersion": "2025-01-01-preview",
     "useMaxCompletionTokens": true,
     "useTemperature": false
   },
@@ -28,7 +28,7 @@ const ALTERNATIVE_APIS = [
     "name": "Deepseek R1",
     "endpoint": null, // Usando el endpoint principal para evitar problemas DNS
     "model": "deepseek-r1",
-    "apiVersion": "2024-12-01-preview", // Actualizando a una versión más reciente
+    "apiVersion": "2025-01-01-preview",
     "useMaxCompletionTokens": false,
     "useTemperature": true
   }
@@ -264,147 +264,48 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
           baseURL: baseURL,
           defaultQuery: { "api-version": api.apiVersion },
           defaultHeaders: { "api-key": apiKey },
-          dangerouslyAllowBrowser: true
+          dangerouslyAllowBrowser: true,
+          timeout: 60000 // 1 minuto es suficiente para el fallback
         });
         
-        // Hacer la solicitud a la API con los parámetros adecuados según el modelo
-        const requestOptions = {
+        console.log(`>>> Intentando con ${api.name} (${api.model})...`);
+        
+        const response = await client.chat.completions.create({
           model: api.model,
-          messages: messages
-        };
+          messages: messages,
+          temperature: api.useTemperature !== false ? 0.5 : undefined,
+          max_tokens: api.useMaxCompletionTokens ? undefined : 4000,
+          max_completion_tokens: api.useMaxCompletionTokens ? 4000 : undefined
+        });
         
-        // Añadir temperatura solo para modelos que la soportan
-        if (api.useTemperature !== false) {
-          requestOptions.temperature = 0.5;
-        }
-        
-        // Algunos modelos usan max_completion_tokens en lugar de max_tokens
-        if (api.useMaxCompletionTokens) {
-          requestOptions.max_completion_tokens = 4000;
-        } else {
-          requestOptions.max_tokens = 4000;
-        }
-        
-        console.log(`>>> Opciones para ${api.name}:`, JSON.stringify(requestOptions));
-        
-        const response = await client.chat.completions.create(requestOptions);
-        
-        // Si llegamos aquí, la solicitud fue exitosa
         console.log(`>>> ÉXITO con ${api.name} (modelo: ${api.model})`);
-        
-        // Extraer la respuesta
         const analysisResult = response.choices[0].message.content;
-        
-        // Añadir información sobre la API usada
         const apiHeader = `*****************************************************\n* API UTILIZADA: ${api.name}\n*****************************************************\n\n`;
-        const completeResponse = apiHeader + analysisResult;
-        
-        // Devolver la respuesta exitosa
         return {
           success: true,
           ready: true,
-          response: completeResponse
+          response: apiHeader + analysisResult
         };
+        
       } catch (error) {
-        // Respuesta más detallada para depurar problemas
         console.error(`>>> ERROR con ${api.name} (${api.model}):`, error);
         
-        // Registro especial para errores de Deepseek
-        if (api.name === "Deepseek R1") {
-          console.error(`>>> DETALLE ESPECIAL DEEPSEEK ERROR: ${JSON.stringify({
-            errorType: error.constructor.name,
-            message: error.message,
-            status: error.status || error.statusCode,
-            url: baseURL,
-            apiVersion: api.apiVersion
-          })}`);
+        // Si es error de rate limit y hay más modelos disponibles
+        if ((error.status === 429 || error.statusCode === 429 || 
+             error.message?.includes("rate limit")) && 
+            i < apisToTry.length - 1) {
+          console.log(`>>> LÍMITE ALCANZADO con ${api.name} - Pasando a ${apisToTry[i+1].name}...`);
+          continue; // Intentar inmediatamente con el siguiente modelo
         }
         
-        if (error.status === 429 || error.statusCode === 429) {
-          console.log(`>>> LÍMITE ALCANZADO con ${api.name} - Probando siguiente API...`);
-          // Continuar con la siguiente API
+        // Para otros errores, si hay más modelos, continuar
+        if (i < apisToTry.length - 1) {
+          console.log(`>>> ERROR GENERAL con ${api.name}, probando ${apisToTry[i+1].name}...`);
           continue;
-        } else if (error.status === 404 || error.statusCode === 404 || 
-                  (error.message && error.message.includes("not found"))) {
-          // Modelo no encontrado o deployment inexistente
-          console.error(`>>> MODELO NO ENCONTRADO en ${api.name}: ${error.message}`);
-          if (i < apisToTry.length - 1) {
-            continue;
-          }
-        } else if (error.status === 400 || error.statusCode === 400) {
-          // Posible problema de configuración del modelo
-          console.error(`>>> ERROR DE CONFIGURACIÓN con ${api.name}: ${error.message}`);
-          if (i < apisToTry.length - 1) {
-            continue;
-          }
-        } else if (error.message && (error.message.includes("fetch") || error.message.includes("network") || 
-                   error.message.includes("ERR_NAME") || error.message.includes("Connection"))) {
-          // Error de conexión - Mostrar información detallada para diagnóstico
-          console.error(`>>> ERROR DE CONEXIÓN con ${api.name}: ${error.message}`);
-          console.error(`>>> DETALLES: Endpoint=${api.endpoint}, Model=${api.model}, API Version=${api.apiVersion}`);
-          
-          // Para Deepseek R1, intentar con una URL alternativa si falla la resolución de DNS
-          if (api.name === "Deepseek R1" && error.message.includes("ERR_NAME_NOT_RESOLVED")) {
-            console.log(">>> Intentando URL alternativa para Deepseek R1...");
-            try {
-              // Intentar usar el endpoint principal con el modelo deepseek
-              const altClient = new OpenAI({
-                apiKey: apiKey,
-                baseURL: `${defaultEndpoint}openai/deployments/deepseek-r1`,
-                defaultQuery: { "api-version": api.apiVersion },
-                defaultHeaders: { "api-key": apiKey },
-                dangerouslyAllowBrowser: true
-              });
-              
-              // Crear nuevas opciones de solicitud para la URL alternativa
-              const altRequestOptions = {
-                model: api.model,
-                messages: messages
-              };
-              
-              // Aplicar las mismas reglas para temperatura y tokens
-              if (api.useTemperature !== false) {
-                altRequestOptions.temperature = 0.5;
-              }
-              
-              if (api.useMaxCompletionTokens) {
-                altRequestOptions.max_completion_tokens = 4000;
-              } else {
-                altRequestOptions.max_tokens = 4000;
-              }
-              
-              const altResponse = await altClient.chat.completions.create(altRequestOptions);
-              
-              // Si llegamos aquí, la solicitud fue exitosa con la URL alternativa
-              console.log(`>>> ÉXITO con ${api.name} (URL alternativa)`);
-              const analysisResult = altResponse.choices[0].message.content;
-              const apiHeader = `*****************************************************\n* API UTILIZADA: ${api.name} (URL alternativa)\n*****************************************************\n\n`;
-              return {
-                success: true,
-                ready: true,
-                response: apiHeader + analysisResult
-              };
-            } catch (altError) {
-              console.error(">>> Error con URL alternativa:", altError.message);
-            }
-          }
-          
-          if (i < apisToTry.length - 1) {
-            continue;
-          }
-        } else {
-          // Otro tipo de error
-          console.error(`>>> ERROR DESCONOCIDO con ${api.name}: ${error.message}`);
-          // Si hay más APIs para probar, continuamos
-          if (i < apisToTry.length - 1) {
-            continue;
-          }
         }
         
-        // Si llegamos aquí en el último modelo, lanzamos el error
-        if (i === apisToTry.length - 1) {
-          throw error;
-        }
+        // Si es el último modelo, propagar el error
+        throw error;
       }
     }
     

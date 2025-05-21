@@ -1341,30 +1341,34 @@ const tryDeleteFiles = async (operationId) => {
     if (savedAnalysisComplete && wasRefreshed && !isProcessingSharedAtConfirmation) {
       // Quitar inmediatamente la marca de refrescado para evitar bucles
       localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-      addDebugMessage('Detectada recarga con análisis previo - mostrando confirmación');
       
-      // Mostrar confirmación antes de borrar
-      setTimeout(() => {
-        if (window.confirm("La página se ha recargado y hay un análisis previo guardado. Si continúas, se perderán todos los datos del análisis actual (tanto estadístico como psicológico). ¿Deseas continuar?")) {
-          addDebugMessage('Usuario confirmó borrar análisis previo - limpiando localStorage');
-          // Si confirma, limpiar todos los datos guardados
-          localStorage.removeItem('whatsapp_analyzer_operation_id');
-          localStorage.removeItem('whatsapp_analyzer_loading');
-          localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-          localStorage.removeItem('whatsapp_analyzer_show_analysis');
-          localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-          localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-          localStorage.removeItem('whatsapp_analyzer_mistral_error');
-          localStorage.removeItem('whatsapp_analyzer_chat_data');
-          localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-          localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
-          
-          // Recargar nuevamente para actualizar la interfaz
-          window.location.reload();
-        } else {
-          addDebugMessage('Usuario canceló borrado - manteniendo análisis previo');
-        }
-      }, 100);
+      // Solo mostrar confirmación si hay un análisis activo en progreso
+      if (savedIsLoading || savedIsFetchingMistral) {
+        addDebugMessage('Detectada recarga con análisis en progreso - mostrando confirmación');
+        
+        // Mostrar confirmación antes de borrar
+        setTimeout(() => {
+          if (window.confirm("Hay un análisis en progreso. Si continúas, se perderá el progreso actual. ¿Deseas continuar?")) {
+            addDebugMessage('Usuario confirmó borrar análisis en progreso - limpiando localStorage');
+            // Si confirma, limpiar todos los datos guardados
+            localStorage.removeItem('whatsapp_analyzer_operation_id');
+            localStorage.removeItem('whatsapp_analyzer_loading');
+            localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+            localStorage.removeItem('whatsapp_analyzer_show_analysis');
+            localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+            localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+            localStorage.removeItem('whatsapp_analyzer_mistral_error');
+            localStorage.removeItem('whatsapp_analyzer_chat_data');
+            localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+            localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
+            
+            // Recargar nuevamente para actualizar la interfaz
+            window.location.reload();
+          } else {
+            addDebugMessage('Usuario canceló borrado - manteniendo análisis en progreso');
+          }
+        }, 100);
+      }
     }
     
     // Restaurar el estado desde localStorage
@@ -1545,11 +1549,8 @@ const tryDeleteFiles = async (operationId) => {
     
     // Función para advertir al usuario antes de refrescar o cerrar la página cuando hay datos de análisis
     const handleBeforeUnload = (e) => {
-      // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
-      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared) {
-        // Marcar que el usuario está refrescando la página con análisis
-        localStorage.setItem('whatsapp_analyzer_page_refreshed', 'true');
-        
+      // MODIFICADO: Solo mostrar confirmación si realmente hay un refresh en curso
+      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && localStorage.getItem('whatsapp_analyzer_page_refreshed') === 'true') {
         // Mensaje que se mostrará
         const message = "¿Estás seguro que quieres salir? Se perderán todos los datos del análisis estadístico y psicológico.";
         e.preventDefault();
@@ -1560,16 +1561,16 @@ const tryDeleteFiles = async (operationId) => {
     
     // Marcar siempre refrescado en pagetransition o unload
     const handlePageHide = () => {
-      // MODIFICADO: No marcar refrescado si estamos procesando un archivo compartido desde WhatsApp
-      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared) {
+      // MODIFICADO: Solo marcar refrescado si realmente hay un refresh en curso
+      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && document.visibilityState === 'hidden') {
         localStorage.setItem('whatsapp_analyzer_page_refreshed', 'true');
       }
     };
     
     // Monitorear clicks en enlaces y botones que puedan causar navegación
     const handleLinkClick = (e) => {
-      // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
-      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && e.target.tagName === 'A' && !e.target.getAttribute('href')?.startsWith('#')) {
+      // MODIFICADO: Solo mostrar confirmación si realmente hay un refresh en curso
+      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && localStorage.getItem('whatsapp_analyzer_page_refreshed') === 'true' && e.target.tagName === 'A' && !e.target.getAttribute('href')?.startsWith('#')) {
         e.preventDefault();
         e.stopPropagation();
         setShowRefreshConfirmation(true);
@@ -1580,8 +1581,8 @@ const tryDeleteFiles = async (operationId) => {
     // Monitorear clicks en elementos que puedan causar recarga
     const handleNavClick = (e) => {
       // Detectar clics en la esquina superior derecha (donde suele estar el botón de recarga)
-      // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
-      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && e.clientY < 50 && e.clientX > window.innerWidth - 100) {
+      // MODIFICADO: Solo mostrar confirmación si realmente hay un refresh en curso
+      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && localStorage.getItem('whatsapp_analyzer_page_refreshed') === 'true' && e.clientY < 50 && e.clientX > window.innerWidth - 100) {
         setShowRefreshConfirmation(true);
       }
     };
