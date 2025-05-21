@@ -1,8 +1,38 @@
 // fileService.js
 // Servicio para operaciones con archivos
 
-// Configura la URL base de la API solo para endpoints de Stripe
+// Nota: Esta API_URL ya no se usa para las solicitudes a Azure (que se hacen directamente desde el cliente)
+// pero se mantiene por compatibilidad con posibles usos futuros o para otras funciones
+// eslint-disable-next-line no-unused-vars
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+
+// Configuración de APIs alternativas
+const ALTERNATIVE_APIS = [
+  {
+    "name": "Principal (gpt-4o-mini)",
+    "endpoint": null, // Se tomará de la configuración
+    "model": "gpt-4o-mini",
+    "apiVersion": "2024-12-01-preview",
+    "useMaxCompletionTokens": false,
+    "useTemperature": true
+  },
+  {
+    "name": "o3-mini",
+    "endpoint": null, // Se tomará de la configuración
+    "model": "o3-mini",
+    "apiVersion": "2024-12-01-preview",
+    "useMaxCompletionTokens": true,
+    "useTemperature": false
+  },
+  {
+    "name": "Deepseek R1",
+    "endpoint": null, // Usando el endpoint principal para evitar problemas DNS
+    "model": "deepseek-r1",
+    "apiVersion": "2024-12-01-preview", // Actualizando a una versión más reciente
+    "useMaxCompletionTokens": false,
+    "useTemperature": true
+  }
+];
 
 // Función auxiliar para obtener variables de entorno con un valor fallback
 export const getEnvVariable = (name, fallback = null) => {
@@ -16,11 +46,11 @@ export const getEnvVariable = (name, fallback = null) => {
   }
   
   // 2. Buscar en localStorage (tanto para desarrollo como producción)
-  // Convertir REACT_APP_AZURE_ENDPOINT -> azure_endpoint
-  const localStorageKey = name
-    .toLowerCase()
-    .replace('react_app_', '')
-    .replace(/\_/g, '_');
+    // Convertir REACT_APP_AZURE_ENDPOINT -> azure_endpoint
+    const localStorageKey = name
+      .toLowerCase()
+      .replace('react_app_', '')
+      .replace(/_/g, '_'); // No necesita escape ya que _ no es un caracter especial en regex
   
   let localValue = localStorage.getItem(localStorageKey);
   
@@ -55,7 +85,7 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
   try {
     // Recuperar y verificar las credenciales con más detalle
     console.log("Verificando credenciales de Azure OpenAI...");
-    const endpoint = getEnvVariable('REACT_APP_AZURE_ENDPOINT');
+    const defaultEndpoint = getEnvVariable('REACT_APP_AZURE_ENDPOINT');
     const apiKey = getEnvVariable('REACT_APP_AZURE_API_KEY');
     
     // Verificación directa en .env para ayudar en la depuración
@@ -66,11 +96,11 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     console.log(`REACT_APP_AZURE_ENDPOINT está definida: ${process.env.REACT_APP_AZURE_ENDPOINT ? 'Sí' : 'No'}`);
     console.log(`REACT_APP_AZURE_API_KEY está definida: ${process.env.REACT_APP_AZURE_API_KEY ? 'Sí' : 'No'}`);
     
-    if (!endpoint || !apiKey) {
+    if (!defaultEndpoint || !apiKey) {
       // Error detallado para ayudar en la depuración
       const mensajeError = `
         Faltan credenciales de Azure OpenAI:
-        - Endpoint: ${endpoint ? 'Configurado' : 'Falta'}
+        - Endpoint: ${defaultEndpoint ? 'Configurado' : 'Falta'}
         - API Key: ${apiKey ? 'Configurada' : 'Falta'}
         
         Por favor, verifica que en tu archivo .env tienes:
@@ -186,17 +216,24 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
       'it': "Analizza il seguente contenuto estratto da una conversazione:"
     };
     
-    // Selección del modelo
-    const model = "gpt-4o-mini"; // Modelo actual recomendado
+    // Preparar la lista de APIs disponibles
+    const apisToTry = ALTERNATIVE_APIS.map(api => ({
+      ...api,
+      endpoint: api.endpoint || defaultEndpoint
+    }));
     
-    // Inicializar el cliente de Azure OpenAI
-    const client = new OpenAI({
-      apiKey: apiKey,
-      baseURL: `${endpoint}openai/deployments/${model}`,
-      defaultQuery: { "api-version": "2024-12-01-preview" },
-      defaultHeaders: { "api-key": apiKey },
-      dangerouslyAllowBrowser: true
-    });
+    // Limitar tamaño del contenido antes de enviarlo a la API
+    console.log(`Longitud original del contenido: ${chatContent.length} caracteres`);
+    
+    // Aplicar limitación de caracteres - tomar solo los últimos 10,000 caracteres
+    const MAX_CHARS = 10000;
+    let limitedContent = chatContent;
+    
+    if (chatContent.length > MAX_CHARS) {
+      console.log(`Contenido del chat demasiado largo (${chatContent.length} caracteres), limitando a los últimos ${MAX_CHARS} caracteres`);
+      limitedContent = "...[Contenido anterior truncado]...\n\n" + chatContent.substring(chatContent.length - MAX_CHARS);
+      console.log(`Contenido truncado a ${limitedContent.length} caracteres`);
+    }
     
     // Obtener el prompt en el idioma correspondiente
     const systemPrompt = PROMPTS[language] || PROMPTS['es'];
@@ -205,26 +242,178 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     // Preparar los mensajes para la API
     const messages = [
       { role: "system", content: systemPrompt },
-      { role: "user", content: `${userPrefix}\n\n${chatContent}` }
+      { role: "user", content: `${userPrefix}\n\n${limitedContent}` }
     ];
     
-    console.log(`Enviando solicitud a Azure OpenAI utilizando modelo: ${model}`);
+    // Intentar cada API en secuencia
+    console.log(`>>> APIs disponibles para fallback: ${apisToTry.length}`);
+    for (let i = 0; i < apisToTry.length; i++) {
+      const api = apisToTry[i];
+      
+      console.log(`>>> INTENTANDO CON: ${api.name} (modelo: ${api.model}) [${i+1}/${apisToTry.length}]`);
+      console.log(`Enviando solicitud utilizando API: ${api.name}, modelo: ${api.model}`);
+      
+      // Definir baseURL fuera del bloque try para que esté disponible en el bloque catch
+      const baseURL = `${api.endpoint}openai/deployments/${api.model}`;
+      console.log(`>>> URL completa para ${api.name}: ${baseURL} (API version: ${api.apiVersion})`);
+      
+      try {
+        // Inicializar el cliente de Azure OpenAI para esta API
+        const client = new OpenAI({
+          apiKey: apiKey,
+          baseURL: baseURL,
+          defaultQuery: { "api-version": api.apiVersion },
+          defaultHeaders: { "api-key": apiKey },
+          dangerouslyAllowBrowser: true
+        });
+        
+        // Hacer la solicitud a la API con los parámetros adecuados según el modelo
+        const requestOptions = {
+          model: api.model,
+          messages: messages
+        };
+        
+        // Añadir temperatura solo para modelos que la soportan
+        if (api.useTemperature !== false) {
+          requestOptions.temperature = 0.5;
+        }
+        
+        // Algunos modelos usan max_completion_tokens en lugar de max_tokens
+        if (api.useMaxCompletionTokens) {
+          requestOptions.max_completion_tokens = 4000;
+        } else {
+          requestOptions.max_tokens = 4000;
+        }
+        
+        console.log(`>>> Opciones para ${api.name}:`, JSON.stringify(requestOptions));
+        
+        const response = await client.chat.completions.create(requestOptions);
+        
+        // Si llegamos aquí, la solicitud fue exitosa
+        console.log(`>>> ÉXITO con ${api.name} (modelo: ${api.model})`);
+        
+        // Extraer la respuesta
+        const analysisResult = response.choices[0].message.content;
+        
+        // Añadir información sobre la API usada
+        const apiHeader = `*****************************************************\n* API UTILIZADA: ${api.name}\n*****************************************************\n\n`;
+        const completeResponse = apiHeader + analysisResult;
+        
+        // Devolver la respuesta exitosa
+        return {
+          success: true,
+          ready: true,
+          response: completeResponse
+        };
+      } catch (error) {
+        // Respuesta más detallada para depurar problemas
+        console.error(`>>> ERROR con ${api.name} (${api.model}):`, error);
+        
+        // Registro especial para errores de Deepseek
+        if (api.name === "Deepseek R1") {
+          console.error(`>>> DETALLE ESPECIAL DEEPSEEK ERROR: ${JSON.stringify({
+            errorType: error.constructor.name,
+            message: error.message,
+            status: error.status || error.statusCode,
+            url: baseURL,
+            apiVersion: api.apiVersion
+          })}`);
+        }
+        
+        if (error.status === 429 || error.statusCode === 429) {
+          console.log(`>>> LÍMITE ALCANZADO con ${api.name} - Probando siguiente API...`);
+          // Continuar con la siguiente API
+          continue;
+        } else if (error.status === 404 || error.statusCode === 404 || 
+                  (error.message && error.message.includes("not found"))) {
+          // Modelo no encontrado o deployment inexistente
+          console.error(`>>> MODELO NO ENCONTRADO en ${api.name}: ${error.message}`);
+          if (i < apisToTry.length - 1) {
+            continue;
+          }
+        } else if (error.status === 400 || error.statusCode === 400) {
+          // Posible problema de configuración del modelo
+          console.error(`>>> ERROR DE CONFIGURACIÓN con ${api.name}: ${error.message}`);
+          if (i < apisToTry.length - 1) {
+            continue;
+          }
+        } else if (error.message && (error.message.includes("fetch") || error.message.includes("network") || 
+                   error.message.includes("ERR_NAME") || error.message.includes("Connection"))) {
+          // Error de conexión - Mostrar información detallada para diagnóstico
+          console.error(`>>> ERROR DE CONEXIÓN con ${api.name}: ${error.message}`);
+          console.error(`>>> DETALLES: Endpoint=${api.endpoint}, Model=${api.model}, API Version=${api.apiVersion}`);
+          
+          // Para Deepseek R1, intentar con una URL alternativa si falla la resolución de DNS
+          if (api.name === "Deepseek R1" && error.message.includes("ERR_NAME_NOT_RESOLVED")) {
+            console.log(">>> Intentando URL alternativa para Deepseek R1...");
+            try {
+              // Intentar usar el endpoint principal con el modelo deepseek
+              const altClient = new OpenAI({
+                apiKey: apiKey,
+                baseURL: `${defaultEndpoint}openai/deployments/deepseek-r1`,
+                defaultQuery: { "api-version": api.apiVersion },
+                defaultHeaders: { "api-key": apiKey },
+                dangerouslyAllowBrowser: true
+              });
+              
+              // Crear nuevas opciones de solicitud para la URL alternativa
+              const altRequestOptions = {
+                model: api.model,
+                messages: messages
+              };
+              
+              // Aplicar las mismas reglas para temperatura y tokens
+              if (api.useTemperature !== false) {
+                altRequestOptions.temperature = 0.5;
+              }
+              
+              if (api.useMaxCompletionTokens) {
+                altRequestOptions.max_completion_tokens = 4000;
+              } else {
+                altRequestOptions.max_tokens = 4000;
+              }
+              
+              const altResponse = await altClient.chat.completions.create(altRequestOptions);
+              
+              // Si llegamos aquí, la solicitud fue exitosa con la URL alternativa
+              console.log(`>>> ÉXITO con ${api.name} (URL alternativa)`);
+              const analysisResult = altResponse.choices[0].message.content;
+              const apiHeader = `*****************************************************\n* API UTILIZADA: ${api.name} (URL alternativa)\n*****************************************************\n\n`;
+              return {
+                success: true,
+                ready: true,
+                response: apiHeader + analysisResult
+              };
+            } catch (altError) {
+              console.error(">>> Error con URL alternativa:", altError.message);
+            }
+          }
+          
+          if (i < apisToTry.length - 1) {
+            continue;
+          }
+        } else {
+          // Otro tipo de error
+          console.error(`>>> ERROR DESCONOCIDO con ${api.name}: ${error.message}`);
+          // Si hay más APIs para probar, continuamos
+          if (i < apisToTry.length - 1) {
+            continue;
+          }
+        }
+        
+        // Si llegamos aquí en el último modelo, lanzamos el error
+        if (i === apisToTry.length - 1) {
+          throw error;
+        }
+      }
+    }
     
-    // Hacer la solicitud a la API
-    const response = await client.chat.completions.create({
-      model: model,
-      messages: messages,
-      temperature: 0.5,
-      max_tokens: 4000
-    });
-    
-    // Extraer la respuesta
-    const analysisResult = response.choices[0].message.content;
+    // Si llegamos aquí, todas las APIs fallaron
+    console.error("Todas las APIs disponibles fallaron al procesar la solicitud");
     
     return {
-      success: true,
-      ready: true,
-      response: analysisResult
+      success: false,
+      error: "No pudimos procesar tu solicitud en este momento. Todos los modelos están ocupados o no disponibles. Por favor, intenta más tarde."
     };
   } catch (error) {
     console.error("Error al analizar el chat con Azure OpenAI:", error);
@@ -233,7 +422,7 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     if (error.status === 429 || error.statusCode === 429) {
       return {
         success: false,
-        error: "Límite de solicitudes alcanzado. Por favor, intenta más tarde."
+        error: "Límite de solicitudes alcanzado en todas las APIs. Por favor, intenta más tarde."
       };
     } else if (error.status === 401 || error.status === 403 || error.statusCode === 401 || error.statusCode === 403) {
       return {

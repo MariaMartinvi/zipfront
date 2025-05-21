@@ -56,11 +56,56 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       return { error: "Formato de chat no reconocido", success: false };
     }
     
+    // Obtener el nombre del grupo de la primera línea solo para chats grupales de iOS
+    let nombreGrupo = null;
+    let esChatGrupal = false;
+    
+    if (formato === "ios") {
+      // Buscar en las primeras líneas para determinar si es un chat grupal
+      const primerasLineas = contenido.split(/\r?\n/).slice(0, 5);
+      esChatGrupal = primerasLineas.some(linea => 
+        // Español
+        linea.includes("Se te añadió al grupo") || 
+        linea.includes("creó este grupo") ||
+        // Inglés
+        linea.includes("You were added") ||
+        linea.includes("created this group") ||
+        // Francés
+        linea.includes("Vous avez été ajouté") ||
+        linea.includes("a créé ce groupe") ||
+        // Alemán
+        linea.includes("Sie wurden hinzugefügt") ||
+        linea.includes("hat diese Gruppe erstellt") ||
+        // Italiano
+        linea.includes("Sei stato aggiunto") ||
+        linea.includes("ha creato questo gruppo") ||
+        // Portugués
+        linea.includes("Você foi adicionado") ||
+        linea.includes("criou este grupo") ||
+        // Catalán
+        linea.includes("T'han afegit") ||
+        linea.includes("ha creat aquest grup")
+      );
+      
+      if (esChatGrupal) {
+        const primeraLinea = primerasLineas[0];
+        const matchGrupo = primeraLinea.match(/^\[[^\]]+\]\s*([^:]+):/);
+        if (matchGrupo) {
+          nombreGrupo = matchGrupo[1].trim();
+        }
+      }
+    }
+    
     // Analizar mensajes
     const lineas = contenido.split(/\r?\n/);
     const mensajes = extraerMensajes(lineas, formato);
     
-    if (mensajes.length === 0) {
+    // Filtrar mensajes del grupo solo para chats grupales de iOS
+    const mensajesFiltrados = (formato === "ios" && esChatGrupal && nombreGrupo)
+      ? mensajes.filter(m => m.nombre !== nombreGrupo)
+      : mensajes;
+    
+    if (mensajesFiltrados.length === 0) {
       return { error: "No se encontraron mensajes válidos", success: false };
     }
     
@@ -88,7 +133,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     
     // Obtener usuarios únicos
     const participantes = new Set();
-    mensajes.forEach(m => participantes.add(m.nombre));
+    mensajesFiltrados.forEach(m => participantes.add(m.nombre));
     
     // Inicializar estadísticas para cada usuario
     const usuarios = {};
@@ -118,22 +163,22 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     
     // Identificar conversaciones (separadas por más de 2 horas)
     const conversaciones = [];
-    if (mensajes.length > 0) {
-      let conversacionActual = [mensajes[0]];
+    if (mensajesFiltrados.length > 0) {
+      let conversacionActual = [mensajesFiltrados[0]];
       
-      for (let i = 1; i < mensajes.length; i++) {
+      for (let i = 1; i < mensajesFiltrados.length; i++) {
         // Calcular diferencia en horas
-        const fechaActual = mensajes[i].fechaObj;
-        const fechaAnterior = mensajes[i-1].fechaObj;
+        const fechaActual = mensajesFiltrados[i].fechaObj;
+        const fechaAnterior = mensajesFiltrados[i-1].fechaObj;
         const tiempoDiferencia = (fechaActual - fechaAnterior) / (1000 * 60 * 60); // en horas
         
         if (tiempoDiferencia > 2) { // Nueva conversación después de 2 horas
           if (conversacionActual.length > 0) {
             conversaciones.push(conversacionActual);
           }
-          conversacionActual = [mensajes[i]];
+          conversacionActual = [mensajesFiltrados[i]];
         } else {
-          conversacionActual.push(mensajes[i]);
+          conversacionActual.push(mensajesFiltrados[i]);
         }
       }
       
@@ -208,8 +253,8 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     }
     
     // Calcular estadísticas de cada mensaje
-    for (let i = 0; i < mensajes.length; i++) {
-      const mensaje = mensajes[i];
+    for (let i = 0; i < mensajesFiltrados.length; i++) {
+      const mensaje = mensajesFiltrados[i];
       const usuario = mensaje.nombre;
       const texto = mensaje.mensaje || '';
       // Usar el objeto fechaObj que ya creamos en analizarMensaje
@@ -249,7 +294,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       
       // Calcular tiempo de respuesta
       if (i > 0) {
-        const mensajeAnterior = mensajes[i-1];
+        const mensajeAnterior = mensajesFiltrados[i-1];
         const tiempoRespuesta = (fecha - mensajeAnterior.fechaObj) / (1000 * 60); // en minutos
         if (tiempoRespuesta > 0) { // Solo considerar respuestas positivas
           usuarios[usuario].tiempo_respuesta.push(tiempoRespuesta);
@@ -293,7 +338,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       
       // Detectar si el mensaje anterior fue una risa (Para la categoría "cómico")
       if (i > 0) {
-        const mensajeAnterior = mensajes[i-1];
+        const mensajeAnterior = mensajesFiltrados[i-1];
         const usuarioAnterior = mensajeAnterior.nombre;
         const textoAnterior = mensajeAnterior.mensaje || '';
         
@@ -1034,7 +1079,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       usuarios: usuarios,
       categorias: categorias,
       totales: {
-        mensajes: mensajes.length,
+        mensajes: mensajesFiltrados.length,
         usuarios: participantes.size,
         emojis: Object.values(usuarios).reduce((sum, u) => sum + u.emojis_utilizados, 0),
         emojis_amor: Object.values(usuarios).reduce((sum, u) => sum + u.emojis_amor, 0)
@@ -1101,13 +1146,90 @@ const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
   
   if (match) {
     const [_, fecha, hora, nombre, mensaje] = match;
+    
+    // Solo para iOS: Ignorar mensajes del sistema y del grupo en chats grupales
+    if (formato === "ios") {
+      const mensajesSistema = [
+        // Español
+        "Se te añadió al grupo",
+        "creó este grupo",
+        "Los mensajes y las llamadas están cifrados",
+        "imagen omitida",
+        "Video omitido",
+        "Esperando el mensaje",
+        // Inglés
+        "You were added",
+        "created this group",
+        "Messages and calls are end-to-end encrypted",
+        "image omitted",
+        "video omitted",
+        "Waiting for this message",
+        // Francés
+        "Vous avez été ajouté",
+        "a créé ce groupe",
+        "Les messages et les appels sont chiffrés de bout en bout",
+        "image omise",
+        "vidéo omise",
+        "En attente de ce message",
+        // Alemán
+        "Sie wurden hinzugefügt",
+        "hat diese Gruppe erstellt",
+        "Nachrichten und Anrufe sind Ende-zu-Ende verschlüsselt",
+        "Bild ausgelassen",
+        "Video ausgelassen",
+        "Warte auf diese Nachricht",
+        // Italiano
+        "Sei stato aggiunto",
+        "ha creato questo gruppo",
+        "I messaggi e le chiamate sono protetti con la crittografia end-to-end",
+        "immagine omessa",
+        "video omesso",
+        "In attesa di questo messaggio",
+        // Portugués
+        "Você foi adicionado",
+        "criou este grupo",
+        "Mensagens e chamadas são protegidas com criptografia de ponta a ponta",
+        "imagem omitida",
+        "vídeo omitido",
+        "Aguardando esta mensagem",
+        // Catalán
+        "T'han afegit",
+        "ha creat aquest grup",
+        "Els missatges i les trucades estan protegits amb xifratge d'extrem a extrem",
+        "imatge omesa",
+        "vídeo omès",
+        "Esperant aquest missatge"
+      ];
+      
+      // Solo ignorar mensajes del sistema si es un chat grupal
+      // Un chat grupal se identifica por la presencia de mensajes específicos del grupo
+      const esChatGrupal = mensaje.includes("Se te añadió al grupo") || 
+                          mensaje.includes("creó este grupo") ||
+                          mensaje.includes("You were added") ||
+                          mensaje.includes("created this group") ||
+                          mensaje.includes("Vous avez été ajouté") ||
+                          mensaje.includes("a créé ce groupe") ||
+                          mensaje.includes("Sie wurden hinzugefügt") ||
+                          mensaje.includes("hat diese Gruppe erstellt") ||
+                          mensaje.includes("Sei stato aggiunto") ||
+                          mensaje.includes("ha creato questo gruppo") ||
+                          mensaje.includes("Você foi adicionado") ||
+                          mensaje.includes("criou este grupo") ||
+                          mensaje.includes("T'han afegit") ||
+                          mensaje.includes("ha creat aquest grup");
+      
+      if (esChatGrupal && mensajesSistema.some(msg => mensaje.includes(msg))) {
+        return null;
+      }
+    }
+    
     // Crear un objeto Date válido usando parseDateTime
     const fechaObj = parseDateTime(fecha, hora, formato);
     
     return {
       fecha: fecha,
       hora: hora,
-      fechaObj: fechaObj, // Añadir el objeto Date
+      fechaObj: fechaObj,
       nombre: nombre.trim(),
       mensaje: mensaje.trim() || "",
       esMultilinea: false
@@ -1149,6 +1271,20 @@ const AnalisisTop = ({ operationId, chatData }) => {
       isAlreadyRendered = false;
     };
   }, [chatData]);
+
+  // NUEVO: Efecto para guardar datos en variable global cuando estén disponibles
+  useEffect(() => {
+    if (datos && datos.usuarios && datos.categorias) {
+      // Guardar datos en una variable global para que App.js pueda acceder
+      window.lastAnalysisTopData = {
+        usuarios: datos.usuarios,
+        categorias: datos.categorias,
+        totales: datos.totales
+      };
+      
+      console.log("Datos de análisis guardados para compartir como juego");
+    }
+  }, [datos]);
 
   // Mapeo de categorías con íconos y traducciones
   const categoriaIconos = {
@@ -1212,7 +1348,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
       titulo: () => t('app.top_profiles.emoji.title'), 
       descripcion: () => t('app.top_profiles.emoji.description') 
     },
-    'amoroso': { 
+          'amoroso': { 
       icono: '❤️', 
       titulo: () => t('app.top_profiles.amoroso.title'), 
       descripcion: () => t('app.top_profiles.amoroso.description') 
@@ -1431,6 +1567,30 @@ const AnalisisTop = ({ operationId, chatData }) => {
                 nombre: data.categorias?.sicopata?.nombre || 'Sin datos',
                 max_mensajes_seguidos: data.categorias?.sicopata?.max_mensajes_seguidos || 0,
                 mensajes: data.categorias?.sicopata?.mensajes || 0
+              },
+              comico: {
+                nombre: data.categorias?.comico?.nombre || 'Sin datos',
+                mensajes_risa: data.categorias?.comico?.mensajes_risa || 0,
+                porcentaje: data.categorias?.comico?.porcentaje || 0,
+                mensajes: data.categorias?.comico?.mensajes || 0
+              },
+              agradecido: {
+                nombre: data.categorias?.agradecido?.nombre || 'Sin datos',
+                mensajes_agradece: data.categorias?.agradecido?.mensajes_agradece || 0,
+                porcentaje: data.categorias?.agradecido?.porcentaje || 0,
+                mensajes: data.categorias?.agradecido?.mensajes || 0
+              },
+              disculpon: {
+                nombre: data.categorias?.disculpon?.nombre || 'Sin datos',
+                mensajes_disculpa: data.categorias?.disculpon?.mensajes_disculpa || 0,
+                porcentaje: data.categorias?.disculpon?.porcentaje || 0,
+                mensajes: data.categorias?.disculpon?.mensajes || 0
+              },
+              curioso: {
+                nombre: data.categorias?.curioso?.nombre || 'Sin datos',
+                mensajes_pregunta: data.categorias?.curioso?.mensajes_pregunta || 0,
+                porcentaje: data.categorias?.curioso?.porcentaje || 0,
+                mensajes: data.categorias?.curioso?.mensajes || 0
               }
             }
           };
@@ -1458,6 +1618,53 @@ const AnalisisTop = ({ operationId, chatData }) => {
     // Iniciar la carga de datos
     cargarDatos();
   }, [operationId, chatData, t, isRenderAllowed]);
+
+  // Efecto para exponer los datos para el juego
+  useEffect(() => {
+    console.log("Verificando datos para exportar al juego:", {
+      hayDatos: !!datos,
+      hayCategorias: datos && !!datos.categorias,
+      hayUsuarios: datos && !!datos.usuarios,
+      formatoUsuarios: datos && datos.usuarios ? typeof datos.usuarios : 'no definido'
+    });
+    
+    if (datos) {
+      // Asegurarnos de que usuarios sea un array
+      let usuariosArray = [];
+      
+      if (datos.usuarios) {
+        if (Array.isArray(datos.usuarios)) {
+          usuariosArray = datos.usuarios;
+        } else if (typeof datos.usuarios === 'object' && datos.usuarios !== null) {
+          usuariosArray = Object.keys(datos.usuarios);
+        }
+      } else if (datos.categorias) {
+        // Si no tenemos usuarios pero sí categorías, usar los nombres de las categorías
+        const nombresUnicos = new Set();
+        
+        // Recolectar todos los nombres únicos de las categorías
+        Object.values(datos.categorias).forEach(cat => {
+          if (cat && cat.nombre && cat.nombre !== 'Sin datos') {
+            nombresUnicos.add(cat.nombre);
+          }
+        });
+        
+        usuariosArray = Array.from(nombresUnicos);
+      }
+      
+      // Exponer los datos para que App.js pueda usarlos en el juego
+      window.lastAnalysisTopData = {
+        categorias: datos.categorias || {},
+        usuarios: usuariosArray
+      };
+      
+      console.log('Datos de análisis disponibles para el juego:', {
+        categorias: datos.categorias ? Object.keys(datos.categorias).length : 0,
+        usuarios: usuariosArray.length,
+        nombresUsuarios: usuariosArray
+      });
+    }
+  }, [datos]);
 
   const renderDetalleCategoria = (categoria) => {
     if (!datos || !datos.categorias || !datos.categorias[categoria]) {

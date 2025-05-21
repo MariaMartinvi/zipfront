@@ -422,23 +422,7 @@ function ChatAnalysisComponent({ operationId, chatData }) {
         </div>
       )}
       
-    
-      
-      {chatContent && (
-        <>
-          <AzureClientComponent 
-            chatContent={chatContent} 
-            onAnalysisComplete={handleAnalysisComplete} 
-          />
-        </>
-      )}
-      
-      
-      
-      {/* Análisis Top - Resultados estadísticos */}
-      {chatContent && <AnalisisTop chatContent={chatContent} />}
-      
-      {/* Análisis psicológico local - Comentado temporalmente para pruebas de rendimiento
+      {/* Análisis psicológico local */}
       {chatStatistics ? (
         <div id="psychological-analysis">
           <HumoristicAnalysis statistics={chatStatistics} />
@@ -450,31 +434,6 @@ function ChatAnalysisComponent({ operationId, chatData }) {
           </div>
         )
       )}
-      */}
-      
-      {/* Debug info - Solo visible en desarrollo */}
-      {/*
-        <div className="debug-info" style={{margin: '20px 0', padding: '10px', background: '#f8f9fa', borderRadius: '5px', fontSize: '12px'}}>
-          <h4>Debug Info</h4>
-          <p>chatContent: {chatContent ? '✅ Disponible' : '❌ No disponible'}</p>
-          <p>chatStatistics: {chatStatistics ? '✅ Disponible' : '❌ No disponible'}</p>
-          <p>analysisResult: {analysisResult ? '✅ Disponible' : '❌ No disponible'}</p>
-          {chatStatistics && (
-            <details>
-              <summary>Ver estadísticas</summary>
-              <pre>{JSON.stringify(chatStatistics, null, 2)}</pre>
-            </details>
-          )}
-          <details>
-            <summary>Logs de rendimiento</summary>
-            <pre>
-              {`Tiempo de carga inicial: ${performance.now().toFixed(2)}ms
-              Tamaño de chatContent: ${chatContent ? JSON.stringify(chatContent).length : 0} bytes
-              Tamaño de chatStatistics: ${chatStatistics ? JSON.stringify(chatStatistics).length : 0} bytes`}
-            </pre>
-          </details>
-        </div>
-      */}
     </div>
   );
 }

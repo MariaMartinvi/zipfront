@@ -623,5 +623,8 @@
     "applying_model": "Application du modèle psychologique...",
     "generating_conclusions": "Génération des conclusions...",
     "finalizing_analysis": "Finalisation de l'analyse psychologique..."
+  },
+  "privacy": {
+    "no_ai_analysis": "Ne pas partager mes données avec l'IA pour l'analyse psychologique (les données ne seront pas envoyées à Azure)"
   }
 } 

@@ -15,6 +15,52 @@ const AzureClientComponent = ({
   }
 }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [nameMapping, setNameMapping] = useState({});
+
+  // Función para limpiar el contenido antes de enviarlo a Azure
+  const cleanContent = (content) => {
+    // Mapeo para guardar nombres originales -> iniciales
+    const mapping = {};
+    
+    // Convertir cada línea
+    const lines = content.split('\n');
+    const cleanedLines = lines.map(line => {
+      // Patrón para extraer nombre y mensaje (ya sin fechas)
+      const match = line.match(/([^:]+):\s*(.*)/);
+      if (match) {
+        const [_, name, message] = match;
+        const fullName = name.trim();
+        
+        // Si no hemos visto este nombre antes, crear sus iniciales
+        if (!mapping[fullName]) {
+          const initials = fullName
+            .split(' ')
+            .map(word => word[0])
+            .join('.');
+          mapping[fullName] = initials;
+        }
+        
+        // Devolver línea con iniciales
+        return `${mapping[fullName]}: ${message}`;
+      }
+      return line;
+    });
+    
+    return {
+      cleanedContent: cleanedLines.join('\n'),
+      nameMapping: mapping
+    };
+  };
+
+  // Función para restaurar los nombres en la respuesta
+  const restoreNames = (content) => {
+    let restoredContent = content;
+    Object.entries(nameMapping).forEach(([fullName, initials]) => {
+      const regex = new RegExp(`\\b${initials}\\b`, 'g');
+      restoredContent = restoredContent.replace(regex, fullName);
+    });
+    return restoredContent;
+  };
 
   // Prompts multiidioma para diferentes idiomas
   const PROMPTS = {
@@ -160,7 +206,6 @@ const AzureClientComponent = ({
   // Función principal para analizar el chat
   const analyzeChat = async () => {
     if (!chatContent) {
-      // Verificar si onError es una función antes de llamarla
       if (typeof onError === 'function') {
         onError("No hay contenido de chat para analizar");
       } else {
@@ -179,6 +224,20 @@ const AzureClientComponent = ({
       // Calcular longitud del contenido
       const contentLength = chatContent.length;
       
+      // Limpiar contenido (quitar fechas y convertir nombres a iniciales)
+      const { cleanedContent, nameMapping: newNameMapping } = cleanContent(chatContent);
+      setNameMapping(newNameMapping);
+      
+      // Aplicar limitación de caracteres - tomar solo los últimos 10,000 caracteres
+      const MAX_CHARS = 10000;
+      let limitedContent = cleanedContent;
+      
+      if (cleanedContent.length > MAX_CHARS) {
+        console.log(`Contenido del chat demasiado largo (${cleanedContent.length} caracteres), limitando a los últimos ${MAX_CHARS} caracteres`);
+        limitedContent = "...[Contenido anterior truncado]...\n\n" + cleanedContent.substring(cleanedContent.length - MAX_CHARS);
+        console.log(`Contenido truncado a ${limitedContent.length} caracteres`);
+      }
+      
       // Seleccionar modelo basado en la longitud
       const model = selectOptimalModel(contentLength);
       
@@ -190,11 +249,9 @@ const AzureClientComponent = ({
       console.log(`Clave API: ${apiKey ? 'Configurada correctamente' : 'No configurada'}`);
       
       if (!endpoint || !apiKey) {
-        // Mostrar un mensaje de error más útil que indique cómo configurar
         const errorMsg = 
           "Faltan credenciales de Azure OpenAI. Presiona Ctrl+Shift+A para abrir el panel de configuración y añadir tus credenciales.";
         console.error(errorMsg);
-        // Verificar si onError es una función antes de llamarla
         if (typeof onError === 'function') {
           onError(errorMsg);
         }
@@ -216,7 +273,7 @@ const AzureClientComponent = ({
       // Preparar los mensajes para la API
       const messages = [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `${userPrefix}\n\n${chatContent}` }
+        { role: "user", content: `${userPrefix}\n\n${limitedContent}` }
       ];
       
       console.log("Enviando solicitud a Azure OpenAI...");
@@ -231,8 +288,8 @@ const AzureClientComponent = ({
       
       console.log("Respuesta recibida correctamente");
       
-      // Extraer la respuesta
-      const analysisResult = response.choices[0].message.content;
+      // Extraer la respuesta y restaurar los nombres
+      const analysisResult = restoreNames(response.choices[0].message.content);
       
       // Pasar los resultados al componente padre
       if (typeof onAnalysisComplete === 'function') {

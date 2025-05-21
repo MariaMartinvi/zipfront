@@ -432,6 +432,12 @@
       "no_category_data": "Nessun dato disponibile per questa categoria",
       "no_specific_details": "Nessun dettaglio specifico disponibile",
       "generic": "Errore"
+    },
+    "login_required": {
+      "title": "Accedi per iniziare",
+      "description": "Devi accedere per analizzare le conversazioni",
+      "login": "Accedi",
+      "register": "Crea Account"
     }
   },
   "date": {
@@ -721,5 +727,8 @@
     "applying_model": "Applicazione del modello psicologico...",
     "generating_conclusions": "Generazione delle conclusioni...",
     "finalizing_analysis": "Finalizzazione dell'analisi psicologica..."
+  },
+  "privacy": {
+    "no_ai_analysis": "Non condividere i miei dati con l'IA per l'analisi psicologica (i dati non verranno inviati ad Azure)"
   }
 } 

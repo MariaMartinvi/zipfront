@@ -4,7 +4,7 @@ import './App.css';
 import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import Chatgptresultados from './Chatgptresultados';
-// import ChatAnalysisComponent from './ChatAnalysisComponent';
+import ChatAnalysisComponent from './ChatAnalysisComponent';
 import WhatsappInstructions from './WhatsappInstructions';
 import AnalisisPrimerChat from './Analisis_primer_chat';
 import AnalisisTop from './Analisis_top';
@@ -25,6 +25,8 @@ import TermsOfService from './Paginasextra/TermsOfService';
 import PrivacyPolicy from './Paginasextra/PrivacyPolicy';
 import AppPreview from './AppPreview';
 import { useTranslation } from 'react-i18next'; // Importar useTranslation
+// NUEVO: Importar el componente del juego
+import ChatTopGame from './ChatTopGame';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -304,6 +306,16 @@ function App() {
   const analysisRef = useRef(null);
   // Get user-related state from AuthContext instead of managing locally
   const { user, userProfile, setUserProfile, isAuthLoading, setUser } = useAuth();
+  
+  // NUEVO: Estado para mostrar el diálogo de compartir juego
+  const [showShareGameModal, setShowShareGameModal] = useState(false);
+  // NUEVO: Estado para almacenar la URL del juego
+  const [gameUrl, setGameUrl] = useState("");
+    // NUEVO: Estado para mostrar mensaje de copiado al portapapeles
+  const [showCopiedMessage, setShowCopiedMessage] = useState(false);
+  
+  // Estado para controlar si omitir el análisis psicológico con IA
+  const [skipAIPsychologicalAnalysis, setSkipAIPsychologicalAnalysis] = useState(false);
   
   // Tracking para evitar procesamiento duplicado
   const processedShareIds = useRef(new Set());
@@ -1009,6 +1021,15 @@ function App() {
     if (!chatData) {
       addDebugMessage('No hay datos de chat disponibles para analizar');
       setError('No hay datos de chat disponibles para analizar');
+      return;
+    }
+    
+    // Si el usuario optó por no compartir datos con la IA, no realizar el análisis psicológico
+    if (skipAIPsychologicalAnalysis) {
+      addDebugMessage('El usuario ha elegido no compartir datos con la IA para análisis psicológico');
+      setIsFetchingMistral(false);
+      setChatGptResponse("El usuario ha elegido no compartir datos con la IA para el análisis psicológico. Para obtener el perfil psicológico, vuelve a subir el archivo y desmarca la opción correspondiente.");
+      setShowChatGptResponse(true);
       return;
     }
     
@@ -1828,6 +1849,103 @@ const tryDeleteFiles = async (operationId) => {
     };
   }, [operationId]);
 
+  // NUEVO: Función para generar URL del juego ultra compacta
+  const generateGameUrl = () => {
+    try {
+      // Verificar que tengamos datos de análisis
+      if (!chatData) {
+        setError("No hay datos de análisis para compartir");
+        return;
+      }
+      
+      // Obtener datos del análisis
+      const data = window.lastAnalysisTopData;
+      
+      if (!data || !data.categorias || !data.usuarios) {
+        setError("No se pudieron obtener los datos del análisis");
+        return;
+      }
+
+      // Mapeo de categorías completas a códigos de una letra
+      const catCodes = {
+        'profesor': 'p', 'rollero': 'r', 'pistolero': 's', 'vampiro': 'v',
+        'cafeconleche': 'c', 'dejaenvisto': 'd', 'narcicista': 'n', 
+        'puntofinal': 'f', 'fosforo': 'o', 'menosesmas': 'm',
+        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'sicopata': 'x',
+        'comico': 'co', 'agradecido': 'ag', 'disculpon': 'di', 'curioso': 'cu'
+      };
+      
+      // Obtener usuarios
+      let users = [];
+      if (Array.isArray(data.usuarios)) {
+        users = data.usuarios;
+      } else if (typeof data.usuarios === 'object') {
+        users = Object.keys(data.usuarios);
+      }
+      
+      // Crear array de nombres únicos para eliminar redundancia
+      const names = [...new Set(
+        Object.values(data.categorias)
+          .filter(c => c && c.nombre)
+          .map(c => c.nombre)
+      )];
+      
+      // Crear pares [código, índice] para cada categoría
+      const cats = [];
+      Object.entries(catCodes).forEach(([cat, code]) => {
+        if (data.categorias[cat]?.nombre) {
+          const idx = names.indexOf(data.categorias[cat].nombre);
+          if (idx >= 0) {
+            cats.push([code, idx]);
+          }
+        }
+      });
+      
+      // Estructura final: [usuarios, nombres, categorías]
+      const result = [users, names, cats];
+      
+      // Comprimir con LZ-String
+      const lzs = require('lz-string');
+      const compressed = lzs.compressToEncodedURIComponent(JSON.stringify(result));
+      
+      // URL con parámetro z (más corto)
+      const url = `${window.location.origin}/chat-game?z=${compressed}`;
+      
+      console.log("Datos ultra compactos:", result);
+      
+      // Actualizar estado y mostrar modal
+      setGameUrl(url);
+      setShowShareGameModal(true);
+      
+      return url;
+    } catch (error) {
+      console.error("Error generando URL:", error);
+      setError("Error generando URL del juego");
+      return null;
+    }
+  };
+  
+  // NUEVO: Función para copiar URL al portapapeles
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(gameUrl)
+      .then(() => {
+        setShowCopiedMessage(true);
+        setTimeout(() => setShowCopiedMessage(false), 2000);
+      })
+      .catch(err => {
+        console.error("Error copiando al portapapeles:", err);
+        setError("No se pudo copiar al portapapeles");
+      });
+  };
+  
+  // NUEVO: Función para compartir en WhatsApp
+  const shareOnWhatsApp = () => {
+    // Mensaje con formato mejorado para que el enlace sea clickeable
+    const message = `¡Juega a adivinar quién es quién en nuestro chat de WhatsApp!\n\n${gameUrl}\n\n🎮 Juego de adivinar personalidades`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   // Main app component UI with routing
   return (
     <div className="app-container">
@@ -1895,16 +2013,13 @@ const tryDeleteFiles = async (operationId) => {
                               <div className="analysis-module">
                                 <AnalisisTop chatData={chatData} />
                               </div>
-                              {/* <div className="analysis-module">
-                                <ChatAnalysisComponent chatData={chatData} />
-                              </div> */}
                             </div>
                           </>
                         )}
                       </div>
                     )}
 
-                    {/* Mostrar componentes de análisis psicológico */}
+                    {/* Análisis psicológico de Azure */}
                     {operationId && (
                       <div className="chat-analysis-section">
                         <h2>{t('app.analysis.psychological')}</h2>
@@ -1914,10 +2029,34 @@ const tryDeleteFiles = async (operationId) => {
                             <p>{t('app.analysis.preparing_psychological')}</p>
                           </div>
                         ) : (
-                          chatGptResponse && <Chatgptresultados chatGptResponse={chatGptResponse} />
+                          chatGptResponse && <Chatgptresultados 
+                            chatGptResponse={chatGptResponse}
+                            promptInput={chatData?.prompt} 
+                            usuarioId={user?.uid || "anonymous"} 
+                          />
                         )}
                       </div>
                     )}
+                    
+                    {console.log("DEBUG BOTÓN: ", {operationId, chatData: !!chatData, isLoading, windowLastAnalysisTopData: !!window.lastAnalysisTopData})}
+                    {/* NUEVO: Botón para compartir juego - Modificado para mostrar sin esperar análisis psicológico */}
+                    {operationId && chatData && !isLoading && (
+                      <div className="share-game-button-container">
+                        <button 
+                          className="share-game-button"
+                          onClick={generateGameUrl}
+                        >
+                          🎮 Compartir como juego
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Análisis humorístico local }
+                    {operationId && chatData && !isLoading && (
+                      <div className="humoristic-analysis-section">
+                        <ChatAnalysisComponent chatData={chatData} />
+                      </div>
+                    ) */}
 
                     {/* Sección de carga de archivos */}
                     <div id="upload-section" className="upload-section">
@@ -1968,6 +2107,16 @@ const tryDeleteFiles = async (operationId) => {
                                 <span className="file-upload-subtext">{t('app.upload.subtext')}</span>
                               </div>
                             </label>
+                            <div className="privacy-option">
+                              <label className="privacy-checkbox-label">
+                                <input
+                                  type="checkbox"
+                                  checked={skipAIPsychologicalAnalysis}
+                                  onChange={(e) => setSkipAIPsychologicalAnalysis(e.target.checked)}
+                                />
+                                <span>No compartir mis datos con la IA para análisis psicológico (no se enviarán datos a Azure)</span>
+                              </label>
+                            </div>
                           </div>
                         </>
                       )}
@@ -2010,6 +2159,8 @@ const tryDeleteFiles = async (operationId) => {
             <Route path="/faq" element={<FAQ />} />
             <Route path="/terms" element={<TermsOfService />} />
             < Route path="/privacy" element={<PrivacyPolicy />} />
+            {/* NUEVA RUTA: Juego de adivinar perfiles */}
+            <Route path="/chat-game" element={<ChatTopGame />} />
             </Routes>
             
             {/* Componente de footer */}
@@ -2061,6 +2212,36 @@ const tryDeleteFiles = async (operationId) => {
                       }}
                     >
                       Sí, continuar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* NUEVO: Modal para compartir juego */}
+            {showShareGameModal && (
+              <div className="share-game-modal">
+                <div className="share-game-modal-content">
+                  <span className="close-modal" onClick={() => setShowShareGameModal(false)}>&times;</span>
+                  <h3>¡Comparte el juego!</h3>
+                  <p>Envía este enlace a tus amigos para que adivinen quién es el profesor, el vampiro y demás personalidades del chat.</p>
+                  
+                  <div className="game-url-container">
+                    <input 
+                      type="text" 
+                      value={gameUrl} 
+                      readOnly 
+                      onClick={(e) => e.target.select()} 
+                    />
+                    <button onClick={copyToClipboard}>
+                      Copiar
+                    </button>
+                    {showCopiedMessage && <span className="copied-message">¡Copiado!</span>}
+                  </div>
+                  
+                  <div className="share-options">
+                    <button className="whatsapp-share" onClick={shareOnWhatsApp}>
+                      <span>Compartir en WhatsApp</span>
                     </button>
                   </div>
                 </div>
