@@ -1,7 +1,7 @@
 import React from 'react';
 import './Footer.css';
 import { useTranslation } from 'react-i18next';
-import { FaHome, FaQuestionCircle, FaEnvelope, FaFileContract, FaShieldAlt, FaFacebook, FaTwitter, FaInstagram, FaWhatsapp, FaArrowUp } from 'react-icons/fa';
+import { FaHome, FaQuestionCircle, FaEnvelope, FaFileContract, FaShieldAlt, FaCookieBite, FaFacebook, FaTwitter, FaInstagram, FaWhatsapp, FaArrowUp } from 'react-icons/fa';
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -45,6 +45,10 @@ const Footer = () => {
               <a href="/privacy" className="footer-link">
                 <FaShieldAlt className="footer-icon" />
                 <span>{t('footer.privacy')}</span>
+              </a>
+              <a href="/politica-cookies" className="footer-link">
+                <FaCookieBite className="footer-icon" />
+                <span>{t('footer.cookies')}</span>
               </a>
             </div>
           </div>

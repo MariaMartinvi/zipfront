@@ -128,6 +128,40 @@ export const redirectToCheckout = async (priceId, userId) => {
   }
 };
 
+// Handle subscription management
+export const manageSubscription = async (userId) => {
+  try {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      throw new Error('User not authenticated');
+    }
+    
+    const token = await getIdToken(currentUser, true);
+    
+    const response = await fetch(`${API_URL}/api/create-portal-session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        userId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+
+    const session = await response.json();
+    window.location.href = session.url;
+  } catch (error) {
+    console.error('Failed to redirect to customer portal:', error);
+    throw error;
+  }
+};
+
 // Get current user's plan
 export const getUserPlan = async (userId) => {
   try {
