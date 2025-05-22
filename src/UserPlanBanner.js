@@ -7,10 +7,10 @@ const UserPlanBanner = ({ userProfile }) => {
   // Determine max uploads for the current plan
   const getMaxUploads = (plan) => {
     switch(plan) {
-      case 'free': return 2;
-      case 'basic': return 20;
-      case 'standard': return 50;
-      case 'premium': return 120;
+      case 'free': return 1;
+      case 'basic': return 5;
+      case 'standard': return 10;
+      case 'premium': return 20;
       default: return 0;
     }
   };
