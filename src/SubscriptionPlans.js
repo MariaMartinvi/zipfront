@@ -1,7 +1,7 @@
 // SubscriptionPlans.js
 import React, { useState, useEffect } from 'react';
 import { getUserProfile } from './firebase_auth';
-import { PLANS, redirectToCheckout, manageSubscription, getUserPlan } from './stripe_integration';
+import { PLANS, redirectToCheckout, getUserPlan } from './stripe_integration';
 import './SubscriptionPlans.css';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -88,17 +88,6 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
     }
   };
 
-  // Handle subscription management
-  const handleManageSubscription = async () => {
-    try {
-      setError('');
-      await manageSubscription(userId);
-    } catch (error) {
-      console.error('Error managing subscription:', error);
-      setError(t('subscription.error.manage'));
-    }
-  };
-
   if (isLoading) {
     return <div className="subscription-loading">{t('subscription.loading')}</div>;
   }
@@ -159,15 +148,6 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
             ></div>
           </div>
         </div>
-        
-        {userPlan !== 'free' && (
-          <button 
-            className="manage-subscription-button"
-            onClick={handleManageSubscription}
-          >
-            {t('subscription.manage_button')}
-          </button>
-        )}
       </div>
       
       <div className="plans-grid">
