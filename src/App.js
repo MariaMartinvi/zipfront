@@ -4,7 +4,6 @@ import './App.css';
 import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import Chatgptresultados from './Chatgptresultados';
-import ChatAnalysisComponent from './ChatAnalysisComponent';
 import WhatsappInstructions from './WhatsappInstructions';
 import AnalisisPrimerChat from './Analisis_primer_chat';
 import AnalisisTop from './Analisis_top';
@@ -14,10 +13,10 @@ import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat } fro
 import Header from './Header';
 import Footer from './Footer';
 import UserPlanBanner from './UserPlanBanner';
+import GameBanner from './GameBanner';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
 import PaymentSuccessBanner from './PaymentSuccessBanner';
 import { useAuth } from './AuthContext';
-import AuthDebug from './AuthDebug'; // Optional for debugging
 import { deleteFiles, uploadFile, getMistralResponse, startChatAnalysis, getAzureResponse } from './fileService';
 import Contact from './Paginasextra/Contact';
 import FAQ from './Paginasextra/FAQ';
@@ -275,8 +274,10 @@ const anonimizarChat = (contenido) => {
   }
 };
 
-function App() {
-  const { t, i18n } = useTranslation(); // Inicializar hook de traducción
+// Componente interno que usa useLocation
+function AppContent() {
+  const location = useLocation();
+  const { t, i18n } = useTranslation();
   const [operationId, setOperationId] = useState(null);
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -302,6 +303,7 @@ function App() {
   const [showViewAnalysisButton, setShowViewAnalysisButton] = useState(false);
   // Estado para mensajes de progreso
   const [progressMessage, setProgressMessage] = useState("");
+  const [aiAnalysisProgress, setAiAnalysisProgress] = useState('');
   // Referencias para secciones de análisis - usadas para scroll automático
   const analysisRef = useRef(null);
   // Get user-related state from AuthContext instead of managing locally
@@ -498,9 +500,7 @@ function App() {
           // Guardamos el contenido del chat en el estado para usarlo en todos los análisis
           setChatData(extractedContent.chat);
           
-          // No es necesario enviar nada al backend ya que procesamos en el frontend
-          console.log('Archivo ZIP procesado exitosamente en el cliente.');
-          addDebugMessage('Análisis procesado exitosamente en el cliente.');
+          // Mostrar inmediatamente la sección de análisis estadístico sin esperar al análisis psicológico
           setShowAnalysis(true);
           
           // Para compatibilidad hacia atrás, mantener el flujo de operationId
@@ -520,6 +520,9 @@ function App() {
               checkAndDeleteFiles(newOperationId);
             }, 1800000); // 30 minutos
           }, 500);
+          
+          // Iniciar el análisis psicológico en background sin bloquear la UI
+          fetchMistralResponse();
           
           return true;
         } else {
@@ -1024,6 +1027,10 @@ function App() {
       return;
     }
     
+    // Mostrar inmediatamente los datos de análisis estadístico
+    // Esto permite que se muestren mientras se espera el análisis psicológico
+    setShowAnalysis(true);
+    
     // Si el usuario optó por no compartir datos con la IA, no realizar el análisis psicológico
     if (skipAIPsychologicalAnalysis) {
       addDebugMessage('El usuario ha elegido no compartir datos con la IA para análisis psicológico');
@@ -1045,11 +1052,32 @@ function App() {
     setIsFetchingMistral(true);
     setProgressMessage(t('app.generating_ai_analysis'));
     
+    // Iniciar actualización progresiva de mensajes
+    setAiAnalysisProgress(t('app.progress_phases.initializing'));
+    
+    // Configurar actualizaciones de progreso
+    const progressUpdates = [
+      { message: t('app.progress_phases.analyzing_patterns'), delay: 3000 },
+      { message: t('app.progress_phases.identifying_traits'), delay: 7000 },
+      { message: t('app.progress_phases.evaluating_dynamics'), delay: 12000 },
+      { message: t('app.progress_phases.preparing_results'), delay: 18000 },
+      { message: t('app.progress_phases.finalizing'), delay: 24000 }
+    ];
+    
+    // Programar actualizaciones de progreso
+    progressUpdates.forEach(update => {
+      setTimeout(() => {
+        if (isFetchingMistral) { // Solo actualizar si aún estamos cargando
+          setAiAnalysisProgress(update.message);
+        }
+      }, update.delay);
+    });
+    
     try {
       addDebugMessage('Analizando chat directamente con Azure OpenAI desde el frontend');
       
       // Actualizar mensaje de progreso
-      setProgressMessage(`${t('app.generating_analysis')}: ${t('progress_phases.processing_data')}`);
+      setProgressMessage(`${t('app.generating_analysis')}: ${t('app.progress_phases.processing_data')}`);
       
       // Obtener el idioma del usuario (predeterminado a 'es')
       const userLanguage = localStorage.getItem('i18nextLng') || 'es';
@@ -1080,17 +1108,20 @@ function App() {
         }, 1800000); // Esperar 30 minutos (1800000 ms)
         
         setIsFetchingMistral(false);
+        setAiAnalysisProgress('');
         return true;
       } else {
         // Si hay un error, mostrar mensaje
         addDebugMessage(`Error al obtener respuesta de Azure: ${result.error}`);
         setError(result.error || 'Error al analizar el chat con Azure OpenAI');
         setIsFetchingMistral(false);
+        setAiAnalysisProgress('');
         return false;
       }
     } catch (error) {
       addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
       setIsFetchingMistral(false);
+      setAiAnalysisProgress('');
       setError(`Error al analizar el chat: ${error.message}`);
       // Guardar que hubo un error para poder recuperarse después
       localStorage.setItem('whatsapp_analyzer_mistral_error', 'true');
@@ -1153,10 +1184,16 @@ const tryDeleteFiles = async (operationId) => {
 };
   // Start analysis when we have chat data
   useEffect(() => {
-    if (chatData && !chatGptResponse) {
+    // Solo iniciar el análisis si chatData está disponible pero no hay respuesta aún
+    // y si no está iniciado desde processZipFile
+    if (chatData && !chatGptResponse && !isFetchingMistral) {
+      // Mostrar inmediatamente los datos de análisis estadístico
+      setShowAnalysis(true);
+      
+      // Iniciar análisis psicológico solo si fue solicitado por otra vía (no desde processZipFile)
       fetchMistralResponse();
     }
-  }, [chatData, chatGptResponse]);
+  }, [chatData, chatGptResponse, isFetchingMistral]);
 
   // Efecto para manejar compartir archivos y configurar Service Worker
   useEffect(() => {
@@ -1947,312 +1984,308 @@ const tryDeleteFiles = async (operationId) => {
     window.open(whatsappUrl, '_blank');
   };
 
-  // Main app component UI with routing
+  // Función para hacer scroll a la sección de carga
+  const scrollToUploadSection = (e) => {
+    e.preventDefault();
+    const uploadSection = document.getElementById('upload-section');
+    if (uploadSection) {
+      uploadSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="App">
+      <Header user={user} />
+      {location.pathname === '/plans' ? (
+        <UserPlanBanner userProfile={userProfile} />
+      ) : (
+        window.lastAnalysisTopData ? <GameBanner onShareClick={generateGameUrl} /> : null
+      )}
+      
+      <main className="App-main">
+        {showPaymentSuccess && (
+          <PaymentSuccessBanner 
+            show={showPaymentSuccess} 
+            onClose={() => setShowPaymentSuccess(false)}
+          />
+        )}
+        {showUpgradeModal && <UpgradeModal />}
+        
+        <Routes>
+          {/* Home/Upload Page */}
+          <Route 
+            path="/"
+            element={
+              <>
+                {/* Mostrar componentes de análisis estadístico */}
+                {operationId && (
+                  <div className="analysis-container" ref={analysisRef}>
+                    <h2>{t('app.analysis.statistical')}</h2>
+                    
+                    {/* Mostrar los componentes de análisis estadístico inmediatamente cuando chatData esté disponible */}
+                    {chatData ? (
+                      <>
+                        <div className="analysis-module">
+                          <AnalisisPrimerChat chatData={chatData} />
+                        </div>
+                        {/* Nuevos componentes de análisis */}
+                        <div className="additional-analysis">
+                          <div className="analysis-module">
+                            <AnalisisTop chatData={chatData} />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="empty-placeholder-container">
+                        <div className="spinner-small"></div>
+                        <p>{progressMessage || (isLoading ? t('app.progress.processing') : t('app.progress.generating'))}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Análisis psicológico de Azure */}
+                {operationId && (
+                  <div className="chat-analysis-section">
+                    <h2>{t('app.analysis.psychological')}</h2>
+                    
+                    {isFetchingMistral ? (
+                      <div className="empty-placeholder-container">
+                        <div className="loading-progress">
+                          <div className="spinner-circle"></div>
+                          <div className="progress-bar">
+                            <div className="progress-fill"></div>
+                          </div>
+                        </div>
+                        <p>{t('app.analysis.preparing_psychological')}</p>
+                        {aiAnalysisProgress && (
+                          <p className="analysis-progress-detail">{aiAnalysisProgress}</p>
+                        )}
+                      </div>
+                    ) : (
+                      chatGptResponse && <Chatgptresultados 
+                        chatGptResponse={chatGptResponse}
+                        promptInput={chatData?.prompt} 
+                        usuarioId={user?.uid || "anonymous"} 
+                      />
+                    )}
+                  </div>
+                )}
+                
+                {/* Botón para compartir juego al final del análisis */}
+                {operationId && chatData && !isLoading && !isFetchingMistral && (
+                  <div className="share-game-section">
+                    <button 
+                      className="share-game-button"
+                      onClick={generateGameUrl}
+                    >
+                      <span>🎮 Compartir juego de personalidades</span>
+                    </button>
+                    <p className="share-game-description">
+                      Comparte un juego para que tus amigos adivinen quién es el profesor, el vampiro y otras personalidades de tu chat.
+                    </p>
+                  </div>
+                )}
+
+                {/* Sección de carga de archivos */}
+                <div id="upload-section" className="upload-section">
+                  {!user ? (
+                    <>
+                      {/* Componente de vista previa de la aplicación ANTES del login */}
+                      <AppPreview />
+                      
+                      <div className="login-required">
+                        <h2>{t('app.login_required.title')}</h2>
+                        <p>{t('app.login_required.description')}</p>
+                        <div className="auth-buttons">
+                          <button 
+                            className="login-button"
+                            onClick={() => window.location.href = '/login'}
+                          >
+                            {t('app.login_required.login')}
+                          </button>
+                          <button 
+                            className="register-button"
+                            onClick={() => window.location.href = '/register'}
+                          >
+                            {t('app.login_required.register')}
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h2>{showAnalysis ? t('app.upload.another') : t('app.upload.title') + " "}<span className="whatsapp-text">WhatsApp</span></h2>
+                      
+                      {/* Carrusel de instrucciones de WhatsApp separado del botón */}
+                      <WhatsappInstructions />
+                      
+                      {/* User subscription status card */}
+                      
+                      <div className="file-upload-container">
+                        <label className="file-upload-label">
+                          <input 
+                            type="file" 
+                            className="file-upload-input" 
+                            accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
+                            onChange={handleFileUpload} 
+                          />
+                          <div className="file-upload-text">
+                            <span className="upload-icon">📂</span>
+                            <span>{t('app.upload.button')}</span>
+                            <span className="file-upload-subtext">{t('app.upload.subtext')}</span>
+                          </div>
+                        </label>
+                        <div className="privacy-option">
+                          <label className="privacy-checkbox-label">
+                            <input
+                              type="checkbox"
+                              checked={skipAIPsychologicalAnalysis}
+                              onChange={(e) => setSkipAIPsychologicalAnalysis(e.target.checked)}
+                            />
+                            <span>No compartir mis datos con la IA para análisis psicológico (no se enviarán datos a Azure)</span>
+                          </label>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {error && (
+                  <div className="error-message">
+                    <p>{error}</p>
+                  </div>
+                )}
+
+                {isLoading && (
+                  <div className="loading-indicator-minimal">
+                    <div className="spinner"></div>
+                  </div>
+                )}
+              </>
+            }
+          />
+          
+          {/* Authentication Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/reset-password" element={<PasswordReset />} />
+          
+          {/* Subscription Plan Routes - Now correctly passing user prop */}
+          <Route path="/plans" element={
+            <ProtectedRoute>
+              <PlansWithLocationCheck user={user} />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/payment-success" element={
+            <ProtectedRoute>
+              <SimplePaymentSuccess />
+            </ProtectedRoute>
+          } />
+
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        < Route path="/privacy" element={<PrivacyPolicy />} />
+        {/* NUEVA RUTA: Juego de adivinar perfiles */}
+        <Route path="/chat-game" element={<ChatTopGame />} />
+        </Routes>
+        
+        {/* Componente de footer */}
+        <Footer/>
+        {/* Componente de instalación de PWA */}
+        <InstallPWA />
+        
+        
+        {/* Reemplazar la advertencia de no refrescar con un indicador de carga más sutil */}
+        {(isLoading || isFetchingMistral) && (
+          <div className="loading-status-indicator">
+            <div className="spinner-small"></div>
+            <div className="loading-status-text">
+              {t('app.loading_status')}
+            </div>
+          </div>
+        )}
+        
+        {/* Alerta de confirmación cuando el usuario intenta salir con análisis completo */}
+        {showRefreshConfirmation && (
+          <div className="refresh-confirmation">
+            <div className="refresh-confirmation-icon">⚠️</div>
+            <div className="refresh-confirmation-content">
+              <h3>¿Estás seguro?</h3>
+              <p>Si continúas, se perderán todos los datos del análisis actual (tanto estadístico como psicológico). ¿Deseas continuar?</p>
+              <div className="refresh-confirmation-buttons">
+                <button 
+                  className="refresh-confirmation-cancel" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('[BOTÓN] Clic en botón Cancelar');
+                    handleCancelRefresh();
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button 
+                  className="refresh-confirmation-confirm" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('[BOTÓN] Clic en botón Confirmar');
+                    console.log('[BOTÓN] Estado pendingZipFile:', pendingZipFile ? 'EXISTE' : 'NO EXISTE');
+                    handleConfirmRefresh();
+                  }}
+                >
+                  Sí, continuar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* NUEVO: Modal para compartir juego */}
+        {showShareGameModal && (
+          <div className="share-game-modal">
+            <div className="share-game-modal-content">
+              <span className="close-modal" onClick={() => setShowShareGameModal(false)}>&times;</span>
+              <h3>¡Comparte el juego!</h3>
+              <p>Envía este enlace a tus amigos para que adivinen quién es el profesor, el vampiro y demás personalidades del chat.</p>
+              
+              <div className="game-url-container">
+                <input 
+                  type="text" 
+                  value={gameUrl} 
+                  readOnly 
+                  onClick={(e) => e.target.select()} 
+                />
+                <button onClick={copyToClipboard}>
+                  Copiar
+                </button>
+                {showCopiedMessage && <span className="copied-message">¡Copiado!</span>}
+              </div>
+              
+              <div className="share-options">
+                <button className="whatsapp-share" onClick={shareOnWhatsApp}>
+                  <span>Compartir en WhatsApp</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function App() {
   return (
     <div className="app-container">
       <Router>
-        <div className="App">
-          <Header user={user} />
-          <UserPlanBanner userProfile={userProfile} />
-          
-          {/* Indicador de progreso flotante para todos los dispositivos */}
-          {(isLoading || isFetchingMistral) && (
-            <div className="mobile-progress-indicator">
-              <div className="progress-content">
-                <div className="spinner-small"></div>
-                <span>{progressMessage || (isLoading ? t('app.progress.processing') : t('app.progress.generating'))}</span>
-              </div>
-              <div className="progress-bar">
-                <div className="progress-value"></div>
-              </div>
-            </div>
-          )}
-          
-          {/* Botón flotante para ver análisis */}
-          {operationId && showViewAnalysisButton && !(isLoading || isFetchingMistral) && (
-            <button 
-              className="view-analysis-button"
-              onClick={scrollToAnalysis}
-            >
-              <span className="icon">📊</span>
-              {t('app.buttons.view_analysis')}
-            </button>
-          )}
-          
-          <main className="App-main">
-            {showPaymentSuccess && (
-              <PaymentSuccessBanner 
-                show={showPaymentSuccess} 
-                onClose={() => setShowPaymentSuccess(false)}
-              />
-            )}
-            {showUpgradeModal && <UpgradeModal />}
-            
-            <Routes>
-              {/* Home/Upload Page */}
-              <Route 
-                path="/"
-                element={
-                  <>
-                    {/* Mostrar componentes de análisis estadístico */}
-                    {operationId && (
-                      <div className="analysis-container" ref={analysisRef}>
-                        <h2>{t('app.analysis.statistical')}</h2>
-                        
-                        {/* Reemplazar el spinner individual con un contenedor simple */}
-                        {isLoading ? (
-                          <div className="empty-placeholder-container">
-                            <p>{t('app.analysis.preparing_statistical')}</p>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="analysis-module">
-                              <AnalisisPrimerChat chatData={chatData} />
-                            </div>
-                            {/* Nuevos componentes de análisis */}
-                            <div className="additional-analysis">
-                              <div className="analysis-module">
-                                <AnalisisTop chatData={chatData} />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Análisis psicológico de Azure */}
-                    {operationId && (
-                      <div className="chat-analysis-section">
-                        <h2>{t('app.analysis.psychological')}</h2>
-                        
-                        {isFetchingMistral ? (
-                          <div className="empty-placeholder-container">
-                            <p>{t('app.analysis.preparing_psychological')}</p>
-                          </div>
-                        ) : (
-                          chatGptResponse && <Chatgptresultados 
-                            chatGptResponse={chatGptResponse}
-                            promptInput={chatData?.prompt} 
-                            usuarioId={user?.uid || "anonymous"} 
-                          />
-                        )}
-                      </div>
-                    )}
-                    
-                    {console.log("DEBUG BOTÓN: ", {operationId, chatData: !!chatData, isLoading, windowLastAnalysisTopData: !!window.lastAnalysisTopData})}
-                    {/* NUEVO: Botón para compartir juego - Modificado para mostrar sin esperar análisis psicológico */}
-                    {operationId && chatData && !isLoading && (
-                      <div className="share-game-button-container">
-                        <button 
-                          className="share-game-button"
-                          onClick={generateGameUrl}
-                        >
-                          🎮 Compartir como juego
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Análisis humorístico local }
-                    {operationId && chatData && !isLoading && (
-                      <div className="humoristic-analysis-section">
-                        <ChatAnalysisComponent chatData={chatData} />
-                      </div>
-                    ) */}
-
-                    {/* Sección de carga de archivos */}
-                    <div id="upload-section" className="upload-section">
-                      {!user ? (
-                        <>
-                          {/* Componente de vista previa de la aplicación ANTES del login */}
-                          <AppPreview />
-                          
-                          <div className="login-required">
-                            <h2>{t('app.login_required.title')}</h2>
-                            <p>{t('app.login_required.description')}</p>
-                            <div className="auth-buttons">
-                              <button 
-                                className="login-button"
-                                onClick={() => window.location.href = '/login'}
-                              >
-                                {t('app.login_required.login')}
-                              </button>
-                              <button 
-                                className="register-button"
-                                onClick={() => window.location.href = '/register'}
-                              >
-                                {t('app.login_required.register')}
-                              </button>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <h2>{showAnalysis ? t('app.upload.another') : t('app.upload.title') + " "}<span className="whatsapp-text">WhatsApp</span></h2>
-                          
-                          {/* Carrusel de instrucciones de WhatsApp separado del botón */}
-                          <WhatsappInstructions />
-                          
-                          {/* User subscription status card */}
-                          
-                          <div className="file-upload-container">
-                            <label className="file-upload-label">
-                              <input 
-                                type="file" 
-                                className="file-upload-input" 
-                                accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
-                                onChange={handleFileUpload} 
-                              />
-                              <div className="file-upload-text">
-                                <span className="upload-icon">📂</span>
-                                <span>{t('app.upload.button')}</span>
-                                <span className="file-upload-subtext">{t('app.upload.subtext')}</span>
-                              </div>
-                            </label>
-                            <div className="privacy-option">
-                              <label className="privacy-checkbox-label">
-                                <input
-                                  type="checkbox"
-                                  checked={skipAIPsychologicalAnalysis}
-                                  onChange={(e) => setSkipAIPsychologicalAnalysis(e.target.checked)}
-                                />
-                                <span>No compartir mis datos con la IA para análisis psicológico (no se enviarán datos a Azure)</span>
-                              </label>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-
-                    {error && (
-                      <div className="error-message">
-                        <p>{error}</p>
-                      </div>
-                    )}
-
-                    {isLoading && (
-                      <div className="loading-indicator-minimal">
-                        <div className="spinner"></div>
-                      </div>
-                    )}
-                  </>
-                }
-              />
-              
-              {/* Authentication Routes */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/reset-password" element={<PasswordReset />} />
-              
-              {/* Subscription Plan Routes - Now correctly passing user prop */}
-              <Route path="/plans" element={
-                <ProtectedRoute>
-                  <PlansWithLocationCheck user={user} />
-                </ProtectedRoute>
-              } />
-
-              <Route path="/payment-success" element={
-                <ProtectedRoute>
-                  <SimplePaymentSuccess />
-                </ProtectedRoute>
-              } />
-
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            < Route path="/privacy" element={<PrivacyPolicy />} />
-            {/* NUEVA RUTA: Juego de adivinar perfiles */}
-            <Route path="/chat-game" element={<ChatTopGame />} />
-            </Routes>
-            
-            {/* Componente de footer */}
-            <Footer/>
-            {/* Componente de instalación de PWA */}
-            <InstallPWA />
-            
-            
-            {/* Optional: Add AuthDebug component for debugging */}
-            {process.env.NODE_ENV === 'development' && <AuthDebug />}
-
-            {/* Reemplazar la advertencia de no refrescar con un indicador de carga más sutil */}
-            {(isLoading || isFetchingMistral) && (
-              <div className="loading-status-indicator">
-                <div className="spinner-small"></div>
-                <div className="loading-status-text">
-                  {t('app.loading_status')}
-                </div>
-              </div>
-            )}
-            
-            {/* Alerta de confirmación cuando el usuario intenta salir con análisis completo */}
-            {showRefreshConfirmation && (
-              <div className="refresh-confirmation">
-                <div className="refresh-confirmation-icon">⚠️</div>
-                <div className="refresh-confirmation-content">
-                  <h3>¿Estás seguro?</h3>
-                  <p>Si continúas, se perderán todos los datos del análisis actual (tanto estadístico como psicológico). ¿Deseas continuar?</p>
-                  <div className="refresh-confirmation-buttons">
-                    <button 
-                      className="refresh-confirmation-cancel" 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('[BOTÓN] Clic en botón Cancelar');
-                        handleCancelRefresh();
-                      }}
-                    >
-                      Cancelar
-                    </button>
-                    <button 
-                      className="refresh-confirmation-confirm" 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('[BOTÓN] Clic en botón Confirmar');
-                        console.log('[BOTÓN] Estado pendingZipFile:', pendingZipFile ? 'EXISTE' : 'NO EXISTE');
-                        handleConfirmRefresh();
-                      }}
-                    >
-                      Sí, continuar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* NUEVO: Modal para compartir juego */}
-            {showShareGameModal && (
-              <div className="share-game-modal">
-                <div className="share-game-modal-content">
-                  <span className="close-modal" onClick={() => setShowShareGameModal(false)}>&times;</span>
-                  <h3>¡Comparte el juego!</h3>
-                  <p>Envía este enlace a tus amigos para que adivinen quién es el profesor, el vampiro y demás personalidades del chat.</p>
-                  
-                  <div className="game-url-container">
-                    <input 
-                      type="text" 
-                      value={gameUrl} 
-                      readOnly 
-                      onClick={(e) => e.target.select()} 
-                    />
-                    <button onClick={copyToClipboard}>
-                      Copiar
-                    </button>
-                    {showCopiedMessage && <span className="copied-message">¡Copiado!</span>}
-                  </div>
-                  
-                  <div className="share-options">
-                    <button className="whatsapp-share" onClick={shareOnWhatsApp}>
-                      <span>Compartir en WhatsApp</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </main>
-        </div>
+        <AppContent />
       </Router>
     </div>
   );
-} 
+}
 
 export default App;

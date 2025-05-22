@@ -21,8 +21,9 @@ const CATEGORY_DESCRIPTIONS = {
   sicopata: 'Quien envía más mensajes seguidos',
   comico: 'Quien tiene el don de hacer reír a los demás',
   agradecido: 'Quien siempre da las gracias por todo',
-  disculpon: 'Quien pide perdón más que nadie',
-  curioso: 'Quien siempre está haciendo preguntas'
+  curioso: 'Quien siempre está haciendo preguntas',
+  negativo: 'Quien envía más mensajes negativos',
+  mala_influencia: 'Quien menciona más vicios y bebidas alcohólicas'
 };
 
 // Mapeo de categorías con íconos
@@ -43,8 +44,9 @@ const CATEGORY_ICONS = {
   sicopata: '🔪',
   comico: '🤡',
   agradecido: '🙏',
-  disculpon: '🙇',
-  curioso: '🧐'
+  curioso: '🧐',
+  negativo: '😔',
+  mala_influencia: '🍸'
 };
 
 const ChatTopGame = () => {
@@ -124,7 +126,8 @@ const ChatTopGame = () => {
             'c': 'cafeconleche', 'd': 'dejaenvisto', 'n': 'narcicista',
             'f': 'puntofinal', 'o': 'fosforo', 'm': 'menosesmas',
             'h': 'chismoso', 'y': 'happyflower', 'a': 'amoroso', 'x': 'sicopata',
-            'co': 'comico', 'ag': 'agradecido', 'di': 'disculpon', 'cu': 'curioso'
+            'co': 'comico', 'ag': 'agradecido', 'cu': 'curioso',
+            'ne': 'negativo'
           };
           
           if (Array.isArray(usuarios)) {

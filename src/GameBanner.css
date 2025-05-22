@@ -1,0 +1,52 @@
+.game-banner {
+  background-color: #f0f4f8;
+  padding: 0.75rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid #e0e4e8;
+}
+
+.game-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.game-banner-text {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.share-game-button {
+  background-color: #25D366;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.share-game-button:hover {
+  background-color: #128C7E;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .game-banner {
+    flex-direction: column;
+    gap: 10px;
+    padding: 0.5rem 0;
+  }
+  
+  .game-banner-content {
+    flex-direction: column;
+    text-align: center;
+  }
+} 

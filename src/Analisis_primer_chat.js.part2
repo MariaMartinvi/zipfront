@@ -1,0 +1,470 @@
+// Memoizar la función obtenerDiasSemana para evitar recreaciones en cada renderizado
+const obtenerDiasSemana = useCallback(() => {
+  return [
+    t('weekdays.monday'),
+    t('weekdays.tuesday'),
+    t('weekdays.wednesday'),
+    t('weekdays.thursday'),
+    t('weekdays.friday'),
+    t('weekdays.saturday'),
+    t('weekdays.sunday')
+  ];
+}, [t]);
+
+// Obtener una lista de usuarios únicos para las leyendas
+const obtenerUsuariosUnicos = useCallback(() => {
+  if (!datos) return [];
+  
+  // Crear un mapa para contar mensajes totales por usuario
+  const mensajesPorUsuario = new Map();
+  
+  // Contar mensajes de tiempo_respuesta_promedio_mes
+  if (datos.tiempo_respuesta_promedio_mes) {
+    Object.values(datos.tiempo_respuesta_promedio_mes).forEach(usuariosDatos => {
+      Object.keys(usuariosDatos).forEach(usuario => {
+        mensajesPorUsuario.set(usuario, (mensajesPorUsuario.get(usuario) || 0) + 1);
+      });
+    });
+  }
+  
+  // Contar mensajes de mensajes_por_mes_porcentaje
+  if (datos.mensajes_por_mes_porcentaje) {
+    Object.values(datos.mensajes_por_mes_porcentaje).forEach(datosMes => {
+      if (datosMes.usuarios) {
+        Object.entries(datosMes.usuarios).forEach(([usuario, datos]) => {
+          mensajesPorUsuario.set(usuario, (mensajesPorUsuario.get(usuario) || 0) + datos.mensajes);
+        });
+      }
+    });
+  }
+  
+  // Si no hay datos en los anteriores, usar mensajes_por_usuario
+  if (mensajesPorUsuario.size === 0 && datos.mensajes_por_usuario) {
+    Object.entries(datos.mensajes_por_usuario).forEach(([usuario, mensajes]) => {
+      mensajesPorUsuario.set(usuario, mensajes);
+    });
+  }
+  
+  // Convertir a array y ordenar por número de mensajes (descendente)
+  return Array.from(mensajesPorUsuario.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([usuario]) => usuario)
+    .slice(0, 5); // Tomar los 5 usuarios más activos
+}, [datos]);
+
+// Función para acortar nombres en dispositivos móviles
+const acortarNombre = useCallback((nombre) => {
+  // Si no hay nombre, devolver vacío
+  if (!nombre) return '';
+  
+  // En dispositivos móviles, acortar nombres largos
+  if (windowWidth <= 480) {
+    if (nombre.length > 10) {
+      // Para nombres compuestos, intentar mantener el primer nombre
+      const partes = nombre.split(' ');
+      if (partes.length > 1) {
+        // Solo mantener la primera parte y la inicial de la segunda
+        return `${partes[0]} ${partes[1].charAt(0)}.`;
+      }
+      // Para nombres simples, acortar
+      return nombre.substring(0, 8) + '...';
+    }
+  } else if (windowWidth <= 768) {
+    // Para tablets, acortar solo nombres muy largos
+    if (nombre.length > 15) {
+      const partes = nombre.split(' ');
+      if (partes.length > 1) {
+        // Mantener primer nombre y inicial del apellido
+        return `${partes[0]} ${partes[1].charAt(0)}.`;
+      }
+      return nombre.substring(0, 12) + '...';
+    }
+  }
+  
+  // En pantallas grandes, mostrar nombre completo
+  return nombre;
+}, [windowWidth]);
+
+// Preparar datos para el gráfico de tiempo de respuesta por mes
+const prepararDatosTiempoRespuesta = useCallback(() => {
+  try {
+    if (!datos) {
+      return [];
+    }
+    
+    if (!datos.tiempo_respuesta_promedio_mes) {
+      return [];
+    }
+    
+    const tiempoRespuesta = datos.tiempo_respuesta_promedio_mes;
+    if (Object.keys(tiempoRespuesta).length === 0) {
+      return [];
+    }
+    
+    // Ordenar meses cronológicamente
+    const mesesOrdenados = Object.keys(tiempoRespuesta).sort();
+    
+    // Preparar datos para el gráfico
+    const datosGrafico = mesesOrdenados.map(mes => {
+      const usuarios = tiempoRespuesta[mes] || {};
+      const resultado = {
+        mes,
+        mesFormateado: formatearMes(mes, t)
+      };
+      
+      // Agregar datos de cada usuario
+      Object.entries(usuarios).forEach(([usuario, tiempo]) => {
+        if (tiempo !== undefined && !isNaN(tiempo)) {
+          resultado[usuario] = Math.round(tiempo * 10) / 10; // Redondear a 1 decimal
+        }
+      });
+      
+      return resultado;
+    });
+    
+    // Verificar si tenemos datos de usuario en cada punto
+    if (datosGrafico.length > 0) {
+      const primerMes = datosGrafico[0];
+      const usuarios = Object.keys(primerMes).filter(k => !['mes', 'mesFormateado'].includes(k));
+      if (usuarios.length === 0) {
+        return [];
+      }
+    }
+    
+    return datosGrafico;
+  } catch (error) {
+    console.error("Error al preparar datos de tiempo de respuesta:", error);
+    return [];
+  }
+}, [datos, t]);
+
+// Preparar datos para el gráfico de mensajes por día de la semana
+const prepararDatosDiaSemana = useCallback(() => {
+  if (!datos || !datos.actividad_por_dia_semana) return [];
+  
+  // Obtener los días de la semana traducidos
+  const diasSemana = obtenerDiasSemana();
+  
+  // Asegurarnos de que todos los días de la semana estén representados
+  // Usamos los nombres en español del backend como claves, pero mostramos los nombres traducidos
+  const diasBackend = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+  
+  const datosCompletos = diasBackend.map((diaBackend, index) => ({
+    nombreBackend: diaBackend, // Nombre original para acceder a los datos
+    nombre: diasSemana[index], // Nombre traducido para mostrar
+    mensajes: datos.actividad_por_dia_semana[diaBackend] || 0
+  }));
+  
+  return datosCompletos;
+}, [datos, obtenerDiasSemana]);
+
+// Preparar datos para el gráfico de actividad por hora
+const prepararDatosHora = useCallback(() => {
+  if (!datos || !datos.actividad_por_hora) return [];
+  
+  // Crear un array con todas las horas (0-23)
+  const datosHoras = [];
+  for (let i = 0; i < 24; i++) {
+    datosHoras.push({
+      hora: i,
+      mensajes: datos.actividad_por_hora[i] || 0,
+      horaFormateada: `${i}:00`
+    });
+  }
+  
+  return datosHoras;
+}, [datos]);
+
+// Preparar datos para el gráfico de mensajes por usuario
+const prepararDatosUsuarios = useCallback(() => {
+  if (!datos || !datos.mensajes_por_usuario) return [];
+  
+  // Convertir el objeto a un array y ordenar por número de mensajes (descendente)
+  return Object.entries(datos.mensajes_por_usuario)
+    .map(([nombre, mensajes]) => ({ nombre, mensajes }))
+    .sort((a, b) => b.mensajes - a.mensajes)
+    .slice(0, 5); // Tomar solo los 5 usuarios más activos
+}, [datos]);
+
+// Preparar datos para el gráfico de mensajes por mes y usuario (porcentaje)
+const prepararDatosMensajesPorMes = useCallback(() => {
+  if (!datos || !datos.mensajes_por_mes_porcentaje) return [];
+  
+  // Obtener los 5 usuarios más activos en total
+  const usuariosMasActivos = obtenerUsuariosUnicos();
+  
+  // Ordenar meses cronológicamente
+  const mesesOrdenados = Object.keys(datos.mensajes_por_mes_porcentaje).sort();
+  
+  // Preparar datos para el gráfico
+  return mesesOrdenados.map(mes => {
+    const datosMes = datos.mensajes_por_mes_porcentaje[mes];
+    const datosUsuarios = datosMes.usuarios || {};
+    
+    // Crear objeto base con el mes
+    const resultado = {
+      mes,
+      mesFormateado: formatearMes(mes, t),
+      total: datosMes.total
+    };
+    
+    // Agregar datos de los 5 usuarios más activos en total
+    usuariosMasActivos.forEach(usuario => {
+      if (datosUsuarios[usuario]) {
+        resultado[usuario] = datosUsuarios[usuario].porcentaje / 100;
+      } else {
+        resultado[usuario] = 0;
+      }
+    });
+
+    // Calcular el porcentaje de "Otros" sumando todos los usuarios que no están en el top 5
+    let porcentajeOtros = 0;
+    Object.entries(datosUsuarios).forEach(([usuario, datos]) => {
+      if (!usuariosMasActivos.includes(usuario)) {
+        porcentajeOtros += datos.porcentaje / 100;
+      }
+    });
+    
+    // Agregar "Otros" si hay algún porcentaje
+    if (porcentajeOtros > 0) {
+      resultado['Otros'] = porcentajeOtros;
+    }
+    
+    return resultado;
+  });
+}, [datos, obtenerUsuariosUnicos, t]);
+
+// Analizar tendencia de tiempos de respuesta
+const analizarTendenciaTiempoRespuesta = useCallback(() => {
+  try {
+    const datosGrafico = prepararDatosTiempoRespuesta();
+    
+    if (!datosGrafico || datosGrafico.length < 3) {
+      return null;
+    }
+    
+    // Obtener los usuarios principales que aparecen en la gráfica
+    const usuariosPrincipales = obtenerUsuariosUnicos();
+    
+    if (!usuariosPrincipales || usuariosPrincipales.length === 0) {
+      return null;
+    }
+    
+    // Para cada usuario principal, analizar tendencias sostenidas durante múltiples meses
+    const tendencias = [];
+    
+    usuariosPrincipales.forEach(usuario => {
+      // Obtener los meses con datos para este usuario
+      let mesesConDatos = [];
+      
+      for (let i = 0; i < datosGrafico.length; i++) {
+        const dato = datosGrafico[i];
+        if (dato[usuario] !== undefined) {
+          mesesConDatos.push({
+            mes: dato.mes,
+            mesFormateado: dato.mesFormateado,
+            tiempo: dato[usuario],
+            indice: i
+          });
+        }
+      }
+      
+      // Necesitamos al menos 3 meses con datos para este usuario
+      if (mesesConDatos.length >= 3) {
+        // Ordenar por índice para asegurar orden cronológico
+        mesesConDatos.sort((a, b) => a.indice - b.indice);
+        
+        // Analizar diferentes ventanas de tiempo (mínimo 3 meses)
+        for (let inicio = 0; inicio < mesesConDatos.length - 2; inicio++) {
+          for (let fin = inicio + 2; fin < mesesConDatos.length; fin++) {
+            // Obtener los datos del mes inicial y final
+            const mesInicial = mesesConDatos[inicio];
+            const mesFinal = mesesConDatos[fin];
+            
+            // Calcular la variación porcentual total
+            const variacionPorcentual = ((mesFinal.tiempo - mesInicial.tiempo) / mesInicial.tiempo) * 100;
+            
+            // Verificar si la tendencia es consistente (siempre creciente o decreciente)
+            let esConsistente = true;
+            const esCreciente = variacionPorcentual > 0;
+            
+            // Verificar cada mes intermedio para confirmar la consistencia de la tendencia
+            for (let i = inicio + 1; i <= fin; i++) {
+              if (i === inicio) continue; // Saltar el primer mes
+              
+              const mesPrevio = mesesConDatos[i-1];
+              const mesActual = mesesConDatos[i];
+              
+              const cambioMensual = mesActual.tiempo - mesPrevio.tiempo;
+              
+              // Si la tendencia general es creciente, cada cambio mensual debería ser >= 0
+              // Si la tendencia general es decreciente, cada cambio mensual debería ser <= 0
+              // Permitimos pequeñas fluctuaciones (1% del valor)
+              const umbralTolerancia = mesPrevio.tiempo * 0.01;
+              if ((esCreciente && cambioMensual < -umbralTolerancia) || 
+                  (!esCreciente && cambioMensual > umbralTolerancia)) {
+                esConsistente = false;
+                break;
+              }
+            }
+            
+            // Solo registrar tendencias significativas (>5%) y consistentes
+            if (Math.abs(variacionPorcentual) >= 5 && esConsistente) {
+              tendencias.push({
+                usuario,
+                variacionPorcentual,
+                mesesAnalizados: [mesInicial.mesFormateado, mesFinal.mesFormateado],
+                primerValor: mesInicial.tiempo,
+                ultimoValor: mesFinal.tiempo,
+                esIncremento: variacionPorcentual > 0,
+                duracionMeses: fin - inicio + 1, // Número de meses en la tendencia
+                esReciente: fin === mesesConDatos.length - 1 // Si incluye el mes más reciente
+              });
+            }
+          }
+        }
+      }
+    });
+    
+    if (tendencias.length === 0) {
+      return null;
+    }
+    
+    // Ordenar tendencias según criterios
+    const maxDuracion = Math.max(...tendencias.map(t => t.duracionMeses));
+    const tendenciasLargas = tendencias.filter(t => t.duracionMeses >= maxDuracion - 1);
+    const tendenciasLargasRecientes = tendenciasLargas.filter(t => t.esReciente);
+    
+    if (tendenciasLargasRecientes.length > 0) {
+      tendenciasLargasRecientes.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
+      return tendenciasLargasRecientes[0];
+    }
+    
+    if (tendenciasLargas.length > 0) {
+      tendenciasLargas.sort((a, b) => Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual));
+      return tendenciasLargas[0];
+    }
+    
+    tendencias.sort((a, b) => {
+      if (b.duracionMeses !== a.duracionMeses) {
+        return b.duracionMeses - a.duracionMeses;
+      }
+      return Math.abs(b.variacionPorcentual) - Math.abs(a.variacionPorcentual);
+    });
+    
+    return tendencias[0];
+    
+  } catch (error) {
+    console.error("Error al analizar tendencia de tiempo de respuesta:", error);
+    return null;
+  }
+}, [prepararDatosTiempoRespuesta, obtenerUsuariosUnicos]);
+
+// Analizar tendencia de frecuencia de mensajes por usuario
+const analizarTendenciaInteres = useCallback(() => {
+  try {
+    const datosGrafico = prepararDatosMensajesPorMes();
+    
+    if (!datosGrafico || datosGrafico.length < 3) {
+      return null;
+    }
+    
+    // Obtener usuarios disponibles (excluyendo propiedades especiales)
+    const usuariosDisponibles = Object.keys(datosGrafico[0]).filter(
+      key => !['mes', 'mesFormateado', 'total', 'Otros'].includes(key)
+    );
+    
+    if (usuariosDisponibles.length === 0) {
+      return null;
+    }
+    
+    // Para cada usuario, analizar tendencias sostenidas durante múltiples meses
+    const tendencias = [];
+    
+    usuariosDisponibles.forEach(usuario => {
+      // Analizar diferentes ventanas de tiempo (mínimo 3 meses)
+      for (let inicio = 0; inicio < datosGrafico.length - 2; inicio++) {
+        for (let fin = inicio + 2; fin < datosGrafico.length; fin++) {
+          // Obtener los datos del mes inicial y final
+          const mesInicial = datosGrafico[inicio];
+          const mesFinal = datosGrafico[fin];
+          
+          // Verificar que ambos meses tienen datos para este usuario
+          if (mesInicial[usuario] !== undefined && mesFinal[usuario] !== undefined) {
+            // Calcular la variación total en puntos porcentuales
+            const variacionPuntosPorcentuales = (mesFinal[usuario] - mesInicial[usuario]) * 100;
+            
+            // Verificar si la tendencia es consistente (siempre creciente o decreciente)
+            let esConsistente = true;
+            const esCreciente = variacionPuntosPorcentuales > 0;
+            
+            // Verificar cada mes intermedio para confirmar la consistencia de la tendencia
+            for (let i = inicio + 1; i < fin; i++) {
+              const mesPrevio = datosGrafico[i-1];
+              const mesActual = datosGrafico[i];
+              
+              if (mesPrevio[usuario] === undefined || mesActual[usuario] === undefined) {
+                esConsistente = false;
+                break;
+              }
+              
+              const cambioMensual = mesActual[usuario] - mesPrevio[usuario];
+              
+              if ((esCreciente && cambioMensual < -0.01) || (!esCreciente && cambioMensual > 0.01)) {
+                esConsistente = false;
+                break;
+              }
+            }
+            
+            // Solo registrar tendencias significativas (>5 puntos porcentuales) y consistentes
+            if (Math.abs(variacionPuntosPorcentuales) >= 5 && esConsistente) {
+              tendencias.push({
+                usuario,
+                variacionPuntosPorcentuales,
+                mesInicial: mesInicial.mesFormateado,
+                mesFinal: mesFinal.mesFormateado,
+                valorInicial: mesInicial[usuario] * 100,
+                valorFinal: mesFinal[usuario] * 100,
+                esIncremento: variacionPuntosPorcentuales > 0,
+                duracionMeses: fin - inicio + 1,
+                esReciente: fin === datosGrafico.length - 1
+              });
+            }
+          }
+        }
+      }
+    });
+    
+    if (tendencias.length === 0) {
+      return null;
+    }
+    
+    // Ordenar tendencias
+    const maxDuracion = Math.max(...tendencias.map(t => t.duracionMeses));
+    const tendenciasLargas = tendencias.filter(t => t.duracionMeses >= maxDuracion - 1);
+    const tendenciasLargasRecientes = tendenciasLargas.filter(t => t.esReciente);
+    
+    if (tendenciasLargasRecientes.length > 0) {
+      tendenciasLargasRecientes.sort((a, b) => Math.abs(b.variacionPuntosPorcentuales) - Math.abs(a.variacionPuntosPorcentuales));
+      return tendenciasLargasRecientes[0];
+    }
+    
+    if (tendenciasLargas.length > 0) {
+      tendenciasLargas.sort((a, b) => Math.abs(b.variacionPuntosPorcentuales) - Math.abs(a.variacionPuntosPorcentuales));
+      return tendenciasLargas[0];
+    }
+    
+    tendencias.sort((a, b) => {
+      if (b.duracionMeses !== a.duracionMeses) {
+        return b.duracionMeses - a.duracionMeses;
+      }
+      return Math.abs(b.variacionPuntosPorcentuales) - Math.abs(a.variacionPuntosPorcentuales);
+    });
+    
+    return tendencias[0];
+    
+  } catch (error) {
+    console.error("Error al analizar tendencia de interés:", error);
+    return null;
+  }
+}, [prepararDatosMensajesPorMes]); 

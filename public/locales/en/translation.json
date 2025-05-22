@@ -117,7 +117,13 @@
         "avg_length": "Characters per message (average)"
       },
       "total_messages": "total messages",
-      "no_data": "Not enough data found for analysis"
+      "no_data": "Not enough data found for analysis",
+      "bad_influence": {
+        "title": "The Bad Influence",
+        "description": "Mentions more vices and alcoholic beverages",
+        "mentions": "Vice mentions",
+        "percentage": "Percentage of messages with mentions"
+      }
     },
     "login_required": {
       "title": "Login to begin",

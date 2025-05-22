@@ -991,13 +991,52 @@ li {
 
 /* Placeholder vacío para secciones en carga */
 .empty-placeholder-container {
-  padding: 30px;
-  text-align: center;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   margin: 20px 0;
-  color: #666;
-  font-style: italic;
+  min-height: 200px;
+}
+
+.empty-placeholder-container .spinner-small {
+  border: 3px solid rgba(37, 211, 102, 0.3);
+  border-top: 3px solid #25D366;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  animation: spin 1s linear infinite;
+}
+
+.empty-placeholder-container p {
+  color: #333;
+  font-size: 1.1rem;
+  text-align: center;
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Eliminar los estilos del banner verde de progreso */
+.mobile-progress-indicator,
+.mobile-progress-indicator .progress-content,
+.mobile-progress-indicator .spinner-small,
+.mobile-progress-indicator .progress-bar,
+.mobile-progress-indicator .progress-value {
+  display: none;
+}
+
+/* Eliminar los estilos del botón flotante de ver análisis */
+.view-analysis-button {
+  display: none;
 }
 
 .mobile-nav-link.mobile-logout {
@@ -1026,6 +1065,68 @@ li {
   margin: 15px 0;
   max-width: 100%;
   overflow: hidden;
+}
+
+/* Estilos para la barra de progreso y ruedecilla en análisis psicológico */
+.loading-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.spinner-circle {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #25D366;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  width: 80%;
+  height: 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #25D366;
+  border-radius: 4px;
+  width: 0%;
+  animation: progress 30s ease-in-out forwards;
+}
+
+.analysis-progress-detail {
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+  font-style: italic;
+  animation: fadeInOut 1s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes progress {
+  0% { width: 0%; }
+  70% { width: 70%; }
+  90% { width: 90%; }
+  100% { width: 98%; }
 }
 
 /* Sección de debug info */
@@ -1286,4 +1387,43 @@ li {
 .privacy-checkbox-label span {
   flex: 1;
   line-height: 1.3;
+}
+
+/* Estilos para la sección de compartir juego */
+.share-game-section {
+  margin: 2rem auto;
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #f0f7ff;
+  border-radius: 10px;
+  max-width: 800px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.share-game-button {
+  background-color: #25d366;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.share-game-button:hover {
+  background-color: #128c7e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.share-game-description {
+  margin-top: 1rem;
+  color: #666;
+  font-size: 0.95rem;
 }

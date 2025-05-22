@@ -1,0 +1,442 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  ComposedChart,
+  AreaChart,
+  Area,
+  LabelList
+} from 'recharts';
+import { useTranslation } from 'react-i18next';
+import './styles/Analisis.css';
+import './Analisis_primer_chat.css'; // Importar los estilos
+// Importar el detector de formato
+import { detectarFormatoArchivo } from './formatDetector.js';
+// Importar utilidades de fecha
+import { parseDateTime, esDateValido } from './dateUtils.js';
+import { formatMinutesToHoursAndMinutes } from './utils/timeUtils';
+
+// Implementación simplificada de analizarChat
+const analizarChat = (contenido, formatoForzado = null) => {
+  console.log("Analizando chat directamente desde Analisis_primer_chat...");
+  
+  try {
+    // Dividir el contenido en líneas
+    const lineas = contenido.split(/\r?\n/);
+    
+    if (!lineas || lineas.length === 0) {
+      console.log("Archivo vacío");
+      return { error: "Archivo vacío", success: false };
+    }
+    
+    console.log(`Archivo leído correctamente. Total de líneas: ${lineas.length}`);
+    
+    // Determinar formato usando el detector
+    const formato = detectarFormatoArchivo(contenido, formatoForzado, true);
+    console.log(`\nFormato final a utilizar: ${formato}`);
+    
+    // Si el formato es desconocido, devolver error
+    if (formato === "desconocido") {
+      return { error: "Formato de chat no reconocido", success: false };
+    }
+    
+    // Analizar mensajes (versión simplificada para evitar dependencias)
+    const mensajes = analizarMensajesSimplificado(lineas, formato);
+    
+    if (mensajes.length === 0) {
+      return { error: "No se encontraron mensajes válidos", success: false };
+    }
+    
+    // Estructura para estadísticas
+    const stats = {
+      mensajes_por_usuario: {},
+      actividad_por_hora: {},
+      actividad_por_dia_semana: {},
+      mensajes_por_mes: {},
+      mensajes_por_dia: {}, // Añadir esta estructura para contar mensajes por día
+      formato_chat: formato,
+      // Nuevas estructuras para los gráficos
+      mensajes_por_mes_usuario: {},
+      mensajes_por_mes_porcentaje: {},
+      tiempo_respuesta_por_mes: {},
+      tiempo_respuesta_promedio_mes: {}
+    };
+    
+    // Días de la semana en español
+    const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    
+    // Variables para encontrar el primer mensaje
+    let primerFecha = null;
+    
+    // Registrar el último mensaje por usuario para calcular tiempos de respuesta
+    const ultimoMensajePorUsuario = {};
+    
+    // Ordenar mensajes por fecha para procesar cronológicamente
+    mensajes.sort((a, b) => {
+      return a.fechaObj - b.fechaObj;
+    });
+    
+    // Calcular estadísticas básicas
+    mensajes.forEach(msg => {
+      // Extraer componentes de fecha
+      const fecha = msg.fechaObj;
+      const hora = fecha.getHours();
+      const diaSemana = fecha.getDay();
+      // Formato YYYY-MM para el mes
+      const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+      // Formato YYYY-MM-DD para el día
+      const dia = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+      
+      // Actualizar primer fecha si es necesario
+      if (!primerFecha || fecha < primerFecha) {
+        primerFecha = fecha;
+      }
+      
+      // Mensajes por usuario
+      stats.mensajes_por_usuario[msg.nombre] = (stats.mensajes_por_usuario[msg.nombre] || 0) + 1;
+      
+      // Actividad por hora
+      stats.actividad_por_hora[hora] = (stats.actividad_por_hora[hora] || 0) + 1;
+      
+      // Actividad por día de la semana
+      const diaSemanaStr = diasSemana[diaSemana];
+      stats.actividad_por_dia_semana[diaSemanaStr] = (stats.actividad_por_dia_semana[diaSemanaStr] || 0) + 1;
+      
+      // Mensajes por día
+      stats.mensajes_por_dia[dia] = (stats.mensajes_por_dia[dia] || 0) + 1;
+      
+      // Mensajes por mes y usuario (estructura para gráfico de tendencia de interés)
+      if (!stats.mensajes_por_mes_usuario[mes]) {
+        stats.mensajes_por_mes_usuario[mes] = {};
+      }
+      stats.mensajes_por_mes_usuario[mes][msg.nombre] = (stats.mensajes_por_mes_usuario[mes][msg.nombre] || 0) + 1;
+      
+      // Calcular tiempo de respuesta
+      const nombreActual = msg.nombre;
+      
+      // Verificar si otros usuarios ya han enviado mensajes
+      for (const otroUsuario in ultimoMensajePorUsuario) {
+        if (otroUsuario !== nombreActual) {
+          const ultimoMsg = ultimoMensajePorUsuario[otroUsuario];
+          const ultimaFecha = ultimoMsg.fechaObj;
+          
+          // Calcular tiempo de respuesta en minutos
+          const tiempoRespuesta = (fecha - ultimaFecha) / (1000 * 60);
+          
+          // Solo considerar respuestas en un período razonable (menos de 24 horas)
+          if (tiempoRespuesta > 0 && tiempoRespuesta < 1440) {
+            // Guardar tiempo de respuesta por mes y usuario
+            if (!stats.tiempo_respuesta_por_mes[mes]) {
+              stats.tiempo_respuesta_por_mes[mes] = {};
+            }
+            
+            if (!stats.tiempo_respuesta_por_mes[mes][nombreActual]) {
+              stats.tiempo_respuesta_por_mes[mes][nombreActual] = [];
+            }
+            
+            stats.tiempo_respuesta_por_mes[mes][nombreActual].push(tiempoRespuesta);
+          }
+        }
+      }
+      
+      // Actualizar el último mensaje de este usuario
+      ultimoMensajePorUsuario[nombreActual] = msg;
+    });
+    
+    // Calcular tiempo de respuesta promedio por mes
+    stats.tiempo_respuesta_promedio_mes = {};
+    for (const mes in stats.tiempo_respuesta_por_mes) {
+      stats.tiempo_respuesta_promedio_mes[mes] = {};
+      for (const usuario in stats.tiempo_respuesta_por_mes[mes]) {
+        const tiempos = stats.tiempo_respuesta_por_mes[mes][usuario];
+        if (tiempos && tiempos.length > 0) {
+          // Filtrar tiempos extremos (más de 24 horas)
+          const tiemposFiltrados = tiempos.filter(t => t < 1440);
+          if (tiemposFiltrados.length > 0) {
+            const promedio = tiemposFiltrados.reduce((sum, t) => sum + t, 0) / tiemposFiltrados.length;
+            stats.tiempo_respuesta_promedio_mes[mes][usuario] = promedio;
+          }
+        }
+      }
+    }
+    
+    // Convertir mensajes por mes y usuario a formato para gráficos de porcentaje
+    stats.mensajes_por_mes_porcentaje = {};
+    for (const mes in stats.mensajes_por_mes_usuario) {
+      const usuarios = stats.mensajes_por_mes_usuario[mes];
+      const totalMensajesMes = Object.values(usuarios).reduce((sum, count) => sum + count, 0);
+      
+      stats.mensajes_por_mes_porcentaje[mes] = {
+        total: totalMensajesMes,
+        usuarios: {}
+      };
+      
+      for (const usuario in usuarios) {
+        const cantidadMensajes = usuarios[usuario];
+        const porcentaje = (cantidadMensajes / totalMensajesMes) * 100;
+        
+        stats.mensajes_por_mes_porcentaje[mes].usuarios[usuario] = {
+          mensajes: cantidadMensajes,
+          porcentaje: porcentaje
+        };
+      }
+    }
+    
+    // Encontrar máximos para el resumen
+    const diaMasActivo = Object.entries(stats.actividad_por_dia_semana)
+      .reduce((max, [dia, count]) => count > max[1] ? [dia, count] : max, ["", 0]);
+    
+    const horaMasActiva = Object.entries(stats.actividad_por_hora)
+      .reduce((max, [hora, count]) => count > max[1] ? [hora, count] : max, ["", 0]);
+    
+    const usuarioMasActivo = Object.entries(stats.mensajes_por_usuario)
+      .reduce((max, [nombre, count]) => count > max[1] ? [nombre, count] : max, ["", 0]);
+    
+    // Calcular promedio de mensajes diarios
+    const diasConActividad = Object.keys(stats.mensajes_por_dia).length;
+    const promedioMensajesDiarios = diasConActividad > 0 ? mensajes.length / diasConActividad : 0;
+    
+    // Añadir información del primer mensaje
+    stats.primer_mensaje = {
+      fecha: primerFecha ? `${primerFecha.getDate()}/${primerFecha.getMonth() + 1}/${primerFecha.getFullYear().toString().substr(2, 2)}` : "No disponible",
+      fecha_completa: primerFecha ? primerFecha.toLocaleDateString() : "No disponible",
+      timestamp: primerFecha ? primerFecha.getTime() / 1000 : 0
+    };
+    
+    // Añadir resumen
+    stats.resumen = {
+      total_mensajes: mensajes.length,
+      fecha_inicio: stats.primer_mensaje.fecha,
+      promedio_mensajes_diarios: promedioMensajesDiarios.toFixed(2), // Usar el valor calculado
+      dia_mas_activo: {
+        fecha: "N/A", // En el frontend no calculamos esto
+        mensajes: 0
+      },
+      hora_mas_activa: {
+        hora: horaMasActiva && horaMasActiva[0] ? horaMasActiva[0] : "0",
+        mensajes: horaMasActiva && horaMasActiva[1] ? horaMasActiva[1] : 0
+      },
+      dia_semana_mas_activo: {
+        dia: diaMasActivo && diaMasActivo[0] ? diaMasActivo[0] : "Lunes",
+        mensajes: diaMasActivo && diaMasActivo[1] ? diaMasActivo[1] : 0
+      },
+      usuario_mas_activo: {
+        nombre: usuarioMasActivo && usuarioMasActivo[0] ? usuarioMasActivo[0] : "N/A",
+        mensajes: usuarioMasActivo && usuarioMasActivo[1] ? usuarioMasActivo[1] : 0
+      }
+    };
+    
+    // Añadir estadísticas globales
+    stats.total_messages = mensajes.length;
+    stats.active_participants = Object.keys(stats.mensajes_por_usuario).length;
+    stats.chat_format = formato;
+    stats.success = true;
+    
+    return stats;
+  } catch (error) {
+    console.error("Error durante el análisis:", error);
+    return {
+      error: `Error durante el análisis: ${error.message}`,
+      success: false
+    };
+  }
+};
+
+// Función simplificada para extraer mensajes
+const analizarMensajesSimplificado = (lineas, formato) => {
+  const mensajes = [];
+  let mensajeAnterior = null;
+  
+  for (const linea of lineas) {
+    if (!linea.trim()) continue;
+    
+    const resultado = analizarMensaje(linea, formato, mensajeAnterior);
+    
+    if (resultado === mensajeAnterior) {
+      mensajeAnterior = resultado;
+      continue;
+    }
+    
+    if (resultado) {
+      mensajes.push(resultado);
+      mensajeAnterior = resultado;
+    }
+  }
+  
+  return mensajes;
+};
+
+// Función para analizar un mensaje individual
+const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
+  linea = linea.trim();
+  
+  // Si es una continuación de mensaje anterior
+  if (mensajeAnterior && 
+      !(linea.startsWith('[') || 
+        (formato === "android" && /^\d{1,2}\/\d{1,2}\/\d{2}/.test(linea)))) {
+    mensajeAnterior.mensaje += `\n${linea}`;
+    mensajeAnterior.esMultilinea = true;
+    return mensajeAnterior;
+  }
+  
+  // Patrones para extraer componentes según el formato
+  const patronIOS = /^\[(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2}(?::\d{2})?)\]\s*([^:]+):\s*(.*)/;
+  const patronAndroid = /^(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2})\s*-\s*([^:]+):\s*(.+)/;
+  
+  let match;
+  if (formato === "ios") {
+    match = linea.match(patronIOS);
+  } else {
+    match = linea.match(patronAndroid);
+  }
+  
+  if (match) {
+    const [_, fecha, hora, nombre, mensaje] = match;
+    // Crear un objeto Date válido usando parseDateTime
+    const fechaObj = parseDateTime(fecha, hora, formato);
+    
+    return {
+      fecha: fecha,
+      hora: hora,
+      fechaObj: fechaObj, // Añadir el objeto Date
+      nombre: nombre.trim(),
+      mensaje: mensaje.trim() || "",
+      esMultilinea: false
+    };
+  }
+  return null;
+};
+
+// Colores para los gráficos
+const COLORS = [
+  '#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', 
+  '#82CA9D', '#F44236', '#E91E63', '#9C27B0', '#673AB7'
+];
+
+// Función para formatear fechas
+const formatearFecha = (fecha, t) => {
+  if (!fecha) return 'N/A';
+  
+  const partes = fecha.split('/');
+  if (partes.length !== 3) return fecha;
+  
+  const [dia, mes, anio] = partes;
+  const meses = [
+    t('date.months.january'),
+    t('date.months.february'),
+    t('date.months.march'),
+    t('date.months.april'),
+    t('date.months.may'),
+    t('date.months.june'),
+    t('date.months.july'),
+    t('date.months.august'),
+    t('date.months.september'),
+    t('date.months.october'),
+    t('date.months.november'),
+    t('date.months.december')
+  ];
+  
+  // Obtener el formato de la traducción y reemplazar los valores
+  const formato = t('date.format');
+  
+  // Reemplazar los marcadores de posición en el formato
+  let fechaFormateada = formato
+    .replace('d', dia)
+    .replace('MMMM', meses[parseInt(mes) - 1])
+    .replace('yy', anio);
+  
+  return fechaFormateada;
+};
+
+// Función para formatear nombres de meses
+const formatearMes = (fechaMes, t) => {
+  if (!fechaMes) return 'N/A';
+  
+  const [anio, mes] = fechaMes.split('-');
+  const meses = [
+    t('date.months.january'),
+    t('date.months.february'),
+    t('date.months.march'),
+    t('date.months.april'),
+    t('date.months.may'),
+    t('date.months.june'),
+    t('date.months.july'),
+    t('date.months.august'),
+    t('date.months.september'),
+    t('date.months.october'),
+    t('date.months.november'),
+    t('date.months.december')
+  ];
+  
+  return `${meses[parseInt(mes) - 1]} ${anio}`;
+};
+
+// Función para analizar el patrón horario de los mensajes
+const obtenerPatronHorario = (datosHora) => {
+  if (!datosHora || datosHora.length === 0) return null;
+  
+  // Contar mensajes por franja horaria
+  let mensajesMañana = 0; // 0-11
+  let mensajesTarde = 0;  // 12-19
+  let mensajesNoche = 0;  // 20-23
+  let totalMensajes = 0;
+  
+  datosHora.forEach(dato => {
+    const hora = dato.hora;
+    const mensajes = dato.mensajes || 0;
+    totalMensajes += mensajes;
+    
+    if (hora >= 0 && hora < 12) {
+      mensajesMañana += mensajes;
+    } else if (hora >= 12 && hora < 20) {
+      mensajesTarde += mensajes;
+    } else {
+      mensajesNoche += mensajes;
+    }
+  });
+  
+  // Calcular porcentajes
+  const porcentajeMañana = totalMensajes > 0 ? (mensajesMañana / totalMensajes) * 100 : 0;
+  const porcentajeTarde = totalMensajes > 0 ? (mensajesTarde / totalMensajes) * 100 : 0;
+  const porcentajeNoche = totalMensajes > 0 ? (mensajesNoche / totalMensajes) * 100 : 0;
+  
+  // Determinar el patrón predominante
+  if (porcentajeMañana > porcentajeTarde && porcentajeMañana > porcentajeNoche) {
+    return {
+      tipo: 'madrugadores',
+      icono: '🌞',
+      porcentaje: porcentajeMañana.toFixed(1)
+    };
+  } else if (porcentajeNoche > porcentajeMañana && porcentajeNoche > porcentajeTarde) {
+    return {
+      tipo: 'nocturnos',
+      icono: '🌙',
+      porcentaje: porcentajeNoche.toFixed(1)
+    };
+  } else {
+    return {
+      tipo: 'diurnos',
+      icono: '⏱️',
+      porcentaje: porcentajeTarde.toFixed(1)
+    };
+  }
+};
+
+const AnalisisPrimerChat = ({ operationId, chatData }) => {
+  const { t, i18n } = useTranslation();
+  const [datos, setDatos] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+} 

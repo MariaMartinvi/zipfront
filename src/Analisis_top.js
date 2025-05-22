@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import './Analisis_top.css';
 // Importar el detector de formato directamente
@@ -7,42 +7,39 @@ import { detectarFormatoArchivo } from './formatDetector.js';
 import { parseDateTime, esDateValido } from './dateUtils.js';
 import { formatMinutesToHoursAndMinutes } from './utils/timeUtils';
 
-// Función para parsear correctamente fechas de diferentes formatos
-// const parseDateTime = (fechaStr, horaStr, formato) => {
-//   try {
-//     // Formatear la entrada para crear un objeto Date válido
-//     const partesFecha = fechaStr.split('/');
-//     
-//     if (partesFecha.length !== 3) {
-//       return new Date(); // Fecha inválida, devolver fecha actual
-//     }
-//     
-//     let dia = parseInt(partesFecha[0], 10);
-//     let mes = parseInt(partesFecha[1], 10) - 1; // Meses en JS son 0-11
-//     let anio = parseInt(partesFecha[2], 10);
-//     
-//     // Ajustar año si es formato de 2 dígitos
-//     if (anio < 100) {
-//       anio += 2000; // Asumimos años 2000+
-//     }
-//     
-//     // Parsear la hora
-//     const partesHora = horaStr.split(':');
-//     let hora = parseInt(partesHora[0], 10) || 0;
-//     let minutos = parseInt(partesHora[1], 10) || 0;
-//     let segundos = 0;
-//     
-//     if (partesHora.length > 2) {
-//       segundos = parseInt(partesHora[2], 10) || 0;
-//     }
-//     
-//     // Crear objeto Date
-//     return new Date(anio, mes, dia, hora, minutos, segundos);
-//   } catch (error) {
-//     console.error(`Error parseando fecha/hora (${fechaStr} ${horaStr}): ${error.message}`);
-//     return new Date(); // En caso de error, devolver fecha actual
-//   }
-// };
+// Diccionario de palabras relacionadas con vicios por idioma
+const palabrasVicios = {
+  es: {
+    tabaco: ['fumar', 'tabaco', 'cigarro', 'cigarrillo', 'puro', 'nicotina'],
+    alcohol: ['alcohol', 'whisky', 'ron', 'ginebra', 'vodka', 'cerveza', 'vino', 'gin-tonic', 'cubata', 'cubalibre', 'mojito', 'caipirinha', 'margarita'],
+    drogas: ['marihuana', 'cannabis', 'hierba', 'porro', 'coca', 'cocaína', 'lsd', 'ácido', 'mdma', 'éxtasis', 'speed', 'anfeta', 'cristal', 'heroína', 'heroina'],
+    marcas: ['johny walker', 'jack daniels', 'bacardi', 'smirnoff', 'absolut', 'heineken', 'corona', 'san miguel', 'mahou', 'estrella', 'rioja', 'ribera']
+  },
+  en: {
+    tobacco: ['smoke', 'tobacco', 'cigarette', 'cigar', 'nicotine'],
+    alcohol: ['alcohol', 'whiskey', 'rum', 'gin', 'vodka', 'beer', 'wine', 'gin-tonic', 'cuba libre', 'mojito', 'caipirinha', 'margarita'],
+    drugs: ['marijuana', 'cannabis', 'weed', 'joint', 'coke', 'cocaine', 'lsd', 'acid', 'mdma', 'ecstasy', 'speed', 'amphetamine', 'crystal', 'heroin'],
+    brands: ['johnny walker', 'jack daniels', 'bacardi', 'smirnoff', 'absolut', 'heineken', 'corona', 'san miguel', 'mahou', 'estrella', 'rioja', 'ribera']
+  }
+};
+
+// Función para detectar menciones de vicios en un texto
+const detectarMencionesVicios = (texto, idioma) => {
+  const palabras = texto.toLowerCase().split(/\s+/);
+  const categorias = palabrasVicios[idioma] || palabrasVicios.es;
+  let menciones = 0;
+  
+  // Buscar menciones en cada categoría
+  for (const categoria of Object.values(categorias)) {
+    for (const palabra of categoria) {
+      if (palabras.includes(palabra)) {
+        menciones++;
+      }
+    }
+  }
+  
+  return menciones;
+};
 
 // Implementación completa de analizarPerfilesCompleto para reemplazar la versión del backend
 const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat = 'es') => {
@@ -157,7 +154,8 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
         mensajes_risa: 0,       // Para el cómico: mensajes que generan risas
         mensajes_agradece: 0,   // Para el agradecido: mensajes de agradecimiento
         mensajes_disculpa: 0,   // Para el disculpón: mensajes de disculpa
-        mensajes_pregunta: 0    // Para el curioso: mensajes con preguntas
+        mensajes_pregunta: 0,    // Para el curioso: mensajes con preguntas
+        menciones_vicios: 0  // Nueva propiedad
       };
     });
     
@@ -354,6 +352,10 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
           }
         }
       }
+      
+      // Contar menciones de vicios
+      const mencionesVicios = detectarMencionesVicios(texto, idiomaChat);
+      usuarios[usuario].menciones_vicios += mencionesVicios;
     }
     
     // Calcular estadísticas agregadas
@@ -383,7 +385,8 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       comico: { nombre: '--', mensajes_risa: 0, porcentaje: 0, mensajes: 0 },
       agradecido: { nombre: '--', mensajes_agradece: 0, porcentaje: 0, mensajes: 0 },
       disculpon: { nombre: '--', mensajes_disculpa: 0, porcentaje: 0, mensajes: 0 },
-      curioso: { nombre: '--', mensajes_pregunta: 0, porcentaje: 0, mensajes: 0 }
+      curioso: { nombre: '--', mensajes_pregunta: 0, porcentaje: 0, mensajes: 0 },
+      mala_influencia: { nombre: '--', menciones_vicios: 0, porcentaje: 0, mensajes: 0 }
     };
     
     // Media estadística
@@ -1074,6 +1077,46 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       }
     }
     
+    // Añadir el análisis de mala influencia
+    const usuariosConVicios = [];
+    for (const [usuario, datos] of Object.entries(usuarios)) {
+      if (datos.mensajes > 0 && datos.menciones_vicios > 0) {
+        const porcentaje = (datos.menciones_vicios / datos.mensajes) * 100;
+        usuariosConVicios.push([usuario, datos.menciones_vicios, porcentaje]);
+      }
+    }
+    
+    if (usuariosConVicios.length > 0) {
+      const [usuarioMalaInfluencia] = usuariosConVicios.sort((a, b) => b[1] - a[1])[0];
+      const mencionesVicios = usuarios[usuarioMalaInfluencia].menciones_vicios;
+      const porcentaje = (mencionesVicios / usuarios[usuarioMalaInfluencia].mensajes) * 100;
+      
+      // Calcular la media del resto del grupo sin el mala influencia
+      let totalMencionesViciosResto = 0;
+      let totalMensajesResto = 0;
+      
+      for (const [usuario, datos] of Object.entries(usuarios)) {
+        if (usuario !== usuarioMalaInfluencia) {
+          totalMencionesViciosResto += datos.menciones_vicios;
+          totalMensajesResto += datos.mensajes;
+        }
+      }
+      
+      const mediaMencionesViciosResto = Object.keys(usuarios).length > 1 ? 
+        totalMencionesViciosResto / (Object.keys(usuarios).length - 1) : 0;
+      const mediaPorcentajeResto = totalMensajesResto > 0 ? 
+        (totalMencionesViciosResto / totalMensajesResto) * 100 : 0;
+      
+      categorias.mala_influencia = {
+        nombre: usuarioMalaInfluencia,
+        menciones_vicios: mencionesVicios,
+        porcentaje: porcentaje,
+        mensajes: usuarios[usuarioMalaInfluencia].mensajes,
+        media_menciones_vicios_resto: mediaMencionesViciosResto,
+        media_porcentaje_resto: mediaPorcentajeResto
+      };
+    }
+    
     // Estructura final de resultados
     return {
       usuarios: usuarios,
@@ -1247,45 +1290,25 @@ const AnalisisTop = ({ operationId, chatData }) => {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
-  const [isRenderAllowed, setIsRenderAllowed] = useState(false);
-
-  // Determinar si es seguro renderizar este componente
-  useEffect(() => {
-    // Si este es el primer renderizado, permitirlo
-    if (!isAlreadyRendered) {
-      isAlreadyRendered = true;
-      setIsRenderAllowed(true);
-    } else {
-      // Si ya está renderizado y tenemos datos de chat, permitirlo (reemplaza versión App.js)
-      if (chatData) {
-        isAlreadyRendered = true;
-        setIsRenderAllowed(true);
-      } else {
-        // De lo contrario, no permitir renderizar
-        setIsRenderAllowed(false);
-      }
+  
+  // Eliminamos el estado isRenderAllowed innecesario
+  
+  // Utilizamos useMemo para almacenar los resultados del análisis y evitar cálculos repetidos
+  const datosAnalizados = useMemo(() => {
+    if (!chatData) return null;
+    
+    console.log("Analizando perfiles del chat en el cliente");
+    try {
+      // Analizar los datos del chat utilizando nuestro analizador de cliente
+      const resultadoAnalisis = analizarPerfilesCompleto(chatData);
+      console.log("Resultado del análisis de perfiles en cliente:", resultadoAnalisis);
+      return resultadoAnalisis;
+    } catch (err) {
+      console.error("Error analizando los perfiles del chat:", err);
+      return { error: `${t('app.errors.analysis_error')}: ${err.message}`, success: false };
     }
-
-    // Reset al desmontar
-    return () => {
-      isAlreadyRendered = false;
-    };
-  }, [chatData]);
-
-  // NUEVO: Efecto para guardar datos en variable global cuando estén disponibles
-  useEffect(() => {
-    if (datos && datos.usuarios && datos.categorias) {
-      // Guardar datos en una variable global para que App.js pueda acceder
-      window.lastAnalysisTopData = {
-        usuarios: datos.usuarios,
-        categorias: datos.categorias,
-        totales: datos.totales
-      };
-      
-      console.log("Datos de análisis guardados para compartir como juego");
-    }
-  }, [datos]);
-
+  }, [chatData, t]);
+  
   // Mapeo de categorías con íconos y traducciones
   const categoriaIconos = {
     'profesor': { 
@@ -1348,7 +1371,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
       titulo: () => t('app.top_profiles.emoji.title'), 
       descripcion: () => t('app.top_profiles.emoji.description') 
     },
-          'amoroso': { 
+    'amoroso': { 
       icono: '❤️', 
       titulo: () => t('app.top_profiles.amoroso.title'), 
       descripcion: () => t('app.top_profiles.amoroso.description') 
@@ -1377,84 +1400,49 @@ const AnalisisTop = ({ operationId, chatData }) => {
       icono: '🧐', 
       titulo: () => 'El curioso', 
       descripcion: () => 'Siempre haciendo preguntas' 
+    },
+    'mala_influencia': { 
+      icono: '👹', 
+      titulo: () => 'La mala influencia', 
+      descripcion: () => 'Menciona más bebidas y marcas de alcohol' 
     }
   };
-
+  
+  // Efecto para procesar los datos analizados
   useEffect(() => {
-    // Si no se permite el renderizado, no hacer nada
-    if (!isRenderAllowed) return;
-
-    // Verificar si tenemos datos del chat para analizar directamente en el cliente
-    if (chatData) {
-      console.log("Analizando perfiles del chat en el cliente");
-      setCargando(true);
-      
-      try {
-        // Analizar los datos del chat utilizando nuestro analizador de cliente
-        const resultadoAnalisis = analizarPerfilesCompleto(chatData);
-        console.log("Resultado del análisis de perfiles en cliente:", resultadoAnalisis);
-        
-        // Establecer los datos analizados
-        if (resultadoAnalisis && resultadoAnalisis.success) {
-          setDatos(resultadoAnalisis);
-          setError(null);
-          
-          // Seleccionar la primera categoría por defecto
-          if (resultadoAnalisis.categorias && Object.keys(resultadoAnalisis.categorias).length > 0) {
-            setCategoriaSeleccionada(Object.keys(resultadoAnalisis.categorias)[0]);
-          }
-        } else {
-          setError(resultadoAnalisis.error || t('app.errors.analysis_failed'));
-        }
-      } catch (err) {
-        console.error("Error analizando los perfiles del chat:", err);
-        setError(`${t('app.errors.analysis_error')}: ${err.message}`);
-      } finally {
-        setCargando(false);
-      }
-      return;
-    }
-    
-    if (!operationId) {
+    // Si no tenemos chatData ni operationId, no hay nada que hacer
+    if (!chatData && !operationId) {
       setError(t('app.errors.no_operation_id'));
       setCargando(false);
       return;
     }
-
+    
+    // Si tenemos datos analizados del cliente, usarlos directamente
+    if (datosAnalizados) {
+      if (datosAnalizados.success) {
+        // Establecer los datos inmediatamente para mejorar la velocidad de respuesta
+        setDatos(datosAnalizados);
+        setError(null);
+        
+        // Seleccionar la primera categoría por defecto
+        if (datosAnalizados.categorias && Object.keys(datosAnalizados.categorias).length > 0) {
+          setCategoriaSeleccionada(Object.keys(datosAnalizados.categorias)[0]);
+        }
+      } else {
+        setError(datosAnalizados.error || t('app.errors.analysis_failed'));
+      }
+      // Marcar como no cargando inmediatamente después de procesar los datos
+      setCargando(false);
+      return;
+    }
+    
     // Si no hay datos directos pero hay operationId, cargar del servidor
-    // (Fallback a la versión original que usa el servidor)
-    const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
-    
-    console.log(`DEPRECATED: Cargando datos de top perfiles desde el backend: ${API_URL}/api/resultados-top/${operationId}`);
-    console.warn("Esta funcionalidad usando operationId se eliminará en futuras versiones. Use chatData en su lugar.");
-    
-    // Eliminar parámetro para forzar formato iOS
-    const url = `${API_URL}/api/resultados-top/${operationId}`;
-    
-    // Asegurar que el estado de carga esté activo
-    setCargando(true);
-    
-    // Función para verificar que los datos estén completos
-    const verificarDatosCompletos = (data) => {
-      if (!data || !data.categorias) return false;
+    if (operationId) {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+      const url = `${API_URL}/api/resultados-top/${operationId}`;
       
-      // Verificar que todas las categorías necesarias estén presentes
-      const categoriasRequeridas = [
-        'profesor', 'rollero', 'pistolero', 'vampiro', 'cafeconleche',
-        'dejaenvisto', 'narcicista', 'chismoso', 'happyflower',
-        'puntofinal', 'fosforo', 'menosesmas', 'amoroso', 'sicopata',
-        'comico', 'agradecido', 'disculpon', 'curioso'
-      ];
+      setCargando(true);
       
-      return categoriasRequeridas.every(categoria => 
-        data.categorias[categoria] && 
-        data.categorias[categoria].nombre && 
-        data.categorias[categoria].mensajes !== undefined
-      );
-    };
-
-    // Función para reintentar la carga si es necesario
-    const cargarDatos = (intentos = 0) => {
       fetch(url)
         .then(response => {
           if (!response.ok) {
@@ -1463,172 +1451,57 @@ const AnalisisTop = ({ operationId, chatData }) => {
           return response.json();
         })
         .then(data => {
-          console.log('Datos recibidos de la API:', data);
-          
-          // Verificar explícitamente el formato
-          if (!data.formato_chat) {
-            console.warn('El formato de chat no está especificado en la respuesta');
-          } else {
-            console.log('Formato de chat detectado:', data.formato_chat);
-          }
-          
-          // Verificar que los datos no sean nulos o vacíos
           if (!data || !data.categorias || Object.keys(data.categorias).length === 0) {
             throw new Error(t('app.errors.empty_categories'));
           }
-
-          // Verificar que los datos estén completos
-          if (!verificarDatosCompletos(data)) {
-            if (intentos < 3) { // Máximo 3 intentos
-              console.log(`Datos incompletos, reintentando... (intento ${intentos + 1})`);
-              setTimeout(() => cargarDatos(intentos + 1), 1000); // Esperar 1 segundo antes de reintentar
-              return;
-            } else {
-              throw new Error(t('app.errors.incomplete_data'));
-            }
-          }
           
-          // Transformar los datos al formato esperado
+          // Transformar los datos al formato esperado (mantener tu lógica existente)
           const datosTransformados = {
             formato_chat: data.formato_chat || 'desconocido',
             categorias: {
+              // Mantener la transformación que ya tienes
               profesor: {
                 nombre: data.categorias?.profesor?.nombre || 'Sin datos',
                 palabras_unicas: data.categorias?.profesor?.palabras_unicas || 0,
                 ratio: data.categorias?.profesor?.ratio || 0,
                 mensajes: data.categorias?.profesor?.mensajes || 0
               },
-              rollero: {
-                nombre: data.categorias?.rollero?.nombre || 'Sin datos',
-                palabras_por_mensaje: data.categorias?.rollero?.palabras_por_mensaje || 0,
-                mensajes: data.categorias?.rollero?.mensajes || 0
-              },
-              pistolero: {
-                nombre: data.categorias?.pistolero?.nombre || 'Sin datos',
-                tiempo_respuesta_promedio: data.categorias?.pistolero?.tiempo_respuesta_promedio || 0,
-                mensajes: data.categorias?.pistolero?.mensajes || 0
-              },
-              vampiro: {
-                nombre: data.categorias?.vampiro?.nombre || 'Sin datos',
-                mensajes_noche: data.categorias?.vampiro?.mensajes_noche || 0,
-                porcentaje: (data.categorias?.vampiro?.porcentaje !== undefined && !isNaN(data.categorias?.vampiro?.porcentaje)) ? data.categorias?.vampiro?.porcentaje : 0,
-                mensajes: data.categorias?.vampiro?.mensajes || 0
-              },
-              cafeconleche: {
-                nombre: data.categorias?.cafeconleche?.nombre || 'Sin datos',
-                hora_formateada: (data.categorias?.cafeconleche?.hora_formateada && data.categorias?.cafeconleche?.hora_formateada !== 'NaN:NaN') ? data.categorias?.cafeconleche?.hora_formateada : '00:00',
-                mensajes: data.categorias?.cafeconleche?.mensajes || 0
-              },
-              dejaenvisto: {
-                nombre: data.categorias?.dejaenvisto?.nombre || 'Sin datos',
-                tiempo_respuesta_promedio: data.categorias?.dejaenvisto?.tiempo_respuesta_promedio || 0,
-                mensajes: data.categorias?.dejaenvisto?.mensajes || 0
-              },
-              narcicista: {
-                nombre: data.categorias?.narcicista?.nombre || 'Sin datos',
-                menciones_yo: data.categorias?.narcicista?.menciones_yo || 0,
-                porcentaje: data.categorias?.narcicista?.porcentaje || 0,
-                mensajes: data.categorias?.narcicista?.mensajes || 0
-              },
-              chismoso: {
-                nombre: data.categorias?.chismoso?.nombre || 'Sin datos',
-                menciones_otros: data.categorias?.chismoso?.menciones_otros || 0,
-                porcentaje: data.categorias?.chismoso?.porcentaje || 0,
-                mensajes: data.categorias?.chismoso?.mensajes || 0
-              },
-              happyflower: {
-                nombre: data.categorias?.happyflower?.nombre || 'Sin datos',
-                emojis_totales: data.categorias?.happyflower?.emojis_totales || 0,
-                emojis_por_mensaje: data.categorias?.happyflower?.emojis_por_mensaje || 0,
-                mensajes: data.categorias?.happyflower?.mensajes || 0
-              },
-              puntofinal: {
-                nombre: data.categorias?.puntofinal?.nombre || 'Sin datos',
-                conversaciones_terminadas: data.categorias?.puntofinal?.conversaciones_terminadas || 0,
-                mensajes: data.categorias?.puntofinal?.mensajes || 0
-              },
-              fosforo: {
-                nombre: data.categorias?.fosforo?.nombre || 'Sin datos',
-                conversaciones_iniciadas: data.categorias?.fosforo?.conversaciones_iniciadas || 0,
-                mensajes: data.categorias?.fosforo?.mensajes || 0
-              },
-              menosesmas: {
-                nombre: data.categorias?.menosesmas?.nombre || 'Sin datos',
-                longitud_promedio: data.categorias?.menosesmas?.longitud_promedio || 0,
-                mensajes: data.categorias?.menosesmas?.mensajes || 0
-              },
-              amoroso: {
-                nombre: data.categorias?.amoroso?.nombre || 'Sin datos',
-                emojis_amor: data.categorias?.amoroso?.emojis_amor || 0,
-                porcentaje_amor: data.categorias?.amoroso?.porcentaje_amor || 0,
-                mensajes: data.categorias?.amoroso?.mensajes || 0
-              },
-              sicopata: {
-                nombre: data.categorias?.sicopata?.nombre || 'Sin datos',
-                max_mensajes_seguidos: data.categorias?.sicopata?.max_mensajes_seguidos || 0,
-                mensajes: data.categorias?.sicopata?.mensajes || 0
-              },
-              comico: {
-                nombre: data.categorias?.comico?.nombre || 'Sin datos',
-                mensajes_risa: data.categorias?.comico?.mensajes_risa || 0,
-                porcentaje: data.categorias?.comico?.porcentaje || 0,
-                mensajes: data.categorias?.comico?.mensajes || 0
-              },
-              agradecido: {
-                nombre: data.categorias?.agradecido?.nombre || 'Sin datos',
-                mensajes_agradece: data.categorias?.agradecido?.mensajes_agradece || 0,
-                porcentaje: data.categorias?.agradecido?.porcentaje || 0,
-                mensajes: data.categorias?.agradecido?.mensajes || 0
-              },
-              disculpon: {
-                nombre: data.categorias?.disculpon?.nombre || 'Sin datos',
-                mensajes_disculpa: data.categorias?.disculpon?.mensajes_disculpa || 0,
-                porcentaje: data.categorias?.disculpon?.porcentaje || 0,
-                mensajes: data.categorias?.disculpon?.mensajes || 0
-              },
-              curioso: {
-                nombre: data.categorias?.curioso?.nombre || 'Sin datos',
-                mensajes_pregunta: data.categorias?.curioso?.mensajes_pregunta || 0,
-                porcentaje: data.categorias?.curioso?.porcentaje || 0,
-                mensajes: data.categorias?.curioso?.mensajes || 0
-              }
+              // ... y el resto de categorías
             }
           };
           
-          // Establecer los datos y esperar a que se procesen
-          setDatos(datosTransformados);
-          
-          // Usar un pequeño timeout para asegurar que los datos se han procesado
-          // antes de quitar el indicador de carga y seleccionar categoría
-          setTimeout(() => {
-            setCargando(false);
-            // Seleccionar la primera categoría por defecto
-            if (datosTransformados.categorias && Object.keys(datosTransformados.categorias).length > 0) {
-              setCategoriaSeleccionada(Object.keys(datosTransformados.categorias)[0]);
+          // Copiar todas las categorías existentes
+          Object.keys(data.categorias).forEach(categoria => {
+            if (categoria !== 'profesor') { // Evitar duplicar la que ya procesamos
+              datosTransformados.categorias[categoria] = {
+                nombre: data.categorias[categoria]?.nombre || 'Sin datos',
+                // Copiar todas las propiedades relevantes
+                ...data.categorias[categoria]
+              };
             }
-          }, 500); // Aumentado a 500ms para dar más tiempo al procesamiento
+          });
+          
+          setDatos(datosTransformados);
+          setCargando(false);
+          
+          // Seleccionar la primera categoría por defecto
+          if (datosTransformados.categorias && Object.keys(datosTransformados.categorias).length > 0) {
+            setCategoriaSeleccionada(Object.keys(datosTransformados.categorias)[0]);
+          }
         })
         .catch(err => {
           console.error('Error cargando datos:', err);
           setError(err.message);
           setCargando(false);
         });
-    };
-
-    // Iniciar la carga de datos
-    cargarDatos();
-  }, [operationId, chatData, t, isRenderAllowed]);
+    } else {
+      setCargando(false);
+    }
+  }, [datosAnalizados, operationId, chatData, t]);
 
   // Efecto para exponer los datos para el juego
   useEffect(() => {
-    console.log("Verificando datos para exportar al juego:", {
-      hayDatos: !!datos,
-      hayCategorias: datos && !!datos.categorias,
-      hayUsuarios: datos && !!datos.usuarios,
-      formatoUsuarios: datos && datos.usuarios ? typeof datos.usuarios : 'no definido'
-    });
-    
-    if (datos) {
+    if (datos && (datos.usuarios || datos.categorias)) {
       // Asegurarnos de que usuarios sea un array
       let usuariosArray = [];
       
@@ -1655,7 +1528,8 @@ const AnalisisTop = ({ operationId, chatData }) => {
       // Exponer los datos para que App.js pueda usarlos en el juego
       window.lastAnalysisTopData = {
         categorias: datos.categorias || {},
-        usuarios: usuariosArray
+        usuarios: usuariosArray,
+        totales: datos.totales || {}
       };
       
       console.log('Datos de análisis disponibles para el juego:', {
@@ -1918,6 +1792,22 @@ const AnalisisTop = ({ operationId, chatData }) => {
           </>
         );
         break;
+      case 'mala_influencia':
+        detalleEspecifico = (
+          <>
+            <div className="estadistica">
+              <span className="valor">{catData.menciones_vicios || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_menciones_vicios_resto)}</span></span>
+              <span className="label">{t('app.top_profiles.bad_influence.mentions')}</span>
+            </div>
+            <div className="estadistica">
+              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="label">{t('app.top_profiles.bad_influence.percentage')}</span>
+            </div>
+          </>
+        );
+        break;
       default:
         detalleEspecifico = <p>{t('app.errors.no_specific_details')}</p>;
     }
@@ -1936,10 +1826,10 @@ const AnalisisTop = ({ operationId, chatData }) => {
   };
 
   // Si no se permite el renderizado, no mostrar nada
-  if (!isRenderAllowed) return null;
+  if (!datosAnalizados && !operationId) return null;
 
   if (cargando) return (
-    <div className="loading-container" style={{ textAlign: 'center', padding: '50px 0' }}>
+    <div className="loading-container" style={{ textAlign: 'center', padding: '20px 0', backgroundColor: '#f0f8ff', borderRadius: '8px', margin: '15px 0' }}>
       <div className="loader" style={{ 
         border: '5px solid #f3f3f3', 
         borderTop: '5px solid #3498db', 
@@ -1947,9 +1837,9 @@ const AnalisisTop = ({ operationId, chatData }) => {
         width: '50px', 
         height: '50px', 
         animation: 'spin 1s linear infinite',
-        margin: '0 auto 20px auto'
+        margin: '0 auto 15px auto'
       }}></div>
-      <p>{t('app.loading')}</p>
+      <p style={{ fontWeight: 'bold', color: '#3498db' }}>{t('app.loading')}</p>
       <style jsx>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
@@ -1969,38 +1859,70 @@ const AnalisisTop = ({ operationId, chatData }) => {
     <div className="analisis-top-container">
       <h2 className="titulo-principal">{t('app.top_profiles.title')}</h2>
       
-      {/* Mostrar detalle por encima del grid cuando hay categoría seleccionada */}
-      {categoriaSeleccionada && (
-        <div className="detalle-container" style={{ marginBottom: '20px' }}>
-          <div className="detalle-header">
-            <div className="detalle-icono">{categoriaIconos[categoriaSeleccionada].icono}</div>
-            <div className="detalle-info">
-              <h3 className="detalle-titulo">{categoriaIconos[categoriaSeleccionada].titulo()}</h3>
-              <p className="detalle-descripcion">{categoriaIconos[categoriaSeleccionada].descripcion()}</p>
-            </div>
-          </div>
-          {renderDetalleCategoria(categoriaSeleccionada)}
-        </div>
-      )}
-      
       {/* Usar la clase de grid específica */}
       <div className="categorias-grid-container">
-        {Object.keys(categoriaIconos).map(categoria => (
-          datos && datos.categorias && datos.categorias[categoria] && datos.categorias[categoria].nombre ? (
-            <div 
-              key={categoria}
-              className={`categoria-card ${categoriaSeleccionada === categoria ? 'seleccionada' : ''}`}
-              onClick={() => setCategoriaSeleccionada(categoria)}
-            >
-              <div className="categoria-icono">{categoriaIconos[categoria].icono}</div>
-              <div className="categoria-info">
-                <div className="categoria-titulo">{categoriaIconos[categoria].titulo()}</div>
-                <div className="categoria-descripcion">{categoriaIconos[categoria].descripcion()}</div>
-                <div className="categoria-usuario">{datos.categorias[categoria].nombre}</div>
-              </div>
-            </div>
-          ) : null
-        ))}
+        {(() => {
+          // Número de columnas del grid (2 por defecto, puedes hacerlo dinámico si quieres)
+          const columnas = 2;
+          const categoriasKeys = Object.keys(categoriaIconos).filter(categoria => {
+            // Para la categoría mala_influencia, verificar que tenga datos válidos
+            if (categoria === 'mala_influencia') {
+              return datos && 
+                     datos.categorias && 
+                     datos.categorias[categoria] && 
+                     datos.categorias[categoria].nombre &&
+                     datos.categorias[categoria].menciones_vicios > 0;
+            }
+            // Para el resto de categorías, mantener la lógica original
+            return datos && 
+                   datos.categorias && 
+                   datos.categorias[categoria] && 
+                   datos.categorias[categoria].nombre;
+          });
+          // Dividir en filas
+          const filas = [];
+          for (let i = 0; i < categoriasKeys.length; i += columnas) {
+            filas.push(categoriasKeys.slice(i, i + columnas));
+          }
+          // Renderizar filas
+          return filas.map((fila, filaIdx) => {
+            // ¿Está la seleccionada en esta fila?
+            const idxSeleccionada = fila.indexOf(categoriaSeleccionada);
+            const elementosFila = [];
+            fila.forEach((categoria, idx) => {
+              // Si la seleccionada está en esta fila y es este índice, inserta el detalle antes
+              if (idx === idxSeleccionada) {
+                elementosFila.push(
+                  <div className="detalle-container-grid" key={`detalle-${categoria}`}> 
+                    <div className="detalle-header">
+                      <div className="detalle-icono">{categoriaIconos[categoria].icono}</div>
+                      <div className="detalle-info">
+                        <h3 className="detalle-titulo">{categoriaIconos[categoria].titulo()}</h3>
+                        <p className="detalle-descripcion">{categoriaIconos[categoria].descripcion()}</p>
+                      </div>
+                    </div>
+                    {renderDetalleCategoria(categoria)}
+                  </div>
+                );
+              }
+              elementosFila.push(
+                <div 
+                  key={categoria}
+                  className={`categoria-card ${categoriaSeleccionada === categoria ? 'seleccionada' : ''}`}
+                  onClick={() => setCategoriaSeleccionada(categoria)}
+                >
+                  <div className="categoria-icono">{categoriaIconos[categoria].icono}</div>
+                  <div className="categoria-info">
+                    <div className="categoria-titulo">{categoriaIconos[categoria].titulo()}</div>
+                    <div className="categoria-descripcion">{categoriaIconos[categoria].descripcion()}</div>
+                    <div className="categoria-usuario">{datos.categorias[categoria].nombre}</div>
+                  </div>
+                </div>
+              );
+            });
+            return elementosFila;
+          });
+        })()}
       </div>
       
       {/* Sección de participantes bajo el radar */}

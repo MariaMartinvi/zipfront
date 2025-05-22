@@ -6,6 +6,106 @@
 // eslint-disable-next-line no-unused-vars
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
 
+/**
+ * Procesa el contenido del chat para Azure, reemplazando nombres por iniciales y eliminando fechas
+ * @param {string} content - Contenido del chat
+ * @returns {Object} - Objeto con el contenido procesado y el mapeo de nombres
+ */
+const processContentForAzure = (content) => {
+  try {
+    // Mapa para mantener consistencia en los reemplazos
+    const nameMapping = {};
+    let processedContent = content;
+
+    // Función para obtener iniciales de un nombre
+    const getInitials = (name) => {
+      return name
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+    };
+
+    // Procesar el contenido línea por línea
+    const lines = processedContent.split('\n');
+    const processedLines = lines.map(line => {
+      // Patrón para detectar el formato de iOS "[DD/MM/YY, HH:mm:ss] Nombre: Mensaje"
+      const iosPattern = /\[(\d{1,2}\/\d{1,2}\/\d{2}), \d{1,2}:\d{1,2}:\d{1,2}\] ([^:]+):/;
+      // Patrón para detectar el formato de Android "MM/DD/YY, HH:mm - Nombre: Mensaje"
+      const androidPattern = /(\d{1,2}\/\d{1,2}\/\d{2}), \d{1,2}:\d{2} - ([^:]+):/;
+      
+      const iosMatch = line.match(iosPattern);
+      const androidMatch = line.match(androidPattern);
+      
+      if (iosMatch || androidMatch) {
+        const fullName = (iosMatch ? iosMatch[2] : androidMatch[2]).trim();
+        
+        // Si el nombre contiene un número de teléfono, no lo procesamos
+        if (fullName.includes('+') || /^\d/.test(fullName)) {
+          console.log('Manteniendo número de teléfono:', fullName);
+          return line;
+        }
+        
+        // Si ya procesamos este nombre, usar el mismo reemplazo
+        if (nameMapping[fullName]) {
+          if (iosMatch) {
+            return line.replace(iosMatch[0], `[${iosMatch[1]}] ${nameMapping[fullName]}:`);
+          } else {
+            return line.replace(androidMatch[0], `${androidMatch[1]} - ${nameMapping[fullName]}:`);
+          }
+        }
+        
+        // Crear nuevo reemplazo
+        const initials = getInitials(fullName);
+        nameMapping[fullName] = initials;
+        
+        if (iosMatch) {
+          return line.replace(iosMatch[0], `[${iosMatch[1]}] ${initials}:`);
+        } else {
+          return line.replace(androidMatch[0], `${androidMatch[1]} - ${initials}:`);
+        }
+      }
+      
+      // Si es un mensaje del sistema (como "You created this group")
+      if (line.includes(' - ') || line.includes('] ')) {
+        // Mantener el mensaje del sistema pero eliminar la fecha
+        const systemMessage = line.split(' - ')[1] || line.split('] ')[1];
+        return systemMessage;
+      }
+      
+      return line;
+    });
+
+    // Unir las líneas procesadas
+    processedContent = processedLines.join('\n');
+
+    // Limpiar el texto
+    processedContent = processedContent
+      // Eliminar fechas en formato MM/DD/YY o DD/MM/YY
+      .replace(/\d{1,2}\/\d{1,2}\/\d{2}/g, '')
+      // Eliminar timestamps en formato HH:mm o HH:mm:ss
+      .replace(/\d{1,2}:\d{2}(:\d{2})?/g, '')
+      // Eliminar corchetes
+      .replace(/[\[\]]/g, '')
+      // Eliminar guiones
+      .replace(/\s*-\s*/g, ' ');
+
+    console.log('Mapeo de nombres:', nameMapping);
+    console.log('Contenido procesado:', processedContent);
+
+    return {
+      processedContent,
+      nameMapping
+    };
+  } catch (error) {
+    console.error('Error procesando contenido para Azure:', error);
+    return {
+      processedContent: content,
+      nameMapping: {}
+    };
+  }
+};
+
 // Configuración de APIs alternativas
 const ALTERNATIVE_APIS = [
   {
@@ -73,6 +173,65 @@ export const getEnvVariable = (name, fallback = null) => {
   
   console.error(`ERROR: Variable ${name} no encontrada o vacía. Buscar en .env o usar panel de configuración.`);
   return null;
+};
+
+/**
+ * Guarda el chat localmente antes de enviarlo a Azure
+ * @param {Object} chatData - Datos del chat a guardar
+ * @returns {Promise<void>}
+ */
+export const saveChatLocally = async (chatData) => {
+  try {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const fileName = `chat_${timestamp}.json`;
+    
+    // Crear el blob con los datos
+    const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Crear y simular clic en el enlace de descarga
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    console.log(`Chat guardado localmente como: ${fileName}`);
+  } catch (error) {
+    console.error('Error al guardar el chat localmente:', error);
+  }
+};
+
+/**
+ * Reconstruye los nombres completos en la respuesta de la IA
+ * @param {string} response - Respuesta de la IA
+ * @param {Object} nameMapping - Mapeo de nombres a iniciales
+ * @returns {string} - Respuesta con nombres reconstruidos
+ */
+const reconstructNames = (response, nameMapping) => {
+  try {
+    let reconstructedResponse = response;
+    
+    // Crear un mapeo inverso (de iniciales a nombres)
+    const inverseMapping = {};
+    Object.entries(nameMapping).forEach(([fullName, initials]) => {
+      inverseMapping[initials] = fullName;
+    });
+
+    // Reemplazar las iniciales por nombres completos
+    Object.entries(inverseMapping).forEach(([initials, fullName]) => {
+      // Buscar patrones como "E:" o "E " o "E," o "E." o "E\n" o "E\n\n"
+      const pattern = new RegExp(`\\b${initials}\\b(?=:|\\s|,|\\.|\\n|$)`, 'g');
+      reconstructedResponse = reconstructedResponse.replace(pattern, fullName);
+    });
+
+    return reconstructedResponse;
+  } catch (error) {
+    console.error('Error reconstruyendo nombres:', error);
+    return response;
+  }
 };
 
 /**
@@ -225,13 +384,17 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     // Limitar tamaño del contenido antes de enviarlo a la API
     console.log(`Longitud original del contenido: ${chatContent.length} caracteres`);
     
+    // Primero procesar los nombres para reducir el tamaño del texto
+    const { processedContent, nameMapping } = processContentForAzure(chatContent);
+    console.log(`Longitud después de procesar nombres: ${processedContent.length} caracteres`);
+    
     // Aplicar limitación de caracteres - tomar solo los últimos 10,000 caracteres
     const MAX_CHARS = 10000;
-    let limitedContent = chatContent;
+    let limitedContent = processedContent;
     
-    if (chatContent.length > MAX_CHARS) {
-      console.log(`Contenido del chat demasiado largo (${chatContent.length} caracteres), limitando a los últimos ${MAX_CHARS} caracteres`);
-      limitedContent = "...[Contenido anterior truncado]...\n\n" + chatContent.substring(chatContent.length - MAX_CHARS);
+    if (processedContent.length > MAX_CHARS) {
+      console.log(`Contenido del chat demasiado largo (${processedContent.length} caracteres), limitando a los últimos ${MAX_CHARS} caracteres`);
+      limitedContent = "...[Contenido anterior truncado]...\n\n" + processedContent.substring(processedContent.length - MAX_CHARS);
       console.log(`Contenido truncado a ${limitedContent.length} caracteres`);
     }
     
@@ -244,6 +407,16 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
       { role: "system", content: systemPrompt },
       { role: "user", content: `${userPrefix}\n\n${limitedContent}` }
     ];
+
+    // Guardar el chat localmente antes de enviarlo
+    await saveChatLocally({
+      timestamp: new Date().toISOString(),
+      messages: messages,
+      language: language,
+      contentLength: limitedContent.length,
+      model: apisToTry[0].model,
+      nameMapping // Incluir el mapeo de nombres en el archivo guardado
+    });
     
     // Intentar cada API en secuencia
     console.log(`>>> APIs disponibles para fallback: ${apisToTry.length}`);
@@ -279,7 +452,11 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
         });
         
         console.log(`>>> ÉXITO con ${api.name} (modelo: ${api.model})`);
-        const analysisResult = response.choices[0].message.content;
+        let analysisResult = response.choices[0].message.content;
+        
+        // Reconstruir los nombres en la respuesta
+        analysisResult = reconstructNames(analysisResult, nameMapping);
+        
         const apiHeader = `*****************************************************\n* API UTILIZADA: ${api.name}\n*****************************************************\n\n`;
         return {
           success: true,

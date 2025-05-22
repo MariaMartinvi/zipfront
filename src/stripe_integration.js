@@ -18,25 +18,25 @@ export const PLANS = {
     id: 'basic',
     name: 'Basic Plan',
     price: 4,
-    quota: 20,
-    description: '20 chat analyses per month',
-    priceId: 'price_1R9pMYF4OlRGsz641UJxyvO1' // VERIFIED price ID
+    quota: 5,
+    description: '5 chat analyses',
+    priceId: process.env.REACT_APP_STRIPE_BASIC_PRICE_ID
   },
   STANDARD: {
     id: 'standard',
     name: 'Standard Plan',
     price: 8,
-    quota: 50,
-    description: '50 chat analyses per month',
-    priceId: 'price_1R9pMGF4OlRGsz64F1vqFdj3' // VERIFIED price ID
+    quota: 10,
+    description: '10 chat analyses',
+    priceId: process.env.REACT_APP_STRIPE_STANDARD_PRICE_ID
   },
   PREMIUM: {
     id: 'premium',
     name: 'Premium Plan',
-    price: 20,
-    quota: 120,
-    description: '120 chat analyses per month',
-    priceId: 'price_1R9pLsF4OlRGsz64idi208OP' // VERIFIED price ID
+    price: 10,
+    quota: 20,
+    description: '20 chat analysis',
+    priceId: process.env.REACT_APP_STRIPE_PREMIUM_PRICE_ID
   }
 };
 
@@ -44,7 +44,7 @@ export const PLANS = {
 let stripePromise;
 export const getStripe = () => {
   if (!stripePromise) {
-    stripePromise = loadStripe('pk_test_51R91efF4OlRGsz64ijTLjfN3zkMjBz9EKuzwlarmjRb8TbyXMWYNUf5d1lq6LoLiVMUXoilh0tZrPhejO32NfdHt00WxBbaYQ6');
+    stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
   }
   return stripePromise;
 };

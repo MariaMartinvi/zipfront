@@ -27,6 +27,9 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // Procesar respuesta cuando llegue
   useEffect(() => {
     if (chatGptResponse) {
+      // Marcar como no cargando inmediatamente
+      setIsLoading(false);
+      
       // Configurar marked para procesar correctamente los emojis
       marked.setOptions({
         breaks: true,  // Interpretar saltos de línea como <br>
@@ -56,7 +59,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       
       // Actualizar el estado con el HTML procesado
       setHtmlContent(cleanHtml);
-      setIsLoading(false);
       
       // Incrementar contador de solicitudes usando función de actualización
       setRequestCount(prevCount => {
@@ -70,6 +72,8 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // Escuchar nuevo prompt para enviarlo a la cola
   useEffect(() => {
     if (promptInput && promptInput.trim().length > 0) {
+      // Mostrar indicador de carga mientras se prepara el procesamiento
+      setIsLoading(true);
       procesarSolicitud(promptInput);
     }
   }, [promptInput]);
@@ -158,6 +162,9 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     setQueueStatus('Procesando solicitud...');
     setErrorStatus(null);
     
+    // Mostrar feedback inmediato al usuario mientras se procesa
+    setHtmlContent(marked.parse(`### ${t('app.processing_request')}...\n\n${t('app.please_wait')}`));
+    
     try {
       console.log(`[DEBUG] Iniciando procesamiento - Contador actual: ${azureRequestCount}`);
       
@@ -245,6 +252,9 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         setQueueStatus('Error: ' + (error.message || 'Desconocido'));
         setHtmlContent(marked.parse(`### ❌ Error al procesar su solicitud\n\n${error.message || "Error desconocido"}.\n\nPor favor intente más tarde o contacte con soporte si el problema persiste.`));
       }
+    } finally {
+      // Asegurarnos de que isLoading se actualice correctamente
+      setIsLoading(false);
     }
   };
 
@@ -256,40 +266,81 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     }
   }, [i18n.language]);
 
-  // Si está cargando, mostrar indicador
+  // Si está cargando pero ya tenemos contenido para mostrar, mostramos ambos
   if (isLoading) {
     return (
-      <div className="loading-container" style={{ textAlign: 'center', padding: '20px' }}>
-        <div className="spinner" style={{
-          border: '4px solid rgba(0, 0, 0, 0.1)',
-          borderLeft: '4px solid #3498db',
-          borderRadius: '50%',
-          width: '30px',
-          height: '30px',
-          animation: 'spin 1s linear infinite',
-          margin: '0 auto 15px auto'
-        }}></div>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
-        <p>{t('app.processing_request')}</p>
+      <div>
+        <div className="loading-container" style={{ 
+          textAlign: 'center', 
+          padding: '15px', 
+          backgroundColor: '#f0f8ff',
+          borderRadius: '8px',
+          margin: '15px 0',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          <div className="spinner" style={{
+            border: '4px solid rgba(0, 0, 0, 0.1)',
+            borderLeft: '4px solid #3498db',
+            borderRadius: '50%',
+            width: '30px',
+            height: '30px',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 15px auto'
+          }}></div>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+          <p style={{ fontWeight: 'bold', color: '#3498db', margin: '0' }}>{t('app.processing_request')}</p>
+        </div>
+        
+        {/* Mostrar el contenido parcial si existe - siempre lo mostramos, incluso durante la carga */}
+        {htmlContent && (
+          <div id="analysisResults-container">
+            <div 
+              id="analysisResults" 
+              className={`chat-analysis-container language-${i18n.language}`}
+              dangerouslySetInnerHTML={{ __html: htmlContent }}
+            />
+          </div>
+        )}
       </div>
     );
   }
 
-  // Si no hay contenido, mostrar mensaje
-  if (!htmlContent) {
+  // Si no hay contenido y no estamos cargando, mostrar mensaje más informativo
+  if (!htmlContent && !isLoading) {
     return (
-      <div className="no-content-message" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-        {chatGptResponse === null ? '' : t('app.loading_status')}
+      <div className="no-content-message" style={{ 
+        textAlign: 'center', 
+        padding: '30px', 
+        color: '#666',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '8px',
+        margin: '20px 0'
+      }}>
+        {chatGptResponse === null ? 
+          t('app.enter_prompt') : 
+          <div>
+            <div className="spinner-small" style={{
+              border: '3px solid rgba(0, 0, 0, 0.1)',
+              borderLeft: '3px solid #999',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 10px auto'
+            }}></div>
+            <p>{t('app.loading_status')}</p>
+          </div>
+        }
       </div>
     );
   }
 
-  // Renderizar el HTML generado
+  // Si tenemos contenido y no estamos cargando, mostrar los resultados
   return (
     <div id="analysisResults-container">
       <div 

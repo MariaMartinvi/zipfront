@@ -436,12 +436,7 @@ const obtenerPatronHorario = (datosHora) => {
 const AnalisisPrimerChat = ({ operationId, chatData }) => {
   const { t, i18n } = useTranslation();
   const [datos, setDatos] = useState(null);
-  const [cargando, setCargando] = useState(true);  
-  const [error, setError] = useState(null);  
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);  
-  
-  // Memoizar la función obtenerDiasSemana para evitar recreaciones en cada renderizado  
-  const obtenerDiasSemana = useCallback(() => {
+    const [cargando, setCargando] = useState(true);  const [error, setError] = useState(null);  const [windowWidth, setWindowWidth] = useState(window.innerWidth);  // Memoizar la función obtenerDiasSemana para evitar recreaciones en cada renderizado  const obtenerDiasSemana = useCallback(() => {
     return [
       t('weekdays.monday'),
       t('weekdays.tuesday'),
@@ -955,13 +950,11 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
     
     if (datosAnalizados) {
       if (datosAnalizados.success) {
-        // Establecer los datos inmediatamente cuando estén disponibles
         setDatos(datosAnalizados);
         setError(null);
       } else {
         setError(datosAnalizados.error || t('app.errors.analysis_failed'));
       }
-      // Marcar como no cargando inmediatamente después de procesar los datos
       setCargando(false);
     }
   }, [datosAnalizados, chatData, t]);
@@ -969,7 +962,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
   // Renderizar el contenido principal
   if (cargando) {
     return (
-      <div className="loading-container" style={{ textAlign: 'center', padding: '20px 0', backgroundColor: '#f0f8ff', borderRadius: '8px', margin: '15px 0' }}>
+      <div className="loading-container" style={{ textAlign: 'center', padding: '50px 0' }}>
         <div className="loader" style={{ 
           border: '5px solid #f3f3f3', 
           borderTop: '5px solid #3498db', 
@@ -977,9 +970,9 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
           width: '50px', 
           height: '50px', 
           animation: 'spin 1s linear infinite',
-          margin: '0 auto 15px auto'
+          margin: '0 auto 20px auto'
         }}></div>
-        <p style={{ fontWeight: 'bold', color: '#3498db' }}>{t('app.loading')}</p>
+        <p>{t('app.loading')}</p>
         <style jsx>{`
           @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -996,29 +989,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
   }
   
   if (!datos || !datos.success) {
-    // Si hay datos analizados pero aún no se han procesado, mostrar cargando
-    if (datosAnalizados && datosAnalizados.success) {
-      return (
-        <div className="loading-container" style={{ textAlign: 'center', padding: '20px 0', backgroundColor: '#f0f8ff', borderRadius: '8px', margin: '15px 0' }}>
-          <div className="loader" style={{ 
-            border: '5px solid #f3f3f3', 
-            borderTop: '5px solid #3498db', 
-            borderRadius: '50%', 
-            width: '50px', 
-            height: '50px', 
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 15px auto'
-          }}></div>
-          <p style={{ fontWeight: 'bold', color: '#3498db' }}>{t('app.loading')}</p>
-          <style jsx>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
-        </div>
-      );
-    }
+    // Eliminar el mensaje de error "no_data"
     return null;
   }
 

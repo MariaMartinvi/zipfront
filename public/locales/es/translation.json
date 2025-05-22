@@ -16,6 +16,15 @@
       "preparing_psychological": "Preparando análisis psicológico de la conversación..."
     },
     "generating_analysis": "Generando análisis: Analizando patrones de comunicación...",
+    "progress_phases": {
+      "initializing": "Inicializando análisis psicológico...",
+      "analyzing_patterns": "Analizando patrones de comunicación...",
+      "identifying_traits": "Identificando rasgos de personalidad...",
+      "evaluating_dynamics": "Evaluando dinámica de grupo...",
+      "preparing_results": "Preparando resultados del análisis...",
+      "finalizing": "Finalizando interpretación psicológica...",
+      "processing_data": "Procesando datos de conversación..."
+    },
     "primer_chat": {
       "title": "Análisis de Inicio y Actividad del Chat",
       "date_start": "Fecha de inicio del chat",
@@ -128,7 +137,13 @@
         "avg_length": "Caracteres por mensaje (promedio)"
       },
       "total_messages": "mensajes totales",
-      "no_data": "No se encontraron datos suficientes para el análisis"
+      "no_data": "No se encontraron datos suficientes para el análisis",
+      "bad_influence": {
+        "title": "El más mala influencia",
+        "description": "Menciona más vicios y bebidas alcohólicas",
+        "mentions": "Menciones de vicios",
+        "percentage": "Porcentaje de mensajes con menciones"
+      }
     },
     "login_required": {
       "title": "Inicia sesión para comenzar",

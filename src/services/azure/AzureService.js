@@ -61,7 +61,8 @@ export class AzureService {
    */
   async getResponse(textContent, language = 'es') {
     try {
-      console.log(`Iniciando solicitud a Azure OpenAI, idioma: ${language}`);
+      console.error('🚨 INICIO getResponse');
+      console.error('Texto recibido:', textContent);
       
       // Validar y normalizar el idioma
       if (!PROMPTS[language]) {
@@ -87,6 +88,9 @@ export class AzureService {
       let userContent = textContent;
       const contentLength = userContent.length;
       
+      console.error('🔍 PREPARANDO CONTENIDO');
+      console.error('Longitud del texto:', contentLength);
+      
       // Límite uniforme de 40,000 caracteres para todos los modelos
       if (contentLength > 40000) {
         console.warn(`Contenido muy grande (${contentLength} caracteres), truncando a 40,000`);
@@ -99,6 +103,20 @@ export class AzureService {
       // Obtener el prompt en el idioma correspondiente
       const systemPrompt = PROMPTS[language] || PROMPTS['es'];
       const userPrefix = USER_PREFIXES[language] || USER_PREFIXES['es'];
+      
+      // Preparar los mensajes para la API
+      const messages = [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `${userPrefix}\n\n${userContent}` }
+      ];
+
+      // Guardar el chat localmente antes de enviarlo
+      await saveChatLocally({
+        timestamp: new Date().toISOString(),
+        messages: messages,
+        language: language,
+        contentLength: contentLength
+      });
       
       // Seleccionar el modelo óptimo
       const { model, temperature } = selectOptimalModel(contentLength);
@@ -126,12 +144,6 @@ export class AzureService {
       
       // Importar OpenAI
       const OpenAI = await this.getOpenAI();
-      
-      // Preparar los mensajes para la API
-      const messages = [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: `${userPrefix}\n\n${userContent}` }
-      ];
       
       // Variables para tracking
       let responseText = null;
@@ -167,7 +179,24 @@ export class AzureService {
           });
           
           // Hacer la solicitud a la API
-          console.log(`Enviando solicitud utilizando API: ${api.name}, modelo: ${api.model}, apiVersion: ${api.apiVersion}`);
+          console.error('🚀 ENVIANDO A AZURE');
+          console.error('API:', api.name);
+          console.error('Modelo:', api.model);
+          console.error('URL:', baseURL);
+          
+          // Añadir logs detallados del contenido que se envía
+          console.error('='.repeat(80));
+          console.error('📝 SYSTEM PROMPT:');
+          console.error(systemPrompt);
+          console.error('='.repeat(80));
+          console.error('👤 USER PREFIX:');
+          console.error(userPrefix);
+          console.error('='.repeat(80));
+          console.error('💬 USER CONTENT:');
+          console.error(userContent);
+          console.error('='.repeat(80));
+          console.error(`📊 Longitud total del texto: ${userContent.length} caracteres`);
+          console.error('='.repeat(80));
           
           const response = await client.chat.completions.create({
             model: api.model,
@@ -177,7 +206,8 @@ export class AzureService {
           });
           
           // Log de respuesta exitosa
-          console.log(`>>> RESPUESTA RECIBIDA de ${api.name}`);
+          console.error(`✅ RESPUESTA RECIBIDA de ${api.name}`);
+          console.error('Respuesta:', response.choices[0].message.content);
           
           // Extraer respuesta
           responseText = response.choices[0].message.content;
@@ -233,7 +263,7 @@ export class AzureService {
         response: responseText
       };
     } catch (error) {
-      console.error('>>> ERROR GENERAL:', error);
+      console.error('❌ ERROR EN getResponse:', error);
       return {
         success: false,
         error: error.message || "Error: An error occurred."
