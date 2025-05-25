@@ -26,6 +26,8 @@ import AppPreview from './AppPreview';
 import { useTranslation } from 'react-i18next'; // Importar useTranslation
 // NUEVO: Importar el componente del juego
 import ChatTopGame from './ChatTopGame';
+import ChatHeadlinesGame from './ChatHeadlinesGame';
+import { userSession } from './utils/userSession';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -482,6 +484,24 @@ function AppContent() {
       setOperationId(null);
       setChatData(null);
       
+      // CRÍTICO: Limpiar el análisis psicológico del chat anterior
+      setChatGptResponse("");
+      setShowChatGptResponse(false);
+      setIsFetchingMistral(false);
+      setShowAnalysis(false);
+      
+      // CRÍTICO: Limpiar también el localStorage del análisis psicológico
+      localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+      localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+      localStorage.removeItem('whatsapp_analyzer_mistral_error');
+      localStorage.removeItem('whatsapp_analyzer_force_fetch');
+      localStorage.removeItem('whatsapp_analyzer_chat_data');
+      localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+      
+      // CRÍTICO: Limpiar también las variables globales de Azure
+      window.lastAzureResponse = null;
+      window.lastNameMapping = null;
+      
       // Generar un ID de operación único para esta sesión
       const newOperationId = `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       setOperationId(newOperationId);
@@ -522,7 +542,8 @@ function AppContent() {
           }, 500);
           
           // Iniciar el análisis psicológico en background sin bloquear la UI
-          fetchMistralResponse();
+          // Pasar el contenido del chat directamente para evitar problemas de timing
+          fetchMistralResponse(extractedContent.chat);
           
           return true;
         } else {
@@ -598,7 +619,9 @@ function AppContent() {
         'whatsapp_analyzer_mistral_error',
         'whatsapp_analyzer_page_refreshed',
         'whatsapp_analyzer_is_processing_shared', // NUEVO: Asegurar que no hay conflicto con archivo compartido
-        'whatsapp_analyzer_force_fetch'
+        'whatsapp_analyzer_force_fetch',
+        'whatsapp_analyzer_chat_data',
+        'whatsapp_analyzer_has_chat_data'
       ];
       
       // Eliminar solo las claves específicas
@@ -1019,9 +1042,12 @@ function AppContent() {
   };
 
   // Function to poll for Mistral response - Mejorada para ser más robusta
-  const fetchMistralResponse = async () => {
+  const fetchMistralResponse = async (chatContent = null) => {
+    // Usar el contenido pasado como parámetro o el del estado como fallback
+    const contentToAnalyze = chatContent || chatData;
+    
     // Verificar que tenemos datos del chat para analizar
-    if (!chatData) {
+    if (!contentToAnalyze) {
       addDebugMessage('No hay datos de chat disponibles para analizar');
       setError('No hay datos de chat disponibles para analizar');
       return;
@@ -1083,7 +1109,8 @@ function AppContent() {
       const userLanguage = localStorage.getItem('i18nextLng') || 'es';
       
       // Enviar solicitud directamente a Azure OpenAI usando el método actualizado
-      const result = await getMistralResponse(chatData, userLanguage);
+      // Usar contentToAnalyze en lugar de chatData
+      const result = await getMistralResponse(contentToAnalyze, userLanguage);
       
       if (result.success && result.ready && result.response) {
         addDebugMessage('Respuesta de Azure recibida con éxito');
@@ -1169,6 +1196,12 @@ const tryDeleteFiles = async (operationId) => {
     localStorage.removeItem('whatsapp_analyzer_mistral_error');
     localStorage.removeItem('whatsapp_analyzer_force_fetch');
     localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+    localStorage.removeItem('whatsapp_analyzer_chat_data');
+    localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+    
+    // Limpiar variables globales de Azure
+    window.lastAzureResponse = null;
+    window.lastNameMapping = null;
     
     // También limpiar el estado de la aplicación
     setZipFile(null);
@@ -1191,7 +1224,8 @@ const tryDeleteFiles = async (operationId) => {
       setShowAnalysis(true);
       
       // Iniciar análisis psicológico solo si fue solicitado por otra vía (no desde processZipFile)
-      fetchMistralResponse();
+      // Pasar chatData como parámetro para asegurar que usa el contenido correcto
+      fetchMistralResponse(chatData);
     }
   }, [chatData, chatGptResponse, isFetchingMistral]);
 
@@ -1644,7 +1678,6 @@ const tryDeleteFiles = async (operationId) => {
 
   // Função para continuar con la acción después de la confirmación
   const handleConfirmRefresh = () => {
-    // Comprobar si tenemos un archivo ZIP pendiente de procesar
     console.log("[DIAGNÓSTICO] Iniciando handleConfirmRefresh");
     console.log("[DIAGNÓSTICO] Estado del archivo pendiente:", pendingZipFile ? "EXISTE" : "NO EXISTE");
     
@@ -1668,11 +1701,17 @@ const tryDeleteFiles = async (operationId) => {
       localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
       localStorage.removeItem('whatsapp_analyzer_analysis_complete');
       localStorage.removeItem('whatsapp_analyzer_mistral_error');
+      localStorage.removeItem('whatsapp_analyzer_force_fetch');
       localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-      // NUEVO: Eliminar también el flag de procesamiento compartido
       localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
+      localStorage.removeItem('whatsapp_analyzer_chat_data');
+      localStorage.removeItem('whatsapp_analyzer_has_chat_data');
       
-      console.log("[DIAGNÓSTICO] LocalStorage limpiado");
+      // NUEVO: Limpiar variables globales de Azure
+      window.lastAzureResponse = null;
+      window.lastNameMapping = null;
+      
+      console.log("[DIAGNÓSTICO] LocalStorage y variables globales limpiados");
       
       // Resetear el estado de la aplicación - IMPORTANTE: Hacer esto antes de la operación asíncrona
       setIsProcessingSharedFile(false);
@@ -1763,6 +1802,7 @@ const tryDeleteFiles = async (operationId) => {
       localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
       localStorage.removeItem('whatsapp_analyzer_analysis_complete');
       localStorage.removeItem('whatsapp_analyzer_mistral_error');
+      localStorage.removeItem('whatsapp_analyzer_force_fetch');
       localStorage.removeItem('whatsapp_analyzer_page_refreshed');
       localStorage.removeItem('whatsapp_analyzer_chat_data');
       localStorage.removeItem('whatsapp_analyzer_has_chat_data');
@@ -1775,13 +1815,18 @@ const tryDeleteFiles = async (operationId) => {
   // Función para cancelar la acción
   const handleCancelRefresh = () => {
     console.log('[FUNCIÓN] Ejecutando handleCancelRefresh');
-    // MODIFICADO: Solo ocultamos el diálogo de confirmación sin alterar ningún otro estado
+    
+    // Limpiar variables globales de Azure
+    window.lastAzureResponse = null;
+    window.lastNameMapping = null;
+    
+    // Solo ocultamos el diálogo de confirmación sin alterar ningún otro estado
     setShowRefreshConfirmation(false);
     
-    // NUEVO: Registramos un mensaje de diagnóstico para seguimiento
+    // Registramos un mensaje de diagnóstico para seguimiento
     console.log('[DIAGNÓSTICO] Acción cancelada por el usuario - continuando con procesamiento previo');
     
-    // NUEVO: Verificar si hay un análisis de archivo compartido en curso
+    // Verificar si hay un análisis de archivo compartido en curso
     const isProcessingShared = localStorage.getItem('whatsapp_analyzer_is_processing_shared') === 'true';
     if (isProcessingShared) {
       console.log('[DIAGNÓSTICO] Detectado procesamiento de archivo compartido en curso - preservando estado');
@@ -1790,28 +1835,39 @@ const tryDeleteFiles = async (operationId) => {
 
   // Limpieza cuando el usuario finaliza explícitamente el análisis o reinicia
   const handleReset = () => {
-    setIsProcessingSharedFile(false);
-    isProcessingRef.current = false;
-    setError('');
-    setIsLoading(false);
-    setDebugMessages([]);
-    processedShareIds.current.clear();
-    setChatGptResponse("");
-    setShowChatGptResponse(false);
-    setOperationId(null);
-    setChatData(null); // Limpiar chatData
+    // Limpiar variables globales de Azure
+    window.lastAzureResponse = null;
+    window.lastNameMapping = null;
     
-    // Limpiar la persistencia
+    // Limpiar localStorage
     localStorage.removeItem('whatsapp_analyzer_operation_id');
     localStorage.removeItem('whatsapp_analyzer_loading');
     localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
     localStorage.removeItem('whatsapp_analyzer_show_analysis');
     localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
     localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+    localStorage.removeItem('whatsapp_analyzer_mistral_error');
+    localStorage.removeItem('whatsapp_analyzer_force_fetch');
+    localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+    localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
     localStorage.removeItem('whatsapp_analyzer_chat_data');
     localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-    // NUEVO: Eliminar también el flag de procesamiento compartido
-    localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
+    
+    // Resetear estado
+    setError('');
+    setDebugMessages([]);
+    processedShareIds.current.clear();
+    setChatGptResponse("");
+    setShowChatGptResponse(false);
+    setShowAnalysis(false);
+    setOperationId(null);
+    setChatData(null);
+    setIsLoading(false);
+    setIsFetchingMistral(false);
+    setIsProcessingSharedFile(false);
+    isProcessingRef.current = false;
+    setZipFile(null);
+    setPendingZipFile(null);
   };
 
   // Component to render when user needs to upgrade
@@ -1992,6 +2048,30 @@ const tryDeleteFiles = async (operationId) => {
       uploadSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    // Inicializar la sesión del usuario
+    userSession.init();
+
+    // Suscribirse a cambios en la sesión
+    const unsubscribe = userSession.subscribe((user) => {
+      if (user) {
+        // Actualizar el estado cuando el usuario cambia
+        setUser(user);
+        // Cargar el perfil del usuario
+        getUserProfile(user.uid).then(profile => {
+          setUserProfile(profile);
+        });
+      } else {
+        setUser(null);
+        setUserProfile(null);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="App">
@@ -2190,6 +2270,8 @@ const tryDeleteFiles = async (operationId) => {
         < Route path="/privacy" element={<PrivacyPolicy />} />
         {/* NUEVA RUTA: Juego de adivinar perfiles */}
         <Route path="/chat-game" element={<ChatTopGame />} />
+        {/* NUEVA RUTA: Juego de titulares */}
+        <Route path="/headlines-game" element={<ChatHeadlinesGame />} />
         </Routes>
         
         {/* Componente de footer */}

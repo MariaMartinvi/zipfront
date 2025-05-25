@@ -4,10 +4,7 @@ import DOMPurify from 'dompurify'; // Para seguridad
 import { useTranslation } from 'react-i18next';
 import './Chatgptresultados.css';
 import azureQueueService from './services/azureQueueService'; // Importamos el servicio de cola existente
-
-// Contador global para simular límite de solicitudes
-let azureRequestCount = parseInt(localStorage.getItem('azure_request_count') || '0');
-const MAX_AZURE_REQUESTS = 3; // Después de 3 solicitudes, comenzará a dar error 429
+import lzString from 'lz-string';
 
 function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-default" }) {
   const { t, i18n } = useTranslation();
@@ -17,6 +14,12 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   const [requestId, setRequestId] = useState(null);
   const [errorStatus, setErrorStatus] = useState(null);
   const [checkingQueue, setCheckingQueue] = useState(false);
+  const [headlinesGameData, setHeadlinesGameData] = useState(null);
+  
+  // Estados para el modal de compartir (igual que en App.js)
+  const [showShareGameModal, setShowShareGameModal] = useState(false);
+  const [gameUrl, setGameUrl] = useState('');
+  const [showCopiedMessage, setShowCopiedMessage] = useState(false);
   
   // Variables para monitoreo
   const [requestCount, setRequestCount] = useState(() => {
@@ -27,40 +30,94 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // Procesar respuesta cuando llegue
   useEffect(() => {
     if (chatGptResponse) {
-      // Marcar como no cargando inmediatamente
-      setIsLoading(false);
+      console.log('Procesando respuesta para extraer datos del juego de titulares...');
       
-      // Configurar marked para procesar correctamente los emojis
-      marked.setOptions({
-        breaks: true,  // Interpretar saltos de línea como <br>
-        gfm: true,     // GitHub Flavored Markdown
-      });
+      // Buscar respuesta de Azure en variable global
+      const azureResponse = window.lastAzureResponse;
+      
+      if (azureResponse) {
+        // Buscar GAME_DATA en la respuesta
+        const gameDataMatch = azureResponse.match(/GAME_DATA:/);
+        
+        if (gameDataMatch) {
+          try {
+            // Buscar la posición inicial del array
+            const startIndex = azureResponse.indexOf('GAME_DATA:[');
+            if (startIndex !== -1) {
+              // Extraer desde '[' hasta encontrar el ']' que cierra el array principal
+              let arrayStart = azureResponse.indexOf('[', startIndex);
+              let bracketCount = 0;
+              let endIndex = arrayStart;
+              
+              for (let i = arrayStart; i < azureResponse.length; i++) {
+                if (azureResponse[i] === '[') {
+                  bracketCount++;
+                } else if (azureResponse[i] === ']') {
+                  bracketCount--;
+                  if (bracketCount === 0) {
+                    endIndex = i;
+                    break;
+                  }
+                }
+              }
+              
+              // Extraer el JSON completo
+              let jsonStr = azureResponse.substring(arrayStart, endIndex + 1);
+              
+              // Intentar parsear el JSON
+              const parsedData = JSON.parse(jsonStr);
+              
+              if (parsedData && Array.isArray(parsedData) && parsedData.length >= 2) {
+                let [usuarios, headlines] = parsedData;
+                
+                // Convertir iniciales a nombres completos si hay nameMapping disponible
+                if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+                  // Crear mapeo inverso
+                  const inverseMapping = {};
+                  Object.entries(window.lastNameMapping).forEach(([fullName, initials]) => {
+                    inverseMapping[initials] = fullName;
+                  });
+                  
+                  // Convertir usuarios
+                  usuarios = usuarios.map(user => inverseMapping[user] || user);
+                  
+                  // Convertir nombres en headlines
+                  if (Array.isArray(headlines)) {
+                    headlines = headlines.map(headline => ({
+                      ...headline,
+                      nombre: inverseMapping[headline.nombre] || headline.nombre
+                    }));
+                  }
+                }
+                
+                // Guardar datos del juego
+                setHeadlinesGameData([usuarios, headlines]);
+                console.log('Datos del juego de titulares procesados:', [usuarios, headlines]);
+              }
+            }
+          } catch (error) {
+            console.log('Error procesando datos del juego de titulares:', error);
+          }
+        }
+      }
 
-      // Eliminar la información de la API utilizada y registrarla en la consola
+      // Procesar la respuesta para reemplazar la sección de titulares
       let processedResponse = chatGptResponse;
       
-      // Detectar el modelo utilizado y registrarlo en la consola
-      if (processedResponse.includes('API UTILIZADA: Principal (gpt-4o-mini)')) {
-        console.log('api 1');
-        processedResponse = processedResponse.replace(/\*{5,}\n\* API UTILIZADA: Principal \(gpt-4o-mini\)\n\*{5,}\n\n/g, '');
-      } else if (processedResponse.includes('API UTILIZADA: o3-mini') || processedResponse.includes('API UTILIZADA: o3')) {
-        console.log('api 2');
-        processedResponse = processedResponse.replace(/\*{5,}\n\* API UTILIZADA: o3(-mini)?\n\*{5,}\n\n/g, '');
-      } else if (processedResponse.includes('API UTILIZADA: Deepseek')) {
-        console.log('api 3');
-        processedResponse = processedResponse.replace(/\*{5,}\n\* API UTILIZADA: Deepseek[^\n]*\n\*{5,}\n\n/g, '');
+      // Si hay datos del juego, reemplazar la sección de Titulares
+      if (azureResponse && headlinesGameData) {
+        processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
       }
 
       // Convertir markdown a HTML
-      const rawHtml = marked.parse(processedResponse);
+      const htmlContent = marked.parse(processedResponse);
       
-      // Sanitizar el HTML (para prevenir ataques XSS)
-      const cleanHtml = DOMPurify.sanitize(rawHtml);
+      // Sanitizar el HTML
+      const sanitizedContent = DOMPurify.sanitize(htmlContent);
       
-      // Actualizar el estado con el HTML procesado
-      setHtmlContent(cleanHtml);
+      setHtmlContent(sanitizedContent);
       
-      // Incrementar contador de solicitudes usando función de actualización
+      // Incrementar contador de solicitudes
       setRequestCount(prevCount => {
         const newCount = prevCount + 1;
         localStorage.setItem('chatgpt_request_count', newCount.toString());
@@ -68,6 +125,111 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       });
     }
   }, [chatGptResponse]);
+
+  // Efecto separado para procesar el contenido cuando headlinesGameData cambie
+  useEffect(() => {
+    if (chatGptResponse && headlinesGameData) {
+      const processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
+      const htmlContent = marked.parse(processedResponse);
+      const sanitizedContent = DOMPurify.sanitize(htmlContent);
+      setHtmlContent(sanitizedContent);
+    }
+  }, [headlinesGameData]);
+
+  // Función para procesar la sección de titulares
+  const processHeadlinesSection = (response, gameData) => {
+    try {
+      // Buscar el inicio de la sección de Titulares
+      const titularesMatch = response.match(/## 💡 Titulares/);
+      if (!titularesMatch) return response;
+      
+      // Buscar donde termina esta sección (siguiente ## o final del texto)
+      const startIndex = titularesMatch.index;
+      const nextSectionMatch = response.slice(startIndex + 20).match(/\n## /);
+      const endIndex = nextSectionMatch ? 
+        startIndex + 20 + nextSectionMatch.index : 
+        response.length;
+      
+      // Extraer la parte antes y después de la sección de Titulares
+      const beforeSection = response.slice(0, startIndex);
+      const afterSection = response.slice(endIndex);
+      
+      // Crear la nueva sección con formato limpio
+      const [usuarios, headlines] = gameData;
+      
+      // Crear mapeo inverso para obtener nombres completos
+      let nameMapping = {};
+      if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+        Object.entries(window.lastNameMapping).forEach(([fullName, initials]) => {
+          nameMapping[initials] = fullName;
+        });
+      }
+      
+      let newTitularesSection = "## 💡 Titulares\n\n**Datos de juego:**\n\n";
+      
+      headlines.forEach(headline => {
+        const nombreCompleto = nameMapping[headline.nombre] || headline.nombre;
+        const fraseClean = headline.frase.replace(/'/g, '').trim();
+        newTitularesSection += `${nombreCompleto}: ${fraseClean}\n\n`;
+      });
+      
+      // Reconstruir la respuesta completa
+      return beforeSection + newTitularesSection + afterSection;
+      
+    } catch (error) {
+      console.error('Error procesando sección de titulares:', error);
+      return response; // Devolver respuesta original si hay error
+    }
+  };
+
+  // Función para generar URL del juego de titulares (igual que en App.js)
+  const generateHeadlinesGameUrl = () => {
+    try {
+      if (!headlinesGameData) {
+        alert("No hay datos de juego disponibles");
+        return;
+      }
+      
+      // Comprimir datos con LZ-String
+      const compressedData = lzString.compressToEncodedURIComponent(JSON.stringify(headlinesGameData));
+      
+      // Crear URL del juego
+      const url = `${window.location.origin}/headlines-game?h=${compressedData}`;
+      
+      setGameUrl(url);
+      setShowShareGameModal(true);
+      
+    } catch (error) {
+      console.error('Error generando URL del juego:', error);
+      alert("Error al generar el enlace del juego");
+    }
+  };
+
+  // Función para copiar al portapapeles (igual que en App.js)
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(gameUrl).then(() => {
+      setShowCopiedMessage(true);
+      setTimeout(() => setShowCopiedMessage(false), 2000);
+    }).catch(err => {
+      console.error('Error al copiar:', err);
+      // Fallback para navegadores que no soportan clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = gameUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setShowCopiedMessage(true);
+      setTimeout(() => setShowCopiedMessage(false), 2000);
+    });
+  };
+
+  // Función para compartir en WhatsApp (igual que en App.js)
+  const shareOnWhatsApp = () => {
+    const message = `🎯 ¡Juego: ¿Quién dijo qué?!\n\n¿Puedes adivinar quién corresponde a cada titular polémico?\n\n👇 Juega aquí:\n${gameUrl}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   // Escuchar nuevo prompt para enviarlo a la cola
   useEffect(() => {
@@ -123,39 +285,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     };
   }, [requestId, checkingQueue]);
 
-  // Función para simular llamada a Azure con límite de tasa
-  const simularLlamadaAzure = async (prompt) => {
-    // Incrementar contador global y guardar en localStorage
-    azureRequestCount++;
-    localStorage.setItem('azure_request_count', azureRequestCount.toString());
-    
-    console.log(`[DEBUG] Contador actual: ${azureRequestCount}, Límite: ${MAX_AZURE_REQUESTS}`);
-    
-    // Si excedimos el límite, simular error 429
-    if (azureRequestCount >= MAX_AZURE_REQUESTS) {
-      console.log(`[DEBUG] Lanzando error 429 - Contador: ${azureRequestCount}, Límite: ${MAX_AZURE_REQUESTS}`);
-      
-      // Crear un error que imita exactamente lo que devolvería Azure
-      const error = new Error("429 Too Many Requests");
-      error.status = 429;
-      error.statusText = "Too Many Requests";
-      error.headers = {
-        "retry-after": "30" // Sugiere esperar 30 segundos
-      };
-      
-      throw error;
-    }
-    
-    // Simular tiempo de procesamiento (1-2 segundos)
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000));
-    
-    // Retornar respuesta exitosa simulada
-    return {
-      exitoso: true,
-      solicitudId: `sim-${Date.now()}`
-    };
-  };
-
   // Función para procesar solicitud (directamente o enviar a la cola de Azure)
   const procesarSolicitud = async (prompt) => {
     setIsLoading(true);
@@ -166,10 +295,8 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     setHtmlContent(marked.parse(`### ${t('app.processing_request')}...\n\n${t('app.please_wait')}`));
     
     try {
-      console.log(`[DEBUG] Iniciando procesamiento - Contador actual: ${azureRequestCount}`);
-      
-      // Intentar hacer la llamada directa a Azure (simulada)
-      await simularLlamadaAzure(prompt);
+      // Simular tiempo de procesamiento (1-2 segundos)
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000));
       
       // Si llega aquí, la llamada fue exitosa
       setQueueStatus(`Solicitud procesada directamente`);
@@ -198,60 +325,11 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         return;
       }
       
-      // Verificar si es un error 429 (límite de tasa)
-      if (error.status === 429 || 
-          error.message.includes('429') || 
-          error.message.includes('RateLimitError') ||
-          error.message.includes('exceeded token rate limit')) {
-        
-        console.log('[DEBUG] Error 429 detectado, enviando a la cola Azure...');
-        setErrorStatus('429 Too Many Requests');
-        
-        // Extraer el tiempo de espera sugerido si está disponible
-        const retryAfter = error.headers?.get('retry-after') || 
-                          error.message.match(/retry after (\d+) seconds/i)?.[1] || 
-                          '60';
-        
-        // Preparar la solicitud para la cola
-        const requestData = {
-          prompt,
-          usuarioId,
-          timestamp: new Date().toISOString(),
-          modelo: 'gpt-35-turbo',
-          maxTokens: 1000,
-          tipoAnalisis: 'chat',
-          retryAfter: parseInt(retryAfter)
-        };
-        
-        try {
-          // Enviar a la cola de Azure usando el servicio existente
-          const queueResult = await azureQueueService.enqueueRequest(requestData);
-          
-          if (queueResult.success) {
-            setRequestId(queueResult.requestId);
-            setQueueStatus(`Solicitud enviada a la cola. ID: ${queueResult.requestId}`);
-            
-            // Mostrar mensaje explicativo al usuario con el tiempo de espera
-            setHtmlContent(marked.parse(`### ⚠️ Límite de tasa alcanzado\n\nHemos alcanzado el límite de solicitudes por minuto en Azure. Su consulta ha sido agregada a la cola y será procesada cuando haya disponibilidad.\n\n**ID de solicitud**: ${queueResult.requestId}\n\n**Tiempo estimado de espera**: ${retryAfter} segundos\n\nPuede esperar en esta página o regresar más tarde para ver el resultado.`));
-          } else {
-            setQueueStatus(`Error al encolar: ${queueResult.error}`);
-            setHtmlContent(marked.parse(`### ❌ Error al encolar solicitud\n\nNo se pudo agregar su solicitud a la cola. Por favor, intente nuevamente más tarde.\n\n**Error**: ${queueResult.error}`));
-          }
-        } catch (queueError) {
-          // Error específico de conexión con la cola
-          console.error("Error conectando con el servicio de cola:", queueError);
-          setQueueStatus(`Error de conexión con la cola: ${queueError.message}`);
-          setHtmlContent(marked.parse(`### ❌ Error de conexión con la cola\n\nNo se pudo conectar con el servicio de cola. Por favor, verifique su conexión e intente nuevamente.\n\n**Error técnico**: ${queueError.message}`));
-        }
-        
-        setIsLoading(false);
-      } else {
-        // Otro tipo de error
-        console.error("Error completo:", error);
-        setIsLoading(false);
-        setQueueStatus('Error: ' + (error.message || 'Desconocido'));
-        setHtmlContent(marked.parse(`### ❌ Error al procesar su solicitud\n\n${error.message || "Error desconocido"}.\n\nPor favor intente más tarde o contacte con soporte si el problema persiste.`));
-      }
+      // Otro tipo de error
+      console.error("Error completo:", error);
+      setIsLoading(false);
+      setQueueStatus('Error: ' + (error.message || 'Desconocido'));
+      setHtmlContent(marked.parse(`### ❌ Error al procesar su solicitud\n\n${error.message || "Error desconocido"}.\n\nPor favor intente más tarde o contacte con soporte si el problema persiste.`));
     } finally {
       // Asegurarnos de que isLoading se actualice correctamente
       setIsLoading(false);
@@ -348,6 +426,74 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         className={`chat-analysis-container language-${i18n.language}`}
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
+      
+      {/* Botón del juego de titulares */}
+      {headlinesGameData && (
+        <div className="headlines-game-button-container" style={{
+          marginTop: '2rem',
+          padding: '1.5rem',
+          borderTop: '2px solid #eee',
+          backgroundColor: '#f8f9fa',
+          borderRadius: '8px',
+          textAlign: 'center'
+        }}>
+          <h3 style={{ marginBottom: '1rem', color: '#2c3e50' }}>
+            🎯 ¿Quién dijo qué?
+          </h3>
+          <p style={{ marginBottom: '1.5rem', color: '#6c757d' }}>
+            Descubre quién corresponde a cada titular polémico
+          </p>
+          <button 
+            onClick={generateHeadlinesGameUrl}
+            style={{
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '6px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'background-color 0.3s ease',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+          >
+            🚀 Compartir Juego de Titulares
+          </button>
+        </div>
+      )}
+      
+      {/* Modal para compartir juego (igual que en App.js) */}
+      {showShareGameModal && (
+        <div className="share-game-modal">
+          <div className="share-game-modal-content">
+            <span className="close-modal" onClick={() => setShowShareGameModal(false)}>&times;</span>
+            <h3>¡Comparte el juego!</h3>
+            <p>Envía este enlace a tus amigos para que adivinen quién corresponde a cada titular polémico.</p>
+            
+            <div className="game-url-container">
+              <input 
+                type="text" 
+                value={gameUrl} 
+                readOnly 
+                onClick={(e) => e.target.select()} 
+              />
+              <button onClick={copyToClipboard}>
+                Copiar
+              </button>
+              {showCopiedMessage && <span className="copied-message">¡Copiado!</span>}
+            </div>
+            
+            <div className="share-options">
+              <button className="whatsapp-share" onClick={shareOnWhatsApp}>
+                <span>Compartir en WhatsApp</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

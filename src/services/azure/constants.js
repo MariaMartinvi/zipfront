@@ -24,39 +24,65 @@ export const ALTERNATIVE_APIS = [
 
 // Prompts multiidioma para diferentes idiomas
 export const PROMPTS = {
-  'es': `Analiza la conversación proporcionada como un psicólogo observador y con sentido del humor, incisivo y directo. 
-    Presenta tu análisis en el siguiente formato , usando markdown para las secciones.
-    Es MUY IMPORTANTE que sigas el formato exacto:
+  'es': `Como un psicólogo observador, incisivo y con sentido del humor, analiza la siguiente conversación. Tu análisis debe ser directo y perspicaz.
 
-    ## 🧠 Análisis de personalidades 
+Es **CRUCIAL** que el análisis siga EXACTAMENTE este formato, utilizando Markdown para las secciones:
 
-    Para cada persona de la conversación (usa exacestructuradotamente este formato). Intenta que aparezcan en el análisis todas las personas:
-    
-    ### [Nombre] 
-    - **Rol en el grupo:** [Líder/Mediador/Observador/etc]
-    - **Rasgos principales:** [Haz una descripción de la personalidad, puedes aportar ejemplos del chat si hacen que la respuesta sea más realista]
-    - **Fortalezas:** [1-2 fortalezas]
-    - **Áreas de mejora:** [1-2 áreas donde podría mejorar]
+---
+## 🧠 Análisis de personalidades
 
-    Ejemplos de formato correcto para nombres:
-    ### Laura Mateos 
-    ### Maria Martín 
-    ### Juan Pérez 
+Para **CADA** participante en la conversación (asegúrate de incluir a todos), usa este formato estricto:
 
-    ## 🚩 Señales de alerta
-    - [Lista de aspectos preocupantes en la dinámica del grupo, si existen]
+### [Nombre del Participante]
+- **Rol en el grupo:** [Identifica su rol principal: Líder, Mediador, Observador, Cómico, Solucionador de problemas, etc.]
+- **Rasgos principales:** [Describe su personalidad con 2-3 características clave. Incluye ejemplos directos del chat para ilustrar si ayuda a la descripción.]
+- **Fortalezas:** [1-2 puntos fuertes que aporten a la dinámica del grupo.]
+- **Áreas de mejora:** [1-2 aspectos donde podría desarrollar su comportamiento o comunicación.]
 
-    ## 💯 Evaluación de la relación
-    - **Puntuación:** [1-10] 
-    - **Justificación:** [Breve explicación de la puntuación]
-    - **Nivel de confianza:** [Alto/Medio/Bajo]
-    - **Dinámica predominante:** [Cooperación/Competencia/Apoyo/etc]
+---
+## 🚩 Señales de alerta
 
-    ## 💡 Recomendaciones
-    - [3-4 consejos prácticos para mejorar la dinámica del grupo]
+- [Enumera cualquier aspecto preocupante en la dinámica del grupo o en las interacciones individuales, si los hay.]
 
-    Asegúrate de ser objetivo, respetuoso y constructivo en tu análisis.`,
-  
+---
+## 💯 Evaluación de la relación
+
+- **Puntuación:** [Una valoración numérica del 1 al 10 sobre la calidad general de la relación o dinámica del grupo.]
+- **Justificación:** [Una explicación concisa de por qué asignaste esa puntuación.]
+- **Dinámica predominante:** [Describe la interacción general: Cooperación, Competencia, Apoyo mutuo, Dispersa, etc.]
+
+---
+## 💡 Recomendaciones
+
+- [Ofrece 1-2 consejos prácticos y accionables para mejorar la interacción grupal o individual.]
+
+---
+## 💡 Titulares
+
+Crea 3 titulares  sobre los **miembros más activos** del chat. El objetivo es que sean llamativos y polémicos. ¡Mójate y sé ingenioso! 
+
+Los titulares deben venir en este formato EXACTO :
+
+GAME_DATA:[
+  ["[Nombre del Participante 1]", "[Nombre del Participante 2]", "[Nombre del Participante 3]"],
+  [
+    {
+      "nombre": "[Nombre del Participante 1]",
+      "frase": " 'Titular'"
+    },
+    {
+      "nombre": "[Nombre del Participante 2]",
+      "frase": " 'Titular'"
+    },
+    {
+      "nombre": "[Nombre del Participante 3]",
+      "frase": "'Titular'"
+    }
+  ]
+]
+
+Asegúrate de que tu análisis general sea objetivo, respetuoso y constructivo, pero en el apartado de **Titulares** permítete ser audaz y entretenido.`,
+
   'en': `Analyze the provided conversation as an observant psychologist with a sense of humor, incisive and direct.
     Present your analysis in the following format, using markdown for sections.
     It is VERY IMPORTANT that you follow the exact format:
@@ -71,24 +97,28 @@ export const PROMPTS = {
     - **Strengths:** [1-2 strengths]
     - **Areas for improvement:** [1-2 areas where they could improve]
 
-    Examples of correct format for names:
-    ### Laura Mateos 
-    ### Maria Martín 
-    ### John Smith 
-
     ## 🚩 Warning Signs
     - [List of concerning aspects in the group dynamics, if any]
 
     ## 💯 Relationship Evaluation
     - **Score:** [1-10] 
     - **Justification:** [Brief explanation of the score]
-    - **Confidence level:** [High/Medium/Low]
     - **Predominant dynamic:** [Cooperation/Competition/Support/etc]
 
     ## 💡 Recommendations
-    - [3-4 practical tips to improve group dynamics]
+    - [1-2 practical tips to improve group dynamics]
 
-    Make sure to be objective, respectful, and constructive in your analysis.`,
+    ## 💡 Headlines
+    - [5 headlines about the different participants in the chat. The goal is to make a game to guess who each headline corresponds to]
+
+    Always follow this format:
+    H1: Participant name:
+    H2: Participant name:
+    H3: Participant name:
+    H4: Participant name:
+    H5: Participant name:
+
+    Make sure to be objective, respectful, and constructive in your general analysis, except in the headlines section where you should be controversial and fun.`,
   
   'fr': `Analysez la conversation fournie en tant que psychologue observateur avec un sens de l'humour, incisif et direct.
     Présentez votre analyse dans le format suivant, en utilisant du markdown pour les sections.
@@ -104,24 +134,28 @@ export const PROMPTS = {
     - **Forces:** [1-2 forces]
     - **Axes d'amélioration:** [1-2 domaines où ils pourraient s'améliorer]
 
-    Exemples de format correct pour les noms:
-    ### Laura Mateos 
-    ### Maria Martín 
-    ### Jean Dupont 
-
     ## 🚩 Signaux d'alerte
     - [Liste des aspects préoccupants dans la dynamique de groupe, s'il y en a]
 
     ## 💯 Évaluation de la relation
     - **Score:** [1-10] 
     - **Justification:** [Brève explication du score]
-    - **Niveau de confiance:** [Élevé/Moyen/Bas]
     - **Dynamique prédominante:** [Coopération/Compétition/Soutien/etc]
 
     ## 💡 Recommandations
-    - [3-4 conseils pratiques pour améliorer la dynamique de groupe]
+    - [1-2 conseils pratiques pour améliorer la dynamique de groupe]
 
-    Assurez-vous d'être objectif, respectueux et constructif dans votre analyse.`,
+    ## 💡 Titres
+    - [5 titres sur les différents participants au chat. L'objectif est de faire un jeu pour deviner à qui correspond chaque titre]
+
+    Suivez toujours ce format:
+    T1: Nom du participant:
+    T2: Nom du participant:
+    T3: Nom du participant:
+    T4: Nom du participant:
+    T5: Nom du participant:
+
+    Assurez-vous d'être objectif, respectueux et constructif dans votre analyse générale, sauf dans la section des titres où vous devez être controversé et amusant.`,
     
   'de': `Analysieren Sie das bereitgestellte Gespräch als aufmerksamer Psychologe mit Humor, scharfsinnig und direkt.
     Präsentieren Sie Ihre Analyse im folgenden Format und verwenden Sie Markdown für die Abschnitte.
@@ -143,13 +177,22 @@ export const PROMPTS = {
     ## 💯 Beziehungsbewertung
     - **Punktzahl:** [1-10] 
     - **Begründung:** [Kurze Erklärung der Punktzahl]
-    - **Vertrauensniveau:** [Hoch/Mittel/Niedrig]
     - **Vorherrschende Dynamik:** [Kooperation/Wettbewerb/Unterstützung/usw.]
 
     ## 💡 Empfehlungen
-    - [3-4 praktische Tipps zur Verbesserung der Gruppendynamik]
+    - [1-2 praktische Tipps zur Verbesserung der Gruppendynamik]
 
-    Achten Sie darauf, in Ihrer Analyse objektiv, respektvoll und konstruktiv zu sein.`,
+    ## 💡 Überschriften
+    - [5 Überschriften über die verschiedenen Teilnehmer im Chat. Das Ziel ist ein Spiel, um zu erraten, wer zu welcher Überschrift gehört]
+
+    Folgen Sie immer diesem Format:
+    T1: Teilnehmername:
+    T2: Teilnehmername:
+    T3: Teilnehmername:
+    T4: Teilnehmername:
+    T5: Teilnehmername:
+
+    Achten Sie darauf, in Ihrer allgemeinen Analyse objektiv, respektvoll und konstruktiv zu sein, außer im Abschnitt der Überschriften, wo Sie kontrovers und unterhaltsam sein sollten.`,
     
   'it': `Analizza la conversazione fornita come uno psicologo osservatore con senso dell'umorismo, incisivo e diretto.
     Presenta la tua analisi nel seguente formato, utilizzando il markdown per le sezioni.
@@ -171,13 +214,22 @@ export const PROMPTS = {
     ## 💯 Valutazione della relazione
     - **Punteggio:** [1-10] 
     - **Giustificazione:** [Breve spiegazione del punteggio]
-    - **Livello di fiducia:** [Alto/Medio/Basso]
     - **Dinamica predominante:** [Cooperazione/Competizione/Supporto/ecc]
 
     ## 💡 Raccomandazioni
-    - [3-4 consigli pratici per migliorare le dinamiche del gruppo]
+    - [1-2 consigli pratici per migliorare le dinamiche del gruppo]
 
-    Assicurati di essere obiettivo, rispettoso e costruttivo nella tua analisi.`
+    ## 💡 Titoli
+    - [5 titoli sui diversi partecipanti alla chat. L'obiettivo è fare un gioco per indovinare a chi corrisponde ogni titolo]
+
+    Segui sempre questo formato:
+    T1: Nome partecipante:
+    T2: Nome partecipante:
+    T3: Nome partecipante:
+    T4: Nome partecipante:
+    T5: Nome partecipante:
+
+    Assicurati di essere obiettivo, rispettoso e costruttivo nella tua analisi generale, tranne che nella sezione dei titoli dove devi essere controverso e divertente.`
 };
 
 // Mensajes de error multiidioma

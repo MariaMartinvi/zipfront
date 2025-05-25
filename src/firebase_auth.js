@@ -9,9 +9,10 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   setPersistence,
-  browserLocalPersistence,
+  browserSessionPersistence,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithRedirect,
+  getRedirectResult
 } from 'firebase/auth';
 import { 
   getFirestore, 
@@ -23,6 +24,9 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import i18next from 'i18next'; // Importar i18next para acceder al idioma actual
+
+// Configuración de la URL del backend
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const firebaseConfig = {
 apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -39,10 +43,10 @@ console.log("Firebase config:", firebaseConfig);
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Set persistence to LOCAL - this will keep the user logged in even after page refresh
-setPersistence(auth, browserLocalPersistence)
+// Set persistence to SESSION - this will keep the user logged in only during the current browser session
+setPersistence(auth, browserSessionPersistence)
   .then(() => {
-    console.log("Firebase auth persistence set to LOCAL");
+    console.log("Firebase auth persistence set to SESSION");
   })
   .catch((error) => {
     console.error("Error setting auth persistence:", error);
@@ -210,26 +214,74 @@ export const getErrorMessage = (errorCode) => {
 export const registerUser = async (email, password, displayName) => {
   try {
     // Garantizar que la persistencia está configurada en LOCAL antes del registro
-    await setPersistence(auth, browserLocalPersistence);
-    console.log("Persistencia configurada para LOCAL durante el registro");
+    await setPersistence(auth, browserSessionPersistence);
+    console.log("Persistencia configurada para SESSION durante el registro");
     
-    // Create the user account
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    console.log("Usuario registrado exitosamente con ID:", user.uid);
+    let user;
+    let isNewUser = true;
     
-    // Update the user's profile with the display name
-    await updateProfile(user, { displayName });
+    try {
+      // Intentar crear el usuario en Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      user = userCredential.user;
+      console.log("Usuario registrado exitosamente con ID:", user.uid);
+      
+      // Update the user's profile with the display name
+      await updateProfile(user, { displayName });
+    } catch (firebaseError) {
+      if (firebaseError.code === 'auth/email-already-in-use') {
+        console.log("Usuario ya existe en Firebase, intentando iniciar sesión...");
+        // Si el usuario ya existe, intentar hacer login
+        const loginCredential = await signInWithEmailAndPassword(auth, email, password);
+        user = loginCredential.user;
+        isNewUser = false;
+        console.log("Login exitoso para usuario existente:", user.uid);
+      } else {
+        throw firebaseError;
+      }
+    }
     
-    // Create a user document in Firestore
-    await setDoc(doc(db, 'users', user.uid), {
-      email,
-      displayName,
-      createdAt: new Date(),
-      plan: 'free',
-      currentPeriodUsage: 0,
-      totalUploads: 0
+    // Get the Firebase Auth token to send to backend
+    const idToken = await user.getIdToken();
+    console.log("Token de Firebase obtenido para envío al backend");
+    
+    // Register with our backend to create Firestore document and get JWT token
+    const actionText = isNewUser ? "crear perfil" : "obtener tokens";
+    console.log(`Enviando datos al backend para ${actionText}...`);
+    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`
+      },
+      body: JSON.stringify({ 
+        email, 
+        is_admin: false,
+        plan: 'free',
+        currentPeriodUsage: 0,
+        totalUploads: 0
+      })
     });
+
+    console.log("Respuesta del backend:", response.status, response.statusText);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Error del backend:", errorText);
+      throw new Error(`Error al ${actionText} en el backend`);
+    }
+
+    const data = await response.json();
+    console.log("Datos recibidos del backend:", data);
+    
+    // Guardar el token JWT
+    if (data.access_token && data.refresh_token) {
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      console.log("Tokens JWT guardados correctamente");
+    } else {
+      console.warn("No se recibieron tokens del backend:", data);
+    }
     
     return user;
   } catch (error) {
@@ -243,17 +295,32 @@ export const registerUser = async (email, password, displayName) => {
 // Sign in an existing user
 export const loginUser = async (email, password) => {
   try {
-    // Garantizar que la persistencia está configurada en LOCAL antes de iniciar sesión
-    await setPersistence(auth, browserLocalPersistence);
-    console.log("Persistencia configurada para LOCAL durante el login");
-    
+    // Primero autenticar con Firebase
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    console.log("Login exitoso con ID:", userCredential.user.uid);
-    return userCredential.user;
+    const user = userCredential.user;
+
+    // Luego obtener el token JWT de nuestro backend
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al iniciar sesión');
+    }
+
+    const data = await response.json();
+    
+    // Guardar el token JWT
+    localStorage.setItem('access_token', data.access_token);
+    localStorage.setItem('refresh_token', data.refresh_token);
+
+    return user;
   } catch (error) {
-    console.error('Error logging in:', error);
-    // Transformar el error antes de propagarlo
-    error.message = getErrorMessage(error.code) || error.message;
+    console.error('Error en login:', error);
     throw error;
   }
 };
@@ -261,8 +328,43 @@ export const loginUser = async (email, password) => {
 // Sign out the current user
 export const logoutUser = async () => {
   try {
+    // Limpiar la sesión de Firebase
     await signOut(auth);
-    console.log("User signed out successfully");
+    
+    // Limpiar tokens de autenticación
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('access_token');
+    sessionStorage.removeItem('refresh_token');
+    
+    // Limpiar datos de la sesión
+    const keysToRemove = [
+      'whatsapp_analyzer_operation_id',
+      'whatsapp_analyzer_loading',
+      'whatsapp_analyzer_fetching_mistral',
+      'whatsapp_analyzer_show_analysis',
+      'whatsapp_analyzer_chatgpt_response',
+      'whatsapp_analyzer_analysis_complete',
+      'whatsapp_analyzer_mistral_error',
+      'whatsapp_analyzer_force_fetch',
+      'whatsapp_analyzer_page_refreshed',
+      'whatsapp_analyzer_chat_data',
+      'whatsapp_analyzer_has_chat_data',
+      'whatsapp_analyzer_is_processing_shared'
+    ];
+
+    // Limpiar cada clave del almacenamiento
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
+
+    // Limpiar datos del juego si existen
+    if (window.lastAnalysisTopData) {
+      delete window.lastAnalysisTopData;
+    }
+
+    console.log("User signed out successfully and all data cleared");
   } catch (error) {
     console.error('Error signing out:', error);
     throw error;
@@ -311,16 +413,30 @@ export const isAuthenticated = () => {
   });
 };
 
-// Get a user's profile data from Firestore
+// Get a user's profile data from our API
 export const getUserProfile = async (userId) => {
   try {
-    const userDoc = await getDoc(doc(db, 'users', userId));
+    const token = localStorage.getItem('access_token');
+    console.log('Token disponible:', token ? 'Sí' : 'No');
     
-    if (userDoc.exists()) {
-      return userDoc.data();
-    } else {
-      throw new Error(getErrorMessage('user-not-found'));
+    if (!token) {
+      console.log('No hay token JWT disponible, omitiendo llamada a la API');
+      return null;
     }
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) {
+      console.log('Respuesta del servidor:', response.status, response.statusText);
+      throw new Error('Usuario no encontrado');
+    }
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error getting user profile:', error);
     throw error;
@@ -463,12 +579,12 @@ export const incrementChatUsage = async (userId) => {
   }
 };
 
-// Login with Google
+// Login with Google using redirect (más compatible con políticas de seguridad)
 export const loginWithGoogle = async () => {
   try {
     // Garantizar que la persistencia está configurada en LOCAL antes de iniciar sesión con Google
-    await setPersistence(auth, browserLocalPersistence);
-    console.log("Persistencia configurada para LOCAL durante el login con Google");
+    await setPersistence(auth, browserSessionPersistence);
+    console.log("Persistencia configurada para SESSION durante el login con Google");
     
     const provider = new GoogleAuthProvider();
     
@@ -482,41 +598,58 @@ export const loginWithGoogle = async () => {
       // Mostrar marca en la pantalla de inicio de sesión
       login_hint: `Login to chatsalsa.com with Google`,
       // Especificar idioma para la UI según el idioma actual
-      hl: currentLanguage,
-      // Intentar establecer el título de la ventana
-      title: 'ChatsalSa - Login'
+      hl: currentLanguage
     });
-    
-    // Utilizar signInWithRedirect en lugar de signInWithPopup para más control sobre la UI
-    // const userCredential = await signInWithPopup(auth, provider);
     
     // Configurar para que use el idioma del dispositivo
     auth.useDeviceLanguage();
-    const userCredential = await signInWithPopup(auth, provider);
-    const user = userCredential.user;
-    console.log("Login con Google exitoso con ID:", user.uid);
     
-    // Check if this is a first-time login
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    // Usar signInWithRedirect para evitar problemas de CORS
+    await signInWithRedirect(auth, provider);
+    // Nota: La función termina aquí y el resultado se maneja en handleGoogleRedirectResult
     
-    if (!userDoc.exists()) {
-      // Create a user document in Firestore for first-time Google sign-ins
-      await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        createdAt: new Date(),
-        plan: 'free',
-        currentPeriodUsage: 0,
-        totalUploads: 0,
-        authProvider: 'google'
-      });
-      console.log("New Google user profile created");
+  } catch (error) {
+    console.error('Error iniciando login con Google:', error);
+    // Transformar el error antes de propagarlo
+    error.message = getErrorMessage(error.code) || error.message;
+    throw error;
+  }
+};
+
+// Manejar el resultado del redirect de Google Auth
+export const handleGoogleRedirectResult = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    
+    if (result) {
+      const user = result.user;
+      console.log("Login con Google exitoso con ID:", user.uid);
+      
+      // Check if this is a first-time login
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      
+      if (!userDoc.exists()) {
+        // Create a user document in Firestore for first-time Google sign-ins
+        await setDoc(doc(db, 'users', user.uid), {
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          createdAt: new Date(),
+          plan: 'free',
+          currentPeriodUsage: 0,
+          totalUploads: 0,
+          authProvider: 'google'
+        });
+        console.log("New Google user profile created");
+      }
+      
+      return user;
     }
     
-    return user;
+    return null; // No hay resultado de redirect
+    
   } catch (error) {
-    console.error('Error logging in with Google:', error);
+    console.error('Error manejando resultado de Google redirect:', error);
     // Transformar el error antes de propagarlo
     error.message = getErrorMessage(error.code) || error.message;
     throw error;

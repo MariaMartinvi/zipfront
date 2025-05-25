@@ -1,6 +1,10 @@
 // fileService.js
 // Servicio para operaciones con archivos
 
+// Importar constantes desde el archivo de constantes
+import { PROMPTS, USER_PREFIXES } from './services/azure/constants';
+import { userSession } from './utils/userSession';
+
 // Nota: Esta API_URL ya no se usa para las solicitudes a Azure (que se hacen directamente desde el cliente)
 // pero se mantiene por compatibilidad con posibles usos futuros o para otras funciones
 // eslint-disable-next-line no-unused-vars
@@ -182,25 +186,69 @@ export const getEnvVariable = (name, fallback = null) => {
  */
 export const saveChatLocally = async (chatData) => {
   try {
+    // Verificar si el usuario está autenticado
+    if (!userSession.isAuthenticated()) {
+      throw new Error('Debes iniciar sesión para guardar chats');
+    }
+
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const fileName = `chat_${timestamp}.json`;
     
+    // Agregar información del usuario al chat
+    const chatDataWithUser = {
+      ...chatData,
+      userId: userSession.getCurrentUser()?.uid,
+      savedAt: timestamp
+    };
+    
     // Crear el blob con los datos
-    const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+    const blob = new Blob([JSON.stringify(chatDataWithUser, null, 2)], { type: 'application/json' });
     
-    // Crear y simular clic en el enlace de descarga
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    console.log(`Chat guardado localmente como: ${fileName}`);
+    // Intentar primero con el método moderno de descarga
+    try {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      
+      // Usar un timeout para asegurar que el clic se procesa
+      setTimeout(() => {
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      console.log(`Chat guardado localmente como: ${fileName}`);
+    } catch (downloadError) {
+      console.warn('Error al descargar con método moderno, intentando método alternativo:', downloadError);
+      
+      // Método alternativo usando window.open
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        const newWindow = window.open();
+        if (newWindow) {
+          newWindow.document.write(`
+            <html>
+              <head>
+                <title>${fileName}</title>
+              </head>
+              <body>
+                <a href="${dataUrl}" download="${fileName}">Haz clic aquí para descargar el archivo</a>
+              </body>
+            </html>
+          `);
+        } else {
+          console.error('No se pudo abrir la ventana de descarga. El navegador puede estar bloqueando las ventanas emergentes.');
+        }
+      };
+      reader.readAsDataURL(blob);
+    }
   } catch (error) {
     console.error('Error al guardar el chat localmente:', error);
+    throw error; // Ahora propagamos el error para manejarlo en el componente
   }
 };
 
@@ -242,6 +290,15 @@ const reconstructNames = (response, nameMapping) => {
  */
 export const getAzureResponse = async (chatContent, language = 'es') => {
   try {
+    // Limpiar variables globales de análisis previo
+    window.lastAzureResponse = null;
+    window.lastNameMapping = null;
+
+    // Verificar si el usuario está autenticado
+    if (!userSession.isAuthenticated()) {
+      throw new Error('Debes iniciar sesión para analizar chats');
+    }
+
     // Recuperar y verificar las credenciales con más detalle
     console.log("Verificando credenciales de Azure OpenAI...");
     const defaultEndpoint = getEnvVariable('REACT_APP_AZURE_ENDPOINT');
@@ -278,102 +335,6 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     
     // Importar la librería de OpenAI dinámicamente para no cargarla si no se usa
     const { OpenAI } = await import('openai');
-    
-    // Prompts multiidioma para diferentes idiomas
-    const PROMPTS = {
-      'es': `Analiza la conversación proporcionada como un psicólogo observador y con sentido del humor, incisivo y directo. 
-      Presenta tu análisis en el siguiente formato, usando markdown para las secciones.
-      Es MUY IMPORTANTE que sigas el formato exacto:
-
-      ## 🧠 Análisis de personalidades 
-
-      Para cada persona de la conversación (usa exacestructuradotamente este formato). Intenta que aparezcan en el análisis todas las personas:
-      
-      ### [Nombre] 
-      - **Rol en el grupo:** [Líder/Mediador/Observador/etc]
-      - **Rasgos principales:** [Haz una descripción de la personalidad, puedes aportar ejemplos del chat si hacen que la respuesta sea más realista]
-      - **Fortalezas:** [1-2 fortalezas]
-      - **Áreas de mejora:** [1-2 áreas donde podría mejorar]
-
-      ## 🚩 Señales de alerta
-      - [Lista de aspectos preocupantes en la dinámica del grupo, si existen]
-
-      ## 💯 Evaluación de la relación
-      - **Puntuación:** [1-10] 
-      - **Justificación:** [Breve explicación de la puntuación]
-      - **Nivel de confianza:** [Alto/Medio/Bajo]
-      - **Dinámica predominante:** [Cooperación/Competencia/Apoyo/etc]
-
-      ## 💡 Recomendaciones
-      - [3-4 consejos prácticos para mejorar la dinámica del grupo]
-
-      Asegúrate de ser objetivo, respetuoso y constructivo en tu análisis.`,
-      
-      'en': `Analyze the provided conversation as an observant psychologist with a sense of humor, incisive and direct.
-      Present your analysis in the following format, using markdown for sections.
-      It is VERY IMPORTANT that you follow the exact format:
-
-      ## 🧠 Personality Analysis
-
-      For each person in the conversation (use exactly this format). Try to include all people in the analysis:
-      
-      ### [Name] 
-      - **Role in the group:** [Leader/Mediator/Observer/etc]
-      - **Main traits:** [Describe the personality, you can provide examples from the chat to make the response more realistic]
-      - **Strengths:** [1-2 strengths]
-      - **Areas for improvement:** [1-2 areas where they could improve]
-
-      ## 🚩 Warning Signs
-      - [List of concerning aspects in the group dynamics, if any]
-
-      ## 💯 Relationship Evaluation
-      - **Score:** [1-10] 
-      - **Justification:** [Brief explanation of the score]
-      - **Confidence level:** [High/Medium/Low]
-      - **Predominant dynamic:** [Cooperation/Competition/Support/etc]
-
-      ## 💡 Recommendations
-      - [3-4 practical tips to improve group dynamics]
-
-      Make sure to be objective, respectful, and constructive in your analysis.`,
-      
-      'fr': `Analysez la conversation fournie en tant que psychologue observateur avec un sens de l'humour, incisif et direct.
-      Présentez votre analyse dans le format suivant, en utilisant du markdown pour les sections.
-      Il est TRÈS IMPORTANT que vous suiviez exactement ce format:
-
-      ## 🧠 Analyse des personnalités
-
-      Pour chaque personne dans la conversation (utilisez exactement ce format). Essayez d'inclure toutes les personnes dans l'analyse:
-      
-      ### [Nom] 
-      - **Rôle dans le groupe:** [Leader/Médiateur/Observateur/etc]
-      - **Traits principaux:** [Faites une description de la personnalité, vous pouvez fournir des exemples du chat pour rendre la réponse plus réaliste]
-      - **Forces:** [1-2 forces]
-      - **Axes d'amélioration:** [1-2 domaines où ils pourraient s'améliorer]
-
-      ## 🚩 Signaux d'alerte
-      - [Liste des aspects préoccupants dans la dynamique de groupe, s'il y en a]
-
-      ## 💯 Évaluation de la relation
-      - **Score:** [1-10] 
-      - **Justification:** [Brève explication du score]
-      - **Niveau de confiance:** [Élevé/Moyen/Bas]
-      - **Dynamique prédominante:** [Coopération/Compétition/Soutien/etc]
-
-      ## 💡 Recommandations
-      - [3-4 conseils pratiques pour améliorer la dynamique de groupe]
-
-      Assurez-vous d'être objectif, respectueux et constructif dans votre analyse.`,
-    };
-
-    // Prefijos para instrucciones del usuario multiidioma
-    const USER_PREFIXES = {
-      'es': "Analiza el siguiente contenido extraído de una conversación:",
-      'en': "Analyze the following content extracted from a conversation:",
-      'fr': "Analysez le contenu suivant extrait d'une conversation :",
-      'de': "Analysieren Sie den folgenden Inhalt aus einem Gespräch:",
-      'it': "Analizza il seguente contenuto estratto da una conversazione:"
-    };
     
     // Preparar la lista de APIs disponibles
     const apisToTry = ALTERNATIVE_APIS.map(api => ({
@@ -456,6 +417,14 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
         
         // Reconstruir los nombres en la respuesta
         analysisResult = reconstructNames(analysisResult, nameMapping);
+        
+        // Guardar el nameMapping globalmente para uso en otros componentes (como el juego)
+        window.lastNameMapping = nameMapping;
+        console.log('nameMapping guardado globalmente:', nameMapping);
+        
+        // Guardar también la respuesta completa para el juego
+        window.lastAzureResponse = analysisResult;
+        console.log('Respuesta de Azure guardada globalmente para el juego');
         
         const apiHeader = `*****************************************************\n* API UTILIZADA: ${api.name}\n*****************************************************\n\n`;
         return {

@@ -1,6 +1,6 @@
 // AuthComponents.js
 import React, { useState, useEffect } from 'react';
-import { loginUser, registerUser, resetPassword, getCurrentUser, loginWithGoogle } from './firebase_auth';
+import { loginUser, registerUser, resetPassword, getCurrentUser, loginWithGoogle, handleGoogleRedirectResult } from './firebase_auth';
 import './AuthComponents.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -29,6 +29,44 @@ export const Login = ({ onLoginSuccess }) => {
   useEffect(() => {
     console.log('Login component mounted with params:', { returnTo, sessionId });
   }, [returnTo, sessionId]);
+
+  // Manejar resultado del redirect de Google Auth
+  useEffect(() => {
+    const handleGoogleRedirect = async () => {
+      try {
+        const user = await handleGoogleRedirectResult();
+        if (user) {
+          console.log('Google login successful after redirect:', user.uid);
+          
+          // Set user in the global context
+          setUser(user);
+          
+          setIsRedirecting(true);
+          
+          // Check if we need to redirect to a specific page after login
+          if (returnTo) {
+            console.log('Redirecting to:', returnTo);
+            setTimeout(() => {
+              navigate(returnTo);
+            }, 1000);
+          } else {
+            console.log('Standard Google login, calling onLoginSuccess');
+            if (onLoginSuccess) {
+              setTimeout(() => {
+                onLoginSuccess(user);
+              }, 500);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error handling Google redirect result:', error);
+        setError(error.message || t('auth.login.error'));
+        setIsLoading(false);
+      }
+    };
+
+    handleGoogleRedirect();
+  }, [navigate, returnTo, onLoginSuccess, setUser, t]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -76,28 +114,11 @@ export const Login = ({ onLoginSuccess }) => {
     try {
       console.log('Attempting Google login...');
       
-      const user = await loginWithGoogle();
-      console.log('Google login successful:', user.uid);
+      // loginWithGoogle ahora usa redirect, no devuelve un usuario inmediatamente
+      await loginWithGoogle();
+      // El usuario será redirigido a Google y volverá a la app
+      // El resultado se manejará en el useEffect
       
-      // Set user in the global context
-      setUser(user);
-      
-      setIsRedirecting(true);
-      
-      // Check if we need to redirect to a specific page after login
-      if (returnTo) {
-        console.log('Redirecting to:', returnTo);
-        setTimeout(() => {
-          navigate(returnTo);
-        }, 1000);
-      } else {
-        console.log('Standard login, calling onLoginSuccess');
-        if (onLoginSuccess) {
-          setTimeout(() => {
-            onLoginSuccess(user);
-          }, 500);
-        }
-      }
     } catch (error) {
       console.error('Google login error:', error);
       setError(error.message || t('auth.login.error'));
@@ -237,6 +258,28 @@ export const Register = ({ onRegisterSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Manejar resultado del redirect de Google Auth
+  useEffect(() => {
+    const handleGoogleRedirect = async () => {
+      try {
+        const user = await handleGoogleRedirectResult();
+        if (user) {
+          console.log('Google registration successful after redirect:', user.uid);
+          
+          if (onRegisterSuccess) {
+            onRegisterSuccess(user);
+          }
+        }
+      } catch (error) {
+        console.error('Error handling Google redirect result in register:', error);
+        setError(error.message || t('auth.register.error'));
+        setIsLoading(false);
+      }
+    };
+
+    handleGoogleRedirect();
+  }, [onRegisterSuccess, t]);
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
@@ -264,12 +307,10 @@ export const Register = ({ onRegisterSuccess }) => {
     
     try {
       console.log('Intentando registro con Google...');
-      const user = await loginWithGoogle();
-      console.log('Registro con Google exitoso:', user.uid);
+      // loginWithGoogle ahora usa redirect, no devuelve un usuario inmediatamente
+      await loginWithGoogle();
+      // El usuario será redirigido a Google y volverá a la app
       
-      if (onRegisterSuccess) {
-        onRegisterSuccess(user);
-      }
     } catch (error) {
       console.error('Error de registro con Google:', error);
       setError(error.message || t('auth.register.error'));

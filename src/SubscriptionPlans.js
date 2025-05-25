@@ -77,8 +77,15 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
       // Find the plan details
       const plan = Object.values(PLANS).find(p => p.id === planId);
       
-      if (!plan || !plan.priceId) {
-        throw new Error('Plan no válido');
+      console.log('Attempting to subscribe to plan:', plan);
+      
+      if (!plan) {
+        throw new Error('Plan no encontrado');
+      }
+      
+      if (!plan.priceId) {
+        console.error('Plan sin priceId:', plan);
+        throw new Error('Plan no válido: Falta priceId');
       }
       
       await redirectToCheckout(plan.priceId, userId);
@@ -150,7 +157,6 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
         <div className="usage-info">
           <div className="usage-text">
             <span>{t('subscription.usage', { used: userUsage, total: currentPlan.quota })}</span>
-            <span>{t('subscription.remaining', { remaining: remainingUploads })}</span>
           </div>
           <div className="usage-bar-container">
             <div 

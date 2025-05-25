@@ -464,7 +464,6 @@
     "title": "Planes de Suscripción",
     "current_plan": "Tu Plan Actual: {{planName}}",
     "usage": "{{used}} de {{total}} chats utilizados",
-    "remaining": "{{remaining}} chats restantes",
     "manage_button": "Gestionar Suscripción",
     "current_button": "Plan Actual",
     "free_button": "Plan Gratuito",
