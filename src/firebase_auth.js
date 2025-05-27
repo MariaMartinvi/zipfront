@@ -36,10 +36,20 @@ apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
+// Verificar authDomain en producción
+if (process.env.NODE_ENV === 'production') {
+  console.log('Producción detectada - authDomain:', firebaseConfig.authDomain);
+  if (firebaseConfig.authDomain !== 'wasapeo-c2b6e.firebaseapp.com') {
+    console.warn('⚠️ ADVERTENCIA: authDomain debería ser wasapeo-c2b6e.firebaseapp.com en producción');
+  }
+}
+
 console.log("Firebase config:", firebaseConfig);
 console.log("API Key presente:", !!firebaseConfig.apiKey);
 console.log("Auth Domain:", firebaseConfig.authDomain);
 console.log("Project ID:", firebaseConfig.projectId);
+console.log("Dominio actual:", window.location.hostname);
+console.log("URL completa:", window.location.href);
 if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
   console.error("ERROR: Variables de entorno de Firebase faltantes!");
 }
@@ -616,38 +626,41 @@ export const loginWithGoogle = async () => {
     let user;
     
     try {
-      // Intentar primero con popup
+      // Intentar primero con popup - agregar configuración adicional para mejor compatibilidad
       console.log("Intentando login con Google usando popup...");
+      
+      // Configuración adicional para el popup
+      provider.addScope('profile');
+      provider.addScope('email');
+      
       result = await signInWithPopup(auth, provider);
       user = result.user;
       console.log("Login con Google exitoso con popup, ID:", user.uid);
     } catch (popupError) {
-      console.log("Error con popup:", popupError.code);
+      console.log("Error con popup:", popupError.code, popupError.message);
       
-      if (popupError.code === 'auth/popup-blocked' || 
-          popupError.code === 'auth/popup-closed-by-user' ||
-          popupError.code === 'auth/cancelled-popup-request') {
-        
-        console.log("Popup bloqueado, intentando con redirect...");
-        
-        // Fallback a redirect si el popup falla
-        const { signInWithRedirect, getRedirectResult } = await import('firebase/auth');
-        
-        // Verificar si ya hay un resultado de redirect pendiente
-        const redirectResult = await getRedirectResult(auth);
-        if (redirectResult) {
-          user = redirectResult.user;
-          console.log("Login con Google exitoso con redirect, ID:", user.uid);
-        } else {
-          // Iniciar el redirect
-          await signInWithRedirect(auth, provider);
-          // La función termina aquí, el usuario será redirigido
-          // El resultado se manejará cuando regrese a la app
-          return null; // Indicar que el proceso está en curso
-        }
+      if (popupError.code === 'auth/popup-blocked') {
+        // En lugar de redirect, mostrar instrucciones al usuario
+        throw new Error('El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio y vuelve a intentarlo.');
+      } else if (popupError.code === 'auth/popup-closed-by-user') {
+        throw new Error('Inicio de sesión cancelado. Inténtalo de nuevo.');
+      } else if (popupError.code === 'auth/cancelled-popup-request') {
+        throw new Error('Solicitud cancelada. Inténtalo de nuevo.');
+      } else if (popupError.code === 'auth/unauthorized-domain') {
+        console.error('Dominio no autorizado. Dominio actual:', window.location.hostname);
+        throw new Error('Este dominio no está autorizado. Contacta al administrador.');
       } else {
-        // Si es otro tipo de error, relanzarlo
-        throw popupError;
+        // Para otros errores, intentar una vez más con configuración simplificada
+        console.log("Reintentando con configuración simplificada...");
+        try {
+          const simpleProvider = new GoogleAuthProvider();
+          result = await signInWithPopup(auth, simpleProvider);
+          user = result.user;
+          console.log("Login con Google exitoso (reintento), ID:", user.uid);
+        } catch (retryError) {
+          console.error("Error en reintento:", retryError);
+          throw popupError; // Lanzar el error original
+        }
       }
     }
     
