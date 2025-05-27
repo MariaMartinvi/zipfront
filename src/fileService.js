@@ -146,8 +146,11 @@ export const getEnvVariable = (name, fallback = null) => {
  */
 export const saveChatLocally = async (chatData) => {
   try {
-    // Verificar si el usuario está autenticado
-    if (!userSession.isAuthenticated()) {
+    // Verificar si el usuario está autenticado - usar método asíncrono
+    console.log("Verificando autenticación para guardar chat...");
+    const isAuthenticated = await userSession.isAuthenticatedAsync();
+    
+    if (!isAuthenticated) {
       throw new Error('Debes iniciar sesión para guardar chats');
     }
 
@@ -254,10 +257,15 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     window.lastAzureResponse = null;
     window.lastNameMapping = null;
 
-    // Verificar si el usuario está autenticado
-    if (!userSession.isAuthenticated()) {
+    // Verificar si el usuario está autenticado - usar método asíncrono
+    console.log("Verificando autenticación del usuario...");
+    const isAuthenticated = await userSession.isAuthenticatedAsync();
+    
+    if (!isAuthenticated) {
       throw new Error('Debes iniciar sesión para analizar chats');
     }
+
+    console.log("Usuario autenticado correctamente");
 
     // Recuperar y verificar las credenciales con más detalle
     console.log("Verificando credenciales de Azure OpenAI...");

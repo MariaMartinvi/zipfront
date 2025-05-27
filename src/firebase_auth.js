@@ -28,6 +28,19 @@ import i18next from 'i18next'; // Importar i18next para acceder al idioma actual
 // Configuración de la URL del backend
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
+// Helper function to build API URLs consistently
+const buildApiUrl = (endpoint) => {
+  const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  
+  // Si la URL base ya termina con /api, usar tal como está
+  if (baseUrl.endsWith('/api')) {
+    return `${baseUrl}${endpoint}`;
+  } else {
+    // Si no termina con /api, agregarlo
+    return `${baseUrl}/api${endpoint}`;
+  }
+};
+
 const firebaseConfig = {
 apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -263,7 +276,7 @@ export const registerUser = async (email, password, displayName) => {
 
     // Llamar al backend para obtener tokens JWT - DEBE completarse antes de continuar
     const actionText = isNewUser ? "crear perfil" : "obtener tokens";
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/${isNewUser ? 'register' : 'login'}`, {
+    const response = await fetch(buildApiUrl('/auth/register'), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -306,7 +319,7 @@ export const loginUser = async (email, password) => {
     const idToken = await user.getIdToken();
 
     // Obtener tokens JWT del backend - DEBE completarse antes de continuar
-    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    const response = await fetch(buildApiUrl('/auth/login'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -448,11 +461,93 @@ export const getUserProfile = async (userId) => {
 
     // Usar cliente API con auto-refresh
     const { default: apiClient } = await import('./utils/apiClient');
-    const response = await apiClient.get('/auth/me');
     
-    return response.data;
+    // Configurar timeout para evitar largos tiempos de espera
+    const timeoutMs = 10000; // 10 segundos
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    
+    try {
+      const response = await apiClient.get('/auth/me', {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      return response.data;
+    } catch (apiError) {
+      clearTimeout(timeoutId);
+      
+      // Si es un error de red (servidor no disponible)
+      if (apiError.code === 'ERR_NETWORK' || apiError.message === 'Network Error') {
+        console.warn('Backend no disponible, continuando sin perfil de usuario desde API');
+        
+        // Mostrar notificación al usuario
+        if (typeof window !== 'undefined' && window.localStorage) {
+          const lastNotification = localStorage.getItem('backend_offline_notification');
+          const now = Date.now();
+          // Solo mostrar la notificación una vez cada 5 minutos
+          if (!lastNotification || (now - parseInt(lastNotification)) > 300000) {
+            localStorage.setItem('backend_offline_notification', now.toString());
+            
+            // Crear y mostrar notificación
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              background: #f39c12;
+              color: white;
+              padding: 15px 20px;
+              border-radius: 8px;
+              z-index: 10000;
+              max-width: 300px;
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            notification.innerHTML = `
+              <div style="font-weight: bold; margin-bottom: 5px;">⚠️ Modo sin conexión</div>
+              <div style="font-size: 14px;">El servidor no está disponible. La aplicación funciona con datos locales.</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Eliminar notificación después de 5 segundos
+            setTimeout(() => {
+              if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+              }
+            }, 5000);
+          }
+        }
+        
+        // Verificar si tenemos un usuario autenticado en Firebase
+        const currentUser = auth.currentUser;
+        if (currentUser && currentUser.uid === userId) {
+          // Retornar un perfil básico basado en los datos de Firebase
+          return {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName,
+            plan: 'free', // Plan por defecto
+            currentPeriodUsage: 0,
+            totalUploads: 0,
+            is_admin: false
+          };
+        }
+      }
+      
+      // Para otros tipos de errores, re-lanzar
+      throw apiError;
+    }
+    
   } catch (error) {
     console.error('Error getting user profile:', error);
+    
+    // Si es específicamente un error de red, no lanzar el error
+    if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+      console.warn('Error de red detectado, retornando null para permitir continuar');
+      return null;
+    }
+    
     throw error;
   }
 };
@@ -694,7 +789,7 @@ export const loginWithGoogle = async () => {
     const idToken = await user.getIdToken();
     
     // Llamar al backend para obtener tokens JWT - DEBE completarse antes de continuar
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
+    const response = await fetch(buildApiUrl('/auth/register'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -758,7 +853,7 @@ export const handleGoogleRedirectResult = async () => {
       const idToken = await result.user.getIdToken();
       
       // Llamar al backend para obtener tokens JWT
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
+      const response = await fetch(buildApiUrl('/auth/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

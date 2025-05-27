@@ -1053,6 +1053,17 @@ function AppContent() {
 
   // Function to poll for Mistral response - Mejorada para ser más robusta
   const fetchMistralResponse = async (chatContent = null) => {
+    // Esperar a que la autenticación se complete antes de proceder
+    try {
+      console.log("Esperando a que la autenticación se complete...");
+      await userSession.waitForAuth();
+      console.log("Autenticación completada, procediendo con el análisis");
+    } catch (error) {
+      console.error("Error esperando autenticación:", error);
+      setError('Error de autenticación. Por favor, recarga la página e inicia sesión nuevamente.');
+      return false;
+    }
+
     // Usar el contenido pasado como parámetro o el del estado como fallback
     const contentToAnalyze = chatContent || chatData;
     
@@ -1372,66 +1383,176 @@ const tryDeleteFiles = async (operationId) => {
 
   // Cargar datos persistentes al iniciar la aplicación
   useEffect(() => {
-    // Intentar recuperar el operationId del localStorage
-    const savedOperationId = localStorage.getItem('whatsapp_analyzer_operation_id');
-    const savedIsLoading = localStorage.getItem('whatsapp_analyzer_loading') === 'true';
-    const savedIsFetchingMistral = localStorage.getItem('whatsapp_analyzer_fetching_mistral') === 'true';
-    const savedShowAnalysis = localStorage.getItem('whatsapp_analyzer_show_analysis') === 'true';
-    const savedChatGptResponse = localStorage.getItem('whatsapp_analyzer_chatgpt_response');
-    const savedAnalysisComplete = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
-    const hadMistralError = localStorage.getItem('whatsapp_analyzer_mistral_error') === 'true';
-    const wasRefreshed = localStorage.getItem('whatsapp_analyzer_page_refreshed') === 'true';
-    const savedChatData = localStorage.getItem('whatsapp_analyzer_chat_data');
-    const hasChatData = localStorage.getItem('whatsapp_analyzer_has_chat_data') === 'true';
-    
-    // MODIFICADO: Recuperar flag isProcessingShared desde localStorage
-    const savedIsProcessingShared = localStorage.getItem('whatsapp_analyzer_is_processing_shared') === 'true';
-    console.log('DIAGNÓSTICO: Flag isProcessingShared recuperado de localStorage:', savedIsProcessingShared);
-    
-    // Si se detecta que estamos procesando un archivo desde WhatsApp, actualizar el estado
-    if (savedIsProcessingShared) {
-      addDebugMessage('Detectada sesión de archivo compartido desde WhatsApp - actualizando estado');
-      setIsProcessingSharedFile(true);
-      isProcessingRef.current = true;
-      
-      // NUEVO: Si estamos procesando un archivo compartido desde WhatsApp,
-      // limpiamos cualquier análisis previo para evitar interferencia
-      if (savedAnalysisComplete) {
-        addDebugMessage('Detectado análisis previo con archivo compartido - limpiando datos conflictivos');
-        localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-        localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-      }
-    }
-    
-    // Verificar si estamos procesando un archivo compartido desde WhatsApp (cualquier fuente)
-    const isProcessingShared = isProcessingSharedFile || isProcessingRef.current || savedIsProcessingShared;
-    
-    // Si hay un operationId guardado, hacer scroll automático hacia arriba después de un refresh
-    if (savedOperationId) {
-      // Usar un pequeño retraso para asegurarse de que el componente se ha renderizado
-      setTimeout(() => scrollToAnalysis(), 300);
-    }
-    
-    // Si el análisis estaba completo y la página se recargó, mostrar alerta de confirmación
-    // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
-    const isProcessingSharedAtConfirmation = isProcessingSharedFile || isProcessingRef.current || savedIsProcessingShared;
-    console.log('[DIAGNÓSTICO] Estado de isProcessingShared antes de mostrar confirmación:', isProcessingSharedAtConfirmation, 
-      '(isProcessingSharedFile:', isProcessingSharedFile, ', isProcessingRef.current:', isProcessingRef.current, 
-      ', savedIsProcessingShared:', savedIsProcessingShared, ')');
-    
-    if (savedAnalysisComplete && wasRefreshed && !isProcessingSharedAtConfirmation) {
-      // Quitar inmediatamente la marca de refrescado para evitar bucles
-      localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-      
-      // Solo mostrar confirmación si hay un análisis activo en progreso
-      if (savedIsLoading || savedIsFetchingMistral) {
-        addDebugMessage('Detectada recarga con análisis en progreso - mostrando confirmación');
+    const restoreStateAfterAuth = async () => {
+      try {
+        // Esperar a que la autenticación se complete antes de restaurar el estado
+        console.log("Esperando autenticación antes de restaurar estado...");
+        await userSession.waitForAuth();
+        console.log("Autenticación completada, procediendo con restauración de estado");
+
+        // Intentar recuperar el operationId del localStorage
+        const savedOperationId = localStorage.getItem('whatsapp_analyzer_operation_id');
+        const savedIsLoading = localStorage.getItem('whatsapp_analyzer_loading') === 'true';
+        const savedIsFetchingMistral = localStorage.getItem('whatsapp_analyzer_fetching_mistral') === 'true';
+        const savedShowAnalysis = localStorage.getItem('whatsapp_analyzer_show_analysis') === 'true';
+        const savedChatGptResponse = localStorage.getItem('whatsapp_analyzer_chatgpt_response');
+        const savedAnalysisComplete = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
+        const hadMistralError = localStorage.getItem('whatsapp_analyzer_mistral_error') === 'true';
+        const wasRefreshed = localStorage.getItem('whatsapp_analyzer_page_refreshed') === 'true';
+        const savedChatData = localStorage.getItem('whatsapp_analyzer_chat_data');
+        const hasChatData = localStorage.getItem('whatsapp_analyzer_has_chat_data') === 'true';
         
-        // Mostrar confirmación antes de borrar
-        setTimeout(() => {
-          if (window.confirm("Hay un análisis en progreso. Si continúas, se perderá el progreso actual. ¿Deseas continuar?")) {
-            addDebugMessage('Usuario confirmó borrar análisis en progreso - limpiando localStorage');
-            // Si confirma, limpiar todos los datos guardados
+        // MODIFICADO: Recuperar flag isProcessingShared desde localStorage
+        const savedIsProcessingShared = localStorage.getItem('whatsapp_analyzer_is_processing_shared') === 'true';
+        console.log('DIAGNÓSTICO: Flag isProcessingShared recuperado de localStorage:', savedIsProcessingShared);
+        
+        // Si se detecta que estamos procesando un archivo desde WhatsApp, actualizar el estado
+        if (savedIsProcessingShared) {
+          addDebugMessage('Detectada sesión de archivo compartido desde WhatsApp - actualizando estado');
+          setIsProcessingSharedFile(true);
+          isProcessingRef.current = true;
+          
+          // NUEVO: Si estamos procesando un archivo compartido desde WhatsApp,
+          // limpiamos cualquier análisis previo para evitar interferencia
+          if (savedAnalysisComplete) {
+            addDebugMessage('Detectado análisis previo con archivo compartido - limpiando datos conflictivos');
+            localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+            localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+          }
+        }
+        
+        // Verificar si estamos procesando un archivo compartido desde WhatsApp (cualquier fuente)
+        const isProcessingShared = isProcessingSharedFile || isProcessingRef.current || savedIsProcessingShared;
+        
+        // Si hay un operationId guardado, hacer scroll automático hacia arriba después de un refresh
+        if (savedOperationId) {
+          // Usar un pequeño retraso para asegurarse de que el componente se ha renderizado
+          setTimeout(() => scrollToAnalysis(), 300);
+        }
+        
+        // Si el análisis estaba completo y la página se recargó, mostrar alerta de confirmación
+        // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
+        const isProcessingSharedAtConfirmation = isProcessingSharedFile || isProcessingRef.current || savedIsProcessingShared;
+        console.log('[DIAGNÓSTICO] Estado de isProcessingShared antes de mostrar confirmación:', isProcessingSharedAtConfirmation, 
+          '(isProcessingSharedFile:', isProcessingSharedFile, ', isProcessingRef.current:', isProcessingRef.current, 
+          ', savedIsProcessingShared:', savedIsProcessingShared, ')');
+        
+        if (savedAnalysisComplete && wasRefreshed && !isProcessingSharedAtConfirmation) {
+          // Quitar inmediatamente la marca de refrescado para evitar bucles
+          localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+          
+          // Solo mostrar confirmación si hay un análisis activo en progreso
+          if (savedIsLoading || savedIsFetchingMistral) {
+            addDebugMessage('Detectada recarga con análisis en progreso - mostrando confirmación');
+            
+            // Mostrar confirmación antes de borrar
+            setTimeout(() => {
+              if (window.confirm("Hay un análisis en progreso. Si continúas, se perderá el progreso actual. ¿Deseas continuar?")) {
+                addDebugMessage('Usuario confirmó borrar análisis en progreso - limpiando localStorage');
+                // Si confirma, limpiar todos los datos guardados
+                localStorage.removeItem('whatsapp_analyzer_operation_id');
+                localStorage.removeItem('whatsapp_analyzer_loading');
+                localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
+                localStorage.removeItem('whatsapp_analyzer_show_analysis');
+                localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
+                localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+                localStorage.removeItem('whatsapp_analyzer_mistral_error');
+                localStorage.removeItem('whatsapp_analyzer_chat_data');
+                localStorage.removeItem('whatsapp_analyzer_has_chat_data');
+                localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
+                
+                // Recargar nuevamente para actualizar la interfaz
+                window.location.reload();
+              } else {
+                addDebugMessage('Usuario canceló borrado - continuando con flujo normal');
+                // NUEVO: Si cancela, continuar con el flujo normal sin polling
+                
+                // Restaurar el estado desde localStorage
+                if (savedOperationId) {
+                  setOperationId(savedOperationId);
+                  
+                  // Restaurar datos de análisis
+                  if (savedChatGptResponse) {
+                    setChatGptResponse(savedChatGptResponse);
+                    setShowChatGptResponse(true);
+                  }
+                  
+                  // Restaurar chatData si está disponible
+                  if (savedChatData && hasChatData) {
+                    setChatData(savedChatData);
+                  }
+                  
+                  // Restaurar otros estados
+                  setIsLoading(savedIsLoading);
+                  setShowAnalysis(savedShowAnalysis || !!savedChatGptResponse);
+                  
+                  // Si hay un error registrado con Mistral, mostrar mensaje
+                  if (hadMistralError) {
+                    setError(t('app.errors.mistral'));
+                    setIsFetchingMistral(false);
+                  } else if (savedIsFetchingMistral && savedChatData) {
+                    // NUEVO: Si estaba esperando respuesta de Mistral, solo restaurar estado de espera
+                    // NO volver a llamar a fetchMistralResponse para evitar llamadas duplicadas a Azure
+                    addDebugMessage('Restaurando estado de espera de respuesta de Azure (sin nueva llamada)');
+                    setIsFetchingMistral(true);
+                    setProgressMessage(t('app.generating_ai_analysis'));
+                    
+                    // Verificar si ya hay respuesta guardada en localStorage
+                    const existingResponse = localStorage.getItem('whatsapp_analyzer_chatgpt_response');
+                    if (existingResponse) {
+                      addDebugMessage('Respuesta de Azure encontrada en localStorage - restaurando');
+                      setChatGptResponse(existingResponse);
+                      setShowChatGptResponse(true);
+                      setIsFetchingMistral(false);
+                      setProgressMessage('');
+                    } else {
+                      addDebugMessage('No hay respuesta guardada - manteniendo estado de espera');
+                      // Solo mantener el estado de espera, NO hacer nueva llamada a Azure
+                      // La respuesta llegará cuando Azure termine el procesamiento original
+                    }
+                  }
+                }
+              }
+            }, 100);
+            
+            // IMPORTANTE: Salir aquí para evitar la ejecución del código de restauración más abajo
+            return;
+          }
+        }
+        
+        // Restaurar el estado desde localStorage (solo si no se mostró confirmación)
+        if (savedOperationId) {
+          setOperationId(savedOperationId);
+          
+          // Restaurar datos de análisis
+          if (savedChatGptResponse) {
+            setChatGptResponse(savedChatGptResponse);
+            setShowChatGptResponse(true);
+          }
+          
+          // Restaurar chatData si está disponible
+          if (savedChatData && hasChatData) {
+            setChatData(savedChatData);
+          }
+          
+          // Restaurar otros estados
+          setIsLoading(savedIsLoading);
+          setIsFetchingMistral(savedIsFetchingMistral);
+          setShowAnalysis(savedShowAnalysis || !!savedChatGptResponse);
+          
+          // Si hay un error registrado con Mistral, mostrar mensaje
+          if (hadMistralError) {
+            setError(t('app.errors.mistral'));
+          }
+        }
+        
+        // Añadir un atajo para reinicio con CTRL+ALT+R (solo en desarrollo)
+        const handleReset = (e) => {
+          if (e.ctrlKey && e.altKey && e.key === 'r') {
+            e.preventDefault();
+            console.log('Reinicio manual forzado');
+            
+            // Limpiar localStorage
             localStorage.removeItem('whatsapp_analyzer_operation_id');
             localStorage.removeItem('whatsapp_analyzer_loading');
             localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
@@ -1439,151 +1560,26 @@ const tryDeleteFiles = async (operationId) => {
             localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
             localStorage.removeItem('whatsapp_analyzer_analysis_complete');
             localStorage.removeItem('whatsapp_analyzer_mistral_error');
-            localStorage.removeItem('whatsapp_analyzer_chat_data');
-            localStorage.removeItem('whatsapp_analyzer_has_chat_data');
-            localStorage.removeItem('whatsapp_analyzer_is_processing_shared');
+            localStorage.removeItem('whatsapp_analyzer_force_fetch');
+            localStorage.removeItem('whatsapp_analyzer_page_refreshed');
             
-            // Recargar nuevamente para actualizar la interfaz
+            // Recargar la página
             window.location.reload();
-          } else {
-            addDebugMessage('Usuario canceló borrado - manteniendo análisis en progreso');
           }
-        }, 100);
-      }
-    }
-    
-    // Restaurar el estado desde localStorage
-    if (savedOperationId) {
-      setOperationId(savedOperationId);
-      
-      // Restaurar datos de análisis
-      if (savedChatGptResponse) {
-        setChatGptResponse(savedChatGptResponse);
-        setShowChatGptResponse(true);
-      }
-      
-      // Restaurar chatData si está disponible
-      if (savedChatData && hasChatData) {
-        setChatData(savedChatData);
-      }
-      
-      // Restaurar otros estados
-      setIsLoading(savedIsLoading);
-      setIsFetchingMistral(savedIsFetchingMistral);
-      setShowAnalysis(savedShowAnalysis || !!savedChatGptResponse);
-      
-      // Si hay un error registrado con Mistral, mostrar mensaje
-      if (hadMistralError) {
-        setError(t('app.errors.mistral'));
-      }
-      
-      // Si estábamos en medio de la carga, continuar donde lo dejamos
-      if (savedIsLoading || savedIsFetchingMistral) {
-        // Intentar recuperar la operación si estaba en progreso
-        const continuarAnalisis = setTimeout(() => {
-          if (savedIsFetchingMistral) {
-            console.log('Restaurando estado de espera de respuesta de IA');
-            // Simplemente restaurar el estado de espera sin volver a llamar a fetchMistralResponse
-            setIsFetchingMistral(true);
-            setProgressMessage(t('app.generating_ai_analysis'));
-            
-            // NUEVO: Implementar polling para verificar periódicamente si hay respuesta
-            // Esta función verificará cada 5 segundos si hay respuesta disponible en localStorage
-            
-            // Función para registrar estado completo del localStorage
-            const logLocalStorageState = () => {
-              console.log('--- DIAGNÓSTICO: ESTADO COMPLETO DE LOCALSTORAGE ---');
-              const storageSnapshot = {};
-              for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith('whatsapp_analyzer_')) {
-                  let value = localStorage.getItem(key);
-                  if (value && value.length > 100) {
-                    value = value.substring(0, 50) + '... [truncado]';
-                  }
-                  storageSnapshot[key] = value;
-                  console.log(`${key}: ${value}`);
-                }
-              }
-              console.log('--- FIN DIAGNÓSTICO LOCALSTORAGE ---');
-              return storageSnapshot;
-            };
-            
-            // Registrar estado inicial
-            console.log('DIAGNÓSTICO: Estado inicial antes del polling');
-            const initialState = logLocalStorageState();
-            const savedOperationId = localStorage.getItem('whatsapp_analyzer_operation_id');
-            console.log(`DIAGNÓSTICO: Polling iniciado con operationId=${savedOperationId}`);
-            
-            const pollingInterval = setInterval(() => {
-              // Verificar si tenemos respuesta en localStorage
-              const savedResponse = localStorage.getItem('whatsapp_analyzer_chatgpt_response');
-              const currentOperationId = localStorage.getItem('whatsapp_analyzer_operation_id');
-              
-              console.log(`DIAGNÓSTICO: Polling check - operationId=${currentOperationId}, responseExists=${!!savedResponse}`);
-              
-              if (savedResponse) {
-                console.log('DIAGNÓSTICO: Respuesta encontrada en polling');
-                // Limpiar el intervalo
-                clearInterval(pollingInterval);
-                
-                // Registrar estado final
-                console.log('DIAGNÓSTICO: Estado final después de encontrar respuesta');
-                const finalState = logLocalStorageState();
-                
-                // Actualizar el estado con la respuesta encontrada
-                setChatGptResponse(savedResponse);
-                setShowChatGptResponse(true);
-                setIsFetchingMistral(false);
-                
-                // Hacer scroll hacia la sección de análisis
-                setTimeout(() => scrollToAnalysis(), 300);
-              } else {
-                console.log('Polling: aún no hay respuesta disponible');
-              }
-            }, 5000); // Verificar cada 5 segundos
-            
-            // Detener el polling después de 5 minutos (como timeout)
-            setTimeout(() => {
-              clearInterval(pollingInterval);
-              // Si después de 5 minutos no hay respuesta, mostrar mensaje
-              if (!localStorage.getItem('whatsapp_analyzer_chatgpt_response')) {
-                setIsFetchingMistral(false);
-                setError('No se pudo recuperar la respuesta del análisis. Por favor, intenta nuevamente.');
-              }
-            }, 300000); // 5 minutos (300000 ms)
-          }
-        }, 1000);
-      }
-    }
-    
-    // Añadir un atajo para reinicio con CTRL+ALT+R (solo en desarrollo)
-    const handleReset = (e) => {
-      if (e.ctrlKey && e.altKey && e.key === 'r') {
-        e.preventDefault();
-        console.log('Reinicio manual forzado');
+        };
         
-        // Limpiar localStorage
-        localStorage.removeItem('whatsapp_analyzer_operation_id');
-        localStorage.removeItem('whatsapp_analyzer_loading');
-        localStorage.removeItem('whatsapp_analyzer_fetching_mistral');
-        localStorage.removeItem('whatsapp_analyzer_show_analysis');
-        localStorage.removeItem('whatsapp_analyzer_chatgpt_response');
-        localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-        localStorage.removeItem('whatsapp_analyzer_mistral_error');
-        localStorage.removeItem('whatsapp_analyzer_force_fetch');
-        localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-        
-        // Recargar la página
-        window.location.reload();
+        // Solo en desarrollo
+        if (process.env.NODE_ENV === 'development') {
+          window.addEventListener('keydown', handleReset);
+          return () => window.removeEventListener('keydown', handleReset);
+        }
+      } catch (error) {
+        console.error("Error durante la restauración del estado:", error);
+        addDebugMessage(`Error durante la restauración del estado: ${error.message}`);
       }
     };
-    
-    // Solo en desarrollo
-    if (process.env.NODE_ENV === 'development') {
-      window.addEventListener('keydown', handleReset);
-      return () => window.removeEventListener('keydown', handleReset);
-    }
+
+    restoreStateAfterAuth();
   }, []);
 
   // Guardar datos críticos en localStorage cuando cambien
@@ -2061,17 +2057,44 @@ const tryDeleteFiles = async (operationId) => {
 
   useEffect(() => {
     // Inicializar la sesión del usuario
-    userSession.init();
+    const initializeAuth = async () => {
+      try {
+        console.log("Inicializando autenticación...");
+        await userSession.init();
+        console.log("Autenticación inicializada correctamente");
+      } catch (error) {
+        console.error("Error al inicializar autenticación:", error);
+      }
+    };
+
+    initializeAuth();
 
     // Suscribirse a cambios en la sesión
     const unsubscribe = userSession.subscribe((user) => {
       if (user) {
         // Actualizar el estado cuando el usuario cambia
         setUser(user);
-        // Cargar el perfil del usuario
-        getUserProfile(user.uid).then(profile => {
-          setUserProfile(profile);
-        });
+        // Cargar el perfil del usuario con manejo de errores
+        getUserProfile(user.uid)
+          .then(profile => {
+            console.log('Perfil de usuario cargado:', profile);
+            setUserProfile(profile);
+          })
+          .catch(error => {
+            console.warn('Error al cargar perfil de usuario:', error);
+            // Si hay error cargando el perfil, crear uno básico con datos de Firebase
+            const basicProfile = {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              plan: 'free',
+              currentPeriodUsage: 0,
+              totalUploads: 0,
+              is_admin: false
+            };
+            console.log('Usando perfil básico:', basicProfile);
+            setUserProfile(basicProfile);
+          });
       } else {
         setUser(null);
         setUserProfile(null);
