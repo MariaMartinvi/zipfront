@@ -37,6 +37,12 @@ apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
 };
 
 console.log("Firebase config:", firebaseConfig);
+console.log("API Key presente:", !!firebaseConfig.apiKey);
+console.log("Auth Domain:", firebaseConfig.authDomain);
+console.log("Project ID:", firebaseConfig.projectId);
+if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
+  console.error("ERROR: Variables de entorno de Firebase faltantes!");
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -69,6 +75,7 @@ const errorMessagesByLanguage = {
     'auth/invalid-api-key': 'La clave API de Firebase no es válida o ha expirado. Contacta al administrador.',
     'auth/network-request-failed': 'Error de conexión. Verifica tu conexión a internet.',
     'auth/popup-closed-by-user': 'Inicio de sesión cancelado. Ventana cerrada antes de completar la autenticación.',
+    'auth/popup-blocked': 'El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio o inténtalo de nuevo.',
     'auth/unauthorized-domain': 'Este dominio no está autorizado para operaciones de OAuth.',
     'auth/too-many-requests': 'Demasiados intentos fallidos. Por favor, inténtalo más tarde.',
     // Errores específicos de Firestore
@@ -96,6 +103,7 @@ const errorMessagesByLanguage = {
     'auth/invalid-api-key': 'The Firebase API key is invalid or has expired. Contact the administrator.',
     'auth/network-request-failed': 'Connection error. Check your internet connection.',
     'auth/popup-closed-by-user': 'Login canceled. Window closed before authentication was completed.',
+    'auth/popup-blocked': 'The browser blocked the popup window. Please allow popups for this site or try again.',
     'auth/unauthorized-domain': 'This domain is not authorized for OAuth operations.',
     'auth/too-many-requests': 'Too many failed attempts. Please try again later.',
     // Firestore specific errors
@@ -314,6 +322,16 @@ export const loginUser = async (email, password) => {
     return user;
   } catch (error) {
     console.error('Error en login:', error);
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    
+    if (error.code === 'auth/network-request-failed') {
+      console.error('Detalles del error de red:');
+      console.error('- Verifica tu conexión a internet');
+      console.error('- Verifica que las variables de Firebase estén configuradas');
+      console.error('- Verifica que no haya bloqueadores de ad/firewall');
+    }
+    
     throw error;
   }
 };
@@ -572,7 +590,7 @@ export const incrementChatUsage = async (userId) => {
   }
 };
 
-// Login with Google using popup (más compatible y directo)
+// Login with Google using popup with fallback to redirect
 export const loginWithGoogle = async () => {
   try {
     // Configurar persistencia
@@ -594,10 +612,44 @@ export const loginWithGoogle = async () => {
     // Configurar para que use el idioma del dispositivo
     auth.useDeviceLanguage();
     
-    // Usar signInWithPopup en lugar de redirect
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    console.log("Login con Google exitoso con ID:", user.uid);
+    let result;
+    let user;
+    
+    try {
+      // Intentar primero con popup
+      console.log("Intentando login con Google usando popup...");
+      result = await signInWithPopup(auth, provider);
+      user = result.user;
+      console.log("Login con Google exitoso con popup, ID:", user.uid);
+    } catch (popupError) {
+      console.log("Error con popup:", popupError.code);
+      
+      if (popupError.code === 'auth/popup-blocked' || 
+          popupError.code === 'auth/popup-closed-by-user' ||
+          popupError.code === 'auth/cancelled-popup-request') {
+        
+        console.log("Popup bloqueado, intentando con redirect...");
+        
+        // Fallback a redirect si el popup falla
+        const { signInWithRedirect, getRedirectResult } = await import('firebase/auth');
+        
+        // Verificar si ya hay un resultado de redirect pendiente
+        const redirectResult = await getRedirectResult(auth);
+        if (redirectResult) {
+          user = redirectResult.user;
+          console.log("Login con Google exitoso con redirect, ID:", user.uid);
+        } else {
+          // Iniciar el redirect
+          await signInWithRedirect(auth, provider);
+          // La función termina aquí, el usuario será redirigido
+          // El resultado se manejará cuando regrese a la app
+          return null; // Indicar que el proceso está en curso
+        }
+      } else {
+        // Si es otro tipo de error, relanzarlo
+        throw popupError;
+      }
+    }
     
     // CRÍTICO: Obtener token de Firebase y tokens JWT ANTES de continuar
     const idToken = await user.getIdToken();
@@ -635,7 +687,72 @@ export const loginWithGoogle = async () => {
     
   } catch (error) {
     console.error('Error iniciando login con Google:', error);
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    
+    // Agregar información específica sobre errores de dominio
+    if (error.code === 'auth/unauthorized-domain') {
+      console.error('Dominio no autorizado. Verifica en Firebase Console > Authentication > Settings > Authorized domains');
+      console.error('Dominio actual:', window.location.hostname);
+    }
+    
+    // Agregar información específica sobre popup bloqueado
+    if (error.code === 'auth/popup-blocked') {
+      console.error('Popup bloqueado por el navegador. Considera usar redirect como alternativa.');
+    }
+    
     error.message = getErrorMessage(error.code) || error.message;
+    throw error;
+  }
+};
+
+// Función para manejar el resultado del redirect de Google (si se usa)
+export const handleGoogleRedirectResult = async () => {
+  try {
+    const { getRedirectResult } = await import('firebase/auth');
+    const result = await getRedirectResult(auth);
+    
+    if (result && result.user) {
+      console.log("Resultado de redirect de Google encontrado:", result.user.uid);
+      
+      // CRÍTICO: Obtener token de Firebase y tokens JWT
+      const idToken = await result.user.getIdToken();
+      
+      // Llamar al backend para obtener tokens JWT
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({ 
+          email: result.user.email, 
+          displayName: result.user.displayName,
+          is_admin: false
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error al autenticar con backend: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // CRÍTICO: Guardar tokens JWT
+      if (data.access_token && data.refresh_token) {
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('refresh_token', data.refresh_token);
+        console.log("Tokens JWT guardados exitosamente para usuario de Google (redirect)");
+      } else {
+        throw new Error("No se recibieron tokens del backend para usuario de Google (redirect)");
+      }
+      
+      return result.user;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error manejando resultado de redirect de Google:', error);
     throw error;
   }
 };

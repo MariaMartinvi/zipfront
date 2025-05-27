@@ -1,4 +1,5 @@
 // Service Worker simplificado - elimina por completo el error de focus
+// Versión 1.1 - Excluye Firebase Auth de interceptación
 const sharedFiles = new Map();
 
 // Función de utilidad para depuración
@@ -45,8 +46,8 @@ const fixFileMimeType = (file) => {
 
 // Instalación del Service Worker
 self.addEventListener('install', event => {
-  debug('Service Worker instalado');
-  self.skipWaiting();
+  debug('Service Worker instalado - Versión 1.1');
+  self.skipWaiting(); // Forzar activación inmediata
 });
 
 self.addEventListener('activate', event => {
@@ -57,6 +58,17 @@ self.addEventListener('activate', event => {
 // Interceptar solicitudes de compartir
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
+  
+  // NO interceptar llamadas de Firebase Auth
+  if (url.hostname.includes('identitytoolkit.googleapis.com') || 
+      url.hostname.includes('securetoken.googleapis.com') ||
+      url.hostname.includes('firebase') ||
+      url.pathname.includes('/v1/accounts:') ||
+      url.pathname.includes('/v1/token')) {
+    debug('Saltando interceptación para Firebase Auth', { url: url.href });
+    return; // Dejar que la request pase normalmente
+  }
+  
   debug('Fetch interceptado', { url: url.pathname, method: event.request.method });
   
   if (url.pathname === '/share-target' && event.request.method === 'POST') {
