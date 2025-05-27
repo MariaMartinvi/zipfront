@@ -31,13 +31,22 @@ api.interceptors.response.use(
         const originalRequest = error.config;
 
         // Si el error es 401 y no es una petición de refresh
-        if (error.response.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 const refreshToken = localStorage.getItem('refresh_token');
-                const response = await api.post('/auth/refresh', {
+                if (!refreshToken) {
+                    throw new Error('No refresh token available');
+                }
+
+                const response = await axios.post(`${API_URL}/auth/refresh`, {
                     refresh_token: refreshToken
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${refreshToken}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
 
                 const { access_token } = response.data;
@@ -47,10 +56,15 @@ api.interceptors.response.use(
                 originalRequest.headers.Authorization = `Bearer ${access_token}`;
                 return api(originalRequest);
             } catch (refreshError) {
-                // Si falla el refresh, cerrar sesión
+                console.error('Error refreshing token:', refreshError);
+                // Si falla el refresh, limpiar tokens y redirigir
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
-                window.location.href = '/login';
+                
+                // Solo redirigir si estamos en el navegador
+                if (typeof window !== 'undefined') {
+                    window.location.href = '/login';
+                }
                 return Promise.reject(refreshError);
             }
         }
@@ -59,37 +73,5 @@ api.interceptors.response.use(
     }
 );
 
-export const authService = {
-    login: async (email, password) => {
-        const response = await api.post('/auth/login', { email, password });
-        const { access_token, refresh_token, user } = response.data;
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('refresh_token', refresh_token);
-        return user;
-    },
-
-    register: async (email, password) => {
-        const response = await api.post('/auth/register', { email, password });
-        return response.data;
-    },
-
-    logout: () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-    },
-
-    getCurrentUser: async () => {
-        try {
-            const response = await api.get('/auth/verify');
-            return response.data;
-        } catch (error) {
-            return null;
-        }
-    },
-
-    isAuthenticated: () => {
-        return !!localStorage.getItem('access_token');
-    }
-};
-
-export default api; 
+const apiClient = api;
+export default apiClient; 

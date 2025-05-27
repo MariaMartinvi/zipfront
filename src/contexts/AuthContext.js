@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { authService } from '../services/authService';
+import api from '../utils/apiClient';
 
 const AuthContext = createContext(null);
 
@@ -10,12 +10,16 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const initAuth = async () => {
             try {
-                if (authService.isAuthenticated()) {
-                    const userData = await authService.getCurrentUser();
-                    setUser(userData);
+                const token = localStorage.getItem('access_token');
+                if (token) {
+                    const response = await api.get('/auth/verify');
+                    setUser(response.data);
                 }
             } catch (error) {
                 console.error('Error al inicializar autenticación:', error);
+                // Si falla, limpiar tokens inválidos
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
             } finally {
                 setLoading(false);
             }
@@ -25,18 +29,16 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        const userData = await authService.login(email, password);
-        setUser(userData);
-        return userData;
+        throw new Error('Usar Firebase Auth loginUser() en lugar de este método');
     };
 
     const register = async (email, password) => {
-        const userData = await authService.register(email, password);
-        return userData;
+        throw new Error('Usar Firebase Auth registerUser() en lugar de este método');
     };
 
     const logout = () => {
-        authService.logout();
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
         setUser(null);
         
         // Limpiar todos los datos de análisis del localStorage
@@ -78,7 +80,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        isAuthenticated: authService.isAuthenticated
+        isAuthenticated: () => !!localStorage.getItem('access_token')
     };
 
     return (

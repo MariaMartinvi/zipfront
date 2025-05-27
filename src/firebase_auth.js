@@ -10,6 +10,7 @@ import {
   updateProfile,
   setPersistence,
   browserSessionPersistence,
+  browserLocalPersistence,
   GoogleAuthProvider,
   signInWithPopup
 } from 'firebase/auth';
@@ -58,10 +59,10 @@ if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.proj
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Set persistence to SESSION - this will keep the user logged in only during the current browser session
-setPersistence(auth, browserSessionPersistence)
+// Set persistence to LOCAL - this will keep the user logged in between browser sessions
+setPersistence(auth, browserLocalPersistence)
   .then(() => {
-    console.log("Firebase auth persistence set to SESSION");
+    console.log("Firebase auth persistence set to LOCAL");
   })
   .catch((error) => {
     console.error("Error setting auth persistence:", error);
@@ -231,8 +232,8 @@ export const getErrorMessage = (errorCode) => {
 export const registerUser = async (email, password, displayName) => {
   try {
     // Garantizar que la persistencia está configurada antes del registro
-    await setPersistence(auth, browserSessionPersistence);
-    console.log("Persistencia configurada para SESSION durante el registro");
+    await setPersistence(auth, browserLocalPersistence);
+    console.log("Persistencia configurada para LOCAL durante el registro");
     
     let user;
     let isNewUser = true;
@@ -445,19 +446,11 @@ export const getUserProfile = async (userId) => {
       return null;
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    // Usar cliente API con auto-refresh
+    const { default: apiClient } = await import('./utils/apiClient');
+    const response = await apiClient.get('/auth/me');
     
-    if (!response.ok) {
-      console.log('Respuesta del servidor:', response.status, response.statusText);
-      throw new Error('Usuario no encontrado');
-    }
-    
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
     console.error('Error getting user profile:', error);
     throw error;
@@ -637,8 +630,8 @@ export const incrementChatUsage = async (userId) => {
 export const loginWithGoogle = async () => {
   try {
     // Configurar persistencia
-    await setPersistence(auth, browserSessionPersistence);
-    console.log("Persistencia configurada para SESSION durante el login con Google");
+    await setPersistence(auth, browserLocalPersistence);
+    console.log("Persistencia configurada para LOCAL durante el login con Google");
     
     const provider = new GoogleAuthProvider();
     
