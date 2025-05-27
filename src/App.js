@@ -441,48 +441,42 @@ function AppContent() {
     return processedFile;
   };
 
-  // Check if user can upload a chat based on their subscription plan
+  // Check if user can upload a chat based on their subscription plan - NO CACHE, always fresh validation
   const checkUploadEligibility = async () => {
-    console.log("Verificando elegibilidad para cargar - Estado actual del usuario:", user);
+    console.log("[checkUploadEligibility] ===== INICIANDO VALIDACIÓN DE ELEGIBILIDAD =====");
+    console.log("[checkUploadEligibility] Verificando elegibilidad para cargar - Estado actual del usuario:", user);
     
     if (!user) {
       // Intentar recuperar el usuario una vez más desde Firebase
       try {
         const currentUser = await getCurrentUser();
         if (currentUser) {
-          setUserProfile(currentUser);
-          console.log("Usuario recuperado correctamente desde Firebase:", currentUser);
+          console.log("[checkUploadEligibility] Usuario recuperado correctamente desde Firebase:", currentUser);
           window.recoveredUser = currentUser; // Guardar para uso posterior
 
           if (setUser) setUser(currentUser); // Usar condicional para evitar errores
 
-          // Actualizar el estado de usuario manualmente
-          // Nota: Esto es un hack temporal. Lo ideal sería que esto ocurra a través de AuthContext
-          window._tempUser = currentUser; // Almacenar en una variable temporal
+          // NO actualizar el estado local del perfil - dejar que canUploadChat haga consulta fresca
           
-          // Intentar recuperar el perfil del usuario
+          // Verificar si el usuario puede cargar (consulta fresca garantizada)
           try {
-            const profile = await getUserProfile(currentUser.uid);
-            window._tempUserProfile = profile;
-          } catch (profileError) {
-            console.error("Error recuperando perfil de usuario:", profileError);
-          }
-          
-          // Verificar si el usuario puede cargar
-          try {
+            console.log("[checkUploadEligibility] Haciendo consulta FRESCA para usuario recuperado:", currentUser.uid);
             const canUpload = await canUploadChat(currentUser.uid);
             if (!canUpload) {
+              console.log("[checkUploadEligibility] Usuario no puede subir - mostrando modal de upgrade");
               setShowUpgradeModal(true);
               return false;
             }
+            console.log("[checkUploadEligibility] Usuario PUEDE subir");
             return true;
           } catch (planError) {
-            console.error("Error verificando plan:", planError);
+            console.error("[checkUploadEligibility] Error verificando plan:", planError);
             setError("Error verificando tu plan. Por favor, recarga la página.");
             return false;
           }
         } else {
           // No hay usuario autenticado
+          console.log("[checkUploadEligibility] No hay usuario autenticado");
           setError('Debes iniciar sesión para analizar conversaciones.');
           // Redirigir a la página de login después de un breve retraso
           setTimeout(() => {
@@ -491,24 +485,27 @@ function AppContent() {
           return false;
         }
       } catch (error) {
-        console.error("Error verificando autenticación:", error);
+        console.error("[checkUploadEligibility] Error verificando autenticación:", error);
         setError('Error al verificar tu sesión. Por favor, inicia sesión nuevamente.');
         return false;
       }
     }
     
-    // Ya hay un usuario en el contexto, verificar plan
+    // Ya hay un usuario en el contexto, verificar plan con consulta fresca
     try {
+      console.log("[checkUploadEligibility] Haciendo consulta FRESCA para usuario actual:", user.uid);
       const canUpload = await canUploadChat(user.uid);
       
       if (!canUpload) {
+        console.log("[checkUploadEligibility] Usuario no puede subir - mostrando modal de upgrade");
         setShowUpgradeModal(true);
         return false;
       }
       
+      console.log("[checkUploadEligibility] Usuario PUEDE subir");
       return true;
     } catch (error) {
-      console.error('Error verificando plan de usuario:', error);
+      console.error('[checkUploadEligibility] Error verificando plan de usuario:', error);
       setError('Error al verificar tu plan. Por favor, inténtalo de nuevo.');
       return false;
     }
@@ -699,20 +696,18 @@ function AppContent() {
     // Analizar y corregir el archivo si es necesario
     const analyzedFile = analyzeFile(file);
     
+    // CRÍTICO: Validar SIEMPRE antes de cualquier early return
+    const isEligible = await checkUploadEligibility();
+    if (!isEligible) {
+      return;
+    }
+    
     // Si ya hay un análisis en curso, guardar el nuevo archivo y mostrar confirmación
     if (operationId && (chatData || chatGptResponse)) {
       // Guardar el archivo pendiente para procesarlo después de la confirmación
       setPendingZipFile(analyzedFile);
       // Mostrar el diálogo de confirmación
       setShowRefreshConfirmation(true);
-      return;
-    }
-    
-    // Check if user is logged in and has available uploads
-    const isEligible = await checkUploadEligibility();
-    if (!isEligible) {
-      setIsProcessingSharedFile(false);
-      isProcessingRef.current = false;
       return;
     }
     
@@ -762,21 +757,8 @@ function AppContent() {
               incrementSuccess = true;
               addDebugMessage(`Incremento exitoso en intento ${attemptCount}`);
               
-              // Actualizar datos locales del perfil
-              if (userProfile) {
-                const newPeriodUsage = (userProfile.currentPeriodUsage || 0) + 1;
-                const newTotalUploads = (userProfile.totalUploads || 0) + 1;
-                
-                setUserProfile({
-                  ...userProfile,
-                  currentPeriodUsage: newPeriodUsage,
-                  totalUploads: newTotalUploads
-                });
-                
-                addDebugMessage(`Perfil de usuario actualizado localmente. Nuevos valores: currentPeriodUsage=${newPeriodUsage}, totalUploads=${newTotalUploads}`);
-              } else {
-                addDebugMessage(`Advertencia: userProfile no disponible para actualización local. user=${user.uid}`);
-              }
+              // NO actualizar estado local - las próximas consultas serán frescas desde Firebase
+              addDebugMessage(`Contador incrementado exitosamente para ${user.uid}. La próxima validación consultará datos frescos desde Firebase.`);
             } catch (incrementError) {
               addDebugMessage(`Error en intento ${attemptCount}: ${incrementError.message}`);
               
@@ -958,21 +940,8 @@ function AppContent() {
               incrementSuccess = true;
               addDebugMessage(`Incremento exitoso en intento ${attemptCount}`);
               
-              // Actualizar datos locales del perfil
-              if (userProfile) {
-                const newPeriodUsage = (userProfile.currentPeriodUsage || 0) + 1;
-                const newTotalUploads = (userProfile.totalUploads || 0) + 1;
-                
-                setUserProfile({
-                  ...userProfile,
-                  currentPeriodUsage: newPeriodUsage,
-                  totalUploads: newTotalUploads
-                });
-                
-                addDebugMessage(`Perfil de usuario actualizado localmente. Nuevos valores: currentPeriodUsage=${newPeriodUsage}, totalUploads=${newTotalUploads}`);
-              } else {
-                addDebugMessage(`Advertencia: userProfile no disponible para actualización local. user=${user.uid}`);
-              }
+              // NO actualizar estado local - las próximas consultas serán frescas desde Firebase
+              addDebugMessage(`Contador incrementado exitosamente para ${user.uid} (WhatsApp Share). La próxima validación consultará datos frescos desde Firebase.`);
             } catch (incrementError) {
               addDebugMessage(`Error en intento ${attemptCount}: ${incrementError.message}`);
               
@@ -1017,14 +986,8 @@ function AppContent() {
             try {
               addDebugMessage(`Incrementando contador (archivo original) para usuario: ${user.uid}`);
               await incrementChatUsage(user.uid);
-              if (userProfile) {
-                setUserProfile({
-                  ...userProfile,
-                  currentPeriodUsage: (userProfile.currentPeriodUsage || 0) + 1,
-                  totalUploads: (userProfile.totalUploads || 0) + 1
-                });
-              }
-              addDebugMessage("Contador de uso incrementado correctamente (archivo original)");
+              // NO actualizar estado local - las próximas consultas serán frescas desde Firebase
+              addDebugMessage("Contador de uso incrementado correctamente (archivo original). Próximas validaciones serán frescas desde Firebase.");
             } catch (usageError) {
               addDebugMessage(`Error al incrementar contador (archivo original): ${usageError.message}`);
             }

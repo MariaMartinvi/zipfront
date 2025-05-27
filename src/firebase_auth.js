@@ -502,28 +502,61 @@ export const updateUserPlan = async (userId, newPlan) => {
   }
 };
 
-// Check if a user can upload more chats
+// Check if a user can upload more chats - ALWAYS queries fresh data from Firebase
 export const canUploadChat = async (userId) => {
   try {
-    const userProfile = await getUserProfile(userId);
+    console.log(`[canUploadChat] Verificando elegibilidad para usuario: ${userId}`);
+    
+    if (!userId) {
+      console.error(`[canUploadChat] Error: ID de usuario inválido o vacío`);
+      throw new Error('ID de usuario requerido');
+    }
+    
+    // CONSULTA FRESCA - hacer una consulta directa a Firestore cada vez (no cache)
+    const userRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      console.error(`[canUploadChat] Error: Usuario ${userId} no encontrado en Firestore`);
+      throw new Error('Usuario no encontrado');
+    }
+    
+    const userProfile = userDoc.data();
+    const plan = userProfile.plan || 'free';
+    const currentUsage = userProfile.currentPeriodUsage || 0;
+    
+    console.log(`[canUploadChat] Plan: ${plan}, Uso actual: ${currentUsage}`);
+    console.log(`[canUploadChat] Datos completos del usuario:`, userProfile);
+    
+    let canUpload = false;
+    let quota = 0;
     
     // Free plan users can upload 2 chats
-    if (userProfile.plan === 'free') {
-      return userProfile.currentPeriodUsage < 2;
+    if (plan === 'free') {
+      quota = 2;
+      canUpload = currentUsage < 2;
+      console.log(`[canUploadChat] Plan FREE - Comparando: ${currentUsage} < 2 = ${canUpload}`);
     }
-    
     // For paid plans, check their quota
-    if (userProfile.plan === 'basic') {
-      return userProfile.currentPeriodUsage < 20;
-    } else if (userProfile.plan === 'standard') {
-      return userProfile.currentPeriodUsage < 50;
-    } else if (userProfile.plan === 'premium') {
-      return userProfile.currentPeriodUsage < 120;
+    else if (plan === 'basic') {
+      quota = 20;
+      canUpload = currentUsage < 20;
+      console.log(`[canUploadChat] Plan BASIC - Comparando: ${currentUsage} < 20 = ${canUpload}`);
+    } else if (plan === 'standard') {
+      quota = 50;
+      canUpload = currentUsage < 50;
+      console.log(`[canUploadChat] Plan STANDARD - Comparando: ${currentUsage} < 50 = ${canUpload}`);
+    } else if (plan === 'premium') {
+      quota = 120;
+      canUpload = currentUsage < 120;
+      console.log(`[canUploadChat] Plan PREMIUM - Comparando: ${currentUsage} < 120 = ${canUpload}`);
     }
     
-    return false;
+    console.log(`[canUploadChat] RESULTADO FINAL - Puede subir: ${canUpload} (${currentUsage}/${quota})`);
+    
+    return canUpload;
   } catch (error) {
-    console.error('Error checking upload capability:', error);
+    console.error('[canUploadChat] Error verificando capacidad de subida:', error);
     throw error;
   }
 };
