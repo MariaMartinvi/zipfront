@@ -11,8 +11,7 @@ import {
   setPersistence,
   browserSessionPersistence,
   GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult
+  signInWithPopup
 } from 'firebase/auth';
 import { 
   getFirestore, 
@@ -213,7 +212,7 @@ export const getErrorMessage = (errorCode) => {
 // Register a new user
 export const registerUser = async (email, password, displayName) => {
   try {
-    // Garantizar que la persistencia está configurada en LOCAL antes del registro
+    // Garantizar que la persistencia está configurada antes del registro
     await setPersistence(auth, browserSessionPersistence);
     console.log("Persistencia configurada para SESSION durante el registro");
     
@@ -221,17 +220,16 @@ export const registerUser = async (email, password, displayName) => {
     let isNewUser = true;
     
     try {
-      // Intentar crear el usuario en Firebase Auth
+      // Crear usuario en Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       user = userCredential.user;
       console.log("Usuario registrado exitosamente con ID:", user.uid);
       
-      // Update the user's profile with the display name
+      // Actualizar perfil del usuario
       await updateProfile(user, { displayName });
     } catch (firebaseError) {
       if (firebaseError.code === 'auth/email-already-in-use') {
         console.log("Usuario ya existe en Firebase, intentando iniciar sesión...");
-        // Si el usuario ya existe, intentar hacer login
         const loginCredential = await signInWithEmailAndPassword(auth, email, password);
         user = loginCredential.user;
         isNewUser = false;
@@ -241,10 +239,10 @@ export const registerUser = async (email, password, displayName) => {
       }
     }
     
-    // Get the Firebase Auth token to send to backend
+    // CRÍTICO: Obtener token de Firebase y tokens JWT ANTES de continuar
     const idToken = await user.getIdToken();
 
-    // Register with our backend to create Firestore document and get JWT token
+    // Llamar al backend para obtener tokens JWT - DEBE completarse antes de continuar
     const actionText = isNewUser ? "crear perfil" : "obtener tokens";
     const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/${isNewUser ? 'register' : 'login'}`, {
         method: 'POST',
@@ -261,18 +259,18 @@ export const registerUser = async (email, password, displayName) => {
 
     const data = await response.json();
 
-    // Guardar el token JWT
+    // CRÍTICO: Guardar tokens JWT ANTES de retornar
     if (data.access_token && data.refresh_token) {
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('refresh_token', data.refresh_token);
+        console.log("Tokens JWT guardados exitosamente");
     } else {
-        console.warn("No se recibieron tokens del backend:", data);
+        throw new Error("No se recibieron tokens del backend");
     }
     
     return user;
   } catch (error) {
     console.error('Error registering user:', error);
-    // Transformar el error antes de propagarlo
     error.message = getErrorMessage(error.code) || error.message;
     throw error;
   }
@@ -281,29 +279,38 @@ export const registerUser = async (email, password, displayName) => {
 // Sign in an existing user
 export const loginUser = async (email, password) => {
   try {
-    // Primero autenticar con Firebase
+    // Autenticar con Firebase
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Luego obtener el token JWT de nuestro backend
+    // CRÍTICO: Obtener token de Firebase y tokens JWT ANTES de continuar
+    const idToken = await user.getIdToken();
+
+    // Obtener tokens JWT del backend - DEBE completarse antes de continuar
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email })
     });
 
     if (!response.ok) {
-      throw new Error('Error al iniciar sesión');
+      throw new Error('Error al iniciar sesión con el backend');
     }
 
     const data = await response.json();
     
-    // Guardar el token JWT
-    localStorage.setItem('access_token', data.access_token);
-    localStorage.setItem('refresh_token', data.refresh_token);
-
+    // CRÍTICO: Guardar tokens JWT ANTES de retornar
+    if (data.access_token && data.refresh_token) {
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      console.log("Login backend completado exitosamente");
+    } else {
+      throw new Error("No se recibieron tokens del backend");
+    }
+    
     return user;
   } catch (error) {
     console.error('Error en login:', error);
@@ -565,10 +572,10 @@ export const incrementChatUsage = async (userId) => {
   }
 };
 
-// Login with Google using redirect (más compatible con políticas de seguridad)
+// Login with Google using popup (más compatible y directo)
 export const loginWithGoogle = async () => {
   try {
-    // Garantizar que la persistencia está configurada en LOCAL antes de iniciar sesión con Google
+    // Configurar persistencia
     await setPersistence(auth, browserSessionPersistence);
     console.log("Persistencia configurada para SESSION durante el login con Google");
     
@@ -579,68 +586,62 @@ export const loginWithGoogle = async () => {
     
     // Personalización de la experiencia de inicio de sesión con Google
     provider.setCustomParameters({
-      // Personalizar la pantalla de selección de cuenta
       prompt: 'select_account',
-      // Mostrar marca en la pantalla de inicio de sesión
       login_hint: `Login to chatsalsa.com with Google`,
-      // Especificar idioma para la UI según el idioma actual
       hl: currentLanguage
     });
     
     // Configurar para que use el idioma del dispositivo
     auth.useDeviceLanguage();
     
-    // Usar signInWithRedirect para evitar problemas de CORS
-    await signInWithRedirect(auth, provider);
-    // Nota: La función termina aquí y el resultado se maneja en handleGoogleRedirectResult
+    // Usar signInWithPopup en lugar de redirect
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    console.log("Login con Google exitoso con ID:", user.uid);
+    
+    // CRÍTICO: Obtener token de Firebase y tokens JWT ANTES de continuar
+    const idToken = await user.getIdToken();
+    
+    // Llamar al backend para obtener tokens JWT - DEBE completarse antes de continuar
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`
+      },
+      body: JSON.stringify({ 
+        email: user.email, 
+        displayName: user.displayName,
+        is_admin: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error al autenticar con backend: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // CRÍTICO: Guardar tokens JWT ANTES de retornar
+    if (data.access_token && data.refresh_token) {
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      console.log("Tokens JWT guardados exitosamente para usuario de Google");
+    } else {
+      throw new Error("No se recibieron tokens del backend para usuario de Google");
+    }
+    
+    return user;
     
   } catch (error) {
     console.error('Error iniciando login con Google:', error);
-    // Transformar el error antes de propagarlo
     error.message = getErrorMessage(error.code) || error.message;
     throw error;
   }
 };
 
-// Manejar el resultado del redirect de Google Auth
-export const handleGoogleRedirectResult = async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    
-    if (result) {
-      const user = result.user;
-      console.log("Login con Google exitoso con ID:", user.uid);
-      
-      // Check if this is a first-time login
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      
-      if (!userDoc.exists()) {
-        // Create a user document in Firestore for first-time Google sign-ins
-        await setDoc(doc(db, 'users', user.uid), {
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          createdAt: new Date(),
-          plan: 'free',
-          currentPeriodUsage: 0,
-          totalUploads: 0,
-          authProvider: 'google'
-        });
-        console.log("New Google user profile created");
-      }
-      
-      return user;
-    }
-    
-    return null; // No hay resultado de redirect
-    
-  } catch (error) {
-    console.error('Error manejando resultado de Google redirect:', error);
-    // Transformar el error antes de propagarlo
-    error.message = getErrorMessage(error.code) || error.message;
-    throw error;
-  }
-};
+// Nota: handleGoogleRedirectResult ya no es necesario con signInWithPopup
+// El login con Google ahora se maneja completamente en loginWithGoogle()
 
 // Exportar onAuthStateChanged para poder usarlo en otros componentes
 export const onAuthStateChanged = (auth, callback) => {
