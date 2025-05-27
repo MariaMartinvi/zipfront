@@ -1,0 +1,12 @@
+{
+  "python_command": "python",
+  "installed_models": {
+    "es_core_news_sm": "instalado",
+    "en_core_web_sm": "instalado",
+    "de_core_news_sm": "instalado",
+    "fr_core_news_sm": "instalado",
+    "it_core_news_sm": "instalado"
+  },
+  "installation_date": "2025-05-27T08:30:20.562Z",
+  "status": "completed"
+}

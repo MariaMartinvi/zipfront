@@ -2,8 +2,9 @@
 // Servicio para operaciones con archivos
 
 // Importar constantes desde el archivo de constantes
-import { PROMPTS, USER_PREFIXES } from './services/azure/constants';
+import { PROMPTS, USER_PREFIXES, ERROR_MESSAGES } from './services/azure/constants';
 import { userSession } from './utils/userSession';
+import { anonymizationService } from './services/anonymizationService';
 
 // Nota: Esta API_URL ya no se usa para las solicitudes a Azure (que se hacen directamente desde el cliente)
 // pero se mantiene por compatibilidad con posibles usos futuros o para otras funciones
@@ -17,73 +18,12 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
  */
 const processContentForAzure = (content) => {
   try {
-    // Mapa para mantener consistencia en los reemplazos
-    const nameMapping = {};
     let processedContent = content;
 
-    // Función para obtener iniciales de un nombre
-    const getInitials = (name) => {
-      return name
-        .split(' ')
-        .map(word => word[0])
-        .join('')
-        .toUpperCase();
-    };
+    // 1. Primero anonimizar los participantes del chat (necesita el formato original con fechas)
+    processedContent = anonymizationService.anonymizeParticipants(processedContent);
 
-    // Procesar el contenido línea por línea
-    const lines = processedContent.split('\n');
-    const processedLines = lines.map(line => {
-      // Patrón para detectar el formato de iOS "[DD/MM/YY, HH:mm:ss] Nombre: Mensaje"
-      const iosPattern = /\[(\d{1,2}\/\d{1,2}\/\d{2}), \d{1,2}:\d{1,2}:\d{1,2}\] ([^:]+):/;
-      // Patrón para detectar el formato de Android "MM/DD/YY, HH:mm - Nombre: Mensaje"
-      const androidPattern = /(\d{1,2}\/\d{1,2}\/\d{2}), \d{1,2}:\d{2} - ([^:]+):/;
-      
-      const iosMatch = line.match(iosPattern);
-      const androidMatch = line.match(androidPattern);
-      
-      if (iosMatch || androidMatch) {
-        const fullName = (iosMatch ? iosMatch[2] : androidMatch[2]).trim();
-        
-        // Si el nombre contiene un número de teléfono, no lo procesamos
-        if (fullName.includes('+') || /^\d/.test(fullName)) {
-          console.log('Manteniendo número de teléfono:', fullName);
-          return line;
-        }
-        
-        // Si ya procesamos este nombre, usar el mismo reemplazo
-        if (nameMapping[fullName]) {
-          if (iosMatch) {
-            return line.replace(iosMatch[0], `[${iosMatch[1]}] ${nameMapping[fullName]}:`);
-          } else {
-            return line.replace(androidMatch[0], `${androidMatch[1]} - ${nameMapping[fullName]}:`);
-          }
-        }
-        
-        // Crear nuevo reemplazo
-        const initials = getInitials(fullName);
-        nameMapping[fullName] = initials;
-        
-        if (iosMatch) {
-          return line.replace(iosMatch[0], `[${iosMatch[1]}] ${initials}:`);
-        } else {
-          return line.replace(androidMatch[0], `${androidMatch[1]} - ${initials}:`);
-        }
-      }
-      
-      // Si es un mensaje del sistema (como "You created this group")
-      if (line.includes(' - ') || line.includes('] ')) {
-        // Mantener el mensaje del sistema pero eliminar la fecha
-        const systemMessage = line.split(' - ')[1] || line.split('] ')[1];
-        return systemMessage;
-      }
-      
-      return line;
-    });
-
-    // Unir las líneas procesadas
-    processedContent = processedLines.join('\n');
-
-    // Limpiar el texto
+    // 2. Limpiar el texto (eliminar fechas, timestamps, etc.) DESPUÉS de identificar participantes
     processedContent = processedContent
       // Eliminar fechas en formato MM/DD/YY o DD/MM/YY
       .replace(/\d{1,2}\/\d{1,2}\/\d{2}/g, '')
@@ -94,12 +34,32 @@ const processContentForAzure = (content) => {
       // Eliminar guiones
       .replace(/\s*-\s*/g, ' ');
 
-    console.log('Mapeo de nombres:', nameMapping);
-    console.log('Contenido procesado:', processedContent);
+    // 3. Limitar tamaño del contenido después de limpiar fechas
+    console.log(`Longitud después de limpiar fechas: ${processedContent.length} caracteres`);
+    
+    const MAX_CHARS = 20000;
+    if (processedContent.length > MAX_CHARS) {
+      console.log(`Contenido del chat demasiado largo (${processedContent.length} caracteres), limitando a los últimos ${MAX_CHARS} caracteres`);
+      processedContent = "...[Contenido anterior truncado]...\n\n" + processedContent.substring(processedContent.length - MAX_CHARS);
+      console.log(`Contenido truncado a ${processedContent.length} caracteres`);
+    }
+
+    // 4. Anonimizar personas mencionadas en el contenido
+    const detectedLanguage = anonymizationService.detectLanguage(processedContent);
+    processedContent = anonymizationService.anonymizeWithPatterns(processedContent, detectedLanguage);
+
+    console.log('🚀🚀🚀 TEXTO QUE SE ENVÍA A AZURE 🚀🚀🚀');
+    console.log('████████████████████████████████████████████');
+    console.log(processedContent);
+    console.log('████████████████████████████████████████████');
+    
+    const mappings = anonymizationService.getAllMappings();
+    console.log('Mapeo de participantes:', mappings.participants);
+    console.log('Mapeo de personas mencionadas:', mappings.mentionedPeople);
 
     return {
       processedContent,
-      nameMapping
+      nameMapping: mappings.participants
     };
   } catch (error) {
     console.error('Error procesando contenido para Azure:', error);
@@ -264,14 +224,14 @@ const reconstructNames = (response, nameMapping) => {
     
     // Crear un mapeo inverso (de iniciales a nombres)
     const inverseMapping = {};
-    Object.entries(nameMapping).forEach(([fullName, initials]) => {
-      inverseMapping[initials] = fullName;
+    Object.entries(nameMapping).forEach(([fullName, participantId]) => {
+      inverseMapping[participantId] = fullName;
     });
 
-    // Reemplazar las iniciales por nombres completos
-    Object.entries(inverseMapping).forEach(([initials, fullName]) => {
-      // Buscar patrones como "E:" o "E " o "E," o "E." o "E\n" o "E\n\n"
-      const pattern = new RegExp(`\\b${initials}\\b(?=:|\\s|,|\\.|\\n|$)`, 'g');
+    // Reconstruir participantes usando solo el mapeo
+    Object.entries(inverseMapping).forEach(([participantId, fullName]) => {
+      // Buscar patrones como "Participante X" o "Participante X:" o "Participante X " o "Participante X," o "Participante X." o "Participante X\n"
+      const pattern = new RegExp(`\\b${participantId}\\b(?=:|\\s|,|\\.|\\n|$)`, 'g');
       reconstructedResponse = reconstructedResponse.replace(pattern, fullName);
     });
 
@@ -313,24 +273,9 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     console.log(`REACT_APP_AZURE_API_KEY está definida: ${process.env.REACT_APP_AZURE_API_KEY ? 'Sí' : 'No'}`);
     
     if (!defaultEndpoint || !apiKey) {
-      // Error detallado para ayudar en la depuración
-      const mensajeError = `
-        Faltan credenciales de Azure OpenAI:
-        - Endpoint: ${defaultEndpoint ? 'Configurado' : 'Falta'}
-        - API Key: ${apiKey ? 'Configurada' : 'Falta'}
-        
-        Por favor, verifica que en tu archivo .env tienes:
-        REACT_APP_AZURE_ENDPOINT=https://tu-servicio.openai.azure.com/
-        REACT_APP_AZURE_API_KEY=tu-api-key
-        
-        Ten en cuenta que debes reiniciar el servidor de desarrollo después de modificar el archivo .env
-      `;
-      
-      console.error(mensajeError);
-      return {
-        success: false,
-        error: 'Faltan credenciales de Azure OpenAI. Verifica las variables de entorno y reinicia la aplicación.'
-      };
+      const errorMsg = ERROR_MESSAGES[language]?.no_api_key ||
+          ERROR_MESSAGES['en'].no_api_key;
+      throw new Error(errorMsg);
     }
     
     // Importar la librería de OpenAI dinámicamente para no cargarla si no se usa
@@ -342,22 +287,12 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
       endpoint: api.endpoint || defaultEndpoint
     }));
     
-    // Limitar tamaño del contenido antes de enviarlo a la API
+    // Procesar el contenido completo para anonimización
     console.log(`Longitud original del contenido: ${chatContent.length} caracteres`);
     
-    // Primero procesar los nombres para reducir el tamaño del texto
+    // Procesar los nombres en el contenido completo
     const { processedContent, nameMapping } = processContentForAzure(chatContent);
-    console.log(`Longitud después de procesar nombres: ${processedContent.length} caracteres`);
-    
-    // Aplicar limitación de caracteres - tomar solo los últimos 10,000 caracteres
-    const MAX_CHARS = 10000;
-    let limitedContent = processedContent;
-    
-    if (processedContent.length > MAX_CHARS) {
-      console.log(`Contenido del chat demasiado largo (${processedContent.length} caracteres), limitando a los últimos ${MAX_CHARS} caracteres`);
-      limitedContent = "...[Contenido anterior truncado]...\n\n" + processedContent.substring(processedContent.length - MAX_CHARS);
-      console.log(`Contenido truncado a ${limitedContent.length} caracteres`);
-    }
+    console.log(`Longitud después de anonimizar: ${processedContent.length} caracteres`);
     
     // Obtener el prompt en el idioma correspondiente
     const systemPrompt = PROMPTS[language] || PROMPTS['es'];
@@ -366,7 +301,7 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     // Preparar los mensajes para la API
     const messages = [
       { role: "system", content: systemPrompt },
-      { role: "user", content: `${userPrefix}\n\n${limitedContent}` }
+      { role: "user", content: `${userPrefix}\n\n${processedContent}` }
     ];
 
     // Guardar el chat localmente antes de enviarlo
@@ -374,7 +309,7 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
       timestamp: new Date().toISOString(),
       messages: messages,
       language: language,
-      contentLength: limitedContent.length,
+      contentLength: processedContent.length,
       model: apisToTry[0].model,
       nameMapping // Incluir el mapeo de nombres en el archivo guardado
     });

@@ -84,21 +84,12 @@ export class AzureService {
         };
       }
       
-      // Preparar el contenido del usuario (truncar si es necesario)
+      // Preparar el contenido del usuario
       let userContent = textContent;
       const contentLength = userContent.length;
       
       console.error('🔍 PREPARANDO CONTENIDO');
       console.error('Longitud del texto:', contentLength);
-      
-      // Límite uniforme de 40,000 caracteres para todos los modelos
-      if (contentLength > 40000) {
-        console.warn(`Contenido muy grande (${contentLength} caracteres), truncando a 40,000`);
-        const truncationMsg = TRUNCATION_MESSAGES[language]?.long || 
-                             "This is an extract from a very long conversation...";
-        userContent = truncationMsg + "\n\n" + userContent.slice(-40000);
-        console.log(`Contenido truncado a ${userContent.length} caracteres`);
-      }
       
       // Obtener el prompt en el idioma correspondiente
       const systemPrompt = PROMPTS[language] || PROMPTS['es'];

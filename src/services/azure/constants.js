@@ -22,6 +22,31 @@ export const ALTERNATIVE_APIS = [
   // Se pueden añadir más APIs según sea necesario
 ];
 
+// Mensajes de error en diferentes idiomas
+export const ERROR_MESSAGES = {
+  'es': {
+    no_api_key: 'No se encontró la clave de API de Azure OpenAI. Por favor, configura las credenciales en el panel de configuración.',
+    rate_limit: 'Se ha alcanzado el límite de solicitudes. Por favor, intenta más tarde.',
+    auth_error: 'Error de autenticación con Azure OpenAI. Verifica las credenciales.',
+    network_error: 'Error de conexión con Azure OpenAI. Verifica tu conexión a Internet.',
+    unknown_error: 'Error desconocido al analizar el chat'
+  },
+  'en': {
+    no_api_key: 'Azure OpenAI API key not found. Please configure the credentials in the settings panel.',
+    rate_limit: 'Rate limit reached. Please try again later.',
+    auth_error: 'Authentication error with Azure OpenAI. Please verify your credentials.',
+    network_error: 'Connection error with Azure OpenAI. Please check your Internet connection.',
+    unknown_error: 'Unknown error while analyzing the chat'
+  },
+  'fr': {
+    no_api_key: 'Clé API Azure OpenAI non trouvée. Veuillez configurer les identifiants dans le panneau de configuration.',
+    rate_limit: 'Limite de requêtes atteinte. Veuillez réessayer plus tard.',
+    auth_error: 'Erreur d\'authentification avec Azure OpenAI. Veuillez vérifier vos identifiants.',
+    network_error: 'Erreur de connexion avec Azure OpenAI. Veuillez vérifier votre connexion Internet.',
+    unknown_error: 'Erreur inconnue lors de l\'analyse du chat'
+  }
+};
+
 // Prompts multiidioma para diferentes idiomas
 export const PROMPTS = {
   'es': `Como un psicólogo observador, incisivo y con sentido del humor, analiza la siguiente conversación. Tu análisis debe ser directo y perspicaz.
@@ -230,45 +255,6 @@ Asegúrate de que tu análisis general sea objetivo, respetuoso y constructivo, 
     T5: Nome partecipante:
 
     Assicurati di essere obiettivo, rispettoso e costruttivo nella tua analisi generale, tranne che nella sezione dei titoli dove devi essere controverso e divertente.`
-};
-
-// Mensajes de error multiidioma
-export const ERROR_MESSAGES = {
-  'es': {
-    'no_api_key': "Error: No se ha configurado la clave API de Azure. Por favor, configura la variable de entorno AZURE_API_KEY.",
-    'error_title': "## 🚨 Error en el Análisis",
-    'error_message': "Lo sentimos, no pudimos completar el análisis de la conversación debido a un problema técnico.",
-    'error_details': "**Detalles del error:**",
-    'try_again': "Por favor, intenta nuevamente más tarde o contacta al soporte técnico si el problema persiste."
-  },
-  'en': {
-    'no_api_key': "Error: No Azure API key configured. Please set the AZURE_API_KEY environment variable.",
-    'error_title': "## 🚨 Analysis Error",
-    'error_message': "We're sorry, we couldn't complete the conversation analysis due to a technical issue.",
-    'error_details': "**Error details:**",
-    'try_again': "Please try again later or contact technical support if the problem persists."
-  },
-  'fr': {
-    'no_api_key': "Erreur : Clé API Azure non configurée. Veuillez définir la variable d'environnement AZURE_API_KEY.",
-    'error_title': "## 🚨 Erreur d'Analyse",
-    'error_message': "Nous sommes désolés, nous n'avons pas pu compléter l'analyse de la conversation en raison d'un problème technique.",
-    'error_details': "**Détails de l'erreur :**",
-    'try_again': "Veuillez réessayer plus tard ou contacter le support technique si le problème persiste."
-  },
-  'de': {
-    'no_api_key': "Fehler: Kein Azure-API-Schlüssel konfiguriert. Bitte setzen Sie die Umgebungsvariable AZURE_API_KEY.",
-    'error_title': "## 🚨 Analysefehler",
-    'error_message': "Es tut uns leid, wir konnten die Konversationsanalyse aufgrund eines technischen Problems nicht abschließen.",
-    'error_details': "**Fehlerdetails:**",
-    'try_again': "Bitte versuchen Sie es später erneut oder kontaktieren Sie den technischen Support, wenn das Problem weiterhin besteht."
-  },
-  'it': {
-    'no_api_key': "Errore: Nessuna chiave API Azure configurata. Imposta la variabile di ambiente AZURE_API_KEY.",
-    'error_title': "## 🚨 Errore di Analisi",
-    'error_message': "Siamo spiacenti, non è stato possibile completare l'analisi della conversazione a causa di un problema tecnico.",
-    'error_details': "**Dettagli dell'errore:**",
-    'try_again': "Riprova più tardi o contatta il supporto tecnico se il problema persiste."
-  }
 };
 
 // Mensajes de truncamiento multiidioma

@@ -243,44 +243,30 @@ export const registerUser = async (email, password, displayName) => {
     
     // Get the Firebase Auth token to send to backend
     const idToken = await user.getIdToken();
-    console.log("Token de Firebase obtenido para envío al backend");
-    
+
     // Register with our backend to create Firestore document and get JWT token
     const actionText = isNewUser ? "crear perfil" : "obtener tokens";
-    console.log(`Enviando datos al backend para ${actionText}...`);
-    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${idToken}`
-      },
-      body: JSON.stringify({ 
-        email, 
-        is_admin: false,
-        plan: 'free',
-        currentPeriodUsage: 0,
-        totalUploads: 0
-      })
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/${isNewUser ? 'register' : 'login'}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({ email, displayName })
     });
 
-    console.log("Respuesta del backend:", response.status, response.statusText);
-
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Error del backend:", errorText);
-      throw new Error(`Error al ${actionText} en el backend`);
+        throw new Error(`Error al ${actionText}`);
     }
 
     const data = await response.json();
-    console.log("Datos recibidos del backend:", data);
-    
+
     // Guardar el token JWT
     if (data.access_token && data.refresh_token) {
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('refresh_token', data.refresh_token);
-      console.log("Tokens JWT guardados correctamente");
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('refresh_token', data.refresh_token);
     } else {
-      console.warn("No se recibieron tokens del backend:", data);
+        console.warn("No se recibieron tokens del backend:", data);
     }
     
     return user;

@@ -41,6 +41,8 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
+      - key: SECRET_KEY
+        value: 83dbd544eeac28b69a2e68a2ff5c1fc2b1cf69deb1d8d587a6180b930c32e68c
       - key: AZURE_OPENAI_API_KEY
         sync: false
       - key: AZURE_OPENAI_ENDPOINT

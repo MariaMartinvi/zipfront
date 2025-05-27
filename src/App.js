@@ -115,6 +115,7 @@ const anonimizarChat = (contenido) => {
     // Diccionarios para mantener consistencia en reemplazos
     const reemplazosEmails = {};
     const reemplazosNumeros = {};
+    let totalUrlsAnonimizadas = 0;
     
     // Función para anonimizar números manteniendo consistencia
     const anonimizarNumero = (numeroStr) => {
@@ -126,26 +127,12 @@ const anonimizarChat = (contenido) => {
         return reemplazosNumeros[numeroLimpio];
       }
       
-      // Anonimización parcial: mantener estructura original reemplazando dígitos
-      let resultado = "";
-      let contadorDigitos = 0;
-      
       // Determinar cuántos dígitos mantener (aproximadamente la mitad)
-      const numDigitos = numeroStr.replace(/[^\d]/g, '').length;
+      const numDigitos = numeroLimpio.length;
       const digitosAMantener = Math.max(2, Math.floor(numDigitos / 2)); // Al menos 2 dígitos
       
-      for (const char of numeroStr) {
-        if (/\d/.test(char)) {
-          if (contadorDigitos < digitosAMantener) {
-            resultado += char; // Mantener este dígito
-          } else {
-            resultado += 'X'; // Reemplazar con X
-          }
-          contadorDigitos++;
-        } else {
-          resultado += char; // Mantener separadores y otros caracteres
-        }
-      }
+      // Construir el resultado: primeros dígitos + X's
+      const resultado = numeroLimpio.substring(0, digitosAMantener) + 'X'.repeat(numDigitos - digitosAMantener);
       
       // Guardar el reemplazo para futuras ocurrencias
       reemplazosNumeros[numeroLimpio] = resultado;
@@ -174,55 +161,112 @@ const anonimizarChat = (contenido) => {
       reemplazosEmails[email] = anonimizado;
       return anonimizado;
     };
+
+    // Función para anonimizar URLs manteniendo solo el protocolo
+    const detectarYAnonimizarUrls = (texto) => {
+      // Patrón para detectar URLs completas
+      const patronUrl = /(https?:\/\/[^\s]+)/gi;
+      
+      let textoAnonimizado = texto;
+      const matches = textoAnonimizado.match(patronUrl);
+      
+      if (matches) {
+        for (const url of matches) {
+          // Extraer solo el protocolo (http:// o https://)
+          const protocoloMatch = url.match(/^(https?:\/\/)/i);
+          if (protocoloMatch) {
+            const protocolo = protocoloMatch[1].toLowerCase();
+            // Reemplazar toda la URL con solo el protocolo
+            textoAnonimizado = textoAnonimizado.replace(url, protocolo);
+            totalUrlsAnonimizadas++;
+          }
+        }
+      }
+      
+      return textoAnonimizado;
+    };
     
     // Detectar y anonimizar números de teléfono y similares
     const detectarYAnonimizarNumeros = (texto) => {
-      // Función para comprobar si es una fecha
-      const esFecha = (textoMatch) => {
-        return /\d+[/:-]\d+/.test(textoMatch);
-      };
-      
-      // Patrones para números con más de 4 dígitos
-      const patrones = [
-        // Números con prefijos y dígitos: +XX123456789
-        /\+\d{1,4}\d{5,}/g,
+      // Patrones para detectar fechas completas (Android e iOS)
+      const patronesFechas = [
+        // Formatos de fecha estándar
+        /\d{1,2}\/\d{1,2}\/\d{2,4}/g,     // DD/MM/YYYY o MM/DD/YYYY (ej: 17/12/23)
+        /\d{1,2}-\d{1,2}-\d{2,4}/g,       // DD-MM-YYYY o MM-DD-YYYY  
+        /\d{2,4}\/\d{1,2}\/\d{1,2}/g,     // YYYY/MM/DD
+        /\d{2,4}-\d{1,2}-\d{1,2}/g,       // YYYY-MM-DD
         
-        // Números con prefijos y separadores: +XX XXX XX XX
-        /\+\d{1,4}(?:[\s.-]+\d{1,4}){2,}/g,
+        // Formatos de hora
+        /\d{1,2}:\d{1,2}:\d{1,2}/g,       // HH:MM:SS (horas) (ej: 14:26:19)
+        /\d{1,2}:\d{1,2}/g,               // HH:MM (horas)
         
-        // Números de al menos 5 dígitos consecutivos
-        /\b\d{5,}\b/g,
+        // Formatos específicos de WhatsApp con corchetes
+        /\[\d{1,2}\/\d{1,2}\/\d{2,4},\s*\d{1,2}:\d{1,2}:\d{1,2}\]/g,  // [DD/MM/YY, HH:MM:SS]
+        /\[\d{1,2}\/\d{1,2}\/\d{2,4},\s*\d{1,2}:\d{1,2}\]/g,          // [DD/MM/YY, HH:MM]
+        /\[\d{1,2}-\d{1,2}-\d{2,4},\s*\d{1,2}:\d{1,2}:\d{1,2}\]/g,    // [DD-MM-YY, HH:MM:SS]
+        /\[\d{1,2}-\d{1,2}-\d{2,4},\s*\d{1,2}:\d{1,2}\]/g,            // [DD-MM-YY, HH:MM]
         
-        // Números con espacios como separadores
-        /\b\d{2,}(?:\s+\d{1,4}){2,}\b/g,
-        
-        // Números con guiones como separadores
-        /\b\d{2,}(?:-\d{1,4}){2,}\b/g,
-        
-        // Números con puntos como separadores
-        /\b\d{2,}(?:\.\d{1,4}){2,}\b/g
+        // Timestamps completos de WhatsApp (sin corchetes para detectar partes)
+        /\d{1,2}\/\d{1,2}\/\d{2,4},\s*\d{1,2}:\d{1,2}:\d{1,2}/g,      // DD/MM/YY, HH:MM:SS
+        /\d{1,2}\/\d{1,2}\/\d{2,4},\s*\d{1,2}:\d{1,2}/g,              // DD/MM/YY, HH:MM
+        /\d{1,2}-\d{1,2}-\d{2,4},\s*\d{1,2}:\d{1,2}:\d{1,2}/g,        // DD-MM-YY, HH:MM:SS
+        /\d{1,2}-\d{1,2}-\d{2,4},\s*\d{1,2}:\d{1,2}/g                 // DD-MM-YY, HH:MM
       ];
       
-      let textoAnonimizado = texto;
+      // Crear un conjunto de todas las fechas encontradas para protegerlas
+      const fechasProtegidas = new Set();
       
-      for (const patron of patrones) {
-        const matches = textoAnonimizado.match(patron);
+      // Encontrar todas las fechas en el texto y marcarlas como protegidas
+      patronesFechas.forEach(patron => {
+        const matches = texto.match(patron);
         if (matches) {
-          for (const match of matches) {
-            // Saltar si es una fecha
-            if (esFecha(match)) {
-              continue;
-            }
-            
-            // Limpiar el número para verificar que tiene más de 4 dígitos
-            const numeroLimpio = match.replace(/[^0-9]/g, '');
-            if (numeroLimpio.length > 4) {
-              // Anonimizar el número manteniendo el formato original
-              const anonimizado = anonimizarNumero(match);
-              // Reemplazo exacto (evitar reemplazos parciales)
-              textoAnonimizado = textoAnonimizado.split(match).join(anonimizado);
+          matches.forEach(fecha => fechasProtegidas.add(fecha));
+        }
+      });
+      
+      // Patrón para encontrar cualquier número (con o sin separadores)
+      const patronNumeros = /\d+(?:[\s.-]\d+)*/g;
+      
+      let textoAnonimizado = texto;
+      const matches = textoAnonimizado.match(patronNumeros);
+      
+      if (matches) {
+        for (const match of matches) {
+          // Verificar si este número es parte de una fecha protegida
+          let esParteDeFecha = false;
+          for (const fecha of fechasProtegidas) {
+            if (fecha.includes(match)) {
+              esParteDeFecha = true;
+              break;
             }
           }
+          
+          // Saltar si es parte de una fecha
+          if (esParteDeFecha) {
+            continue;
+          }
+          
+          // Limpiar el número (quitar espacios, puntos, guiones)
+          const numeroLimpio = match.replace(/[^0-9]/g, '');
+          const numDigitos = numeroLimpio.length;
+          
+          // Determinar cuántos dígitos mantener
+          let digitosAMantener;
+          if (numDigitos === 1) {
+            digitosAMantener = 0; // Se reemplazará todo con X
+          } else if (numDigitos === 2) {
+            digitosAMantener = 1; // Mantener 1 dígito
+          } else if (numDigitos === 3) {
+            digitosAMantener = 1; // Mantener 1 dígito
+          } else {
+            digitosAMantener = Math.ceil(numDigitos / 2); // Mitad de dígitos
+          }
+          
+          // Construir el resultado
+          const resultado = numeroLimpio.substring(0, digitosAMantener) + 'X'.repeat(numDigitos - digitosAMantener);
+          
+          // Reemplazar en el texto original
+          textoAnonimizado = textoAnonimizado.replace(match, resultado);
         }
       }
       
@@ -255,7 +299,10 @@ const anonimizarChat = (contenido) => {
       // Primero anonimizar los emails
       linea = detectarYAnonimizarEmails(linea);
       
-      // Luego anonimizar números
+      // Luego anonimizar URLs
+      linea = detectarYAnonimizarUrls(linea);
+      
+      // Finalmente anonimizar números
       linea = detectarYAnonimizarNumeros(linea);
       
       lineasAnonimizadas.push(linea);
@@ -267,7 +314,7 @@ const anonimizarChat = (contenido) => {
     // Registrar las estadísticas de anonimización
     const totalEmails = Object.keys(reemplazosEmails).length;
     const totalNumeros = Object.keys(reemplazosNumeros).length;
-    console.log(`Anonimización completada: ${totalEmails} emails y ${totalNumeros} números anonimizados`);
+    console.log(`Anonimización completada: ${totalEmails} emails, ${totalUrlsAnonimizadas} URLs y ${totalNumeros} números anonimizados`);
     
     return contenidoAnonimizado;
   } catch (error) {
