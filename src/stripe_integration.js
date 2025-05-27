@@ -20,7 +20,7 @@ export const PLANS = {
     price: 4,
     quota: 20,
     description: '20 chat analyses',
-    priceId: process.env.STRIPE_BASIC_PRICE_ID || 'price_1R9pMYF4OlRGsz641UJxyvO1'
+    priceId: process.env.REACT_APP_STRIPE_BASIC_PRICE_ID
   },
   STANDARD: {
     id: 'standard',
@@ -28,7 +28,7 @@ export const PLANS = {
     price: 8,
     quota: 50,
     description: '50 chat analyses',
-    priceId: process.env.STRIPE_STANDARD_PRICE_ID || 'price_1R9pMGF4OlRGsz64F1vqFdj3'
+    priceId: process.env.REACT_APP_STRIPE_STANDARD_PRICE_ID
   },
   PREMIUM: {
     id: 'premium',
@@ -36,7 +36,7 @@ export const PLANS = {
     price: 20,
     quota: 120,
     description: '120 chat analyses',
-    priceId: process.env.STRIPE_PREMIUM_PRICE_ID || 'price_1R9pLsF4OlRGsz64idi208OP'
+    priceId: process.env.REACT_APP_STRIPE_PREMIUM_PRICE_ID
   }
 };
 
