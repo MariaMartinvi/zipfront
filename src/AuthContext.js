@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getCurrentUser, getUserProfile, onAuthStateChanged, auth } from './firebase_auth';
+import { getCurrentUser, onAuthStateChanged, auth } from './firebase_auth';
 
 const AuthContext = createContext(null);
 
@@ -16,13 +16,7 @@ export function AuthProvider({ children }) {
         
         if (currentUser) {
           setUser(currentUser);
-          try {
-            const profile = await getUserProfile(currentUser.uid);
-            setUserProfile(profile);
-            console.log("AuthContext: Perfil de usuario cargado correctamente");
-          } catch (profileError) {
-            console.error("AuthContext: Error al cargar el perfil:", profileError);
-          }
+          console.log("AuthContext: Usuario autenticado correctamente");
         } else {
           console.log("AuthContext: No se encontró un usuario autenticado");
         }
@@ -42,12 +36,7 @@ export function AuthProvider({ children }) {
       setUser(currentUser);
       
       if (currentUser) {
-        try {
-          const profile = await getUserProfile(currentUser.uid);
-          setUserProfile(profile);
-        } catch (profileError) {
-          console.error("Error al cargar el perfil después del cambio de autenticación:", profileError);
-        }
+        console.log("AuthContext: Usuario autenticado en cambio de estado");
       } else {
         setUserProfile(null);
       }

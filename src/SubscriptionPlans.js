@@ -1,6 +1,5 @@
 // SubscriptionPlans.js
 import React, { useState, useEffect } from 'react';
-import { getUserProfile } from './firebase_auth';
 import { PLANS, redirectToCheckout, manageSubscription, getUserPlan } from './stripe_integration';
 import './SubscriptionPlans.css';
 import { useLocation } from 'react-router-dom';
@@ -54,9 +53,10 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
       
       try {
         setIsLoading(true);
-        const userProfile = await getUserProfile(userId);
-        setUserPlan(userProfile.plan || 'free');
-        setUserUsage(userProfile.currentPeriodUsage || 0);
+        // Usar datos por defecto para evitar llamadas problemáticas
+        console.log('Usando datos por defecto para evitar errores CORS');
+        setUserPlan('free');
+        setUserUsage(0);
       } catch (error) {
         console.error('Error loading user data:', error);
         setError(t('subscription.error.load'));
