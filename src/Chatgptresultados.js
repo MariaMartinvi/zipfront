@@ -3,23 +3,40 @@ import { marked } from 'marked'; // Importamos marked
 import DOMPurify from 'dompurify'; // Para seguridad
 import { useTranslation } from 'react-i18next';
 import './Chatgptresultados.css';
+import './styles/Analisis.css';
 import azureQueueService from './services/azureQueueService'; // Importamos el servicio de cola existente
 import lzString from 'lz-string';
+import { useAuth } from './AuthContext';
 
 function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-default" }) {
+  // TODOS los hooks deben ir ANTES de cualquier return condicional
+  const { user } = useAuth();
   const { t, i18n } = useTranslation();
+  
+  // TODOS los useState juntos
   const [htmlContent, setHtmlContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [progress, setProgress] = useState('');
+  const [analysisProgress, setAnalysisProgress] = useState('');
+  const [requestQueue, setRequestQueue] = useState([]);
   const [queueStatus, setQueueStatus] = useState(null);
   const [requestId, setRequestId] = useState(null);
-  const [errorStatus, setErrorStatus] = useState(null);
   const [checkingQueue, setCheckingQueue] = useState(false);
   const [headlinesGameData, setHeadlinesGameData] = useState(null);
   
   // Estados para el modal de compartir (igual que en App.js)
   const [showShareGameModal, setShowShareGameModal] = useState(false);
   const [gameUrl, setGameUrl] = useState('');
+  
+  // Estados para el juego de titulares
+  const [showHeadlinesShare, setShowHeadlinesShare] = useState(false);
+  const [headlinesUrl, setHeadlinesUrl] = useState("");
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
+  
+  // Estados para gestión de solicitudes
+  const [activeRequests, setActiveRequests] = useState(new Set());
   
   // Variables para monitoreo
   const [requestCount, setRequestCount] = useState(() => {
@@ -27,6 +44,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     return saved ? parseInt(saved, 10) : 0;
   });
   
+  // TODOS los useEffect juntos
   // Procesar respuesta cuando llegue
   useEffect(() => {
     if (chatGptResponse) {
@@ -104,9 +122,15 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       // Procesar la respuesta para reemplazar la sección de titulares
       let processedResponse = chatGptResponse;
       
-      // Si hay datos del juego, reemplazar la sección de Titulares
-      if (azureResponse && headlinesGameData) {
-        processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
+      // Si hay datos del juego, reemplazar la sección de Titulares (CON VALIDACIÓN)
+      if (azureResponse && headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) {
+        try {
+          processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
+        } catch (error) {
+          console.error('Error procesando headlinesGameData en useEffect principal:', error);
+          // Si hay error, usar la respuesta original sin procesar
+          processedResponse = chatGptResponse;
+        }
       }
 
       // Convertir markdown a HTML
@@ -128,108 +152,67 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
 
   // Efecto separado para procesar el contenido cuando headlinesGameData cambie
   useEffect(() => {
-    if (chatGptResponse && headlinesGameData) {
-      const processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
-      const htmlContent = marked.parse(processedResponse);
-      const sanitizedContent = DOMPurify.sanitize(htmlContent);
-      setHtmlContent(sanitizedContent);
-    }
-  }, [headlinesGameData]);
-
-  // Función para procesar la sección de titulares
-  const processHeadlinesSection = (response, gameData) => {
-    try {
-      // Buscar el inicio de la sección de Titulares
-      const titularesMatch = response.match(/## 💡 Titulares/);
-      if (!titularesMatch) return response;
-      
-      // Buscar donde termina esta sección (siguiente ## o final del texto)
-      const startIndex = titularesMatch.index;
-      const nextSectionMatch = response.slice(startIndex + 20).match(/\n## /);
-      const endIndex = nextSectionMatch ? 
-        startIndex + 20 + nextSectionMatch.index : 
-        response.length;
-      
-      // Extraer la parte antes y después de la sección de Titulares
-      const beforeSection = response.slice(0, startIndex);
-      const afterSection = response.slice(endIndex);
-      
-      // Crear la nueva sección con formato limpio
-      const [usuarios, headlines] = gameData;
-      
-      // Crear mapeo inverso para obtener nombres completos
-      let nameMapping = {};
-      if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
-        Object.entries(window.lastNameMapping).forEach(([fullName, initials]) => {
-          nameMapping[initials] = fullName;
-        });
+    if (chatGptResponse && headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) {
+      try {
+        const processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
+        const htmlContent = marked.parse(processedResponse);
+        const sanitizedContent = DOMPurify.sanitize(htmlContent);
+        setHtmlContent(sanitizedContent);
+      } catch (error) {
+        console.error('Error en useEffect de headlinesGameData:', error);
       }
-      
-      let newTitularesSection = "## 💡 Titulares\n\n**Datos de juego:**\n\n";
-      
-      headlines.forEach(headline => {
-        const nombreCompleto = nameMapping[headline.nombre] || headline.nombre;
-        const fraseClean = headline.frase.replace(/'/g, '').trim();
-        newTitularesSection += `${nombreCompleto}: ${fraseClean}\n\n`;
-      });
-      
-      // Reconstruir la respuesta completa
-      return beforeSection + newTitularesSection + afterSection;
-      
-    } catch (error) {
-      console.error('Error procesando sección de titulares:', error);
-      return response; // Devolver respuesta original si hay error
     }
-  };
+  }, [headlinesGameData, chatGptResponse]);
 
-  // Función para generar URL del juego de titulares (igual que en App.js)
-  const generateHeadlinesGameUrl = () => {
-    try {
-      if (!headlinesGameData) {
-        alert("No hay datos de juego disponibles");
-        return;
+  // useEffect para verificar el idioma del usuario y procesar el texto
+  useEffect(() => {
+    if (chatGptResponse) {
+      // Detectar idioma del usuario (predeterminado a español)
+      const userLanguage = i18n.language?.substring(0, 2) || 'es';
+      console.log(`Idioma detectado: ${userLanguage}`);
+      
+      // Solo procesar el HTML si no se ha procesado antes
+      if (!htmlContent) {
+        try {
+          // Solo procesar con headlinesGameData si es válido
+          const gameDataToUse = (headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) 
+            ? headlinesGameData 
+            : null;
+          
+          const processedResponse = processHeadlinesSection(chatGptResponse, gameDataToUse);
+          const htmlContent = marked.parse(processedResponse);
+          const sanitizedContent = DOMPurify.sanitize(htmlContent);
+          setHtmlContent(sanitizedContent);
+        } catch (error) {
+          console.error('Error procesando respuesta:', error);
+          setError('Error al procesar la respuesta');
+        }
       }
-      
-      // Comprimir datos con LZ-String
-      const compressedData = lzString.compressToEncodedURIComponent(JSON.stringify(headlinesGameData));
-      
-      // Crear URL del juego
-      const url = `${window.location.origin}/headlines-game?h=${compressedData}`;
-      
-      setGameUrl(url);
-      setShowShareGameModal(true);
-      
-    } catch (error) {
-      console.error('Error generando URL del juego:', error);
-      alert("Error al generar el enlace del juego");
     }
-  };
+  }, [chatGptResponse, i18n.language, htmlContent, headlinesGameData]);
 
-  // Función para copiar al portapapeles (igual que en App.js)
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(gameUrl).then(() => {
-      setShowCopiedMessage(true);
-      setTimeout(() => setShowCopiedMessage(false), 2000);
-    }).catch(err => {
-      console.error('Error al copiar:', err);
-      // Fallback para navegadores que no soportan clipboard API
-      const textArea = document.createElement('textarea');
-      textArea.value = gameUrl;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setShowCopiedMessage(true);
-      setTimeout(() => setShowCopiedMessage(false), 2000);
-    });
-  };
+  // useEffect para restablecer contadores si es necesario
+  useEffect(() => {
+    // Limpiar registros antiguos si es necesario
+    const lastReset = localStorage.getItem('chatgpt_last_reset');
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    
+    if (!lastReset || (now - parseInt(lastReset)) > oneDay) {
+      // Resetear contadores diarios si han pasado más de 24 horas
+      localStorage.setItem('chatgpt_request_count', '0');
+      localStorage.setItem('chatgpt_last_reset', now.toString());
+      setRequestCount(0);
+    }
+  }, []);
 
-  // Función para compartir en WhatsApp (igual que en App.js)
-  const shareOnWhatsApp = () => {
-    const message = `🎯 ¡Juego: ¿Quién dijo qué?!\n\n¿Puedes adivinar quién corresponde a cada titular polémico?\n\n👇 Juega aquí:\n${gameUrl}`;
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  };
+  // Cleanup useEffect
+  useEffect(() => {
+    return () => {
+      // Limpiar cualquier timeout o intervalo si los hubiera
+      setActiveRequests(new Set());
+    };
+  }, []);
 
   // Escuchar nuevo prompt para enviarlo a la cola
   useEffect(() => {
@@ -285,11 +268,19 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     };
   }, [requestId, checkingQueue]);
 
-  // Función para procesar solicitud (directamente o enviar a la cola de Azure)
+  // Efecto para aplicar personalizaciones específicas según el idioma
+  useEffect(() => {
+    const container = document.getElementById('analysisResults');
+    if (container) {
+      console.log(`Idioma actualizado a: ${i18n.language}`);
+    }
+  }, [i18n.language]);
+
+  // FUNCIÓN procesarSolicitud - debe estar ANTES del return condicional
   const procesarSolicitud = async (prompt) => {
     setIsLoading(true);
     setQueueStatus('Procesando solicitud...');
-    setErrorStatus(null);
+    setError(null);
     
     // Mostrar feedback inmediato al usuario mientras se procesa
     setHtmlContent(marked.parse(`### ${t('app.processing_request')}...\n\n${t('app.please_wait')}`));
@@ -315,7 +306,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
            error.message.includes("maximum context length"))) {
         
         console.log('[DEBUG] Error de límite de tokens detectado');
-        setErrorStatus('Texto demasiado largo');
+        setError('Texto demasiado largo');
         
         // Mensaje explicativo para el usuario
         const tokenErrorMsg = `### ⚠️ Texto demasiado largo\n\nEl texto que intentas analizar excede el límite de tokens permitido por el modelo.\n\nPor favor, reduce la longitud del texto e intenta nuevamente.\n\n**Sugerencias**:\n- Divide el análisis en conversaciones más pequeñas\n- Elimina partes irrelevantes de la conversación\n- Usa un modelo con mayor capacidad de contexto`;
@@ -336,13 +327,121 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     }
   };
 
-  // Efecto para aplicar personalizaciones específicas según el idioma
-  useEffect(() => {
-    const container = document.getElementById('analysisResults');
-    if (container) {
-      console.log(`Idioma actualizado a: ${i18n.language}`);
+  // FUNCIÓN processHeadlinesSection - debe estar ANTES del return condicional
+  const processHeadlinesSection = (response, gameData) => {
+    try {
+      // VALIDACIÓN: Verificar que gameData sea válido
+      if (!gameData || !Array.isArray(gameData) || gameData.length < 2) {
+        console.warn('processHeadlinesSection: gameData no válido, devolviendo respuesta original');
+        return response;
+      }
+
+      // Buscar el inicio de la sección de Titulares
+      const titularesMatch = response.match(/## 💡 Titulares/);
+      if (!titularesMatch) return response;
+      
+      // Buscar donde termina esta sección (siguiente ## o final del texto)
+      const startIndex = titularesMatch.index;
+      const nextSectionMatch = response.slice(startIndex + 20).match(/\n## /);
+      const endIndex = nextSectionMatch ? 
+        startIndex + 20 + nextSectionMatch.index : 
+        response.length;
+      
+      // Extraer la parte antes y después de la sección de Titulares
+      const beforeSection = response.slice(0, startIndex);
+      const afterSection = response.slice(endIndex);
+      
+      // Crear la nueva sección con formato limpio - AHORA ES SEGURO hacer destructuring
+      const [usuarios, headlines] = gameData;
+      
+      // VALIDACIÓN: Verificar que headlines sea válido
+      if (!headlines || !Array.isArray(headlines)) {
+        console.warn('processHeadlinesSection: headlines no válido, devolviendo respuesta original');
+        return response;
+      }
+      
+      // Crear mapeo inverso para obtener nombres completos
+      let nameMapping = {};
+      if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+        Object.entries(window.lastNameMapping).forEach(([fullName, initials]) => {
+          nameMapping[initials] = fullName;
+        });
+      }
+      
+      let newTitularesSection = "## 💡 Titulares\n\n**Datos de juego:**\n\n";
+      
+      headlines.forEach(headline => {
+        // VALIDACIÓN: Verificar que headline tenga las propiedades necesarias
+        if (headline && headline.nombre && headline.frase) {
+          const nombreCompleto = nameMapping[headline.nombre] || headline.nombre;
+          const fraseClean = headline.frase.replace(/'/g, '').trim();
+          newTitularesSection += `${nombreCompleto}: ${fraseClean}\n\n`;
+        }
+      });
+      
+      // Reconstruir la respuesta completa
+      return beforeSection + newTitularesSection + afterSection;
+      
+    } catch (error) {
+      console.error('Error procesando sección de titulares:', error);
+      return response; // Devolver respuesta original si hay error
     }
-  }, [i18n.language]);
+  };
+
+  // CRÍTICO: Verificar autenticación DESPUÉS de declarar todos los hooks
+  if (!user) {
+    console.error('[SEGURIDAD] Chatgptresultados: Sin usuario autenticado - bloqueando análisis psicológico');
+    return null;
+  }
+
+  // Función para generar URL del juego de titulares (igual que en App.js)
+  const generateHeadlinesGameUrl = () => {
+    try {
+      if (!headlinesGameData) {
+        alert("No hay datos de juego disponibles");
+        return;
+      }
+      
+      // Comprimir datos con LZ-String
+      const compressedData = lzString.compressToEncodedURIComponent(JSON.stringify(headlinesGameData));
+      
+      // Crear URL del juego
+      const url = `${window.location.origin}/headlines-game?h=${compressedData}`;
+      
+      setGameUrl(url);
+      setShowShareGameModal(true);
+      
+    } catch (error) {
+      console.error('Error generando URL del juego:', error);
+      alert("Error al generar el enlace del juego");
+    }
+  };
+
+  // Función para copiar al portapapeles (igual que en App.js)
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(gameUrl).then(() => {
+      setShowCopiedMessage(true);
+      setTimeout(() => setShowCopiedMessage(false), 2000);
+    }).catch(err => {
+      console.error('Error al copiar:', err);
+      // Fallback para navegadores que no soportan clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = gameUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setShowCopiedMessage(true);
+      setTimeout(() => setShowCopiedMessage(false), 2000);
+    });
+  };
+
+  // Función para compartir en WhatsApp (igual que en App.js)
+  const shareOnWhatsApp = () => {
+    const message = t('share.whatsapp_message', '🎯 ¡Juego: ¿Quién dijo qué?!\n\n¿Puedes adivinar quién corresponde a cada titular polémico?\n\n👇 Juega aquí:\n{{url}}', { url: gameUrl });
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   // Si está cargando pero ya tenemos contenido para mostrar, mostramos ambos
   if (isLoading) {
@@ -438,10 +537,10 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           textAlign: 'center'
         }}>
           <h3 style={{ marginBottom: '1rem', color: '#2c3e50' }}>
-            🎯 ¿Quién dijo qué?
+            🎯 {t('share.game_title', '¿Quién dijo qué?')}
           </h3>
           <p style={{ marginBottom: '1.5rem', color: '#6c757d' }}>
-            Descubre quién corresponde a cada titular polémico
+            {t('share.game_description', 'Descubre quién corresponde a cada titular polémico')}
           </p>
           <button 
             onClick={generateHeadlinesGameUrl}
@@ -460,37 +559,49 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
             onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
             onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
           >
-            🚀 Compartir Juego de Titulares
+            🚀 {t('share.share_game_button', 'Compartir Juego de Titulares')}
           </button>
         </div>
       )}
       
-      {/* Modal para compartir juego (igual que en App.js) */}
+      {/* Modal para compartir juego */}
       {showShareGameModal && (
         <div className="share-game-modal">
           <div className="share-game-modal-content">
-            <span className="close-modal" onClick={() => setShowShareGameModal(false)}>&times;</span>
-            <h3>¡Comparte el juego!</h3>
-            <p>Envía este enlace a tus amigos para que adivinen quién corresponde a cada titular polémico.</p>
+            <h3>{t('share.modal_title', 'Compartir Juego')}</h3>
+            <p>{t('share.modal_description', 'Comparte este enlace con tus amigos para que puedan jugar:')}</p>
             
             <div className="game-url-container">
               <input 
                 type="text" 
                 value={gameUrl} 
                 readOnly 
-                onClick={(e) => e.target.select()} 
+                onClick={(e) => e.target.select()}
               />
               <button onClick={copyToClipboard}>
-                Copiar
+                {t('share.copy_button', 'Copiar')}
               </button>
-              {showCopiedMessage && <span className="copied-message">¡Copiado!</span>}
             </div>
+            
+            {showCopiedMessage && (
+              <div className="copied-message">
+                {t('share.copied_message', '¡Enlace copiado!')}
+              </div>
+            )}
             
             <div className="share-options">
               <button className="whatsapp-share" onClick={shareOnWhatsApp}>
-                <span>Compartir en WhatsApp</span>
+                <span>WhatsApp</span>
+                <span>📱</span>
               </button>
             </div>
+            
+            <button 
+              className="close-modal-button"
+              onClick={() => setShowShareGameModal(false)}
+            >
+              {t('share.close_button', 'Cerrar')}
+            </button>
           </div>
         </div>
       )}

@@ -177,6 +177,9 @@
       "no_category_data": "No data available for this category",
       "no_specific_details": "No specific details available",
       "generic": "Error"
+    },
+    "privacy": {
+      "no_ai_analysis": "Do not share my data with AI for psychological analysis (data will not be sent to Azure)"
     }
   },
   "header": {
@@ -199,7 +202,8 @@
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "cookies": "Cookie Policy"
   },
   "messages": {
     "loading": "Loading...",
@@ -643,9 +647,6 @@
     "generating_conclusions": "Generating conclusions...",
     "finalizing_analysis": "Finalizing psychological analysis..."
   },
-  "privacy": {
-    "no_ai_analysis": "Do not share my data with AI for psychological analysis (data will not be sent to Azure)"
-  },
   "cookiePolicy": {
     "title": "Cookie Policy",
     "introduction": {
@@ -741,6 +742,174 @@
     "contact": {
       "title": "Contact",
       "description": "If you have any questions about our cookie policy, you can contact us at:"
+    }
+  },
+  "headlines_game": {
+    "title": "Who Said What?",
+    "subtitle": "Guess who corresponds to each headline",
+    "question": "Question",
+    "select_person": "Select a person...",
+    "view_results": "View Results",
+    "results": "Results!",
+    "perfect": "Perfect! 🏆",
+    "good_job": "Well done! 👏",
+    "try_again": "Keep trying! 💪",
+    "game_data": "Game Data:",
+    "answer_review": "Answer Review:",
+    "your_answer": "Your answer:",
+    "no_answer": "No answer",
+    "play_again": "Play Again"
+  },
+  "share": {
+    "whatsapp_message": "🎯 Game: Who Said What?\n\nCan you guess who corresponds to each controversial headline?\n\n👇 Play here:\n{{url}}",
+    "game_title": "Who Said What?",
+    "game_description": "Discover who corresponds to each controversial headline",
+    "share_game_button": "Share Headlines Game",
+    "modal_title": "Share Game",
+    "modal_description": "Share this link with your friends so they can play:",
+    "copy_button": "Copy",
+    "copied_message": "Link copied!",
+    "close_button": "Close"
+  },
+  "chatTopGame": {
+    "error": {
+      "noGameDataUrl": "No game data found in URL",
+      "incompleteData": "Game data is incomplete or corrupted",
+      "loadingError": "Error loading game: {{error}}",
+      "title": "Error"
+    },
+    "header": {
+      "title": "Who's Who in the Chat?",
+      "subtitle": "Guess which person in the chat corresponds to each category"
+    },
+    "loading": "Loading game...",
+    "button": {
+      "backToHome": "Back to home",
+      "playAgainResults": "Play again",
+      "playAgainBottom": "Play again",
+      "viewResults": "View results"
+    },
+    "formHint": "Answer at least one question to continue",
+    "question": {
+      "whoIs": "Who is {{categoryName}}?",
+      "selectPerson": "Select a person"
+    },
+    "categories": {
+      "pistolero": {
+        "name": "Gunslinger",
+        "description": "Replies faster"
+      },
+      "vampiro": {
+        "name": "Vampire",
+        "description": "Sends more messages at night"
+      },
+      "cafeconleche": {
+        "name": "Coffee with Milk",
+        "description": "Shorter messages"
+      },
+      "dejaenvisto": {
+        "name": "Ghost",
+        "description": "Replies slower"
+      },
+      "narcicista": {
+        "name": "Narcissist",
+        "description": "Uses the word 'I' more often"
+      },
+      "puntofinal": {
+        "name": "Finisher",
+        "description": "Ends more conversations"
+      },
+      "fosforo": {
+        "name": "Igniter",
+        "description": "Starts conversations"
+      },
+      "menosesmas": {
+        "name": "Less is More",
+        "description": "More concise messages"
+      },
+      "chismoso": {
+        "name": "Gossip",
+        "description": "Talks more about other people"
+      },
+      "happyflower": {
+        "name": "Happy Flower",
+        "description": "Uses more emojis"
+      },
+      "amoroso": {
+        "name": "Romantic",
+        "description": "Uses more love emojis"
+      },
+      "sicopata": {
+        "name": "Psychopath",
+        "description": "Sends more consecutive messages"
+      },
+      "comico": {
+        "name": "Comic",
+        "description": "Uses more funny emojis"
+      },
+      "agradecido": {
+        "name": "Grateful",
+        "description": "Uses more gratitude emojis"
+      },
+      "curioso": {
+        "name": "Curious",
+        "description": "Asks more questions"
+      },
+      "negativo": {
+        "name": "Negative",
+        "description": "Uses more negative emojis"
+      },
+      "mala_influencia": {
+        "name": "Bad Influence",
+        "description": "Mentions more vices"
+      }
+    },
+    "results": {
+      "title": "Results!",
+      "perfect": "Perfect! You got all the questions you answered right.",
+      "goodJob": "Good job! You know your friends quite well.",
+      "tryAgain": "Try again! It seems you don't know them as well as you thought."
+    },
+    "answers": {
+      "title": "Answers:",
+      "yourAnswer": "Your answer:",
+      "notAnswered": "Not answered",
+      "correctAnswer": "Correct answer:"
+    },
+    "footer": {
+      "text": "WhatsApp Chat Analyzer"
+    }
+  },
+  "cookieBanner": {
+    "title": "We use cookies",
+    "description": "We use necessary cookies for application functionality (login, payments) and optional cookies to improve your experience (analytics and personalization).",
+    "acceptAll": "Accept all",
+    "onlyNecessary": "Only necessary",
+    "customize": "Customize",
+    "preferences": {
+      "title": "Cookie preferences",
+      "description": "Customize which types of cookies you want to allow:",
+      "save": "Save preferences",
+      "back": "Back",
+      "categories": {
+        "necessary": {
+          "title": "🔒 Necessary cookies",
+          "required": "(Required)",
+          "description": "Include authentication (Firebase), payment processing (Stripe) and basic application functionality."
+        },
+        "analytics": {
+          "title": "📊 Analytics cookies",
+          "description": "Google Analytics to understand how you use the application and improve the experience."
+        },
+        "marketing": {
+          "title": "🎯 Marketing cookies",
+          "description": "Google Ads and remarketing to show you relevant content."
+        },
+        "functionality": {
+          "title": "⚙️ Functionality cookies",
+          "description": "Remember your language preferences and interface customization."
+        }
+      }
     }
   }
 } 

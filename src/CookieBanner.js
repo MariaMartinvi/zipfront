@@ -80,30 +80,27 @@ const CookieBanner = () => {
           <div className="cookie-banner-content">
             <div className="cookie-banner-icon">🍪</div>
             <div className="cookie-banner-text">
-              <h3>Utilizamos cookies</h3>
-              <p>
-                Usamos cookies necesarias para el funcionamiento de la aplicación (login, pagos) 
-                y opcionales para mejorar tu experiencia (análisis y personalización).
-              </p>
+              <h3>{t('cookieBanner.title')}</h3>
+              <p>{t('cookieBanner.description')}</p>
             </div>
             <div className="cookie-banner-buttons">
               <button 
                 className="cookie-btn cookie-btn-primary" 
                 onClick={acceptAllCookies}
               >
-                Aceptar todas
+                {t('cookieBanner.acceptAll')}
               </button>
               <button 
                 className="cookie-btn cookie-btn-secondary" 
                 onClick={rejectNonEssentialCookies}
               >
-                Solo necesarias
+                {t('cookieBanner.onlyNecessary')}
               </button>
               <button 
                 className="cookie-btn cookie-btn-outline" 
                 onClick={() => setShowPreferences(true)}
               >
-                Personalizar
+                {t('cookieBanner.customize')}
               </button>
             </div>
           </div>
@@ -111,16 +108,18 @@ const CookieBanner = () => {
       ) : (
         <div className="cookie-preferences">
           <div className="cookie-preferences-content">
-            <h3>Preferencias de cookies</h3>
-            <p>Personaliza qué tipos de cookies quieres permitir:</p>
+            <h3>{t('cookieBanner.preferences.title')}</h3>
+            <p>{t('cookieBanner.preferences.description')}</p>
             
             {Object.entries(cookieCategories).map(([key, category]) => (
               <div key={key} className="cookie-category">
                 <div className="cookie-category-header">
                   <div className="cookie-category-title">
-                    <h4>{category.icon} {category.name}</h4>
+                    <h4>{category.icon} {t(`cookieBanner.preferences.categories.${key}.title`)}</h4>
                     {category.required && (
-                      <span className="cookie-category-required">(Obligatorias)</span>
+                      <span className="cookie-category-required">
+                        {t(`cookieBanner.preferences.categories.${key}.required`)}
+                      </span>
                     )}
                   </div>
                   <div className="cookie-category-toggle">
@@ -134,7 +133,7 @@ const CookieBanner = () => {
                     <label htmlFor={`${key}-cookies`}></label>
                   </div>
                 </div>
-                <p>{category.description}</p>
+                <p>{t(`cookieBanner.preferences.categories.${key}.description`)}</p>
               </div>
             ))}
             
@@ -143,13 +142,13 @@ const CookieBanner = () => {
                 className="cookie-btn cookie-btn-primary" 
                 onClick={savePreferences}
               >
-                Guardar preferencias
+                {t('cookieBanner.preferences.save')}
               </button>
               <button 
                 className="cookie-btn cookie-btn-outline" 
                 onClick={() => setShowPreferences(false)}
               >
-                Volver
+                {t('cookieBanner.preferences.back')}
               </button>
             </div>
           </div>

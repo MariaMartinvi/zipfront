@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './ChatHeadlinesGame.css';
 import lzString from 'lz-string';
 
 const ChatHeadlinesGame = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const [gameData, setGameData] = useState(null);
   const [userAnswers, setUserAnswers] = useState({});
@@ -228,15 +230,15 @@ const ChatHeadlinesGame = () => {
   return (
     <div className="headlines-game-container">
       <div className="headlines-game-header">
-        <h2>🎯 ¿Quién dijo qué?</h2>
-        <p>Adivina quién corresponde a cada titular</p>
+        <h2>🎯 {t('headlines_game.title', '¿Quién dijo qué?')}</h2>
+        <p>{t('headlines_game.subtitle', 'Adivina quién corresponde a cada titular')}</p>
       </div>
 
       {!submitted ? (
         <form onSubmit={handleSubmit} className="headlines-game-form">
           {gameData.headlines.map((headline, index) => (
             <div key={index} className="question-block">
-              <div className="question-number">Pregunta {index + 1}</div>
+              <div className="question-number">{t('headlines_game.question', 'Pregunta')} {index + 1}</div>
               <div className="question-description">{headline.frase}</div>
               
               <div className="options-container">
@@ -245,7 +247,7 @@ const ChatHeadlinesGame = () => {
                   onChange={(e) => handleAnswerChange(index, e.target.value)}
                   className="user-select"
                 >
-                  <option value="">Selecciona una persona...</option>
+                  <option value="">{t('headlines_game.select_person', 'Selecciona una persona...')}</option>
                   {gameData.usuarios.map((user, userIndex) => (
                     <option key={userIndex} value={user}>
                       {user}
@@ -257,28 +259,28 @@ const ChatHeadlinesGame = () => {
           ))}
 
           <button type="submit" className="submit-button">
-            Ver Resultados
+            {t('headlines_game.view_results', 'Ver Resultados')}
           </button>
         </form>
       ) : (
         <div className="results-container">
           <div className="score-display">
-            <h3>🎉 ¡Resultados!</h3>
+            <h3>🎉 {t('headlines_game.results', '¡Resultados!')}</h3>
             <div className="score-big">
               {score} / {gameData.headlines.length}
             </div>
             <p>
               {score === gameData.headlines.length 
-                ? '¡Perfecto! 🏆' 
+                ? t('headlines_game.perfect', '¡Perfecto! 🏆')
                 : score >= gameData.headlines.length / 2 
-                ? '¡Bien hecho! 👏' 
-                : '¡Sigue intentando! 💪'
+                ? t('headlines_game.good_job', '¡Bien hecho! 👏')
+                : t('headlines_game.try_again', '¡Sigue intentando! 💪')
               }
             </p>
           </div>
 
           <div className="game-data-section">
-            <div className="game-data-title">Datos de juego:</div>
+            <div className="game-data-title">{t('headlines_game.game_data', 'Datos de juego:')}</div>
             <div className="game-data-list">
               {gameData.headlines.map((headline, index) => (
                 <div key={index} className="game-data-item">
@@ -290,7 +292,7 @@ const ChatHeadlinesGame = () => {
           </div>
 
           <div className="answers-review">
-            <h4>Revisión de respuestas:</h4>
+            <h4>{t('headlines_game.answer_review', 'Revisión de respuestas:')}</h4>
             {gameData.headlines.map((headline, index) => {
               const userAnswer = userAnswers[index];
               const isCorrect = userAnswer === headline.nombre;
@@ -304,10 +306,10 @@ const ChatHeadlinesGame = () => {
                       <div className="headline-part">{headline.frase}</div>
                     </div>
                     {userAnswer && !isCorrect && (
-                      <span className="user-answer">✗ Tu respuesta: {userAnswer}</span>
+                      <span className="user-answer">✗ {t('headlines_game.your_answer', 'Tu respuesta:')} {userAnswer}</span>
                     )}
                     {!userAnswer && (
-                      <span className="no-answer">○ No respondiste</span>
+                      <span className="no-answer">○ {t('headlines_game.no_answer', 'No respondiste')}</span>
                     )}
                   </div>
                 </div>
@@ -316,7 +318,7 @@ const ChatHeadlinesGame = () => {
           </div>
 
           <button onClick={resetGame} className="reset-button">
-            Jugar de Nuevo
+            {t('headlines_game.play_again', 'Jugar de Nuevo')}
           </button>
         </div>
       )}

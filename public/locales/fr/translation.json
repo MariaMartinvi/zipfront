@@ -181,7 +181,10 @@
     "terms": "Conditions d'utilisation",
     "privacy": "Politique de confidentialité",
     "contact": "Contact",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "legal": "Mentions légales",
+    "rights": "Tous droits réservés",
+    "scroll_top": "Retour en haut"
   },
   "messages": {
     "loading": "Chargement...",
@@ -723,6 +726,65 @@
     "contact": {
       "title": "Contact",
       "description": "Si vous avez des questions sur notre politique de cookies, vous pouvez nous contacter à :"
+    }
+  },
+  "headlines_game": {
+    "title": "Qui a dit quoi ?",
+    "subtitle": "Devinez qui correspond à chaque titre",
+    "question": "Question",
+    "select_person": "Sélectionnez une personne...",
+    "view_results": "Voir les résultats",
+    "results": "Résultats !",
+    "perfect": "Parfait ! 🏆",
+    "good_job": "Bien joué ! 👏",
+    "try_again": "Continuez d'essayer ! 💪",
+    "game_data": "Données du jeu :",
+    "answer_review": "Révision des réponses :",
+    "your_answer": "Votre réponse :",
+    "no_answer": "Pas de réponse",
+    "play_again": "Rejouer"
+  },
+  "share": {
+    "whatsapp_message": "🎯 Jeu : Qui a dit quoi ?\n\nPouvez-vous deviner qui correspond à chaque titre controversé ?\n\n👇 Jouez ici :\n{{url}}",
+    "game_title": "Qui a dit quoi ?",
+    "game_description": "Découvrez qui correspond à chaque titre controversé",
+    "share_game_button": "Partager le Jeu des Titres",
+    "modal_title": "Partager le Jeu",
+    "modal_description": "Partagez ce lien avec vos amis pour qu'ils puissent jouer :",
+    "copy_button": "Copier",
+    "copied_message": "Lien copié !",
+    "close_button": "Fermer"
+  },
+  "cookieBanner": {
+    "title": "Nous utilisons des cookies",
+    "description": "Nous utilisons des cookies nécessaires pour le fonctionnement de l'application (connexion, paiements) et optionnels pour améliorer votre expérience (analyse et personnalisation).",
+    "acceptAll": "Tout accepter",
+    "onlyNecessary": "Uniquement les nécessaires",
+    "customize": "Personnaliser",
+    "preferences": {
+      "title": "Préférences de cookies",
+      "description": "Personnalisez les types de cookies que vous souhaitez autoriser :",
+      "save": "Enregistrer les préférences",
+      "back": "Retour",
+      "categories": {
+        "necessary": {
+          "title": "🔒 Cookies nécessaires",
+          "required": "(Obligatoire)",
+          "description": "Incluent l'authentification (Firebase), le traitement des paiements (Stripe) et les fonctionnalités de base de l'application."
+        },
+        "analytics": {
+          "title": "📊 Cookies d'analyse",
+          "description": "Google Analytics pour comprendre comment vous utilisez l'application et améliorer l'expérience."
+        },
+        "marketing": {
+          "title": "🎯 Cookies marketing",
+          "description": "Google Ads et remarketing pour vous montrer du contenu pertinent."
+        },
+        "functionality": {
+          "title": "⚙️ Cookies de fonctionnalité",
+          "description": "Mémorisent vos préférences de langue et personnalisation de l'interface."
+        }
+      }
     }
   }
 } 

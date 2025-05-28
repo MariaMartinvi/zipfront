@@ -178,6 +178,9 @@
       "no_category_data": "Nenhum dado disponível para esta categoria",
       "no_specific_details": "Nenhum detalhe específico disponível",
       "generic": "Erro"
+    },
+    "privacy": {
+      "no_ai_analysis": "Não compartilhar meus dados com a IA para análise psicológica (os dados não serão enviados para o Azure)"
     }
   },
   "header": {
@@ -643,9 +646,6 @@
     "generating_conclusions": "Gerando conclusões...",
     "finalizing_analysis": "Finalizando análise psicológica..."
   },
-  "privacy": {
-    "no_ai_analysis": "Não compartilhar meus dados com IA para análise psicológica (os dados não serão enviados para o Azure)"
-  },
   "cookiePolicy": {
     "title": "Política de Cookies",
     "introduction": {
@@ -742,5 +742,32 @@
       "title": "Contato",
       "description": "Se você tiver dúvidas sobre nossa política de cookies, pode nos contatar em:"
     }
+  },
+  "headlines_game": {
+    "title": "Quem Disse o Quê?",
+    "subtitle": "Adivinhe quem corresponde a cada título",
+    "question": "Pergunta",
+    "select_person": "Selecione uma pessoa...",
+    "view_results": "Ver Resultados",
+    "results": "Resultados!",
+    "perfect": "Perfeito! 🏆",
+    "good_job": "Ótimo trabalho! 👏",
+    "try_again": "Continue tentando! 💪",
+    "game_data": "Dados do jogo:",
+    "answer_review": "Revisão das respostas:",
+    "your_answer": "Sua resposta:",
+    "no_answer": "Sem resposta",
+    "play_again": "Jogar Novamente"
+  },
+  "share": {
+    "whatsapp_message": "🎯 Jogo: Quem Disse o Quê?\n\nConsegue adivinhar quem corresponde a cada título controverso?\n\n👇 Jogue aqui:\n{{url}}",
+    "game_title": "Quem Disse o Quê?",
+    "game_description": "Descubra quem corresponde a cada título controverso",
+    "share_game_button": "Compartilhar Jogo de Títulos",
+    "modal_title": "Compartilhar Jogo",
+    "modal_description": "Compartilhe este link com seus amigos para que eles possam jogar:",
+    "copy_button": "Copiar",
+    "copied_message": "Link copiado!",
+    "close_button": "Fechar"
   }
 } 

@@ -26,6 +26,7 @@ import { detectarFormatoArchivo } from './formatDetector.js';
 // Importar utilidades de fecha
 import { parseDateTime, esDateValido } from './dateUtils.js';
 import { formatMinutesToHoursAndMinutes } from './utils/timeUtils';
+import { useAuth } from './AuthContext';
 
 // Implementación simplificada de analizarChat
 const analizarChat = (contenido, formatoForzado = null) => {
@@ -434,6 +435,7 @@ const obtenerPatronHorario = (datosHora) => {
 };
 
 const AnalisisPrimerChat = ({ operationId, chatData }) => {
+  const { user } = useAuth(); // Añadir verificación de autenticación
   const { t, i18n } = useTranslation();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);  
@@ -966,8 +968,16 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
     }
   }, [datosAnalizados, chatData, t]);
 
-  // Renderizar el contenido principal
-  if (cargando) {
+  // SEGURIDAD: Verificar autenticación antes de mostrar cualquier contenido
+  if (!user) {
+    return (
+      <div className="analisis-placeholder">
+        <p>{t('app.errors.login_required')}</p>
+      </div>
+    );
+  }
+
+  if (cargando && !datosAnalizados) {
     return (
       <div className="loading-container" style={{ textAlign: 'center', padding: '20px 0', backgroundColor: '#f0f8ff', borderRadius: '8px', margin: '15px 0' }}>
         <div className="loader" style={{ 
@@ -980,7 +990,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
           margin: '0 auto 15px auto'
         }}></div>
         <p style={{ fontWeight: 'bold', color: '#3498db' }}>{t('app.loading')}</p>
-        <style jsx>{`
+        <style>{`
           @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -989,12 +999,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       </div>
     );
   }
-  
-  // Mostrar error solo si no está relacionado con operationId
-  if (error && !error.includes("No operation ID") && !error.includes("operation_id") && !error.includes("operationId")) {
-    return <div className="error">{error}</div>;
-  }
-  
+
   if (!datos || !datos.success) {
     // Si hay datos analizados pero aún no se han procesado, mostrar cargando
     if (datosAnalizados && datosAnalizados.success) {
@@ -1010,7 +1015,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
             margin: '0 auto 15px auto'
           }}></div>
           <p style={{ fontWeight: 'bold', color: '#3498db' }}>{t('app.loading')}</p>
-          <style jsx>{`
+          <style>{`
             @keyframes spin {
               0% { transform: rotate(0deg); }
               100% { transform: rotate(360deg); }

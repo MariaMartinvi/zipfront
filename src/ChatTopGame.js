@@ -1,30 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './ChatTopGame.css';
 import lzString from 'lz-string'; // Importar lz-string para descomprimir los datos
-
-// Mapeo de categorías con descripciones
-const CATEGORY_DESCRIPTIONS = {
-  profesor: 'Quien usa más palabras únicas por mensaje',
-  rollero: 'Quien escribe mensajes más largos',
-  pistolero: 'Quien responde más rápido',
-  vampiro: 'Quien escribe más mensajes durante la noche',
-  cafeconleche: 'Quien escribe más temprano',
-  dejaenvisto: 'Quien responde más tarde',
-  narcicista: 'Quien más habla de sí mismo',
-  puntofinal: 'Quien termina más conversaciones',
-  fosforo: 'Quien inicia más conversaciones',
-  menosesmas: 'Quien escribe mensajes más cortos',
-  chismoso: 'Quien más menciona a otros',
-  happyflower: 'Quien usa más emojis',
-  amoroso: 'Quien usa más emojis de amor',
-  sicopata: 'Quien envía más mensajes seguidos',
-  comico: 'Quien tiene el don de hacer reír a los demás',
-  agradecido: 'Quien siempre da las gracias por todo',
-  curioso: 'Quien siempre está haciendo preguntas',
-  negativo: 'Quien envía más mensajes negativos',
-  mala_influencia: 'Quien menciona más vicios y bebidas alcohólicas'
-};
 
 // Mapeo de categorías con íconos
 const CATEGORY_ICONS = {
@@ -51,6 +29,7 @@ const CATEGORY_ICONS = {
 
 const ChatTopGame = () => {
   const location = useLocation();
+  const { t } = useTranslation();
   const [gameData, setGameData] = useState(null);
   const [userAnswers, setUserAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -75,7 +54,7 @@ const ChatTopGame = () => {
       const legacyData = searchParams.get('data');
       
       if (!superCompactData && !ultraCompactData && !compressedData && !legacyData) {
-        setDataError("No se encontraron datos del juego en la URL");
+        setDataError(t('chatTopGame.error.noGameDataUrl', "No se encontraron datos del juego en la URL"));
         setLoaded(true);
         return;
       }
@@ -202,7 +181,7 @@ const ChatTopGame = () => {
       if (!processedData.categorias || !processedData.usuarios || 
           Object.keys(processedData.categorias).length === 0 || 
           processedData.usuarios.length === 0) {
-        setDataError("Los datos del juego están incompletos o dañados");
+        setDataError(t('chatTopGame.error.incompleteData', "Los datos del juego están incompletos o dañados"));
         setLoaded(true);
         return;
       }
@@ -212,10 +191,10 @@ const ChatTopGame = () => {
       setLoaded(true);
     } catch (error) {
       console.error("Error decodificando datos del juego:", error);
-      setDataError(`Error cargando el juego: ${error.message}`);
+      setDataError(t('chatTopGame.error.loadingError', `Error cargando el juego: ${error.message}`));
       setLoaded(true);
     }
-  }, [location]);
+  }, [location, t]);
   
   // Manejar cambios en las respuestas del usuario
   const handleAnswerChange = (category, value) => {
@@ -260,10 +239,10 @@ const ChatTopGame = () => {
   if (dataError) {
     return (
       <div className="chat-top-game error-container">
-        <h1>Error</h1>
+        <h1>{t('chatTopGame.error.title', 'Error')}</h1>
         <p>{dataError}</p>
         <button onClick={() => window.location.href = '/'}>
-          Volver al inicio
+          {t('chatTopGame.button.backToHome', 'Volver al inicio')}
         </button>
       </div>
     );
@@ -274,7 +253,7 @@ const ChatTopGame = () => {
     return (
       <div className="chat-top-game loading-container">
         <div className="spinner"></div>
-        <p>Cargando juego...</p>
+        <p>{t('chatTopGame.loading', 'Cargando juego...')}</p>
       </div>
     );
   }
@@ -286,53 +265,54 @@ const ChatTopGame = () => {
   return (
     <div className="chat-top-game">
       <div className="game-header">
-        <h1>¿Quién es quién en el chat?</h1>
-        <p>Adivina qué persona del chat corresponde a cada categoría</p>
+        <h1>{t('chatTopGame.header.title', '¿Quién es quién en el chat?')}</h1>
+        <p>{t('chatTopGame.header.subtitle', 'Adivina qué persona del chat corresponde a cada categoría')}</p>
       </div>
       
       {submitted ? (
         <div className="game-results">
           <div className="score-card">
-            <h2>¡Resultado!</h2>
+            <h2>{t('chatTopGame.results.title', '¡Resultado!')}</h2>
             <div className="score">
               <span className="score-value">{score}</span>
               <span className="score-total">/ {answeredQuestionsCount}</span>
             </div>
             <p>{score === answeredQuestionsCount ? 
-              "¡Perfecto! Has acertado todas las preguntas que has respondido." : 
+              t('chatTopGame.results.perfect', '¡Perfecto! Has acertado todas las preguntas que has respondido.') : 
               score > answeredQuestionsCount / 2 ? 
-                "¡Buen trabajo! Conoces bastante a tus amigos." :
-                "¡Inténtalo de nuevo! Parece que no los conoces tanto como pensabas."}
+                t('chatTopGame.results.goodJob', '¡Buen trabajo! Conoces bastante a tus amigos.') :
+                t('chatTopGame.results.tryAgain', '¡Inténtalo de nuevo! Parece que no los conoces tanto como pensabas.')}
             </p>
             <button onClick={() => setSubmitted(false)}>
-              Volver a jugar
+              {t('chatTopGame.button.playAgainResults', 'Volver a jugar')}
             </button>
           </div>
           
-          <h3>Respuestas:</h3>
+          <h3>{t('chatTopGame.answers.title', 'Respuestas:')}</h3>
           <div className="answers-container">
             {categories.map(category => {
               const correctAnswer = gameData.categorias[category].nombre;
               const userAnswer = userAnswers[category] || '';
               const isCorrect = correctAnswer === userAnswer;
               const hasAnswer = !!userAnswer;
-              
+              const categoryKey = category.toLowerCase().replace(/\s+/g, '_');
+
               return (
                 <div key={category} className={`answer-card ${hasAnswer ? (isCorrect ? 'correct' : 'incorrect') : ''}`}>
                   <div className="category-info">
                     <div className="category-icon">{CATEGORY_ICONS[category] || '🏆'}</div>
                     <div className="category-details">
-                      <div className="category-name">{category.charAt(0).toUpperCase() + category.slice(1)}</div>
-                      <div className="category-description">{CATEGORY_DESCRIPTIONS[category] || category}</div>
+                      <div className="category-name">{t(`chatTopGame.categories.${categoryKey}.name`, category.charAt(0).toUpperCase() + category.slice(1))}</div>
+                      <div className="category-description">{t(`chatTopGame.categories.${categoryKey}.description`, category)}</div>
                     </div>
                   </div>
                   
                   <div className="answer-result">
                     <div className="user-answer">
-                      <span>Tu respuesta:</span> {userAnswer || 'No respondida'}
+                      <span>{t('chatTopGame.answers.yourAnswer', 'Tu respuesta:')} {userAnswer || t('chatTopGame.answers.notAnswered', 'No respondida')}</span>
                     </div>
                     <div className="correct-answer">
-                      <span>Respuesta correcta:</span> {correctAnswer}
+                      <span>{t('chatTopGame.answers.correctAnswer', 'Respuesta correcta:')} {correctAnswer}</span>
                     </div>
                   </div>
                   
@@ -346,37 +326,40 @@ const ChatTopGame = () => {
           
           <div className="share-again">
             <button onClick={() => window.location.reload()}>
-              Jugar otra vez
+              {t('chatTopGame.button.playAgainBottom', 'Jugar otra vez')}
             </button>
           </div>
         </div>
       ) : (
         <form className="game-form" onSubmit={handleSubmit}>
           <div className="questions-container">
-            {categories.map(category => (
-              <div key={category} className="question-card">
-                <div className="question-header">
-                  <div className="category-icon">{CATEGORY_ICONS[category] || '🏆'}</div>
-                  <h3>¿Quién es {category.charAt(0).toUpperCase() + category.slice(1)}?</h3>
+            {categories.map(category => {
+              const categoryKey = category.toLowerCase().replace(/\s+/g, '_');
+              return (
+                <div key={category} className="question-card">
+                  <div className="question-header">
+                    <div className="category-icon">{CATEGORY_ICONS[category] || '🏆'}</div>
+                    <h3>{t('chatTopGame.question.whoIs', '¿Quién es {{categoryName}}?', { categoryName: t(`chatTopGame.categories.${categoryKey}.name`, category.charAt(0).toUpperCase() + category.slice(1)) })}</h3>
+                  </div>
+                  
+                  <div className="question-description">
+                    {t(`chatTopGame.categories.${categoryKey}.description`, category)}
+                  </div>
+                  
+                  <select 
+                    value={userAnswers[category] || ''} 
+                    onChange={(e) => handleAnswerChange(category, e.target.value)}
+                  >
+                    <option value="">{t('chatTopGame.question.selectPerson', 'Selecciona una persona')}</option>
+                    {usuarios.map(usuario => (
+                      <option key={usuario} value={usuario}>
+                        {usuario}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                
-                <div className="question-description">
-                  {CATEGORY_DESCRIPTIONS[category] || category}
-                </div>
-                
-                <select 
-                  value={userAnswers[category] || ''} 
-                  onChange={(e) => handleAnswerChange(category, e.target.value)}
-                >
-                  <option value="">Selecciona una persona</option>
-                  {usuarios.map(usuario => (
-                    <option key={usuario} value={usuario}>
-                      {usuario}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ))}
+              );
+            })}
           </div>
           
           <div className="submit-container">
@@ -384,11 +367,11 @@ const ChatTopGame = () => {
               type="submit" 
               disabled={Object.keys(userAnswers).length === 0}
             >
-              Ver resultados
+              {t('chatTopGame.button.viewResults', 'Ver resultados')}
             </button>
             {Object.keys(userAnswers).length === 0 && (
               <p className="form-hint">
-                Responde al menos una pregunta para continuar
+                {t('chatTopGame.formHint', 'Responde al menos una pregunta para continuar')}
               </p>
             )}
           </div>
@@ -396,7 +379,7 @@ const ChatTopGame = () => {
       )}
       
       <div className="game-footer">
-        <p>Analizador de chats WhatsApp</p>
+        <p>{t('chatTopGame.footer.text', 'Analizador de chats WhatsApp')}</p>
       </div>
     </div>
   );

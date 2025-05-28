@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import './styles/Analisis.css';
 import './Analisis_top.css';
 // Importar el detector de formato directamente
 import { detectarFormatoArchivo } from './formatDetector.js';
 // Importar utilidades de fecha
 import { parseDateTime, esDateValido } from './dateUtils.js';
 import { formatMinutesToHoursAndMinutes } from './utils/timeUtils';
+import { useAuth } from './AuthContext';
 
 // Diccionario de palabras relacionadas con vicios por idioma
 const palabrasVicios = {
@@ -1285,6 +1287,7 @@ const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
 let isAlreadyRendered = false;
 
 const AnalisisTop = ({ operationId, chatData }) => {
+  const { user } = useAuth(); // Añadimos esta línea para verificar autenticación
   const { t } = useTranslation();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -1501,6 +1504,15 @@ const AnalisisTop = ({ operationId, chatData }) => {
 
   // Efecto para exponer los datos para el juego
   useEffect(() => {
+    // SEGURIDAD: Solo exponer datos si hay usuario autenticado
+    if (!user) {
+      // Limpiar datos previos si no hay usuario
+      if (window.lastAnalysisTopData) {
+        delete window.lastAnalysisTopData;
+      }
+      return;
+    }
+
     if (datos && (datos.usuarios || datos.categorias)) {
       // Asegurarnos de que usuarios sea un array
       let usuariosArray = [];
@@ -1525,7 +1537,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         usuariosArray = Array.from(nombresUnicos);
       }
       
-      // Exponer los datos para que App.js pueda usarlos en el juego
+      // Exponer los datos para que App.js pueda usarlos en el juego SOLO SI HAY USUARIO
       window.lastAnalysisTopData = {
         categorias: datos.categorias || {},
         usuarios: usuariosArray,
@@ -1538,7 +1550,16 @@ const AnalisisTop = ({ operationId, chatData }) => {
         nombresUsuarios: usuariosArray
       });
     }
-  }, [datos]);
+  }, [datos, user]); // Añadimos user como dependencia
+
+  // SEGURIDAD: Verificar autenticación antes de mostrar cualquier contenido
+  if (!user) {
+    return (
+      <div className="analisis-placeholder">
+        <p>{t('app.errors.login_required')}</p>
+      </div>
+    );
+  }
 
   const renderDetalleCategoria = (categoria) => {
     if (!datos || !datos.categorias || !datos.categorias[categoria]) {
@@ -1840,7 +1861,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         margin: '0 auto 15px auto'
       }}></div>
       <p style={{ fontWeight: 'bold', color: '#3498db' }}>{t('app.loading')}</p>
-      <style jsx>{`
+      <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
@@ -1925,54 +1946,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         })()}
       </div>
       
-      {/* Sección de participantes bajo el radar */}
-      {datos && datos.usuarios && datos.categorias && (() => {
-        // Recopilar todos los nombres que aparecen en alguna categoría
-        const nombresEnCategorias = new Set();
-        Object.values(datos.categorias).forEach(categoria => {
-          if (categoria && categoria.nombre && categoria.nombre !== '--' && categoria.nombre !== 'Sin datos') {
-            nombresEnCategorias.add(categoria.nombre);
-          }
-        });
-        
-        // Filtrar usuarios que no aparecen en categorías
-        const participantesBajoRadar = Object.keys(datos.usuarios).filter(
-          nombre => !nombresEnCategorias.has(nombre)
-        );
-        
-        // Solo mostrar la sección si hay participantes bajo el radar
-        if (participantesBajoRadar.length === 0) {
-          return null;
-        }
-        
-        return (
-          <div className="bajo-radar-container" style={{ marginTop: '30px', textAlign: 'center' }}>
-            <h3 style={{ fontWeight: 'bold', marginBottom: '15px' }}>
-              Y volando bajo del radar tenemos a:
-            </h3>
-            <div className="bajo-radar-participantes" style={{ 
-              display: 'flex', 
-              flexWrap: 'wrap', 
-              justifyContent: 'center',
-              gap: '10px' 
-            }}>
-              {participantesBajoRadar.map(nombre => (
-                <div key={nombre} style={{
-                  background: '#f2f2f2',
-                  padding: '8px 15px',
-                  borderRadius: '20px',
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem'
-                }}>
-                  {nombre} ({datos.usuarios[nombre].mensajes} {t('app.top_profiles.total_messages')})
-                </div>
-              ))}
-            </div>
-            
-          </div>
-        );
-      })()}
-    </div>
+        </div>
   );
 };
 

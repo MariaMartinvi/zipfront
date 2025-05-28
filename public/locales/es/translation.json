@@ -200,7 +200,10 @@
       "no_specific_details": "No hay detalles específicos disponibles",
       "generic": "Error"
     },
-    "loading_status": "Procesando datos..."
+    "loading_status": "Procesando datos...",
+    "privacy": {
+      "no_ai_analysis": "No compartir mis datos con la IA para análisis psicológico (no se enviarán datos a Azure)"
+    }
   },
   "header": {
     "home": "Inicio",
@@ -222,7 +225,8 @@
     "terms": "Términos de Servicio",
     "privacy": "Política de Privacidad",
     "contact": "Contacto",
-    "faq": "Preguntas Frecuentes"
+    "faq": "Preguntas Frecuentes",
+    "cookies": "Política de Cookies"
   },
   "messages": {
     "loading": "Cargando...",
@@ -665,9 +669,6 @@
     "generating_conclusions": "Generando conclusiones...",
     "finalizing_analysis": "Finalizando análisis psicológico..."
   },
-  "privacy": {
-    "no_ai_analysis": "No compartir mis datos con la IA para análisis psicológico (no se enviarán datos a Azure)"
-  },
   "cookiePolicy": {
     "title": "Política de Cookies",
     "introduction": {
@@ -763,6 +764,155 @@
     "contact": {
       "title": "Contacto",
       "description": "Si tiene alguna pregunta sobre nuestra política de cookies, puede contactarnos en:"
+    }
+  },
+  "headlines_game": {
+    "title": "¿Quién dijo qué?",
+    "subtitle": "Adivina quién corresponde a cada titular",
+    "question": "Pregunta",
+    "select_person": "Selecciona una persona...",
+    "view_results": "Ver Resultados",
+    "results": "¡Resultados!",
+    "perfect": "¡Perfecto! 🏆",
+    "good_job": "¡Bien hecho! 👏",
+    "try_again": "¡Sigue intentando! 💪",
+    "game_data": "Datos de juego:",
+    "answer_review": "Revisión de respuestas:",
+    "your_answer": "Tu respuesta:",
+    "no_answer": "No respondiste",
+    "play_again": "Jugar de Nuevo"
+  },
+  "share": {
+    "whatsapp_message": "🎯 ¡Juego: ¿Quién dijo qué?!\n\n¿Puedes adivinar quién corresponde a cada titular polémico?\n\n👇 Juega aquí:\n{{url}}",
+    "game_title": "¿Quién dijo qué?",
+    "game_description": "Descubre quién corresponde a cada titular polémico",
+    "share_game_button": "Compartir Juego de Titulares",
+    "modal_title": "Compartir Juego",
+    "modal_description": "Comparte este enlace con tus amigos para que puedan jugar:",
+    "copy_button": "Copiar",
+    "copied_message": "¡Enlace copiado!",
+    "close_button": "Cerrar"
+  },
+  "chatTopGame": {
+    "error": {
+      "noGameDataUrl": "No se encontraron datos del juego en la URL",
+      "incompleteData": "Los datos del juego están incompletos o dañados",
+      "loadingError": "Error cargando el juego: {{error}}",
+      "title": "Error"
+    },
+    "header": {
+      "title": "¿Quién es quién en el chat?",
+      "subtitle": "Adivina qué persona del chat corresponde a cada categoría"
+    },
+    "loading": "Cargando juego...",
+    "button": {
+      "backToHome": "Volver al inicio",
+      "playAgainResults": "Volver a jugar",
+      "playAgainBottom": "Jugar otra vez",
+      "viewResults": "Ver resultados"
+    },
+    "formHint": "Responde al menos una pregunta para continuar",
+    "question": {
+      "whoIs": "¿Quién es {{categoryName}}?",
+      "selectPerson": "Selecciona una persona"
+    },
+    "categories": {
+      "pistolero": {
+        "name": "Pistolero",
+        "description": "Contesta más rápido"
+      },
+      "vampiro": {
+        "name": "Vampiro",
+        "description": "Manda más mensajes por la noche"
+      },
+      "cafeconleche": {
+        "name": "Cafeconleche",
+        "description": "Mensajes más cortos"
+      },
+      "dejaenvisto": {
+        "name": "Dejaenvisto",
+        "description": "Contesta más lento"
+      },
+      "narcicista": {
+        "name": "Narcisista",
+        "description": "Usa más la palabra 'yo'"
+      },
+      "puntofinal": {
+        "name": "Puntofinal",
+        "description": "Acaba más conversaciones"
+      },
+      "fosforo": {
+        "name": "Fosforo",
+        "description": "Inicia conversaciones"
+      },
+      "menosesmas": {
+        "name": "Menos es más",
+        "description": "Mensajes más concisos"
+      },
+      "chismoso": {
+        "name": "Chismoso",
+        "description": "Habla más de otras personas"
+      },
+      "happyflower": {
+        "name": "Happy Flower",
+        "description": "Usa más emojis"
+      },
+      "amoroso": {
+        "name": "Amoroso",
+        "description": "Usa más emojis de amor"
+      },
+      "sicopata": {
+        "name": "Sicópata",
+        "description": "Envía más mensajes seguidos"
+      },
+      "comico": {
+        "name": "Cómico",
+        "description": "Usa más emojis divertidos"
+      },
+      "agradecido": {
+        "name": "Agradecido",
+        "description": "Usa más emojis de agradecimiento"
+      },
+      "curioso": {
+        "name": "Curioso",
+        "description": "Hace más preguntas"
+      },
+      "negativo": {
+        "name": "Negativo",
+        "description": "Usa más emojis negativos"
+      },
+      "mala_influencia": {
+        "name": "Mala Influencia",
+        "description": "Menciona más vicios"
+      }
+    },
+    "results": {
+      "title": "¡Resultado!",
+      "perfect": "¡Perfecto! Has acertado todas las preguntas que has respondido.",
+      "goodJob": "¡Buen trabajo! Conoces bastante a tus amigos.",
+      "tryAgain": "¡Inténtalo de nuevo! Parece que no los conoces tanto como pensabas."
+    },
+    "answers": {
+      "title": "Respuestas:",
+      "yourAnswer": "Tu respuesta:",
+      "notAnswered": "No respondida",
+      "correctAnswer": "Respuesta correcta:"
+    },
+    "footer": {
+      "text": "Analizador de chats WhatsApp"
+    }
+  },
+  "cookieBanner": {
+    "title": "Utilizamos cookies",
+    "description": "Usamos cookies necesarias para el funcionamiento de la aplicación (login, pagos) y opcionales para mejorar tu experiencia (análisis y personalización).",
+    "acceptAll": "Aceptar todas",
+    "onlyNecessary": "Solo necesarias",
+    "customize": "Personalizar",
+    "preferences": {
+      "title": "Preferencias de cookies",
+      "description": "Personaliza qué tipos de cookies quieres permitir:",
+      "save": "Guardar preferencias",
+      "back": "Volver"
     }
   }
 } 

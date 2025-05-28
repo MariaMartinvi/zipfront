@@ -514,6 +514,30 @@ function AppContent() {
 
   // Función para procesar el archivo ZIP una vez validado y autorizado
   const processZipFile = async (file) => {
+    // CRÍTICO: Verificación de seguridad - NO permitir análisis sin autenticación
+    if (!user) {
+      console.error('[SEGURIDAD] Intento de análisis sin usuario autenticado - BLOQUEADO');
+      setError('Error de seguridad: Debes estar autenticado para analizar chats.');
+      setIsLoading(false);
+      return false;
+    }
+    
+    // CRÍTICO: Verificación adicional con getCurrentUser
+    try {
+      const currentUser = await getCurrentUser();
+      if (!currentUser) {
+        console.error('[SEGURIDAD] Verificación adicional falló - sin usuario - BLOQUEADO');
+        setError('Error de seguridad: Sesión no válida. Por favor, inicia sesión nuevamente.');
+        setIsLoading(false);
+        return false;
+      }
+    } catch (authError) {
+      console.error('[SEGURIDAD] Error verificando autenticación:', authError);
+      setError('Error de autenticación. Por favor, inicia sesión nuevamente.');
+      setIsLoading(false);
+      return false;
+    }
+
     if (!file) {
       setError(t('error.file_type'));
       setIsLoading(false);
@@ -1029,6 +1053,13 @@ function AppContent() {
 
   // Función para el manejo de extracción de ZIP
   const handleZipExtraction = (data) => {
+    // CRÍTICO: Verificación de seguridad antes de mostrar análisis
+    if (!user) {
+      console.error('[SEGURIDAD] Intento de mostrar análisis sin usuario autenticado - BLOQUEADO');
+      setError('Error de seguridad: Debes estar autenticado para ver análisis.');
+      return;
+    }
+
     if (data && data.chat) {
       console.log("Chat extraído con éxito. Preparando para análisis...");
       // Guardar los datos del chat para que estén disponibles para los componentes
@@ -1054,6 +1085,30 @@ function AppContent() {
 
   // Function to poll for Mistral response - Mejorada para ser más robusta
   const fetchMistralResponse = async (chatContent = null) => {
+    // CRÍTICO: Verificación de seguridad antes de cualquier análisis psicológico
+    if (!user) {
+      console.error('[SEGURIDAD] Intento de análisis psicológico sin usuario autenticado - BLOQUEADO');
+      setError('Error de seguridad: Debes estar autenticado para realizar análisis psicológico.');
+      setIsFetchingMistral(false);
+      return false;
+    }
+
+    // CRÍTICO: Verificación adicional con getCurrentUser para análisis psicológico
+    try {
+      const currentUser = await getCurrentUser();
+      if (!currentUser) {
+        console.error('[SEGURIDAD] Verificación adicional falló para análisis psicológico - sin usuario - BLOQUEADO');
+        setError('Error de seguridad: Sesión no válida para análisis psicológico. Por favor, inicia sesión nuevamente.');
+        setIsFetchingMistral(false);
+        return false;
+      }
+    } catch (authError) {
+      console.error('[SEGURIDAD] Error verificando autenticación para análisis psicológico:', authError);
+      setError('Error de autenticación para análisis psicológico. Por favor, inicia sesión nuevamente.');
+      setIsFetchingMistral(false);
+      return false;
+    }
+
     // Esperar a que la autenticación se complete antes de proceder
     try {
       console.log("Esperando a que la autenticación se complete...");
@@ -1239,6 +1294,13 @@ const tryDeleteFiles = async (operationId) => {
 };
   // Start analysis when we have chat data
   useEffect(() => {
+    // CRÍTICO: Verificación de seguridad antes de mostrar análisis automáticamente
+    if (!user) {
+      console.error('[SEGURIDAD] Intento de mostrar análisis automáticamente sin usuario autenticado - BLOQUEADO');
+      // No mostrar error aquí para evitar interferir con el flujo normal de autenticación
+      return;
+    }
+
     // Solo iniciar el análisis si chatData está disponible pero no hay respuesta aún
     // y si no está iniciado desde processZipFile
     if (chatData && !chatGptResponse && !isFetchingMistral) {
@@ -1249,7 +1311,7 @@ const tryDeleteFiles = async (operationId) => {
       // Pasar chatData como parámetro para asegurar que usa el contenido correcto
       fetchMistralResponse(chatData);
     }
-  }, [chatData, chatGptResponse, isFetchingMistral]);
+  }, [chatData, chatGptResponse, isFetchingMistral, user]); // Agregar user como dependencia
 
   // Efecto para manejar compartir archivos y configurar Service Worker
   useEffect(() => {
@@ -1390,6 +1452,32 @@ const tryDeleteFiles = async (operationId) => {
         console.log("Esperando autenticación antes de restaurar estado...");
         await userSession.waitForAuth();
         console.log("Autenticación completada, procediendo con restauración de estado");
+
+        // CRÍTICO: Verificar que hay usuario autenticado antes de restaurar cualquier estado
+        const currentUser = await getCurrentUser();
+        if (!currentUser) {
+          console.error('[SEGURIDAD] No hay usuario autenticado - NO restaurar estado de análisis');
+          // Limpiar cualquier dato persistente sin autorización
+          const keysToRemove = [
+            'whatsapp_analyzer_operation_id',
+            'whatsapp_analyzer_loading',
+            'whatsapp_analyzer_fetching_mistral',
+            'whatsapp_analyzer_show_analysis',
+            'whatsapp_analyzer_chatgpt_response',
+            'whatsapp_analyzer_analysis_complete',
+            'whatsapp_analyzer_mistral_error',
+            'whatsapp_analyzer_chat_data',
+            'whatsapp_analyzer_has_chat_data',
+            'whatsapp_analyzer_force_fetch'
+          ];
+          
+          keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+          });
+          
+          console.log('[SEGURIDAD] Datos de análisis no autorizados eliminados del localStorage');
+          return;
+        }
 
         // Intentar recuperar el operationId del localStorage
         const savedOperationId = localStorage.getItem('whatsapp_analyzer_operation_id');
@@ -2107,6 +2195,45 @@ const tryDeleteFiles = async (operationId) => {
     };
   }, []);
 
+  // CRÍTICO: Efecto para limpiar análisis si el usuario se desconecta
+  useEffect(() => {
+    if (!user) {
+      // Si no hay usuario, limpiar completamente cualquier estado de análisis
+      console.log('[SEGURIDAD] Usuario desconectado - limpiando todo estado de análisis');
+      
+      // Limpiar estados de análisis
+      setShowAnalysis(false);
+      setChatData(null);
+      setChatGptResponse("");
+      setShowChatGptResponse(false);
+      setIsFetchingMistral(false);
+      setOperationId(null);
+      setZipFile(null);
+      
+      // Limpiar localStorage
+      const keysToRemove = [
+        'whatsapp_analyzer_operation_id',
+        'whatsapp_analyzer_loading',
+        'whatsapp_analyzer_fetching_mistral',
+        'whatsapp_analyzer_show_analysis',
+        'whatsapp_analyzer_chatgpt_response',
+        'whatsapp_analyzer_analysis_complete',
+        'whatsapp_analyzer_mistral_error',
+        'whatsapp_analyzer_chat_data',
+        'whatsapp_analyzer_has_chat_data',
+        'whatsapp_analyzer_force_fetch'
+      ];
+      
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+      });
+      
+      // Limpiar variables globales de Azure
+      window.lastAzureResponse = null;
+      window.lastNameMapping = null;
+    }
+  }, [user]);
+
   return (
     <div className="App">
       <Header user={user} />
@@ -2132,7 +2259,7 @@ const tryDeleteFiles = async (operationId) => {
             element={
               <>
                 {/* Mostrar componentes de análisis estadístico */}
-                {operationId && (
+                {operationId && user && (
                   <div className="analysis-container" ref={analysisRef}>
                     <h2>{t('app.analysis.statistical')}</h2>
                     
@@ -2159,7 +2286,7 @@ const tryDeleteFiles = async (operationId) => {
                 )}
 
                 {/* Análisis psicológico de Azure */}
-                {operationId && (
+                {operationId && user && (
                   <div className="chat-analysis-section">
                     <h2>{t('app.analysis.psychological')}</h2>
                     
@@ -2187,7 +2314,7 @@ const tryDeleteFiles = async (operationId) => {
                 )}
                 
                 {/* Botón para compartir juego al final del análisis */}
-                {operationId && chatData && !isLoading && !isFetchingMistral && (
+                {operationId && chatData && !isLoading && !isFetchingMistral && user && (
                   <div className="share-game-section">
                     <button 
                       className="share-game-button"
@@ -2257,7 +2384,7 @@ const tryDeleteFiles = async (operationId) => {
                               checked={skipAIPsychologicalAnalysis}
                               onChange={(e) => setSkipAIPsychologicalAnalysis(e.target.checked)}
                             />
-                            <span>No compartir mis datos con la IA para análisis psicológico (no se enviarán datos a Azure)</span>
+                            <span>{t('app.privacy.no_ai_analysis')}</span>
                           </label>
                         </div>
                       </div>

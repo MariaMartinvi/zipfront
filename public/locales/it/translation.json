@@ -88,10 +88,11 @@
     }
   },
   "footer": {
-    "faq": "FAQ",
-    "contact": "Contatti",
     "terms": "Termini e Condizioni",
     "privacy": "Privacy",
+    "contact": "Contatti",
+    "faq": "FAQ",
+    "legal": "Note legali",
     "rights": "Tutti i diritti riservati",
     "scroll_top": "Torna su"
   },
@@ -439,6 +440,9 @@
       "description": "Devi accedere per analizzare le conversazioni",
       "login": "Accedi",
       "register": "Crea Account"
+    },
+    "privacy": {
+      "no_ai_analysis": "Non condividere i miei dati con l'IA per l'analisi psicologica (i dati non verranno inviati ad Azure)"
     }
   },
   "date": {
@@ -729,9 +733,6 @@
     "generating_conclusions": "Generazione delle conclusioni...",
     "finalizing_analysis": "Finalizzazione dell'analisi psicologica..."
   },
-  "privacy": {
-    "no_ai_analysis": "Non condividere i miei dati con l'IA per l'analisi psicologica (i dati non verranno inviati ad Azure)"
-  },
   "cookiePolicy": {
     "title": "Informativa sui Cookie",
     "introduction": {
@@ -827,6 +828,65 @@
     "contact": {
       "title": "Contatto",
       "description": "Se hai domande sulla nostra informativa sui cookie, puoi contattarci a:"
+    }
+  },
+  "headlines_game": {
+    "title": "Chi ha detto cosa?",
+    "subtitle": "Indovina chi corrisponde a ogni titolo",
+    "question": "Domanda",
+    "select_person": "Seleziona una persona...",
+    "view_results": "Vedi risultati",
+    "results": "Risultati!",
+    "perfect": "Perfetto! 🏆",
+    "good_job": "Ottimo lavoro! 👏",
+    "try_again": "Continua a provare! 💪",
+    "game_data": "Dati del gioco:",
+    "answer_review": "Revisione delle risposte:",
+    "your_answer": "La tua risposta:",
+    "no_answer": "Nessuna risposta",
+    "play_again": "Gioca di nuovo"
+  },
+  "share": {
+    "whatsapp_message": "🎯 Gioco: Chi ha detto cosa?\n\nRiesci a indovinare chi corrisponde a ogni titolo controverso?\n\n👇 Gioca qui:\n{{url}}",
+    "game_title": "Chi ha detto cosa?",
+    "game_description": "Scopri chi corrisponde a ogni titolo controverso",
+    "share_game_button": "Condividi Gioco dei Titoli",
+    "modal_title": "Condividi Gioco",
+    "modal_description": "Condividi questo link con i tuoi amici per farli giocare:",
+    "copy_button": "Copia",
+    "copied_message": "Link copiato!",
+    "close_button": "Chiudi"
+  },
+  "cookieBanner": {
+    "title": "Utilizziamo i cookie",
+    "description": "Utilizziamo cookie necessari per il funzionamento dell'applicazione (login, pagamenti) e opzionali per migliorare la tua esperienza (analisi e personalizzazione).",
+    "acceptAll": "Accetta tutti",
+    "onlyNecessary": "Solo necessari",
+    "customize": "Personalizza",
+    "preferences": {
+      "title": "Preferenze cookie",
+      "description": "Personalizza quali tipi di cookie vuoi consentire:",
+      "save": "Salva preferenze",
+      "back": "Indietro",
+      "categories": {
+        "necessary": {
+          "title": "🔒 Cookie necessari",
+          "required": "(Obbligatorio)",
+          "description": "Includono autenticazione (Firebase), elaborazione dei pagamenti (Stripe) e funzionalità di base dell'applicazione."
+        },
+        "analytics": {
+          "title": "📊 Cookie analitici",
+          "description": "Google Analytics per capire come usi l'applicazione e migliorare l'esperienza."
+        },
+        "marketing": {
+          "title": "🎯 Cookie di marketing",
+          "description": "Google Ads e remarketing per mostrarti contenuti pertinenti."
+        },
+        "functionality": {
+          "title": "⚙️ Cookie di funzionalità",
+          "description": "Memorizzano le tue preferenze di lingua e personalizzazione dell'interfaccia."
+        }
+      }
     }
   }
 } 

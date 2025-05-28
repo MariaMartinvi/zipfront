@@ -156,6 +156,9 @@
       "no_category_data": "Keine Daten für diese Kategorie verfügbar",
       "no_specific_details": "Keine spezifischen Details verfügbar",
       "generic": "Fehler"
+    },
+    "privacy": {
+      "no_ai_analysis": "Meine Daten nicht mit KI für psychologische Analyse teilen (Daten werden nicht an Azure gesendet)"
     }
   },
   "header": {
@@ -178,7 +181,10 @@
     "terms": "Nutzungsbedingungen",
     "privacy": "Datenschutzrichtlinie",
     "contact": "Kontakt",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "legal": "Rechtliches",
+    "rights": "Alle Rechte vorbehalten",
+    "scroll_top": "Nach oben scrollen"
   },
   "messages": {
     "loading": "Laden...",
@@ -605,9 +611,6 @@
     "generating_conclusions": "Schlussfolgerungen werden generiert...",
     "finalizing_analysis": "Psychologische Analyse wird abgeschlossen..."
   },
-  "privacy": {
-    "no_ai_analysis": "Meine Daten nicht mit KI für psychologische Analysen teilen (Daten werden nicht an Azure gesendet)"
-  },
   "cookiePolicy": {
     "title": "Cookie-Richtlinie",
     "introduction": {
@@ -703,6 +706,65 @@
     "contact": {
       "title": "Kontakt",
       "description": "Wenn Sie Fragen zu unserer Cookie-Richtlinie haben, können Sie uns kontaktieren unter:"
+    }
+  },
+  "headlines_game": {
+    "title": "Wer hat was gesagt?",
+    "subtitle": "Erraten Sie, wer zu welcher Überschrift gehört",
+    "question": "Frage",
+    "select_person": "Wählen Sie eine Person...",
+    "view_results": "Ergebnisse anzeigen",
+    "results": "Ergebnisse!",
+    "perfect": "Perfekt! 🏆",
+    "good_job": "Gut gemacht! 👏",
+    "try_again": "Weiter versuchen! 💪",
+    "game_data": "Spieldaten:",
+    "answer_review": "Antwortüberprüfung:",
+    "your_answer": "Ihre Antwort:",
+    "no_answer": "Keine Antwort",
+    "play_again": "Nochmal spielen"
+  },
+  "share": {
+    "whatsapp_message": "🎯 Spiel: Wer hat was gesagt?\n\nKönnen Sie erraten, wer zu welcher kontroversen Überschrift gehört?\n\n👇 Hier spielen:\n{{url}}",
+    "game_title": "Wer hat was gesagt?",
+    "game_description": "Entdecken Sie, wer zu welcher kontroversen Überschrift gehört",
+    "share_game_button": "Überschriften-Spiel teilen",
+    "modal_title": "Spiel teilen",
+    "modal_description": "Teilen Sie diesen Link mit Ihren Freunden, damit sie spielen können:",
+    "copy_button": "Kopieren",
+    "copied_message": "Link kopiert!",
+    "close_button": "Schließen"
+  },
+  "cookieBanner": {
+    "title": "Wir verwenden Cookies",
+    "description": "Wir verwenden notwendige Cookies für die Funktionalität der Anwendung (Login, Zahlungen) und optionale Cookies zur Verbesserung Ihrer Erfahrung (Analyse und Personalisierung).",
+    "acceptAll": "Alle akzeptieren",
+    "onlyNecessary": "Nur notwendige",
+    "customize": "Anpassen",
+    "preferences": {
+      "title": "Cookie-Einstellungen",
+      "description": "Passen Sie an, welche Arten von Cookies Sie zulassen möchten:",
+      "save": "Einstellungen speichern",
+      "back": "Zurück",
+      "categories": {
+        "necessary": {
+          "title": "🔒 Notwendige Cookies",
+          "required": "(Erforderlich)",
+          "description": "Umfassen Authentifizierung (Firebase), Zahlungsabwicklung (Stripe) und grundlegende Anwendungsfunktionalität."
+        },
+        "analytics": {
+          "title": "📊 Analyse-Cookies",
+          "description": "Google Analytics, um zu verstehen, wie Sie die Anwendung nutzen und die Erfahrung zu verbessern."
+        },
+        "marketing": {
+          "title": "🎯 Marketing-Cookies",
+          "description": "Google Ads und Remarketing, um Ihnen relevante Inhalte anzuzeigen."
+        },
+        "functionality": {
+          "title": "⚙️ Funktionalitäts-Cookies",
+          "description": "Speichern Ihre Sprachpräferenzen und Anpassungen der Benutzeroberfläche."
+        }
+      }
     }
   }
 } 
