@@ -202,6 +202,7 @@
     "fr": "Français",
     "de": "Allemand",
     "it": "Italien",
+    "pt": "Portugais",
     "select": "Sélectionner la langue"
   },
   "whatsapp": {
@@ -626,5 +627,102 @@
   },
   "privacy": {
     "no_ai_analysis": "Ne pas partager mes données avec l'IA pour l'analyse psychologique (les données ne seront pas envoyées à Azure)"
+  },
+  "cookiePolicy": {
+    "title": "Politique de Cookies",
+    "introduction": {
+      "title": "Introduction",
+      "content": "Cette politique de cookies explique ce que sont les cookies et comment nous les utilisons. Vous devriez lire cette politique pour comprendre quels types de cookies nous utilisons, quelles informations nous collectons et comment nous les utilisons."
+    },
+    "whatAreCookies": {
+      "title": "Que sont les cookies ?",
+      "content": "Les cookies sont de petits fichiers texte qui sont stockés sur votre appareil lorsque vous visitez notre site web. Ils sont largement utilisés pour faire fonctionner les sites web plus efficacement et fournir des informations aux propriétaires du site."
+    },
+    "typesOfCookies": {
+      "title": "Types de cookies que nous utilisons",
+      "byPurpose": {
+        "title": "Par finalité",
+        "necessary": {
+          "title": "Cookies nécessaires",
+          "description": "Ils sont essentiels pour que vous puissiez naviguer sur le site web et utiliser ses fonctionnalités."
+        },
+        "preferences": {
+          "title": "Cookies de préférences",
+          "description": "Permettent au site web de mémoriser des informations qui modifient la façon dont le site se comporte ou s'affiche."
+        },
+        "statistics": {
+          "title": "Cookies statistiques",
+          "description": "Nous aident à comprendre comment les visiteurs interagissent avec le site web."
+        },
+        "marketing": {
+          "title": "Cookies marketing",
+          "description": "Utilisés pour suivre les visiteurs sur les sites web. L'intention est d'afficher des publicités pertinentes et engageantes pour l'utilisateur individuel."
+        }
+      },
+      "byLifespan": {
+        "title": "Par durée",
+        "session": {
+          "title": "Cookies de session",
+          "description": "Ils sont supprimés lorsque vous fermez votre navigateur."
+        },
+        "persistent": {
+          "title": "Cookies persistants",
+          "description": "Ils restent sur votre appareil pendant une période spécifiée."
+        }
+      }
+    },
+    "cookiesUsed": {
+      "title": "Cookies que nous utilisons",
+      "tableHeaders": {
+        "name": "Nom",
+        "provider": "Fournisseur",
+        "purpose": "Finalité",
+        "expiry": "Durée",
+        "type": "Type"
+      },
+      "necessary": {
+        "title": "Cookies nécessaires",
+        "cookieConsent": "Stocke les préférences de consentement aux cookies de l'utilisateur",
+        "cookiePreferences": "Stocke les préférences de cookies de l'utilisateur",
+        "sessionId": "Maintient la session de l'utilisateur active"
+      },
+      "analytics": {
+        "title": "Cookies analytiques",
+        "ga": "Distinguer les utilisateurs uniques",
+        "gid": "Distinguer les utilisateurs"
+      },
+      "marketing": {
+        "title": "Cookies marketing",
+        "fbp": "Utilisé par Facebook pour afficher des publicités pertinentes"
+      }
+    },
+    "thirdPartyServices": {
+      "title": "Services tiers",
+      "description": "Nous utilisons des services tiers qui peuvent définir des cookies sur votre appareil :",
+      "googleAnalytics": "Nous utilisons Google Analytics pour analyser l'utilisation du site web. Google Analytics génère des informations statistiques sur l'utilisation du site web via des cookies.",
+      "facebookPixel": "Nous utilisons Facebook Pixel pour mesurer l'efficacité de nos publicités et personnaliser le contenu publicitaire.",
+      "privacyPolicy": "Politique de confidentialité"
+    },
+    "howToManage": {
+      "title": "Comment gérer les cookies",
+      "description": "Vous pouvez contrôler et/ou supprimer les cookies comme vous le souhaitez. Vous pouvez supprimer tous les cookies déjà présents sur votre ordinateur et configurer la plupart des navigateurs pour empêcher leur placement.",
+      "browsers": {
+        "title": "Instructions pour les navigateurs populaires",
+        "instructions": "Instructions pour gérer les cookies"
+      }
+    },
+    "consent": {
+      "title": "Consentement",
+      "description": "En utilisant notre site web, vous acceptez l'utilisation des cookies conformément à cette politique de cookies."
+    },
+    "updates": {
+      "title": "Mises à jour de la politique",
+      "description": "Nous pouvons mettre à jour cette politique de cookies de temps à autre. Tout changement sera publié sur cette page.",
+      "lastUpdate": "Dernière mise à jour"
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Si vous avez des questions sur notre politique de cookies, vous pouvez nous contacter à :"
+    }
   }
 } 

@@ -101,6 +101,7 @@
     "fr": "Francese",
     "de": "Tedesco",
     "it": "Italiano",
+    "pt": "Portoghese",
     "select": "Seleziona lingua"
   },
   "analysis": {
@@ -730,5 +731,102 @@
   },
   "privacy": {
     "no_ai_analysis": "Non condividere i miei dati con l'IA per l'analisi psicologica (i dati non verranno inviati ad Azure)"
+  },
+  "cookiePolicy": {
+    "title": "Informativa sui Cookie",
+    "introduction": {
+      "title": "Introduzione",
+      "content": "Questa informativa sui cookie spiega cosa sono i cookie e come li utilizziamo. Dovresti leggere questa informativa per capire quali tipi di cookie utilizziamo, quali informazioni raccogliamo e come le utilizziamo."
+    },
+    "whatAreCookies": {
+      "title": "Cosa sono i cookie?",
+      "content": "I cookie sono piccoli file di testo che vengono memorizzati sul tuo dispositivo quando visiti il nostro sito web. Sono ampiamente utilizzati per far funzionare i siti web in modo più efficiente e fornire informazioni ai proprietari del sito."
+    },
+    "typesOfCookies": {
+      "title": "Tipi di cookie che utilizziamo",
+      "byPurpose": {
+        "title": "Per finalità",
+        "necessary": {
+          "title": "Cookie necessari",
+          "description": "Sono essenziali per consentirti di navigare sul sito web e utilizzare le sue funzionalità."
+        },
+        "preferences": {
+          "title": "Cookie di preferenza",
+          "description": "Permettono al sito web di ricordare informazioni che modificano il modo in cui il sito si comporta o appare."
+        },
+        "statistics": {
+          "title": "Cookie statistici",
+          "description": "Ci aiutano a capire come i visitatori interagiscono con il sito web."
+        },
+        "marketing": {
+          "title": "Cookie di marketing",
+          "description": "Utilizzati per tracciare i visitatori sui siti web. L'intento è mostrare annunci pertinenti e coinvolgenti per l'utente individuale."
+        }
+      },
+      "byLifespan": {
+        "title": "Per durata",
+        "session": {
+          "title": "Cookie di sessione",
+          "description": "Vengono eliminati quando chiudi il browser."
+        },
+        "persistent": {
+          "title": "Cookie persistenti",
+          "description": "Rimangono sul tuo dispositivo per un periodo di tempo specificato."
+        }
+      }
+    },
+    "cookiesUsed": {
+      "title": "Cookie che utilizziamo",
+      "tableHeaders": {
+        "name": "Nome",
+        "provider": "Fornitore",
+        "purpose": "Finalità",
+        "expiry": "Durata",
+        "type": "Tipo"
+      },
+      "necessary": {
+        "title": "Cookie necessari",
+        "cookieConsent": "Memorizza le preferenze di consenso ai cookie dell'utente",
+        "cookiePreferences": "Memorizza le preferenze dei cookie dell'utente",
+        "sessionId": "Mantiene attiva la sessione dell'utente"
+      },
+      "analytics": {
+        "title": "Cookie analitici",
+        "ga": "Distinguere gli utenti unici",
+        "gid": "Distinguere gli utenti"
+      },
+      "marketing": {
+        "title": "Cookie di marketing",
+        "fbp": "Utilizzato da Facebook per mostrare annunci pertinenti"
+      }
+    },
+    "thirdPartyServices": {
+      "title": "Servizi di terze parti",
+      "description": "Utilizziamo servizi di terze parti che possono impostare cookie sul tuo dispositivo:",
+      "googleAnalytics": "Utilizziamo Google Analytics per analizzare l'utilizzo del sito web. Google Analytics genera informazioni statistiche sull'utilizzo del sito web tramite cookie.",
+      "facebookPixel": "Utilizziamo Facebook Pixel per misurare l'efficacia dei nostri annunci e personalizzare i contenuti pubblicitari.",
+      "privacyPolicy": "Informativa sulla privacy"
+    },
+    "howToManage": {
+      "title": "Come gestire i cookie",
+      "description": "Puoi controllare e/o eliminare i cookie come desideri. Puoi eliminare tutti i cookie già presenti sul tuo computer e puoi configurare la maggior parte dei browser per impedirne il posizionamento.",
+      "browsers": {
+        "title": "Istruzioni per browser popolari",
+        "instructions": "Istruzioni per la gestione dei cookie"
+      }
+    },
+    "consent": {
+      "title": "Consenso",
+      "description": "Utilizzando il nostro sito web, accetti l'uso dei cookie in conformità con questa informativa sui cookie."
+    },
+    "updates": {
+      "title": "Aggiornamenti dell'informativa",
+      "description": "Potremmo aggiornare questa informativa sui cookie di volta in volta. Qualsiasi modifica sarà pubblicata su questa pagina.",
+      "lastUpdate": "Ultimo aggiornamento"
+    },
+    "contact": {
+      "title": "Contatto",
+      "description": "Se hai domande sulla nostra informativa sui cookie, puoi contattarci a:"
+    }
   }
 } 

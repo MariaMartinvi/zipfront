@@ -220,6 +220,7 @@
     "fr": "French",
     "de": "German",
     "it": "Italian",
+    "pt": "Portuguese",
     "select": "Select language"
   },
   "whatsapp": {
@@ -644,5 +645,102 @@
   },
   "privacy": {
     "no_ai_analysis": "Do not share my data with AI for psychological analysis (data will not be sent to Azure)"
+  },
+  "cookiePolicy": {
+    "title": "Cookie Policy",
+    "introduction": {
+      "title": "Introduction",
+      "content": "This cookie policy explains what cookies are and how we use them. You should read this policy to understand what type of cookies we use, what information we collect, and how we use it."
+    },
+    "whatAreCookies": {
+      "title": "What are cookies?",
+      "content": "Cookies are small text files that are stored on your device when you visit our website. They are widely used to make websites work more efficiently and provide information to website owners."
+    },
+    "typesOfCookies": {
+      "title": "Types of cookies we use",
+      "byPurpose": {
+        "title": "By purpose",
+        "necessary": {
+          "title": "Necessary cookies",
+          "description": "These are essential for you to browse the website and use its features."
+        },
+        "preferences": {
+          "title": "Preference cookies",
+          "description": "Allow the website to remember information that changes how the website behaves or looks."
+        },
+        "statistics": {
+          "title": "Statistics cookies",
+          "description": "Help us understand how visitors interact with the website."
+        },
+        "marketing": {
+          "title": "Marketing cookies",
+          "description": "Used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user."
+        }
+      },
+      "byLifespan": {
+        "title": "By duration",
+        "session": {
+          "title": "Session cookies",
+          "description": "These are deleted when you close your browser."
+        },
+        "persistent": {
+          "title": "Persistent cookies",
+          "description": "These remain on your device for a specified period of time."
+        }
+      }
+    },
+    "cookiesUsed": {
+      "title": "Cookies we use",
+      "tableHeaders": {
+        "name": "Name",
+        "provider": "Provider",
+        "purpose": "Purpose",
+        "expiry": "Duration",
+        "type": "Type"
+      },
+      "necessary": {
+        "title": "Necessary cookies",
+        "cookieConsent": "Stores user's cookie consent preferences",
+        "cookiePreferences": "Stores user's cookie preferences",
+        "sessionId": "Keeps user session active"
+      },
+      "analytics": {
+        "title": "Analytics cookies",
+        "ga": "Distinguish unique users",
+        "gid": "Distinguish users"
+      },
+      "marketing": {
+        "title": "Marketing cookies",
+        "fbp": "Used by Facebook to display relevant advertisements"
+      }
+    },
+    "thirdPartyServices": {
+      "title": "Third-party services",
+      "description": "We use third-party services that may set cookies on your device:",
+      "googleAnalytics": "We use Google Analytics to analyze website usage. Google Analytics generates statistical information about website usage through cookies.",
+      "facebookPixel": "We use Facebook Pixel to measure the effectiveness of our advertisements and to personalize advertising content.",
+      "privacyPolicy": "Privacy Policy"
+    },
+    "howToManage": {
+      "title": "How to manage cookies",
+      "description": "You can control and/or delete cookies as you wish. You can delete all cookies that are already on your computer and you can set most browsers to prevent them from being placed.",
+      "browsers": {
+        "title": "Instructions for popular browsers",
+        "instructions": "Instructions for managing cookies"
+      }
+    },
+    "consent": {
+      "title": "Consent",
+      "description": "By using our website, you agree to the use of cookies in accordance with this cookie policy."
+    },
+    "updates": {
+      "title": "Policy updates",
+      "description": "We may update this cookie policy from time to time. Any changes will be posted on this page.",
+      "lastUpdate": "Last updated"
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "If you have any questions about our cookie policy, you can contact us at:"
+    }
   }
 } 

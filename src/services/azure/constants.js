@@ -254,7 +254,43 @@ Asegúrate de que tu análisis general sea objetivo, respetuoso y constructivo, 
     T4: Nome partecipante:
     T5: Nome partecipante:
 
-    Assicurati di essere obiettivo, rispettoso e costruttivo nella tua analisi generale, tranne che nella sezione dei titoli dove devi essere controverso e divertente.`
+    Assicurati di essere obiettivo, rispettoso e costruttivo nella tua analisi generale, tranne che nella sezione dei titoli dove devi essere controverso e divertente.`,
+  'pt': `Analise a conversa fornecida como um psicólogo observador com senso de humor, incisivo e direto.
+    Apresente sua análise no seguinte formato, usando markdown para as seções.
+    É MUITO IMPORTANTE que você siga exatamente este formato:
+
+    ## 🧠 Análise de Personalidades
+
+    Para cada pessoa na conversa (use exatamente este formato). Tente incluir todas as pessoas na análise:
+    
+    ### [Nome] 
+    - **Papel no grupo:** [Líder/Mediador/Observador/etc]
+    - **Características principais:** [Descreva a personalidade, você pode fornecer exemplos do chat para tornar a resposta mais realística]
+    - **Pontos fortes:** [1-2 pontos fortes]
+    - **Áreas para melhoria:** [1-2 áreas onde poderiam melhorar]
+
+    ## 🚩 Sinais de Alerta
+    - [Lista de aspectos preocupantes na dinâmica do grupo, se houver]
+
+    ## 💯 Avaliação do Relacionamento
+    - **Pontuação:** [1-10] 
+    - **Justificativa:** [Breve explicação da pontuação]
+    - **Dinâmica predominante:** [Cooperação/Competição/Apoio/etc]
+
+    ## 💡 Recomendações
+    - [1-2 dicas práticas para melhorar a dinâmica do grupo]
+
+    ## 💡 Manchetes
+    - [5 manchetes sobre os diferentes participantes do chat. O objetivo é fazer um jogo para adivinhar a quem cada manchete corresponde]
+
+    Sempre siga este formato:
+    M1: Nome do participante:
+    M2: Nome do participante:
+    M3: Nome do participante:
+    M4: Nome do participante:
+    M5: Nome do participante:
+
+    Certifique-se de ser objetivo, respeitoso e construtivo em sua análise geral, exceto na seção de manchetes onde deve ser controverso e divertido.`
 };
 
 // Mensajes de truncamiento multiidioma
@@ -278,6 +314,10 @@ export const TRUNCATION_MESSAGES = {
   'it': {
     'short': "Questo è un estratto di una conversazione più lunga. Di seguito è riportata gran parte del contenuto:",
     'long': "Questo è un estratto di una conversazione molto lunga. Di seguito è riportata gran parte del contenuto:"
+  },
+  'pt': {
+    'short': "Este é um extrato de uma conversa mais longa. Abaixo está mostrada grande parte do conteúdo:",
+    'long': "Este é um extrato de uma conversa muito longa. Abaixo está mostrada grande parte do conteúdo:"
   }
 };
 
@@ -287,7 +327,8 @@ export const USER_PREFIXES = {
   'en': "Analyze the following content extracted from a conversation:",
   'fr': "Analysez le contenu suivant extrait d'une conversation :",
   'de': "Analysieren Sie den folgenden Inhalt aus einem Gespräch:",
-  'it': "Analizza il seguente contenuto estratto da una conversazione:"
+  'it': "Analizza il seguente contenuto estratto da una conversazione:",
+  'pt': "Analise o seguinte conteúdo extraído de uma conversa:"
 };
 
 // Configuración de límites para selección inteligente de modelos

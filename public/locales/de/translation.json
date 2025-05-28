@@ -199,6 +199,7 @@
     "fr": "Französisch",
     "de": "Deutsch",
     "it": "Italienisch",
+    "pt": "Portugiesisch",
     "select": "Sprache auswählen"
   },
   "whatsapp": {
@@ -606,5 +607,102 @@
   },
   "privacy": {
     "no_ai_analysis": "Meine Daten nicht mit KI für psychologische Analysen teilen (Daten werden nicht an Azure gesendet)"
+  },
+  "cookiePolicy": {
+    "title": "Cookie-Richtlinie",
+    "introduction": {
+      "title": "Einführung",
+      "content": "Diese Cookie-Richtlinie erklärt, was Cookies sind und wie wir sie verwenden. Sie sollten diese Richtlinie lesen, um zu verstehen, welche Art von Cookies wir verwenden, welche Informationen wir sammeln und wie wir sie verwenden."
+    },
+    "whatAreCookies": {
+      "title": "Was sind Cookies?",
+      "content": "Cookies sind kleine Textdateien, die auf Ihrem Gerät gespeichert werden, wenn Sie unsere Website besuchen. Sie werden häufig verwendet, um Websites effizienter zu machen und Informationen an Website-Betreiber zu liefern."
+    },
+    "typesOfCookies": {
+      "title": "Arten von Cookies, die wir verwenden",
+      "byPurpose": {
+        "title": "Nach Zweck",
+        "necessary": {
+          "title": "Notwendige Cookies",
+          "description": "Diese sind für das Browsen der Website und die Nutzung ihrer Funktionen unerlässlich."
+        },
+        "preferences": {
+          "title": "Präferenz-Cookies",
+          "description": "Ermöglichen der Website, Informationen zu speichern, die das Verhalten oder Aussehen der Website ändern."
+        },
+        "statistics": {
+          "title": "Statistik-Cookies",
+          "description": "Helfen uns zu verstehen, wie Besucher mit der Website interagieren."
+        },
+        "marketing": {
+          "title": "Marketing-Cookies",
+          "description": "Werden verwendet, um Besucher auf Websites zu verfolgen. Die Absicht ist, Anzeigen anzuzeigen, die für den einzelnen Benutzer relevant und ansprechend sind."
+        }
+      },
+      "byLifespan": {
+        "title": "Nach Dauer",
+        "session": {
+          "title": "Session-Cookies",
+          "description": "Diese werden gelöscht, wenn Sie Ihren Browser schließen."
+        },
+        "persistent": {
+          "title": "Persistente Cookies",
+          "description": "Diese bleiben für einen bestimmten Zeitraum auf Ihrem Gerät."
+        }
+      }
+    },
+    "cookiesUsed": {
+      "title": "Cookies, die wir verwenden",
+      "tableHeaders": {
+        "name": "Name",
+        "provider": "Anbieter",
+        "purpose": "Zweck",
+        "expiry": "Dauer",
+        "type": "Typ"
+      },
+      "necessary": {
+        "title": "Notwendige Cookies",
+        "cookieConsent": "Speichert die Cookie-Zustimmungseinstellungen des Benutzers",
+        "cookiePreferences": "Speichert die Cookie-Präferenzen des Benutzers",
+        "sessionId": "Hält die Benutzersitzung aktiv"
+      },
+      "analytics": {
+        "title": "Analyse-Cookies",
+        "ga": "Unterscheidet eindeutige Benutzer",
+        "gid": "Unterscheidet Benutzer"
+      },
+      "marketing": {
+        "title": "Marketing-Cookies",
+        "fbp": "Wird von Facebook verwendet, um relevante Anzeigen anzuzeigen"
+      }
+    },
+    "thirdPartyServices": {
+      "title": "Drittanbieter-Dienste",
+      "description": "Wir verwenden Drittanbieter-Dienste, die Cookies auf Ihrem Gerät setzen können:",
+      "googleAnalytics": "Wir verwenden Google Analytics, um die Nutzung der Website zu analysieren. Google Analytics generiert statistische Informationen über die Nutzung der Website durch Cookies.",
+      "facebookPixel": "Wir verwenden Facebook Pixel, um die Effektivität unserer Anzeigen zu messen und Werbeinhalte zu personalisieren.",
+      "privacyPolicy": "Datenschutzerklärung"
+    },
+    "howToManage": {
+      "title": "Wie man Cookies verwaltet",
+      "description": "Sie können Cookies nach Belieben kontrollieren und/oder löschen. Sie können alle Cookies löschen, die sich bereits auf Ihrem Computer befinden, und die meisten Browser so einstellen, dass sie nicht platziert werden.",
+      "browsers": {
+        "title": "Anweisungen für beliebte Browser",
+        "instructions": "Anweisungen zum Verwalten von Cookies"
+      }
+    },
+    "consent": {
+      "title": "Einwilligung",
+      "description": "Durch die Nutzung unserer Website stimmen Sie der Verwendung von Cookies gemäß dieser Cookie-Richtlinie zu."
+    },
+    "updates": {
+      "title": "Richtlinien-Updates",
+      "description": "Wir können diese Cookie-Richtlinie von Zeit zu Zeit aktualisieren. Alle Änderungen werden auf dieser Seite veröffentlicht.",
+      "lastUpdate": "Zuletzt aktualisiert"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "description": "Wenn Sie Fragen zu unserer Cookie-Richtlinie haben, können Sie uns kontaktieren unter:"
+    }
   }
 } 
