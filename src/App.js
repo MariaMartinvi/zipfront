@@ -16,6 +16,7 @@ import UserPlanBanner from './UserPlanBanner';
 import GameBanner from './GameBanner';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
 import PaymentSuccessBanner from './PaymentSuccessBanner';
+import CookieBanner from './CookieBanner';
 import { useAuth } from './AuthContext';
 import { deleteFiles, uploadFile, getMistralResponse, startChatAnalysis, getAzureResponse } from './fileService';
 import Contact from './Paginasextra/Contact';
@@ -2389,6 +2390,9 @@ const tryDeleteFiles = async (operationId) => {
           </div>
         )}
       </main>
+      
+      {/* Barra de cookies */}
+      <CookieBanner />
     </div>
   );
 }

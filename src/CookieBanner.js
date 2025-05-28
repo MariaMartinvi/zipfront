@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import './CookieBanner.css';
 import { useTranslation } from 'react-i18next';
+import { CookieService, defaultCookiePreferences, cookieCategories } from './services/cookieService';
 
 const CookieBanner = () => {
   const { t } = useTranslation();
   const [showBanner, setShowBanner] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
-  const [cookiePreferences, setCookiePreferences] = useState({
-    necessary: true, // Siempre activadas
-    analytics: false,
-    marketing: false,
-    preferences: false
-  });
+  const [cookiePreferences, setCookiePreferences] = useState(defaultCookiePreferences);
 
   useEffect(() => {
-    // Verificar si ya se han aceptado las cookies
-    const cookieConsent = localStorage.getItem('cookieConsent');
-    if (!cookieConsent) {
+    // Verificar si necesita mostrar el banner
+    if (CookieService.shouldShowBanner()) {
       setShowBanner(true);
+      // Configurar consentimiento por defecto (denegado) en GTM
+      CookieService.initializeGTMConsent(defaultCookiePreferences);
     } else {
       // Cargar preferencias guardadas
-      try {
-        setCookiePreferences(JSON.parse(localStorage.getItem('cookiePreferences') || '{}'));
-      } catch (e) {
-        console.error('Error loading cookie preferences', e);
+      const savedPreferences = CookieService.getSavedPreferences();
+      if (savedPreferences) {
+        setCookiePreferences(savedPreferences);
+        // Aplicar las preferencias guardadas a GTM
+        CookieService.updateGTMConsent(savedPreferences);
       }
     }
   }, []);
@@ -33,15 +31,12 @@ const CookieBanner = () => {
       necessary: true,
       analytics: true,
       marketing: true,
-      preferences: true
+      functionality: true
     };
     
     setCookiePreferences(allAccepted);
-    localStorage.setItem('cookieConsent', 'true');
-    localStorage.setItem('cookiePreferences', JSON.stringify(allAccepted));
-    
-    // Aquí se activarían todos los scripts de seguimiento y marketing
-    activateAcceptedCookies(allAccepted);
+    CookieService.savePreferences(allAccepted);
+    CookieService.updateGTMConsent(allAccepted);
     
     setShowBanner(false);
   };
@@ -51,43 +46,22 @@ const CookieBanner = () => {
       necessary: true,
       analytics: false,
       marketing: false,
-      preferences: false
+      functionality: false
     };
     
     setCookiePreferences(onlyNecessary);
-    localStorage.setItem('cookieConsent', 'true');
-    localStorage.setItem('cookiePreferences', JSON.stringify(onlyNecessary));
+    CookieService.savePreferences(onlyNecessary);
+    CookieService.updateGTMConsent(onlyNecessary);
     
     setShowBanner(false);
   };
 
   const savePreferences = () => {
-    localStorage.setItem('cookieConsent', 'true');
-    localStorage.setItem('cookiePreferences', JSON.stringify(cookiePreferences));
-    
-    // Activar solo las cookies consentidas
-    activateAcceptedCookies(cookiePreferences);
+    CookieService.savePreferences(cookiePreferences);
+    CookieService.updateGTMConsent(cookiePreferences);
     
     setShowPreferences(false);
     setShowBanner(false);
-  };
-
-  const activateAcceptedCookies = (preferences) => {
-    // Ejemplo de activación de scripts según preferencias
-    if (preferences.analytics) {
-      // Activar scripts de Google Analytics, etc.
-      console.log('Activando scripts de analytics');
-    }
-    
-    if (preferences.marketing) {
-      // Activar scripts de marketing, Facebook Pixel, etc.
-      console.log('Activando scripts de marketing');
-    }
-    
-    if (preferences.preferences) {
-      // Activar cookies de preferencias
-      console.log('Activando cookies de preferencias');
-    }
   };
 
   const handlePreferenceChange = (category) => {
@@ -104,126 +78,78 @@ const CookieBanner = () => {
       {!showPreferences ? (
         <div className="cookie-banner-main">
           <div className="cookie-banner-content">
-            <h3>{t('cookies.title')}</h3>
-            <p>{t('cookies.mainText')}</p>
+            <div className="cookie-banner-icon">🍪</div>
+            <div className="cookie-banner-text">
+              <h3>Utilizamos cookies</h3>
+              <p>
+                Usamos cookies necesarias para el funcionamiento de la aplicación (login, pagos) 
+                y opcionales para mejorar tu experiencia (análisis y personalización).
+              </p>
+            </div>
             <div className="cookie-banner-buttons">
               <button 
                 className="cookie-btn cookie-btn-primary" 
                 onClick={acceptAllCookies}
               >
-                {t('cookies.acceptAll')}
+                Aceptar todas
               </button>
               <button 
                 className="cookie-btn cookie-btn-secondary" 
                 onClick={rejectNonEssentialCookies}
               >
-                {t('cookies.rejectNonEssential')}
+                Solo necesarias
               </button>
               <button 
                 className="cookie-btn cookie-btn-outline" 
                 onClick={() => setShowPreferences(true)}
               >
-                {t('cookies.preferences')}
+                Personalizar
               </button>
-            </div>
-            <div className="cookie-banner-links">
-              <a href="/politica-cookies" target="_blank" rel="noopener noreferrer">
-                {t('cookies.readMore')}
-              </a>
             </div>
           </div>
         </div>
       ) : (
         <div className="cookie-preferences">
           <div className="cookie-preferences-content">
-            <h3>{t('cookies.preferencesTitle')}</h3>
-            <p>{t('cookies.preferencesDescription')}</p>
+            <h3>Preferencias de cookies</h3>
+            <p>Personaliza qué tipos de cookies quieres permitir:</p>
             
-            <div className="cookie-category">
-              <div className="cookie-category-header">
-                <div className="cookie-category-title">
-                  <h4>{t('cookies.necessary')}</h4>
-                  <span className="cookie-category-required">({t('cookies.required')})</span>
+            {Object.entries(cookieCategories).map(([key, category]) => (
+              <div key={key} className="cookie-category">
+                <div className="cookie-category-header">
+                  <div className="cookie-category-title">
+                    <h4>{category.icon} {category.name}</h4>
+                    {category.required && (
+                      <span className="cookie-category-required">(Obligatorias)</span>
+                    )}
+                  </div>
+                  <div className="cookie-category-toggle">
+                    <input 
+                      type="checkbox" 
+                      checked={cookiePreferences[key]} 
+                      disabled={category.required}
+                      onChange={() => handlePreferenceChange(key)}
+                      id={`${key}-cookies`}
+                    />
+                    <label htmlFor={`${key}-cookies`}></label>
+                  </div>
                 </div>
-                <div className="cookie-category-toggle">
-                  <input 
-                    type="checkbox" 
-                    checked={cookiePreferences.necessary} 
-                    disabled={true}
-                    id="necessary-cookies"
-                  />
-                  <label htmlFor="necessary-cookies"></label>
-                </div>
+                <p>{category.description}</p>
               </div>
-              <p>{t('cookies.necessaryDescription')}</p>
-            </div>
-            
-            <div className="cookie-category">
-              <div className="cookie-category-header">
-                <div className="cookie-category-title">
-                  <h4>{t('cookies.analytics')}</h4>
-                </div>
-                <div className="cookie-category-toggle">
-                  <input 
-                    type="checkbox" 
-                    checked={cookiePreferences.analytics} 
-                    onChange={() => handlePreferenceChange('analytics')}
-                    id="analytics-cookies"
-                  />
-                  <label htmlFor="analytics-cookies"></label>
-                </div>
-              </div>
-              <p>{t('cookies.analyticsDescription')}</p>
-            </div>
-            
-            <div className="cookie-category">
-              <div className="cookie-category-header">
-                <div className="cookie-category-title">
-                  <h4>{t('cookies.marketing')}</h4>
-                </div>
-                <div className="cookie-category-toggle">
-                  <input 
-                    type="checkbox" 
-                    checked={cookiePreferences.marketing} 
-                    onChange={() => handlePreferenceChange('marketing')}
-                    id="marketing-cookies"
-                  />
-                  <label htmlFor="marketing-cookies"></label>
-                </div>
-              </div>
-              <p>{t('cookies.marketingDescription')}</p>
-            </div>
-            
-            <div className="cookie-category">
-              <div className="cookie-category-header">
-                <div className="cookie-category-title">
-                  <h4>{t('cookies.preferences')}</h4>
-                </div>
-                <div className="cookie-category-toggle">
-                  <input 
-                    type="checkbox" 
-                    checked={cookiePreferences.preferences} 
-                    onChange={() => handlePreferenceChange('preferences')}
-                    id="preferences-cookies"
-                  />
-                  <label htmlFor="preferences-cookies"></label>
-                </div>
-              </div>
-              <p>{t('cookies.preferencesDescriptionDetailed')}</p>
-            </div>
+            ))}
             
             <div className="cookie-preferences-buttons">
               <button 
                 className="cookie-btn cookie-btn-primary" 
                 onClick={savePreferences}
               >
-                {t('cookies.savePreferences')}
+                Guardar preferencias
               </button>
               <button 
                 className="cookie-btn cookie-btn-outline" 
                 onClick={() => setShowPreferences(false)}
               >
-                {t('cookies.back')}
+                Volver
               </button>
             </div>
           </div>

@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-P4PTW3CH');</script>
-  <!-- End Google Tag Manager -->
-  
   <meta charset="utf-8" />
   <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,6 +9,82 @@
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   <title>Chatsalsa-Analiza Estadística y Sicológicamente tus chats</title>
+  
+  <!-- Script de inicialización de cookies y GTM -->
+  <script>
+    // Inicializar dataLayer para GTM
+    window.dataLayer = window.dataLayer || [];
+    
+    // Función para cargar GTM
+    function loadGTM() {
+      if (window.gtmLoaded) return; // Evitar carga duplicada
+      
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-P4PTW3CH');
+      
+      window.gtmLoaded = true;
+    }
+    
+    // Verificar si el usuario ya dio consentimiento
+    function checkCookieConsent() {
+      const cookieConsent = localStorage.getItem('cookieConsent');
+      const cookiePreferences = localStorage.getItem('cookiePreferences');
+      
+      if (cookieConsent && cookiePreferences) {
+        try {
+          const preferences = JSON.parse(cookiePreferences);
+          
+          // Configurar consentimiento por defecto en GTM
+          window.dataLayer.push({
+            'consent': 'default',
+            'analytics_storage': preferences.analytics ? 'granted' : 'denied',
+            'ad_storage': preferences.marketing ? 'granted' : 'denied',
+            'functionality_storage': preferences.functionality ? 'granted' : 'denied'
+          });
+          
+          // Cargar GTM
+          loadGTM();
+        } catch (e) {
+          console.error('Error parsing cookie preferences:', e);
+        }
+      } else {
+        // Sin consentimiento, configurar todo como denegado por defecto
+        window.dataLayer.push({
+          'consent': 'default',
+          'analytics_storage': 'denied',
+          'ad_storage': 'denied',
+          'functionality_storage': 'denied'
+        });
+        
+        // Cargar GTM pero sin consentimiento
+        loadGTM();
+      }
+    }
+    
+    // Escuchar actualizaciones de consentimiento desde React
+    window.addEventListener('message', function(event) {
+      if (event.data.type === 'COOKIE_CONSENT_UPDATE') {
+        const preferences = event.data.preferences;
+        
+        window.dataLayer.push({
+          'consent': 'update',
+          'analytics_storage': preferences.analytics ? 'granted' : 'denied',
+          'ad_storage': preferences.marketing ? 'granted' : 'denied',
+          'functionality_storage': preferences.functionality ? 'granted' : 'denied'
+        });
+      }
+    });
+    
+    // Ejecutar verificación cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkCookieConsent);
+    } else {
+      checkCookieConsent();
+    }
+  </script>
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
