@@ -516,29 +516,26 @@ function AppContent() {
   // Función para procesar el archivo ZIP una vez validado y autorizado
   const processZipFile = async (file) => {
     // CRÍTICO: Verificación de seguridad - NO permitir análisis sin autenticación
-    if (!user) {
-      console.error('[SEGURIDAD] Intento de análisis sin usuario autenticado - BLOQUEADO');
-      setError('Error de seguridad: Debes estar autenticado para analizar chats.');
-      setIsLoading(false);
-      return false;
-    }
-    
-    // CRÍTICO: Verificación adicional con getCurrentUser
+    // MODIFICADO: Usar getCurrentUser() directamente para evitar race conditions
+    let currentUser;
     try {
-      const currentUser = await getCurrentUser();
-      if (!currentUser) {
-        console.error('[SEGURIDAD] Verificación adicional falló - sin usuario - BLOQUEADO');
-        setError('Error de seguridad: Sesión no válida. Por favor, inicia sesión nuevamente.');
-        setIsLoading(false);
-        return false;
-      }
+      currentUser = await getCurrentUser();
     } catch (authError) {
       console.error('[SEGURIDAD] Error verificando autenticación:', authError);
       setError('Error de autenticación. Por favor, inicia sesión nuevamente.');
       setIsLoading(false);
       return false;
     }
-
+    
+    if (!currentUser) {
+      console.error('[SEGURIDAD] Intento de análisis sin usuario autenticado - BLOQUEADO');
+      setError('Error de seguridad: Debes estar autenticado para analizar chats.');
+      setIsLoading(false);
+      return false;
+    }
+    
+    console.log('[SEGURIDAD] Usuario verificado para análisis:', currentUser.uid);
+    
     if (!file) {
       setError(t('error.file_type'));
       setIsLoading(false);
@@ -1087,29 +1084,26 @@ function AppContent() {
   // Function to poll for Mistral response - Mejorada para ser más robusta
   const fetchMistralResponse = async (chatContent = null) => {
     // CRÍTICO: Verificación de seguridad antes de cualquier análisis psicológico
-    if (!user) {
-      console.error('[SEGURIDAD] Intento de análisis psicológico sin usuario autenticado - BLOQUEADO');
-      setError('Error de seguridad: Debes estar autenticado para realizar análisis psicológico.');
-      setIsFetchingMistral(false);
-      return false;
-    }
-
-    // CRÍTICO: Verificación adicional con getCurrentUser para análisis psicológico
+    // MODIFICADO: Usar getCurrentUser() directamente para evitar race conditions
+    let currentUser;
     try {
-      const currentUser = await getCurrentUser();
-      if (!currentUser) {
-        console.error('[SEGURIDAD] Verificación adicional falló para análisis psicológico - sin usuario - BLOQUEADO');
-        setError('Error de seguridad: Sesión no válida para análisis psicológico. Por favor, inicia sesión nuevamente.');
-        setIsFetchingMistral(false);
-        return false;
-      }
+      currentUser = await getCurrentUser();
     } catch (authError) {
       console.error('[SEGURIDAD] Error verificando autenticación para análisis psicológico:', authError);
       setError('Error de autenticación para análisis psicológico. Por favor, inicia sesión nuevamente.');
       setIsFetchingMistral(false);
       return false;
     }
-
+    
+    if (!currentUser) {
+      console.error('[SEGURIDAD] Intento de análisis psicológico sin usuario autenticado - BLOQUEADO');
+      setError('Error de seguridad: Debes estar autenticado para realizar análisis psicológico.');
+      setIsFetchingMistral(false);
+      return false;
+    }
+    
+    console.log('[SEGURIDAD] Usuario verificado para análisis psicológico:', currentUser.uid);
+    
     // Esperar a que la autenticación se complete antes de proceder
     try {
       console.log("Esperando a que la autenticación se complete...");
