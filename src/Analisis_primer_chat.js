@@ -435,7 +435,7 @@ const obtenerPatronHorario = (datosHora) => {
 };
 
 const AnalisisPrimerChat = ({ operationId, chatData }) => {
-  const { user } = useAuth(); // Añadir verificación de autenticación
+  const { user, isAuthLoading } = useAuth(); // Añadir isAuthLoading para verificar el estado de carga
   const { t, i18n } = useTranslation();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);  
@@ -969,6 +969,15 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
   }, [datosAnalizados, chatData, t]);
 
   // SEGURIDAD: Verificar autenticación antes de mostrar cualquier contenido
+  if (isAuthLoading) {
+    // Mostrar loading mientras se verifica la autenticación
+    return (
+      <div className="analisis-placeholder">
+        <p>Verificando sesión...</p>
+      </div>
+    );
+  }
+  
   if (!user) {
     return (
       <div className="analisis-placeholder">

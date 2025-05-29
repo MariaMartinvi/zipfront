@@ -1287,7 +1287,7 @@ const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
 let isAlreadyRendered = false;
 
 const AnalisisTop = ({ operationId, chatData }) => {
-  const { user } = useAuth(); // Añadimos esta línea para verificar autenticación
+  const { user, isAuthLoading } = useAuth(); // Añadir isAuthLoading para verificar el estado de carga
   const { t } = useTranslation();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -1553,6 +1553,15 @@ const AnalisisTop = ({ operationId, chatData }) => {
   }, [datos, user]); // Añadimos user como dependencia
 
   // SEGURIDAD: Verificar autenticación antes de mostrar cualquier contenido
+  if (isAuthLoading) {
+    // Mostrar loading mientras se verifica la autenticación
+    return (
+      <div className="analisis-placeholder">
+        <p>Verificando sesión...</p>
+      </div>
+    );
+  }
+  
   if (!user) {
     return (
       <div className="analisis-placeholder">
