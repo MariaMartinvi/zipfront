@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next'; // Importar useTranslation
 import ChatTopGame from './ChatTopGame';
 import ChatHeadlinesGame from './ChatHeadlinesGame';
 import { userSession } from './utils/userSession';
+import DebugLogger from './DebugLogger'; // Añadir import del DebugLogger
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -2520,6 +2521,9 @@ const tryDeleteFiles = async (operationId) => {
       
       {/* Barra de cookies */}
       <CookieBanner />
+      
+      {/* Debug Logger para desarrollo - solo se muestra si viene de WhatsApp */}
+      <DebugLogger />
     </div>
   );
 }
