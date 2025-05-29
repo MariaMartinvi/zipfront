@@ -33,6 +33,27 @@ export function AuthProvider({ children }) {
     // Escuchar cambios de autenticación
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       console.log("AuthContext: Cambio en estado de autenticación:", currentUser ? currentUser.uid : "No hay usuario");
+      
+      // NUEVO: Verificar si estamos procesando un archivo compartido desde WhatsApp
+      const isProcessingSharedFile = localStorage.getItem('whatsapp_analyzer_is_processing_shared') === 'true';
+      
+      // Si estamos procesando un archivo compartido y currentUser es null, 
+      // hacer una verificación adicional antes de limpiar la sesión
+      if (!currentUser && isProcessingSharedFile) {
+        console.log("AuthContext: Detectado procesamiento de archivo desde WhatsApp - verificando autenticación");
+        try {
+          const verifiedUser = await getCurrentUser();
+          if (verifiedUser) {
+            console.log("AuthContext: Usuario verificado durante procesamiento de WhatsApp:", verifiedUser.uid);
+            setUser(verifiedUser);
+            setIsAuthLoading(false);
+            return;
+          }
+        } catch (error) {
+          console.error("AuthContext: Error verificando usuario durante procesamiento de WhatsApp:", error);
+        }
+      }
+      
       setUser(currentUser);
       
       if (currentUser) {
