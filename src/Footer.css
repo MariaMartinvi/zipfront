@@ -23,30 +23,33 @@
 }
 
 .footer-content {
-  max-width: 1200px;
+  /* max-width: 1200px; */ /* Comentado para ocupar todo el ancho */
+  width: 100%; /* Asegurar que ocupe todo el ancho */
   margin: 0 auto;
   position: relative;
   z-index: 1;
-  padding: 0 1rem; /* Añadido padding para contenido en pantallas anchas */
+  padding: 0 2rem; /* Aumentado padding lateral para mejor espaciado en pantallas anchas */
 }
 
 .footer-grid {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+  gap: 3rem; /* Mayor separación entre columnas */
   margin-bottom: 2rem;
-  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-items: center; /* Centrar contenido de cada columna */
 }
 
 .footer-section {
-  flex: 1 1 0%;
-  min-width: 200px;
-  /* background: rgba(255, 255, 255, 0.05); */ /* Eliminado fondo de sección */
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 8px;
   transition: transform 0.3s ease;
+  text-align: center; /* Centrar contenido */
+  min-width: 200px; /* Ancho mínimo para consistencia */
+  width: 100%; /* Ocupar todo el ancho disponible */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrar elementos verticalmente */
 }
 
 .footer-section:hover {
@@ -60,13 +63,15 @@
   position: relative;
   padding-bottom: 0.5rem;
   white-space: nowrap;
+  text-align: center; /* Centrar título */
 }
 
 .footer-section h3::after {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: 50%; /* Centrar la línea */
+  transform: translateX(-50%); /* Centrar la línea */
   width: 30px;
   height: 2px;
   background-color: #25D366;
@@ -81,11 +86,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+  align-items: center; /* Centrar enlaces */
+  width: 100%;
 }
 
 .footer-link {
   display: flex;
   align-items: center;
+  justify-content: center; /* Centrar contenido del enlace */
   gap: 0.6rem;
   color: #000000; /* Cambiado a negro */
   text-decoration: none;
@@ -98,6 +106,7 @@
   text-overflow: ellipsis;
   font-size: 0.95rem;
   line-height: 1.4;
+  width: fit-content; /* Ajustar al contenido */
 }
 
 /* Estilo para enlace activo (ejemplo) */
@@ -134,6 +143,8 @@
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
+  justify-content: center; /* Centrar iconos sociales */
+  width: 100%;
 }
 
 .social-link {
@@ -224,12 +235,12 @@
 /* Responsive Adjustments */
 @media (max-width: 1200px) {
   .footer-grid {
-    gap: 0.8rem;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en pantallas medianas */
+    gap: 1.5rem;
   }
   
   .footer-section {
     padding: 0.8rem;
-    min-width: 180px; /* Ajustado min-width */
   }
   
   .footer-link {
@@ -238,6 +249,15 @@
 }
 
 @media (max-width: 992px) {
+  .footer-content {
+    padding: 0 1.5rem; /* Padding intermedio para tablets */
+  }
+  
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablets */
+    gap: 1rem;
+  }
+  
   .footer-section h3 {
     font-size: 0.9rem;
   }
@@ -251,17 +271,19 @@
   .app-footer {
       padding: 1.5rem 0; /* Menos padding en móvil */
   }
+  
+  .footer-content {
+    padding: 0 1rem; /* Reducir padding lateral en móvil */
+  }
+  
   .footer-grid {
-    flex-direction: column;
-    align-items: center;
-    flex-wrap: wrap;
+    grid-template-columns: 1fr; /* 1 columna en móvil */
+    gap: 0.5rem;
+    text-align: center; /* Centrar contenido en móvil */
   }
 
   .footer-section {
-    width: 90%;
-    max-width: 400px;
-    flex: 0 0 auto;
-    min-width: unset; /* Resetear min-width en móvil */
+    width: 100%;
     text-align: center; /* Centrar texto en móvil */
   }
 

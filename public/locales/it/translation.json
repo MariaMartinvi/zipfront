@@ -417,7 +417,7 @@
     "generating_ai_analysis": "Generazione dell'analisi psicologica con IA...",
     "refresh_confirmation": {
       "title": "Sei sicuro?",
-      "message": "Tutti i dati dell'analisi corrente andranno persi. Vuoi continuare?",
+      "message": "Se continui, tutti i dati dell'analisi attuale (sia statistici che psicologici) andranno persi. Vuoi continuare?",
       "cancel": "Mantieni analisi",
       "confirm": "Sì, ricomincia"
     },

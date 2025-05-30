@@ -141,7 +141,7 @@
     "generating_ai_analysis": "Génération de l'analyse psychologique avec l'IA...",
     "refresh_confirmation": {
       "title": "Êtes-vous sûr ?",
-      "message": "Toutes les données d'analyse actuelles seront perdues. Voulez-vous continuer ?",
+      "message": "Si vous continuez, toutes les données d'analyse actuelles (statistiques et psychologiques) seront perdues. Voulez-vous continuer ?",
       "cancel": "Conserver l'analyse",
       "confirm": "Oui, recommencer"
     },

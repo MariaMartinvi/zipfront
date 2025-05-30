@@ -464,7 +464,9 @@ function AppContent() {
           // Verificar si el usuario puede cargar (consulta fresca garantizada)
           try {
             console.log("[checkUploadEligibility] Haciendo consulta FRESCA para usuario recuperado:", currentUser.uid);
-            const canUpload = await canUploadChat(currentUser.uid);
+            const uploadResult = await canUploadChat(currentUser.uid);
+            // Manejar tanto el formato boolean (legacy) como el nuevo formato de objeto
+            const canUpload = typeof uploadResult === 'boolean' ? uploadResult : uploadResult.canUpload;
             if (!canUpload) {
               console.log("[checkUploadEligibility] Usuario no puede subir - mostrando modal de upgrade");
               setShowUpgradeModal(true);
@@ -497,7 +499,9 @@ function AppContent() {
     // Ya hay un usuario en el contexto, verificar plan con consulta fresca
     try {
       console.log("[checkUploadEligibility] Haciendo consulta FRESCA para usuario actual:", user.uid);
-      const canUpload = await canUploadChat(user.uid);
+      const uploadResult = await canUploadChat(user.uid);
+      // Manejar tanto el formato boolean (legacy) como el nuevo formato de objeto
+      const canUpload = typeof uploadResult === 'boolean' ? uploadResult : uploadResult.canUpload;
       
       if (!canUpload) {
         console.log("[checkUploadEligibility] Usuario no puede subir - mostrando modal de upgrade");
@@ -1532,7 +1536,7 @@ const tryDeleteFiles = async (operationId) => {
             
             // Mostrar confirmación antes de borrar
             setTimeout(() => {
-              if (window.confirm("Hay un análisis en progreso. Si continúas, se perderá el progreso actual. ¿Deseas continuar?")) {
+              if (window.confirm(t('app.refresh_confirmation.message'))) {
                 addDebugMessage('Usuario confirmó borrar análisis en progreso - limpiando localStorage');
                 // Si confirma, limpiar todos los datos guardados
                 localStorage.removeItem('whatsapp_analyzer_operation_id');
@@ -2428,8 +2432,6 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/headlines-game" element={<ChatHeadlinesGame />} />
         </Routes>
         
-        {/* Componente de footer */}
-        <Footer/>
         {/* Componente de instalación de PWA */}
         <InstallPWA />
         
@@ -2510,6 +2512,9 @@ const tryDeleteFiles = async (operationId) => {
           </div>
         )}
       </main>
+      
+      {/* Componente de footer - Movido fuera del main para ocupar todo el ancho */}
+      <Footer/>
       
       {/* Barra de cookies */}
       <CookieBanner />

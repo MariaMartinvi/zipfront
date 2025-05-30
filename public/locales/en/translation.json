@@ -160,7 +160,7 @@
     "prev": "Previous",
     "refresh_confirmation": {
       "title": "Are you sure?",
-      "message": "All current analysis data will be lost. Do you want to continue?",
+      "message": "If you continue, all current analysis data (both statistical and psychological) will be lost. Do you want to continue?",
       "cancel": "Keep analysis",
       "confirm": "Yes, start new"
     },

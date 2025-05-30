@@ -605,8 +605,15 @@ export const canUploadChat = async (userId) => {
     const userDoc = await getDoc(userRef);
     
     if (!userDoc.exists()) {
-      console.error(`[canUploadChat] Error: Usuario ${userId} no encontrado en Firestore`);
-      throw new Error('Usuario no encontrado');
+      console.log(`[canUploadChat] Usuario ${userId} no encontrado en Firestore, asumiendo plan gratuito como fallback`);
+      // En lugar de lanzar error, devolver valores por defecto de plan gratuito
+      return {
+        canUpload: true,
+        plan: 'free',
+        currentUsage: 0,
+        quota: 2,
+        message: 'Usuario nuevo - plan gratuito aplicado'
+      };
     }
     
     const userProfile = userDoc.data();

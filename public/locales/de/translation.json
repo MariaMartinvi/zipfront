@@ -139,7 +139,7 @@
     "prev": "Zurück",
     "refresh_confirmation": {
       "title": "Sind Sie sicher?",
-      "message": "Alle aktuellen Analysedaten gehen verloren. Möchten Sie fortfahren?",
+      "message": "Wenn Sie fortfahren, gehen alle aktuellen Analysedaten (sowohl statistische als auch psychologische) verloren. Möchten Sie fortfahren?",
       "cancel": "Analyse behalten",
       "confirm": "Ja, neu starten"
     },

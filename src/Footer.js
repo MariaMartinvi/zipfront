@@ -18,7 +18,7 @@ const Footer = () => {
       <div className="footer-content">
         <div className="footer-grid">
           <div className="footer-section">
-            <h3>{t('header.home')}</h3>
+            <h3>{t('footer.navigation', 'Navegación')}</h3>
             <div className="footer-links">
               <a href="/" className="footer-link">
                 <FaHome className="footer-icon" />
@@ -36,7 +36,7 @@ const Footer = () => {
           </div>
           
           <div className="footer-section">
-            <h3>{t('footer.legal', 'Legal')}</h3>
+            <h3>{t('footer.legal')}</h3>
             <div className="footer-links">
               <a href="/terms" className="footer-link">
                 <FaFileContract className="footer-icon" />
@@ -53,8 +53,8 @@ const Footer = () => {
             </div>
           </div>
           
-         {/*   <div className="footer-section">
-            <h3>Redes Sociales</h3>
+          <div className="footer-section">
+            <h3>{t('footer.social', 'Redes Sociales')}</h3>
             <div className="social-grid">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="social-link">
                 <FaFacebook className="social-icon" />
@@ -69,16 +69,16 @@ const Footer = () => {
                 <FaWhatsapp className="social-icon" />
               </a>
             </div>
-          </div>*/}
+          </div>
         </div>
       </div>
       
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} {t('footer.rights')}</p>
+        <p>&copy; {new Date().getFullYear()} {t('footer.rights', 'Analizador de Chats - Todos los derechos reservados')}</p>
         <button 
           className="scroll-top" 
           onClick={scrollToTop} 
-          aria-label={t('footer.scroll_top')}
+          aria-label={t('footer.scroll_top', 'Volver arriba')}
         >
           <FaArrowUp />
         </button>

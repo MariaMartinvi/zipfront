@@ -182,7 +182,7 @@
     "generating_ai_analysis": "Generando análisis psicológico con IA...",
     "refresh_confirmation": {
       "title": "¿Estás seguro?",
-      "message": "Se perderán todos los datos del análisis actual. ¿Deseas continuar?",
+      "message": "Si continúas, se perderán todos los datos del análisis actual (tanto estadístico como psicológico). ¿Deseas continuar?",
       "cancel": "Mantener análisis",
       "confirm": "Sí, empezar nuevo"
     },
@@ -222,11 +222,23 @@
     "view": "Ver análisis"
   },
   "footer": {
+    "app": "Aplicación",
+    "features": "Funciones",
+    "support": "Soporte",
+    "legal": "Legal",
+    "social": "Redes Sociales",
+    "plans": "Planes",
+    "analysis": "Análisis de Chat",
+    "game": "Juego de Personalidades",
+    "headlines": "Juego de Titulares",
+    "help": "Ayuda",
     "terms": "Términos de Servicio",
     "privacy": "Política de Privacidad",
     "contact": "Contacto",
     "faq": "Preguntas Frecuentes",
-    "cookies": "Política de Cookies"
+    "cookies": "Política de Cookies",
+    "rights": "Analizador de Chats - Todos los derechos reservados",
+    "scroll_top": "Volver arriba"
   },
   "messages": {
     "loading": "Cargando...",
