@@ -235,22 +235,89 @@ const reconstructNames = (response, nameMapping) => {
   try {
     let reconstructedResponse = response;
     
-    // Crear un mapeo inverso (de iniciales a nombres)
+    console.log('🔧 INICIO reconstructNames');
+    console.log('📥 NameMapping recibido:', nameMapping);
+    
+    // Crear un mapeo inverso (de participante ID a nombres completos)
     const inverseMapping = {};
     Object.entries(nameMapping).forEach(([fullName, participantId]) => {
       inverseMapping[participantId] = fullName;
     });
 
-    // Reconstruir participantes usando solo el mapeo
+    console.log('🔄 Mapeo inverso creado:', inverseMapping);
+
+    // Detectar participantes sin mapeo y eliminar objetos completos
+    const gameDataMatch = reconstructedResponse.match(/GAME_DATA:\[([\s\S]*?)\]/);
+    if (gameDataMatch) {
+      let gameDataContent = gameDataMatch[1];
+      console.log('🎯 Contenido GAME_DATA original:', gameDataContent);
+      
+      // Detectar participantes que no están en el mapeo (Azure inventó participantes)
+      const allParticipantsInGameData = gameDataContent.match(/"Participante \d+"/g) || [];
+      const unmappedParticipants = allParticipantsInGameData.filter(p => {
+        const cleanParticipant = p.replace(/"/g, '');
+        return !inverseMapping.hasOwnProperty(cleanParticipant);
+      });
+      
+      if (unmappedParticipants.length > 0) {
+        console.warn('⚠️ ELIMINANDO participantes inventados por Azure:', [...new Set(unmappedParticipants)]);
+        
+        // Eliminar los objetos con participantes inventados
+        unmappedParticipants.forEach(unmappedParticipant => {
+          const cleanParticipant = unmappedParticipant.replace(/"/g, '');
+          console.log(`🧹 Eliminando objeto con: ${cleanParticipant}`);
+          
+          // Eliminar el objeto completo que contiene este participante inventado
+          const objectPattern = new RegExp(`\\s*{[^}]*"nombre":\\s*"${cleanParticipant}"[^}]*},?`, 'g');
+          gameDataContent = gameDataContent.replace(objectPattern, '');
+        });
+        
+        // Limpiar comas extra que puedan haber quedado
+        gameDataContent = gameDataContent.replace(/,\s*]/g, ']');
+        gameDataContent = gameDataContent.replace(/,\s*,/g, ',');
+        
+        // Reemplazar la sección completa en la respuesta
+        reconstructedResponse = reconstructedResponse.replace(
+          /GAME_DATA:\[([\s\S]*?)\]/,
+          `GAME_DATA:[${gameDataContent}]`
+        );
+        
+        console.log('🧹 Participantes inventados eliminados');
+      }
+    }
+
+    // AHORA usar UN SOLO PROCESO para mapear TODA la respuesta
+    let totalMappings = 0;
     Object.entries(inverseMapping).forEach(([participantId, fullName]) => {
-      // Buscar patrones como "Participante X" o "Participante X:" o "Participante X " o "Participante X," o "Participante X." o "Participante X\n"
-      const pattern = new RegExp(`\\b${participantId}\\b(?=:|\\s|,|\\.|\\n|$)`, 'g');
-      reconstructedResponse = reconstructedResponse.replace(pattern, fullName);
+      // Usar regex que funcione tanto para texto general como para JSON
+      // Busca "Participante X" con o sin comillas, seguido de delimitadores
+      const pattern = new RegExp(`"?${participantId}"?(?="|:|\\s|,|\\.|\\n|$)`, 'g');
+      const beforeReplace = reconstructedResponse;
+      
+      // Si tiene comillas, mantener las comillas
+      reconstructedResponse = reconstructedResponse.replace(
+        new RegExp(`"${participantId}"`, 'g'),
+        `"${fullName}"`
+      );
+      
+      // Si no tiene comillas, mapear sin comillas
+      reconstructedResponse = reconstructedResponse.replace(
+        new RegExp(`\\b${participantId}\\b(?=:|\\s|,|\\.|\\n|$)`, 'g'),
+        fullName
+      );
+      
+      if (beforeReplace !== reconstructedResponse) {
+        console.log(`✅ Mapeado: "${participantId}" → "${fullName}"`);
+        totalMappings++;
+      }
     });
+
+    console.log(`📊 Total de mappings aplicados: ${totalMappings}`);
+    console.log('🔧 FIN reconstructNames');
 
     return reconstructedResponse;
   } catch (error) {
-    console.error('Error reconstruyendo nombres:', error);
+    console.error('❌ Error reconstruyendo nombres:', error);
     return response;
   }
 };

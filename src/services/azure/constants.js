@@ -49,12 +49,16 @@ export const ERROR_MESSAGES = {
 
 // Prompts multiidioma para diferentes idiomas
 export const PROMPTS = {
-  'es': `INSTRUCCIONES CRÍTICAS:
+  'es': `INSTRUCCIONES CRÍTICAS - DEBES SEGUIRLAS AL 100%:
 - Analiza ÚNICAMENTE a los participantes que escriben mensajes en el texto proporcionado
 - Usa EXACTAMENTE los nombres como aparecen (ej: "Participante 1", "Participante 2", etc.)
 - NO inventes nombres reales (como Kevin, Giorgia, etc.)
 - NO añadas participantes que no aparecen escribiendo mensajes
+- NO analices participantes que no han enviado mensajes en el chat
+- Si ves solo 3 participantes en el chat, analiza SOLO esos 3 - no inventes más
 - Los nombres están anonimizados intencionalmente y se reconvertirán después
+
+REGLA FUNDAMENTAL: SOLO analiza a los participantes que VES escribiendo mensajes en el texto. Si solo hay "Participante 1" y "Participante 3" escribiendo, NO menciones "Participante 2" si no escribe nada.
 
 Como un psicólogo observador, incisivo y con sentido del humor, analiza la siguiente conversación. Tu análisis debe ser directo y perspicaz.
 
@@ -89,25 +93,30 @@ Para **CADA** participante que ESCRIBE MENSAJES en la conversación, usa este fo
 - [Ofrece 1-2 consejos prácticos y accionables para mejorar la interacción grupal o individual.]
 
 ---
-## 💡 Titulares
+## 💡 Frases descriptivas
 
-Crea titulares sobre los **participantes que ESCRIBEN MENSAJES** en el chat. Usa sus nombres EXACTOS como aparecen en el texto. El objetivo es que sean llamativos y polémicos. ¡Mójate y sé ingenioso! 
+Crea frases descriptivas-resumen sobre los **participantes que ESCRIBEN MENSAJES** en el chat. Usa sus nombres EXACTOS como aparecen en el texto ejemplo: Participante 1, Participante 2. El objetivo es que sean llamativos y polémicos. ¡Mójate y sé ingenioso! 
+Estas frases se mostrarán en un juego y los participantes del chat (Participante 1, etc) deben adivinar a quien describe cada frase.
 
-Los titulares deben venir en este formato EXACTO usando los nombres tal como aparecen:
+IMPORTANTE: Incluye SOLO los participantes que realmente escriben mensajes. No inventes participantes adicionales.
+
+Las frases descriptivas deben venir en este formato EXACTO usando los nombres tal como aparecen:
 
 GAME_DATA:[
-  ["[Nombre exacto del Participante 1]", "[Nombre exacto del Participante 2]"],
+  ["Participante 1", "Participante 2"],
   [
     {
-      "nombre": "[Nombre exacto del Participante 1]",
+      "nombre": "Participante 1",
       "frase": " 'Titular'"
     },
     {
-      "nombre": "[Nombre exacto del Participante 2]",
+      "nombre": "Participante 2",
       "frase": " 'Titular'"
     }
   ]
 ]
+
+⚠️ REGLA CRÍTICA: El primer array y el segundo array deben contener EXACTAMENTE los mismos participantes. No añadas participantes en uno que no estén en el otro.
 
 Asegúrate de que tu análisis general sea objetivo, respetuoso y constructivo, pero en el apartado de **Titulares** permítete ser audaz y entretenido.`,
 
