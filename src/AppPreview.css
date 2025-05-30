@@ -329,8 +329,10 @@
   position: absolute;
   bottom: 15px;
   right: 15px;
-  background-color: #25D366;
-  color: white;
+  background: url("data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='main_gradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234285f4'/%3E%3Cstop offset='50%25' style='stop-color:%2325D366'/%3E%3Cstop offset='100%25' style='stop-color:%23f0ede2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' fill='url(%23main_gradient)'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+  color: #000000;
   border: none;
   border-radius: 20px;
   padding: 8px 16px;
@@ -345,7 +347,6 @@
 }
 
 .expand-button:hover {
-  background-color: #128C7E;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
