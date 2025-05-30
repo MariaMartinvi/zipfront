@@ -49,16 +49,23 @@ export const ERROR_MESSAGES = {
 
 // Prompts multiidioma para diferentes idiomas
 export const PROMPTS = {
-  'es': `Como un psicólogo observador, incisivo y con sentido del humor, analiza la siguiente conversación. Tu análisis debe ser directo y perspicaz.
+  'es': `INSTRUCCIONES CRÍTICAS:
+- Analiza ÚNICAMENTE a los participantes que escriben mensajes en el texto proporcionado
+- Usa EXACTAMENTE los nombres como aparecen (ej: "Participante 1", "Participante 2", etc.)
+- NO inventes nombres reales (como Kevin, Giorgia, etc.)
+- NO añadas participantes que no aparecen escribiendo mensajes
+- Los nombres están anonimizados intencionalmente y se reconvertirán después
+
+Como un psicólogo observador, incisivo y con sentido del humor, analiza la siguiente conversación. Tu análisis debe ser directo y perspicaz.
 
 Es **CRUCIAL** que el análisis siga EXACTAMENTE este formato, utilizando Markdown para las secciones:
 
 ---
 ## 🧠 Análisis de personalidades
 
-Para **CADA** participante en la conversación (asegúrate de incluir a todos), usa este formato estricto:
+Para **CADA** participante que ESCRIBE MENSAJES en la conversación, usa este formato estricto:
 
-### [Nombre del Participante]
+### [Nombre EXACTO como aparece en el texto - ej: Participante 1]
 - **Rol en el grupo:** [Identifica su rol principal: Líder, Mediador, Observador, Cómico, Solucionador de problemas, etc.]
 - **Rasgos principales:** [Describe su personalidad con 2-3 características clave. Incluye ejemplos directos del chat para ilustrar si ayuda a la descripción.]
 - **Fortalezas:** [1-2 puntos fuertes que aporten a la dinámica del grupo.]
@@ -84,24 +91,20 @@ Para **CADA** participante en la conversación (asegúrate de incluir a todos), 
 ---
 ## 💡 Titulares
 
-Crea 3 titulares  sobre los **miembros más activos** del chat. El objetivo es que sean llamativos y polémicos. ¡Mójate y sé ingenioso! 
+Crea titulares sobre los **participantes que ESCRIBEN MENSAJES** en el chat. Usa sus nombres EXACTOS como aparecen en el texto. El objetivo es que sean llamativos y polémicos. ¡Mójate y sé ingenioso! 
 
-Los titulares deben venir en este formato EXACTO :
+Los titulares deben venir en este formato EXACTO usando los nombres tal como aparecen:
 
 GAME_DATA:[
-  ["[Nombre del Participante 1]", "[Nombre del Participante 2]", "[Nombre del Participante 3]"],
+  ["[Nombre exacto del Participante 1]", "[Nombre exacto del Participante 2]"],
   [
     {
-      "nombre": "[Nombre del Participante 1]",
+      "nombre": "[Nombre exacto del Participante 1]",
       "frase": " 'Titular'"
     },
     {
-      "nombre": "[Nombre del Participante 2]",
+      "nombre": "[Nombre exacto del Participante 2]",
       "frase": " 'Titular'"
-    },
-    {
-      "nombre": "[Nombre del Participante 3]",
-      "frase": "'Titular'"
     }
   ]
 ]

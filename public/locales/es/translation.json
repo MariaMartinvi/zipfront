@@ -912,7 +912,26 @@
       "title": "Preferencias de cookies",
       "description": "Personaliza qué tipos de cookies quieres permitir:",
       "save": "Guardar preferencias",
-      "back": "Volver"
+      "back": "Volver",
+      "categories": {
+        "necessary": {
+          "title": "Cookies necesarias",
+          "required": "Requeridas",
+          "description": "Esenciales para el funcionamiento: autenticación, pagos seguros y funcionalidad básica de la aplicación."
+        },
+        "analytics": {
+          "title": "Cookies de análisis",
+          "description": "Nos ayudan a entender cómo usas la aplicación para mejorar tu experiencia y nuestros servicios."
+        },
+        "marketing": {
+          "title": "Cookies de marketing",
+          "description": "Utilizadas para mostrarte contenido personalizado y medir la efectividad de nuestras campañas publicitarias."
+        },
+        "functionality": {
+          "title": "Cookies de funcionalidad",
+          "description": "Recuerdan tus preferencias de idioma, tema y configuraciones para ofrecerte una experiencia personalizada."
+        }
+      }
     }
   }
 } 

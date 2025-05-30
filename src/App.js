@@ -23,6 +23,7 @@ import Contact from './Paginasextra/Contact';
 import FAQ from './Paginasextra/FAQ';
 import TermsOfService from './Paginasextra/TermsOfService';
 import PrivacyPolicy from './Paginasextra/PrivacyPolicy';
+import PoliticaCookies from './Paginasextra/PoliticaCookies';
 import AppPreview from './AppPreview';
 import { useTranslation } from 'react-i18next'; // Importar useTranslation
 // NUEVO: Importar el componente del juego
@@ -1697,22 +1698,23 @@ const tryDeleteFiles = async (operationId) => {
 
   // Modificar el efecto de beforeunload para mostrar advertencia cuando el análisis esté completo
   useEffect(() => {
+    // CORREGIDO: Ser más específico sobre cuándo hay datos valiosos
     const isAnalysisComplete = chatGptResponse && operationId && !isLoading && !isFetchingMistral;
-    const hasAnalysisData = chatData || chatGptResponse;
+    const isRecoveringState = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
+    const hasValuableData = isAnalysisComplete || isRecoveringState;
+    
     // Verificar si estamos procesando un archivo compartido desde WhatsApp
     const isProcessingShared = isProcessingSharedFile || isProcessingRef.current;
     
-    // Si el análisis está completo o hay datos de análisis, registrar este estado
-    // MODIFICADO: No establecer el flag si estamos procesando un archivo compartido desde WhatsApp
-    if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared) {
+    // Solo establecer el flag cuando el análisis esté realmente completo
+    if (isAnalysisComplete && !isProcessingShared) {
       localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
     }
     
     // Función para advertir al usuario antes de refrescar o cerrar la página cuando hay datos de análisis
     const handleBeforeUnload = (e) => {
-      // CORREGIDO: Mostrar confirmación si hay datos de análisis y no estamos procesando un archivo compartido
-      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared) {
-        // Mensaje que se mostrará
+      // CORREGIDO: Solo mostrar confirmación si hay datos realmente valiosos y no estamos en proceso inicial
+      if (hasValuableData && !isProcessingShared && !isLoading) {
         const message = "¿Estás seguro que quieres salir? Se perderán todos los datos del análisis estadístico y psicológico.";
         e.preventDefault();
         e.returnValue = message;
@@ -1722,16 +1724,21 @@ const tryDeleteFiles = async (operationId) => {
     
     // Marcar siempre refrescado en pagetransition o unload
     const handlePageHide = () => {
-      // CORREGIDO: Marcar refrescado si hay datos de análisis y no estamos procesando un archivo compartido
-      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared) {
+      // CORREGIDO: Solo marcar refrescado si hay datos realmente valiosos
+      if (hasValuableData && !isProcessingShared && !isLoading) {
         localStorage.setItem('whatsapp_analyzer_page_refreshed', 'true');
       }
     };
     
     // Monitorear clicks en enlaces y botones que puedan causar navegación
     const handleLinkClick = (e) => {
-      // CORREGIDO: Mostrar confirmación si hay datos de análisis y no estamos procesando un archivo compartido
-      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && e.target.tagName === 'A' && !e.target.getAttribute('href')?.startsWith('#')) {
+      // CORREGIDO: Solo interceptar si hay datos realmente valiosos y no estamos en proceso inicial
+      if (hasValuableData && !isProcessingShared && !isLoading &&
+          e.target.tagName === 'A' && 
+          e.target.getAttribute('href') && 
+          !e.target.getAttribute('href').startsWith('#') &&
+          !e.target.closest('.analysis-container') &&
+          !e.target.closest('.upload-section')) {
         e.preventDefault();
         e.stopPropagation();
         setShowRefreshConfirmation(true);
@@ -1739,22 +1746,13 @@ const tryDeleteFiles = async (operationId) => {
       }
     };
     
-    // Monitorear clicks en elementos que puedan causar recarga
-    const handleNavClick = (e) => {
-      // Detectar clics en la esquina superior derecha (donde suele estar el botón de recarga)
-      // CORREGIDO: Mostrar confirmación si hay datos de análisis y no estamos procesando un archivo compartido
-      if ((isAnalysisComplete || hasAnalysisData) && !isProcessingShared && e.clientY < 50 && e.clientX > window.innerWidth - 100) {
-        setShowRefreshConfirmation(true);
-      }
-    };
-
-    // Activar las advertencias solo cuando hay datos de análisis
-    if (isAnalysisComplete || hasAnalysisData) {
+    // ACTIVAR las advertencias solo cuando realmente hay datos valiosos y no estamos cargando
+    if (hasValuableData && !isProcessingShared && !isLoading) {
       window.addEventListener('beforeunload', handleBeforeUnload);
       window.addEventListener('pagehide', handlePageHide);
       window.addEventListener('unload', handlePageHide);
+      // Solo interceptar enlaces de navegación real, no clics generales
       document.addEventListener('click', handleLinkClick, true);
-      document.addEventListener('mousedown', handleNavClick, true);
     }
 
     return () => {
@@ -1762,9 +1760,8 @@ const tryDeleteFiles = async (operationId) => {
       window.removeEventListener('pagehide', handlePageHide);
       window.removeEventListener('unload', handlePageHide);
       document.removeEventListener('click', handleLinkClick, true);
-      document.removeEventListener('mousedown', handleNavClick, true);
     };
-  }, [chatGptResponse, operationId, isLoading, isFetchingMistral, chatData]);
+  }, [chatGptResponse, operationId, isLoading, isFetchingMistral, isProcessingSharedFile]);
 
   // Função para continuar con la acción después de la confirmación
   const handleConfirmRefresh = () => {
@@ -2423,7 +2420,8 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/terms" element={<TermsOfService />} />
-        < Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/politica-cookies" element={<PoliticaCookies />} />
         {/* NUEVA RUTA: Juego de adivinar perfiles */}
         <Route path="/chat-game" element={<ChatTopGame />} />
         {/* NUEVA RUTA: Juego de titulares */}

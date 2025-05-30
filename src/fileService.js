@@ -57,6 +57,16 @@ const processContentForAzure = (content) => {
     console.log('Mapeo de participantes:', mappings.participants);
     console.log('Mapeo de personas mencionadas:', mappings.mentionedPeople);
 
+    // NUEVO: Verificar qué participantes aparecen en el texto final
+    const participantesEnTextoFinal = [];
+    Object.values(mappings.participants).forEach(participantId => {
+      if (processedContent.includes(participantId + ':')) {
+        participantesEnTextoFinal.push(participantId);
+      }
+    });
+    console.log('🔍 PARTICIPANTES QUE APARECEN EN TEXTO FINAL:', participantesEnTextoFinal);
+    console.log('⚠️ Si Azure analiza más participantes que estos, está inventando nombres');
+
     return {
       processedContent,
       nameMapping: mappings.participants
