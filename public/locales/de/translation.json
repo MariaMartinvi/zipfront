@@ -330,21 +330,21 @@
     ]
   },
   "preview": {
-    "title": "Entdecken Sie die Geheimnisse Ihrer WhatsApp-Gespräche",
-    "description": "Wir kombinieren Statistik und fortschrittliche Künstliche Intelligenz, um faszinierende Daten über die psychologischen Profile der Teilnehmer und Gruppendynamiken zu enthüllen.",
+    "title": "Entdecken Sie die Geheimnisse Ihrer WhatsApp-Konversationen",
+    "description": "Wir kombinieren Statistik und fortschrittliche Künstliche Intelligenz, um faszinierende Einblicke in die psychologischen Profile der Teilnehmer und Gruppendynamiken zu liefern.",
     "security": {
-      "badge": "100% privat und sicher - Garantierte Löschung"
+      "badge": "100% privat und sicher - Persönliche Daten verlassen nie Ihr Gerät"
     },
     "features": {
-      "psychological": "Psychologische Analyse von Kommunikationsmustern.",
+      "psychological": "Psychologische Analyse der Kommunikationsmuster.",
       "statistics": "Detaillierte Statistiken darüber, wer die Gespräche dominiert.",
-      "emotional": "Emotionale Interpretation basierend auf Emoji-Nutzung und Sprache.",
-      "discover": "Entdecken Sie verborgene Persönlichkeiten und Gruppendynamiken."
+      "emotional": "Emotionale Interpretation basierend auf Emoji- und Sprachgebrauch.",
+      "discover": "Spielen Sie Wer ist wer mit Ihrer WhatsApp-Gruppe - Garantierter Spaß."
     },
     "privacy": {
-      "encryption": "Chats werden verschlüsselt, sofort analysiert und sicher gelöscht.",
-      "protection": "Ihre Daten sind zu 100% mit AES-Verschlüsselung geschützt.",
-      "deletion": "Verifiziertes, sicheres Löschsystem für maximalen Schutz."
+      "encryption": "Die statistische Analyse erfolgt auf Ihrem Gerät und der Chat verlässt nie Ihr Gerät.",
+      "protection": "Ihr Chat wird für die KI-Verarbeitung anonymisiert und fragmentiert. Persönliche Daten verlassen nie Ihr Gerät.",
+      "deletion": "Persönliche Daten verlassen niemals Ihr Gerät."
     },
     "cta": "Entdecken Sie die Psychologie Ihres Chats!",
     "image": {
@@ -366,7 +366,7 @@
           "author": "Anna M."
         },
         {
-          "content": "Absolute Seelenruhe zu wissen, dass meine Daten verschlüsselt, geschützt und automatisch gelöscht werden. Das sichere Löschsystem gibt mir das Vertrauen, meine Chats ohne Bedenken hochzuladen.",
+          "content": "Völlige Sicherheit, da meine persönlichen Daten mein Gerät nie verlassen: Computer oder Telefon.",
           "author": "Laura T."
         }
       ]

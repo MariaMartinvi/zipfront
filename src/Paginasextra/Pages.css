@@ -2,54 +2,60 @@
 
 /* Global Page Container */
 .page-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 2rem;
   background-color: #fff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
 }
 
 .page-header {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #075E54;
-  border-bottom: 2px solid #25D366;
-  padding-bottom: 1rem;
+  text-align: left;
+  margin-bottom: 3rem;
+  color: #1a1a1a;
+  border-bottom: 3px solid #25D366;
+  padding-bottom: 1.5rem;
+  font-size: 2.5rem;
+  font-weight: 700;
 }
 
 .page-content {
-  line-height: 1.6;
-  color: #333;
+  line-height: 1.8;
+  color: #2d2d2d;
+  font-size: 1.1rem;
+  text-align: left;
 }
 
 /* Contact Page Styles */
 .contact-page {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 2rem;
 }
 
 .contact-header {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #075E54;
+  text-align: left;
+  margin-bottom: 3rem;
+  color: #1a1a1a;
+  font-size: 2.5rem;
+  font-weight: 700;
 }
 
 .contact-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 3rem;
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  padding: 3rem;
 }
 
 .contact-info {
-  background-color: #f5f8fa;
-  padding: 1.5rem;
-  border-radius: 8px;
+  background-color: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
 }
 
 .contact-form {
@@ -59,25 +65,27 @@
 
 /* FAQ Page Styles */
 .faq-page {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 2rem;
 }
 
 .faq-header {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #075E54;
+  text-align: left;
+  margin-bottom: 3rem;
+  color: #1a1a1a;
+  font-size: 2.5rem;
+  font-weight: 700;
 }
 
 .faq-container {
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 }
 
 .faq-item {
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #eaeaea;
 }
 
 .faq-item:last-child {
@@ -88,20 +96,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 1.5rem;
   cursor: pointer;
-  background-color: #f5f8fa;
-  transition: background-color 0.3s ease;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
 }
 
 .faq-question:hover {
   background-color: #f0f4f8;
+  transform: translateX(5px);
 }
 
 .faq-question h3 {
   margin: 0;
-  font-size: 1rem;
-  color: #075E54;
+  font-size: 1.1rem;
+  color: #1a1a1a;
+  font-weight: 600;
 }
 
 .faq-toggle {
@@ -110,10 +120,11 @@
 }
 
 .faq-answer {
-  padding: 1rem;
+  padding: 1.5rem;
   background-color: #fff;
-  color: #333;
-  line-height: 1.6;
+  color: #2d2d2d;
+  line-height: 1.8;
+  font-size: 1.1rem;
 }
 
 .faq-additional-help {
@@ -133,44 +144,57 @@
 /* Terms of Service and Privacy Policy Styles */
 .terms-of-service,
 .privacy-policy {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 2rem;
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 }
 
 .tos-header,
 .privacy-header {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #075E54;
-  border-bottom: 2px solid #25D366;
-  padding-bottom: 1rem;
+  text-align: left;
+  margin-bottom: 3rem;
+  color: #1a1a1a;
+  font-size: 2.5rem;
+  font-weight: 700;
+  border-bottom: 3px solid #25D366;
+  padding-bottom: 1.5rem;
 }
 
 .tos-content,
 .privacy-content {
-  line-height: 1.6;
-  color: #333;
+  line-height: 1.8;
+  color: #2d2d2d;
+  font-size: 1.1rem;
+  text-align: left;
 }
 
 .tos-content section,
 .privacy-content section {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .tos-content h2,
 .privacy-content h2 {
-  color: #075E54;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 0.5rem;
+  color: #1a1a1a;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 1rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
 }
 
 .tos-content ul,
 .privacy-content ul {
   padding-left: 2rem;
+  margin-bottom: 1.5rem;
+  list-style-type: disc;
+}
+
+.tos-content li,
+.privacy-content li {
   margin-bottom: 1rem;
 }
 
@@ -186,59 +210,80 @@
 
 /* Form Styles */
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
-  color: #333;
+  margin-bottom: 0.75rem;
+  color: #1a1a1a;
   font-weight: 500;
+  font-size: 1.1rem;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  transition: border-color 0.3s ease;
+  padding: 1rem;
+  border: 2px solid #eaeaea;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
   border-color: #25D366;
-  box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.15);
 }
 
 .submit-button {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem;
   background-color: #25D366;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .submit-button:hover {
-  background-color: #075E54;
+  background-color: #128C7E;
+  transform: translateY(-2px);
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-  .contact-container {
-    grid-template-columns: 1fr;
+  .page-header,
+  .contact-header,
+  .faq-header,
+  .tos-header,
+  .privacy-header {
+    font-size: 2rem;
   }
 
-  .faq-question h3 {
-    font-size: 0.9rem;
-  }
-
+  .page-content,
+  .faq-answer,
   .tos-content,
   .privacy-content {
-    font-size: 0.9rem;
+    font-size: 1rem;
+  }
+
+  .contact-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem;
+  }
+
+  .page-container,
+  .contact-page,
+  .faq-page,
+  .terms-of-service,
+  .privacy-policy {
+    padding: 2rem 1rem;
   }
 }

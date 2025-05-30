@@ -385,18 +385,18 @@
     "title": "Descubre los secretos de tus conversaciones de WhatsApp",
     "description": "Combinamos la estadística y la Inteligencia Artificial avanzada para revelarte datos fascinantes sobre los perfiles psicológicos de los participantes y las dinámicas de grupo.",
     "security": {
-      "badge": "100% privado y seguro - Borrado garantizado"
+      "badge": "100% privado y seguro - Los datos personales no salen de tu dispositivo"
     },
     "features": {
       "psychological": "Análisis psicológico de los patrones de comunicación.",
       "statistics": "Estadísticas detalladas sobre quién domina las conversaciones.",
       "emotional": "Interpretación emocional basada en el uso de emojis y lenguaje.",
-      "discover": "Descubre personalidades ocultas y dinámicas de grupo."
+      "discover": "Juego al Quien es quien con tu grupo de Whatsapp- Diversión asegurada."
     },
     "privacy": {
-      "encryption": "Los chats se cifran, analizan al momento y se eliminan de forma segura.",
-      "protection": "Tus datos están 100% protegidos con cifrado AES.",
-      "deletion": "Sistema verificado de borrado seguro para máxima protección."
+      "encryption": "El análisis estadístico se realiza en tu dispositivo y el chat no sale de tu dispositivo.",
+      "protection": "Tu chat se anonimiza y fragmenta para tratarlo con la AI.",
+      "deletion": "Los datos personales no salen jamás de tu dispositivo."
     },
     "cta": "¡Descubre la psicología de tu chat!",
     "image": {
@@ -418,7 +418,7 @@
           "author": "Ana M."
         },
         {
-          "content": "Tranquilidad total sabiendo que mis datos están cifrados, protegidos y se eliminan automáticamente. El sistema de borrado seguro me da la confianza para subir mis chats sin preocupaciones.",
+          "content": "Tranquilidad total sabiendo que mis datos personales jamás salen de mi dispositivo: ordenador o teléfono.",
           "author": "Laura T."
         }
       ]

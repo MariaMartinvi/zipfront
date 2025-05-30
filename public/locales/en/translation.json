@@ -350,20 +350,20 @@
   },
   "preview": {
     "title": "Discover the secrets of your WhatsApp conversations",
-    "description": "We combine statistics and advanced Artificial Intelligence to reveal fascinating data about the psychological profiles of participants and group dynamics.",
+    "description": "We combine statistics and advanced Artificial Intelligence to reveal fascinating insights about participants' psychological profiles and group dynamics.",
     "security": {
-      "badge": "100% private and secure - Guaranteed deletion"
+      "badge": "100% private and secure - Personal data never leaves your device"
     },
     "features": {
       "psychological": "Psychological analysis of communication patterns.",
-      "statistics": "Detailed statistics on who dominates the conversations.",
-      "emotional": "Emotional interpretation based on emoji usage and language.",
-      "discover": "Discover hidden personalities and group dynamics."
+      "statistics": "Detailed statistics about who dominates conversations.",
+      "emotional": "Emotional interpretation based on emoji and language usage.",
+      "discover": "Play Who's Who with your WhatsApp group - Guaranteed fun."
     },
     "privacy": {
-      "encryption": "Chats are encrypted, analyzed on the spot, and securely deleted.",
-      "protection": "Your data is 100% protected with AES encryption.",
-      "deletion": "Verified secure deletion system for maximum protection."
+      "encryption": "Statistical analysis is performed on your device and the chat never leaves your device.",
+      "protection": "Your chat is anonymized and fragmented for AI processing.",
+      "deletion": "Personal data never leaves your device."
     },
     "cta": "Discover the psychology of your chat!",
     "image": {
@@ -385,7 +385,7 @@
           "author": "Ann M."
         },
         {
-          "content": "Complete peace of mind knowing that my data is encrypted, protected, and automatically deleted. The secure deletion system gives me the confidence to upload my chats without worries.",
+          "content": "Complete peace of mind knowing that my personal data never leaves my device: computer or phone.",
           "author": "Laura T."
         }
       ]

@@ -22,27 +22,27 @@ const FAQ = () => {
   const faqs = [
     {
       question: "¿Cómo funciona el análisis de conversaciones de WhatsApp?",
-      answer: "Nuestro servicio analiza tus chats de WhatsApp después de exportarlos como archivo ZIP. Utilizamos técnicas de análisis de datos y IA para proporcionarte insights únicos sobre tus conversaciones."
+      answer: "Nuestro servicio analiza tus chats de WhatsApp después de exportarlos como archivo ZIP. Utilizamos técnicas avanzadas de análisis de datos y IA para proporcionarte insights detallados sobre tus conversaciones, incluyendo patrones de comunicación, análisis psicológico y estadísticas detalladas."
     },
     {
       question: "¿Es seguro subir mis chats?",
-      answer: "Sí, tomamos la privacidad muy en serio. Tus archivos se eliminan automáticamente después del análisis, y no guardamos ningún contenido de tus conversaciones. Nuestro proceso cumple con los más altos estándares de seguridad de datos."
+      answer: "Sí, la privacidad es nuestra prioridad. Tus archivos se eliminan automáticamente después del análisis, y no guardamos ningún contenido de tus conversaciones. Además, ofrecemos la opción de omitir el análisis psicológico por IA si lo prefieres. Nuestro proceso cumple con los más altos estándares de seguridad de datos."
     },
     {
       question: "¿Qué tipo de análisis ofrece la plataforma?",
-      answer: "Ofrecemos varios tipos de análisis, incluyendo: estadísticas de primer chat, análisis de influencers, uso de emojis, palabras más frecuentes, y un análisis psicológico generado por IA."
+      answer: "Ofrecemos un análisis completo que incluye: estadísticas detalladas de conversación, patrones de comunicación, análisis de horarios y actividad, uso de emojis y palabras más frecuentes, análisis de conversaciones iniciadas y terminadas, y un análisis psicológico opcional generado por IA. Todos los análisis se presentan de forma visual e interactiva."
     },
     {
       question: "¿Cómo puedo exportar mis chats de WhatsApp?",
-      answer: "En WhatsApp, ve a un chat, selecciona 'Exportar chat' y guarda como archivo ZIP sin multimedia. Luego puedes subirlo directamente en nuestra plataforma."
+      answer: "En WhatsApp, ve a un chat, selecciona 'Exportar chat' y guarda como archivo ZIP sin multimedia. La plataforma acepta archivos ZIP de WhatsApp tanto de Android como de iOS, y detecta automáticamente el formato. Puedes subir el archivo directamente en nuestra plataforma."
     },
     {
       question: "¿Cuánto cuesta el servicio?",
-      answer: "Ofrecemos diferentes planes: un plan gratuito con análisis limitados y planes premium con análisis más detallados y frecuencia de uso extendida."
+      answer: "Ofrecemos diferentes planes: un plan gratuito con análisis básicos y planes premium con análisis más detallados, mayor frecuencia de uso y características avanzadas. Todos los planes incluyen la opción de omitir el análisis psicológico por IA si lo prefieres."
     },
     {
       question: "¿Puedo usar el servicio en cualquier dispositivo?",
-      answer: "Sí, nuestra plataforma es completamente web y responsive. Puedes acceder desde computadoras, tablets y teléfonos móviles."
+      answer: "Sí, nuestra plataforma es completamente web y responsive. Puedes acceder desde cualquier dispositivo (computadoras, tablets y teléfonos móviles) y los análisis se adaptan automáticamente a tu pantalla. Además, puedes compartir los resultados fácilmente con otros."
     }
   ];
 

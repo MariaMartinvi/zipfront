@@ -331,20 +331,20 @@
   },
   "preview": {
     "title": "Découvrez les secrets de vos conversations WhatsApp",
-    "description": "Nous combinons statistiques et Intelligence Artificielle avancée pour révéler des données fascinantes sur les profils psychologiques des participants et les dynamiques de groupe.",
+    "description": "Nous combinons les statistiques et l'Intelligence Artificielle avancée pour révéler des données fascinantes sur les profils psychologiques des participants et les dynamiques de groupe.",
     "security": {
-      "badge": "100% privé et sécurisé - Suppression garantie"
+      "badge": "100% privé et sécurisé - Les données personnelles ne quittent jamais votre appareil"
     },
     "features": {
       "psychological": "Analyse psychologique des modèles de communication.",
       "statistics": "Statistiques détaillées sur qui domine les conversations.",
-      "emotional": "Interprétation émotionnelle basée sur l'utilisation d'émojis et le langage.",
-      "discover": "Découvrez les personnalités cachées et les dynamiques de groupe."
+      "emotional": "Interprétation émotionnelle basée sur l'utilisation des emojis et du langage.",
+      "discover": "Jouez à Qui est qui avec votre groupe WhatsApp - Divertissement garanti."
     },
     "privacy": {
-      "encryption": "Les chats sont chiffrés, analysés sur place et supprimés en toute sécurité.",
-      "protection": "Vos données sont protégées à 100% avec le chiffrement AES.",
-      "deletion": "Système de suppression sécurisée vérifié pour une protection maximale."
+      "encryption": "L'analyse statistique est effectuée sur votre appareil et la conversation ne quitte jamais votre appareil.",
+      "protection": "Votre conversation est anonymisée et fragmentée pour le traitement par l'IA. Les données personnelles ne quittent jamais votre appareil.",
+      "deletion": "Les données personnelles ne quittent jamais votre appareil."
     },
     "cta": "Découvrez la psychologie de votre chat!",
     "image": {
@@ -366,7 +366,7 @@
           "author": "Anne M."
         },
         {
-          "content": "Tranquillité d'esprit totale sachant que mes données sont chiffrées, protégées et automatiquement supprimées. Le système de suppression sécurisée me donne la confiance pour télécharger mes chats sans inquiétude.",
+          "content": "Une tranquillité totale sachant que mes données personnelles ne quittent jamais mon appareil : ordinateur ou téléphone.",
           "author": "Laura T."
         }
       ]

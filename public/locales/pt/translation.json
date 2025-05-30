@@ -362,18 +362,18 @@
     "title": "Descubra os segredos das suas conversas do WhatsApp",
     "description": "Combinamos estatísticas e Inteligência Artificial avançada para revelar dados fascinantes sobre os perfis psicológicos dos participantes e dinâmicas de grupo.",
     "security": {
-      "badge": "100% privado e seguro - Exclusão garantida"
+      "badge": "100% privado e seguro - Os dados pessoais nunca saem do seu dispositivo"
     },
     "features": {
       "psychological": "Análise psicológica dos padrões de comunicação.",
       "statistics": "Estatísticas detalhadas sobre quem domina as conversas.",
       "emotional": "Interpretação emocional baseada no uso de emojis e linguagem.",
-      "discover": "Descubra personalidades ocultas e dinâmicas de grupo."
+      "discover": "Jogue Quem é Quem com seu grupo do WhatsApp - Diversão garantida."
     },
     "privacy": {
       "encryption": "Os chats são criptografados, analisados no momento e excluídos com segurança.",
       "protection": "Seus dados estão 100% protegidos com criptografia AES.",
-      "deletion": "Sistema verificado de exclusão segura para máxima proteção."
+      "deletion": "Os dados pessoais nunca saem do seu dispositivo."
     },
     "cta": "Descubra a psicologia do seu chat!",
     "image": {
@@ -395,7 +395,7 @@
           "author": "Ana M."
         },
         {
-          "content": "Tranquilidade total sabendo que meus dados estão criptografados, protegidos e excluídos automaticamente. O sistema de exclusão segura me dá confiança para fazer upload dos meus chats sem preocupações.",
+          "content": "Tranquilidade total sabendo que meus dados pessoais nunca saem do meu dispositivo: computador ou telefone.",
           "author": "Laura T."
         }
       ]
