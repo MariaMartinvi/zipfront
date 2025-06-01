@@ -2259,7 +2259,7 @@ const tryDeleteFiles = async (operationId) => {
                 {/* Mostrar componentes de análisis estadístico */}
                 {operationId && user && (
                   <div className="analysis-container" ref={analysisRef}>
-                    <h2>{t('app.analysis.statistical')}</h2>
+                    <h2 className="analysis-special-title">{t('app.analysis.statistical')}</h2>
                     
                     {/* Mostrar los componentes de análisis estadístico inmediatamente cuando chatData esté disponible */}
                     {chatData ? (
@@ -2286,7 +2286,7 @@ const tryDeleteFiles = async (operationId) => {
                 {/* Análisis psicológico de Azure */}
                 {operationId && user && (
                   <div className="chat-analysis-section">
-                    <h2>{t('app.analysis.psychological')}</h2>
+                    <h2 className="analysis-special-title">{t('app.analysis.psychological')}</h2>
                     
                     {isFetchingMistral ? (
                       <div className="empty-placeholder-container">
@@ -2313,16 +2313,20 @@ const tryDeleteFiles = async (operationId) => {
                 
                 {/* Botón para compartir juego al final del análisis */}
                 {operationId && chatData && !isLoading && !isFetchingMistral && user && (
-                  <div className="share-game-section">
-                    <button 
-                      className="share-game-button"
-                      onClick={generateGameUrl}
-                    >
-                      <span>🎮 Compartir juego de personalidades</span>
-                    </button>
-                    <p className="share-game-description">
+                  <div className="personality-game-section">
+                    <span className="personality-game-badge">JUEGO INTERACTIVO</span>
+                    <h3 className="personality-game-title">
+                      🎮 Compartir juego de personalidades
+                    </h3>
+                    <p className="personality-game-description">
                       Comparte un juego para que tus amigos adivinen quién es el profesor, el vampiro y otras personalidades de tu chat.
                     </p>
+                    <button 
+                      className="personality-game-button"
+                      onClick={generateGameUrl}
+                    >
+                      🚀 Crear juego
+                    </button>
                   </div>
                 )}
 

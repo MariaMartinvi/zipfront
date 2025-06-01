@@ -865,36 +865,17 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       
       {/* Botón del juego de titulares */}
       {headlinesGameData && (
-        <div className="headlines-game-button-container" style={{
-          marginTop: '2rem',
-          padding: '1.5rem',
-          borderTop: '2px solid #eee',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          textAlign: 'center'
-        }}>
-          <h3 style={{ marginBottom: '1rem', color: '#2c3e50' }}>
+        <div className="headlines-game-section">
+          <span className="headlines-game-badge">JUEGO INTERACTIVO</span>
+          <h3 className="headlines-game-title">
             🎯 {t('share.game_title', '¿Quién dijo qué?')}
           </h3>
-          <p style={{ marginBottom: '1.5rem', color: '#6c757d' }}>
+          <p className="headlines-game-description">
             {t('share.game_description', 'Descubre quién corresponde a cada titular polémico')}
           </p>
           <button 
+            className="headlines-game-button"
             onClick={generateHeadlinesGameUrl}
-            style={{
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              padding: '12px 24px',
-              borderRadius: '6px',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s ease',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
           >
             🚀 {t('share.share_game_button', 'Compartir Juego de Titulares')}
           </button>
