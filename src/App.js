@@ -2234,10 +2234,11 @@ const tryDeleteFiles = async (operationId) => {
   return (
     <div className="App">
       <Header user={user} />
-      {location.pathname === '/plans' ? (
+      {user && userProfile && location.pathname === '/plans' && (
         <UserPlanBanner userProfile={userProfile} />
-      ) : (
-        window.lastAnalysisTopData ? <GameBanner onShareClick={generateGameUrl} /> : null
+      )}
+      {!user && location.pathname !== '/plans' && window.lastAnalysisTopData && (
+        <GameBanner onShareClick={generateGameUrl} />
       )}
       
       <main className="App-main">

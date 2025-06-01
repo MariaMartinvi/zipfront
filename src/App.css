@@ -67,55 +67,74 @@
   color: #25D366;            /* Verde de WhatsApp */
 }
 
-/* Sección de carga de archivos */
-.upload-section {
-  margin: 40px 0 20px 0;
-  padding: 40px 20px;
-  border-radius: 0;
-  background-color: white;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  scroll-margin-top: 20px;
-  width: 100%;
-}
-
-.upload-section-container {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.upload-section h2 {
-  text-align: center;
-  color: #128C7E;
-  margin-bottom: 20px;
-  font-size: 1.6rem;
-}
-
+/* Sección de carga de archivos - Estilo moderno consistente */
 .file-upload-container {
-  background-color: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s, box-shadow 0.3s;
-  margin-top: 30px;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.file-upload-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(113, 34, 172, 0.05), rgba(37, 211, 102, 0.05));
+  pointer-events: none;
+}
+
+.file-upload-container > * {
+  position: relative;
+  z-index: 1;
 }
 
 .file-upload-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-8px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
 }
 
 .file-upload-label {
   display: block;
   cursor: pointer;
-  padding: 30px;
-  border: 2px dashed #25D366; /* Color principal de WhatsApp */
-  border-radius: 8px;
+  padding: 40px 30px;
+  border: 3px dashed transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, #25D366, #7122AC) border-box;
+  border-radius: 16px;
   text-align: center;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.file-upload-label::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.05), rgba(113, 34, 172, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.file-upload-label:hover::before {
+  opacity: 1;
 }
 
 .file-upload-label:hover {
-  background-color: rgba(37, 211, 102, 0.05);
+  transform: scale(1.02);
+  border-color: #25D366;
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.2);
 }
 
 .file-upload-input {
@@ -126,25 +145,39 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .upload-icon {
-  font-size: 3rem;
+  font-size: 4rem;
   margin-bottom: 10px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.file-upload-label:hover .upload-icon {
+  transform: scale(1.1);
 }
 
 .file-upload-text span:nth-child(2) {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #075E54;
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #075E54, #25D366);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
 }
 
 .file-upload-subtext {
-  font-size: 0.9rem;
-  color: #707070;
-  max-width: 400px;
+  font-size: 16px;
+  color: #6B7280;
+  max-width: 500px;
   margin: 0 auto;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 /* Indicadores de carga */
@@ -326,18 +359,10 @@
   background-color: #1976D2;
 }
 
-/* Responsive */
+/* Responsive - Reglas generales */
 @media (max-width: 768px) {
   .App-header h1 {
     font-size: 1.5rem;
-  }
-  
-  .file-upload-label {
-    padding: 20px;
-  }
-  
-  .upload-icon {
-    font-size: 2.5rem;
   }
   
   .files-header {
@@ -358,14 +383,6 @@
 @media (max-width: 480px) {
   .App-main {
     padding: 0 10px 30px;
-  }
-  
-  .file-upload-text span:nth-child(2) {
-    font-size: 1rem;
-  }
-  
-  .file-upload-subtext {
-    font-size: 0.8rem;
   }
   
   .files-table {
@@ -667,53 +684,153 @@
   gap: 1rem;
 }
 
+/* UserPlanBanner - Estilo moderno consistente */
 .user-plan-banner {
-  background-color: #f0f4f8;
-  padding: 0.75rem 0;
+  background: linear-gradient(135deg, rgba(113, 34, 172, 0.05), rgba(37, 211, 102, 0.05));
+  padding: 16px 20px;
   text-align: center;
-  font-size: 0.9rem;
-  color: #333;
+  font-size: 16px;
+  color: #1a1a1a;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px;
-  border-bottom: 1px solid #e0e4e8;
+  gap: 20px;
+  border-bottom: 2px solid rgba(37, 211, 102, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.user-plan-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(37, 211, 102, 0.1), transparent);
+  animation: shimmer 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .user-plan-banner-content {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
 }
 
 .user-plan-badge {
-  background-color: #4285f4;
+  background: linear-gradient(135deg, #25D366, #7122AC);
   color: white;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.user-plan-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: badgeShine 3s ease-in-out infinite;
+}
+
+@keyframes badgeShine {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
 }
 
 .user-plan-upgrade-link {
-  color: #4285f4;
-  text-decoration: underline;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  color: #7122AC;
+  padding: 10px 20px;
+  border-radius: 16px;
+  border: 2px solid #7122AC;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-plan-upgrade-link::after {
+  content: '⬆️';
+  font-size: 16px;
+}
+
+.user-plan-upgrade-link:hover {
+  background: linear-gradient(135deg, #7122AC, #25D366);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(113, 34, 172, 0.3);
+  text-decoration: none;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .user-plan-banner {
     flex-direction: column;
-    gap: 10px;
-    padding: 0.5rem 0;
+    gap: 12px;
+    padding: 14px 16px;
+    font-size: 15px;
   }
   
   .user-plan-banner-content {
     flex-direction: column;
     text-align: center;
+    gap: 12px;
+  }
+
+  .user-plan-badge {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  .user-plan-upgrade-link {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-plan-banner {
+    padding: 12px 15px;
+    font-size: 14px;
+    gap: 10px;
+  }
+  
+  .user-plan-banner-content {
+    gap: 10px;
+  }
+
+  .user-plan-badge {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .user-plan-upgrade-link {
+    padding: 8px 14px;
+    font-size: 12px;
   }
 }
 
@@ -1484,26 +1601,40 @@ li {
 
 /* Estilos para la opción de privacidad */
 .privacy-option {
-  margin-top: 10px;
-  padding: 5px 0;
+  margin-top: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(113, 34, 172, 0.05), rgba(37, 211, 102, 0.05));
+  border-radius: 12px;
+  border: 1px solid rgba(37, 211, 102, 0.1);
 }
 
 .privacy-checkbox-label {
   display: flex;
   align-items: flex-start;
+  gap: 12px;
   cursor: pointer;
-  font-size: 0.9rem;
-  color: #555;
+  font-size: 16px;
+  color: #374151;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 .privacy-checkbox-label input[type="checkbox"] {
-  margin-right: 8px;
-  margin-top: 2px;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: #25D366;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .privacy-checkbox-label span {
   flex: 1;
-  line-height: 1.3;
+  user-select: none;
+}
+
+.privacy-checkbox-label:hover {
+  color: #25D366;
 }
 
 /* Estilos para la sección de compartir juego */
@@ -1544,3 +1675,86 @@ li {
   color: #666;
   font-size: 0.95rem;
 }
+
+/* Sección de carga principal - Estilo moderno consistente */
+.upload-section {
+  margin: 40px 0 20px 0;
+  padding: 60px 40px;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  scroll-margin-top: 20px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(113, 34, 172, 0.03), rgba(37, 211, 102, 0.03));
+  pointer-events: none;
+}
+
+.upload-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.upload-section-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.upload-section h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #128C7E, #25D366);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Responsive para upload-section */
+@media (max-width: 1024px) {
+  .upload-section {
+    padding: 50px 30px;
+  }
+  
+  .upload-section h2 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .upload-section {
+    padding: 40px 20px;
+    margin: 30px 0 15px 0;
+    border-radius: 16px;
+  }
+  
+  .upload-section h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .upload-section {
+    padding: 30px 16px;
+    margin: 20px 0 10px 0;
+  }
+  
+  .upload-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+  }
+}
+
+/* Sección de carga de archivos - Estilo moderno consistente */
