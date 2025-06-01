@@ -393,6 +393,28 @@
       }
     ]
   },
+  "hero": {
+    "badge": "ANÁLISIS DE CONVERSACIONES",
+    "title": {
+      "discover": "Descubre los secretos de",
+      "conversations": "tus conversaciones de"
+    },
+    "description": "Combinamos la estadística y la Inteligencia Artificial avanzada para revelarte datos fascinantes sobre los perfiles psicológicos de los participantes y las dinámicas de grupo.",
+    "buttons": {
+      "analyze": "Analizar mi chat",
+      "how_it_works": "Cómo funciona"
+    },
+    "security": {
+      "title": "100% Privado y Seguro",
+      "subtitle": "Los datos no salen de tu dispositivo"
+    },
+    "mockup": {
+      "title": "Resultados instantáneos",
+      "profile": "Extrovertida, líder natural del grupo.",
+      "description": "Suele iniciar la mayoría de las conversaciones.",
+      "view_analysis": "Ver análisis completo"
+    }
+  },
   "preview": {
     "title": "Descubre los secretos de tus conversaciones de WhatsApp",
     "description": "Combinamos la estadística y la Inteligencia Artificial avanzada para revelarte datos fascinantes sobre los perfiles psicológicos de los participantes y las dinámicas de grupo.",

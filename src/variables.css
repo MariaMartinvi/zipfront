@@ -1,65 +1,181 @@
 :root {
-  /* Colores principales */
-  --color-primary: #25D366; /* Verde WhatsApp */
+  /* ========== SISTEMA DE DISEÑO CANVA INTEGRADO ========== */
+  
+  /* Tema y configuración base */
+  --theme: light;
+  color-scheme: var(--theme);
+  
+  /* Tamaños de fuente base */
+  font-size: 62.5%;
+  
+  /* Variables de escalado responsive */
+  ----lgQg: 0.1rem;
+  
+  /* ========== COLORES PRINCIPALES (WhatsApp + Canva) ========== */
+  --color-primary: #25D366; /* Verde WhatsApp mantenido */
   --color-primary-dark: #128C7E;
   --color-primary-light: #DCF8C6;
   
-  /* Colores secundarios */
-  --color-secondary: #4285f4; /* Azul Google */
-  --color-secondary-dark: #3367d6;
-  --color-secondary-light: #e8f0fe;
+  /* Colores Canva principales */
+  --Zpa-KA: #00c4cc; /* Cyan Canva */
+  --eGVbng: #8b3dff; /* Púrpura principal Canva */
+  --M5_pvA: #7731d8; /* Púrpura secundario */
+  --boKKWg: #612dae; /* Púrpura oscuro */
   
-  /* Colores de texto */
-  --color-text-primary: #333333;
-  --color-text-secondary: #666666;
-  --color-text-light: #999999;
+  /* ========== GRADIENTES CANVA ========== */
+  --WYh-Pg: linear-gradient(to bottom right in srgb, #00c4cc, #5a32fa, #7d2ae8);
+  --SoALWA: linear-gradient(to bottom right in srgb, #00c4cc, #5a32fa, #7d2ae8);
+  --9v5PLg: linear-gradient(90deg, #00c4cc, #7d2ae8);
+  --LsXbHQ: linear-gradient(135deg, #00c4cc, #7d2ae8);
+  --U8pJuw: linear-gradient(135deg, #00c4cc, #7d2ae8);
+  --0BpVqA: linear-gradient(135deg, #03a5ab, #7d2ae8);
+  --dbTMCw: linear-gradient(180deg, #f9f5fe, #f5ffff);
+  
+  /* Gradientes con WhatsApp */
+  --whatsapp-gradient: linear-gradient(135deg, #25D366, #128C7E);
+  --whatsapp-soft-gradient: linear-gradient(135deg, #DCF8C6, #25D366);
+  
+  /* ========== BACKGROUNDS AVANZADOS ========== */
+  --xOBEOw: radial-gradient(100.99% 100.73% at 0% 0%, rgba(0, 196, 204, .726) 0%, #00c4cc 0.01%, rgba(0, 196, 204, 0) 100%), 
+           radial-gradient(68.47% 129.02% at 22.82% 97.71%, #6420ff 0%, rgba(100, 32, 255, 0) 100%), 
+           radial-gradient(106.1% 249.18% at 0% 0%, #00c4cc 0%, rgba(0, 196, 204, 0) 100%), 
+           radial-gradient(64.14% 115.13% at 5.49% 50%, #6420ff 0%, rgba(100, 32, 255, 0) 100%), #7d2ae7;
+  
+  --DTz8lQ: radial-gradient(100.99% 100.73% at 0% 0%, rgba(0, 196, 204, .726) 0%, #00c4cc 0.01%, rgba(0, 196, 204, 0) 100%), 
+           radial-gradient(68.47% 129.02% at 22.82% 97.71%, #6420ff 0%, rgba(100, 32, 255, 0) 100%), 
+           radial-gradient(106.1% 249.18% at 0% 0%, #00c4cc 0%, rgba(0, 196, 204, 0) 100%), 
+           radial-gradient(64.14% 115.13% at 5.49% 50%, #6420ff 0%, rgba(100, 32, 255, 0) 100%), #7d2ae7;
+  
+  /* ========== COLORES DE TEXTO CANVA ========== */
+  --color-text-primary: #0d1216;
+  --color-text-secondary: #464749;
+  --color-text-light: #a1a7aa;
   --color-text-white: #ffffff;
+  --vCimLg: #0d1216;
+  --y-Cg_Q: #0d1216;
+  --IiGh2A: #464749;
+  --yDx7qg: #464749;
   
-  /* Colores de fondo */
+  /* ========== COLORES DE FONDO CANVA ========== */
   --color-background: #ffffff;
-  --color-background-light: #f8f9fa;
-  --color-background-dark: #f5f7fa;
+  --color-background-light: #f6f7f8;
+  --color-background-soft: #f1ebff;
+  --qwofNA: #fff;
+  --EanfEg: #fff;
+  --BhAIAw: #fff;
+  --CZ9big: #f6f7f8;
+  --xpFk1A: #f6f7f8;
+  --91N9zw: #f1ebff;
+  --aKsGUw: #f1ebff;
   
-  /* Colores de estado */
-  --color-success: #4caf50;
-  --color-warning: #ffc107;
-  --color-error: #f44336;
-  --color-info: #2196f3;
+  /* ========== COLORES PÚRPURA CANVA ========== */
+  --ah0Ftw: #bbf3f4;
+  ---ixxCg: #f1eaff;
+  --MKiYLw: #e7dbff;
+  --kPU2Zw: #d6c2ff;
+  --gzW8Zw: #d6c2ff;
+  --ELyO6w: #d6c2ff;
+  --7t50pg: #e7dbff;
+  --tuSuvQ: #e7dbff;
   
-  /* Sombras */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  /* ========== SOMBRAS CANVA AVANZADAS ========== */
+  --Xh-ChQ: 0 -1px 1px -1px rgba(64, 87, 109, .07), 0px -6px 8px -8px rgba(57, 76, 96, .15);
+  --8WgTXw: 0 -4px 8px rgba(64, 87, 109, .07);
+  --mhXVmQ: 0 0 0 1px rgba(64, 87, 109, .07), 0 0 8px 0 rgba(57, 76, 96, .15);
+  --lq6ZjA: 0 0 0 1px rgba(64, 87, 109, .07), 0 0 8px 0 rgba(57, 76, 96, .15);
+  --sTmP_A: 0 0 0 1px rgba(64, 87, 109, .07), 0 0 8px 0 rgba(57, 76, 96, .15);
+  --xbFLow: 0 0 0 1px rgba(64, 87, 109, .07), 0 0 8px 0 rgba(57, 76, 96, .15);
+  --wlsoXA: 0px 0px 0px 1px rgba(64, 87, 109, .04), 0px 6px 20px -4px rgba(64, 87, 109, .3);
+  --ej6pBg: 0px 0px 0px 1px rgba(64, 87, 109, .04), 0px 12px 40px -8px rgba(64, 87, 109, .3);
+  --3LGewA: 0px 0px 0px 1px rgba(64, 87, 109, .04), 0px 2px 4px -1px rgba(64, 87, 109, .3);
   
-  /* Bordes */
+  /* Sombras modernas para cards */
+  --uU7oTw: 0px 0px 0px 0.5px #40576d12, 0px 1px 2px 0px #182c5923, 0px 2px 4px 0px #182c5923;
+  --galhog: 0px 0px 0px 0.5px #40576d12, 0px 2px 4px 0px #182c5923, 0px 6px 12px 0px #182c5912;
+  --JF44pw: 0px 0px 0px 0.5px #40576d12, 0px 8px 16px 0px #182c5923, 0px 24px 24px 0px #182c5912;
+  
+  /* ========== TIPOGRAFÍA RESPONSIVE CANVA ========== */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  
+  /* Tamaños móvil por defecto */
+  --aJwtZg: calc(var(----lgQg, 0.1rem) * 48); /* 4.8rem */
+  --Vf8OSg: calc(var(----lgQg, 0.1rem) * 36); /* 3.6rem */
+  --A3YTsg: calc(var(----lgQg, 0.1rem) * 24); /* 2.4rem */
+  --Dynksw: calc(var(----lgQg, 0.1rem) * 21); /* 2.1rem */
+  --VrAiwg: calc(var(----lgQg, 0.1rem) * 16); /* 1.6rem */
+  --5QGiVg: calc(var(----lgQg, 0.1rem) * 14); /* 1.4rem */
+  --R07nfg: calc(var(----lgQg, 0.1rem) * 12); /* 1.2rem */
+  --m8t8Kw: calc(var(----lgQg, 0.1rem) * 21); /* 2.1rem */
+  --ZYsOLQ: calc(var(----lgQg, 0.1rem) * 18); /* 1.8rem */
+  --__4QUw: calc(var(----lgQg, 0.1rem) * 16); /* 1.6rem */
+  --ZOMbtg: calc(var(----lgQg, 0.1rem) * 14); /* 1.4rem */
+  --ylZqXQ: calc(var(----lgQg, 0.1rem) * 12); /* 1.2rem */
+  --ggP9YA: calc(var(----lgQg, 0.1rem) * 11); /* 1.1rem */
+  
+  /* ========== COLORES DE ESTADO ========== */
+  --color-success: #008009;
+  --jz0LSw: #008009;
+  --U4Djhw: #008009;
+  --CJur3Q: #fff;
+  --UfNqTg: #c3eac4;
+  --QcueGQ: #133416;
+  
+  --color-warning: #ad5a00;
+  --Am6Phw: #ad5a00;
+  --X8oIbA: #fff;
+  --G_qVww: #ffd9ad;
+  --HfWZ1A: #3e2a14;
+  
+  --color-error: #db142c;
+  --0_PQrA: #db142c;
+  --9am7Zg: #db142c;
+  --wv7owA: #db142c;
+  --43wRQw: #db142c;
+  --9luNoA: #fff;
+  --qKGzFw: #ffd6d8;
+  --CMMUiA: #501b21;
+  
+  --color-info: #1a62ff;
+  --bdtRFA: #1a62ff;
+  --YrdGEw: #fff;
+  --_bpjsw: #cce1ff;
+  --x3uTOw: #182c59;
+  
+  /* ========== BORDERS Y RADIUS ========== */
   --border-radius-sm: 4px;
   --border-radius-md: 8px;
   --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
   --border-radius-full: 9999px;
   
-  /* Espaciado */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
+  /* ========== OPACIDADES CANVA ========== */
+  --ok513Q: 0.45;
+  --6DgMdQ: 0.45;
+  --9YJ6jQ: 0.45;
+  --1l4jNQ: 0.4;
+  --RY1XQg: 0.7;
+  --wlik6g: 0.4;
+  --dy3KDw: 0.7;
+  --s7De_w: 0.4;
+  --2doBew: 0.4;
+  --W85Nwg: 0.7;
+  --VyQPbg: 0.7;
   
-  /* Tipografía */
-  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
+  /* ========== COLORES TRANSPARENTES Y OVERLAYS ========== */
+  --ca2hZw: rgba(57, 76, 96, .15);
+  --eu46bQ: rgba(57, 76, 96, .15);
+  --xfy86Q: rgba(57, 76, 96, .15);
+  --A_Rimw: rgba(64, 87, 109, .07);
+  --oqurdw: rgba(64, 87, 109, .07);
+  --X3--Zg: rgba(64, 87, 109, .07);
+  --aMXh3A: rgba(64, 87, 109, .07);
   
-  /* Transiciones */
+  /* ========== TRANSICIONES ========== */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
   
-  /* Z-index */
+  /* ========== Z-INDEX ========== */
   --z-index-dropdown: 1000;
   --z-index-sticky: 1020;
   --z-index-fixed: 1030;
@@ -67,4 +183,99 @@
   --z-index-modal: 1050;
   --z-index-popover: 1060;
   --z-index-tooltip: 1070;
+  
+  /* ========== EFECTOS ESPECIALES CANVA ========== */
+  --lLIt9w: linear-gradient(#fff, #fff) padding-box, linear-gradient(to bottom right, #00c4cc, #8b3dff) border-box;
+  --gFpm7A: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, hsla(0, 0%, 100%, .7) 33%, hsla(0, 0%, 100%, .7) 66%, hsla(0, 0%, 100%, 0));
+  --VmWCzw: linear-gradient(33deg, transparent, transparent 40%, hsla(0, 0%, 100%, .3) 60%);
+  
+  /* ========== BLUE TONES CANVA ========== */
+  --Q2f31A: #6ba9ff;
+  --XmZqVA: #cee2ff;
+  --SYTTzA: #dae9ff;
+  --4PEc8w: #cee2ff;
+  --8twhFg: #dae9ff;
+  
+  /* ========== PURPLE SPECIAL EFFECTS ========== */
+  --4Epz8Q: #a570ff;
+  --wuYAdg: #a570ff;
+  --Tvynng: rgba(165, 112, 255, .15);
+  --BKx0jQ: rgba(165, 112, 255, .2);
+  --FVk7Ew: rgba(165, 112, 255, .15);
+  --2-zmYA: rgba(165, 112, 255, .15);
+  --ySYdsQ: rgba(165, 112, 255, .2);
+}
+
+/* ========== RESPONSIVE TYPOGRAPHY ========== */
+@media (min-width: 600px) {
+  :root {
+    /* Tamaños más grandes para desktop */
+    --aJwtZg: calc(var(----lgQg, 0.1rem) * 64); /* 6.4rem */
+    --Vf8OSg: calc(var(----lgQg, 0.1rem) * 48); /* 4.8rem */
+    --A3YTsg: calc(var(----lgQg, 0.1rem) * 32); /* 3.2rem */
+    --Dynksw: calc(var(----lgQg, 0.1rem) * 24); /* 2.4rem */
+    --VrAiwg: calc(var(----lgQg, 0.1rem) * 18); /* 1.8rem */
+    --5QGiVg: calc(var(----lgQg, 0.1rem) * 14); /* 1.4rem */
+    --R07nfg: calc(var(----lgQg, 0.1rem) * 12); /* 1.2rem */
+    --m8t8Kw: calc(var(----lgQg, 0.1rem) * 24); /* 2.4rem */
+    --ZYsOLQ: calc(var(----lgQg, 0.1rem) * 21); /* 2.1rem */
+    --__4QUw: calc(var(----lgQg, 0.1rem) * 16); /* 1.6rem */
+    --ZOMbtg: calc(var(----lgQg, 0.1rem) * 14); /* 1.4rem */
+    --ylZqXQ: calc(var(----lgQg, 0.1rem) * 12); /* 1.2rem */
+    --ggP9YA: calc(var(----lgQg, 0.1rem) * 11); /* 1.1rem */
+  }
+}
+
+/* ========== SAFE AREA SUPPORT ========== */
+@supports (height:env(safe-area-inset-top)) {
+  html {
+    --safe-area-inset-top: env(safe-area-inset-top);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+    --safe-area-inset-left: env(safe-area-inset-left);
+    --safe-area-inset-right: env(safe-area-inset-right);
+  }
+}
+
+html {
+  --safe-area-inset-top: 0px;
+  --safe-area-inset-bottom: 0px;
+  --safe-area-inset-left: 0px;
+  --safe-area-inset-right: 0px;
+}
+
+/* ========== UTILITY CLASSES CANVA STYLE ========== */
+.gradient-primary {
+  background: var(--9v5PLg);
+}
+
+.gradient-radial {
+  background: var(--xOBEOw);
+}
+
+.gradient-whatsapp {
+  background: var(--whatsapp-gradient);
+}
+
+.shadow-soft {
+  box-shadow: var(--uU7oTw);
+}
+
+.shadow-medium {
+  box-shadow: var(--galhog);
+}
+
+.shadow-strong {
+  box-shadow: var(--JF44pw);
+}
+
+.text-gradient {
+  background: var(--WYh-Pg);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.border-gradient {
+  border: 2px solid transparent;
+  background: var(--lLIt9w);
 } 

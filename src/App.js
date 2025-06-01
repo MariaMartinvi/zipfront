@@ -31,6 +31,7 @@ import ChatTopGame from './ChatTopGame';
 import ChatHeadlinesGame from './ChatHeadlinesGame';
 import { userSession } from './utils/userSession';
 import DebugLogger from './DebugLogger'; // Añadir import del DebugLogger
+import HeroSection from './components/HeroSection';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -2324,13 +2325,13 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
+                {/* Vista previa de la aplicación para usuarios no logueados */}
+                {!user && <AppPreview />}
+
                 {/* Sección de carga de archivos */}
                 <div id="upload-section" className="upload-section">
-                  {!user ? (
-                    <>
-                      {/* Componente de vista previa de la aplicación ANTES del login */}
-                      <AppPreview />
-                      
+                  <div className="upload-section-container">
+                    {!user ? (
                       <div className="login-required">
                         <h2>{t('app.login_required.title')}</h2>
                         <p>{t('app.login_required.description')}</p>
@@ -2349,43 +2350,43 @@ const tryDeleteFiles = async (operationId) => {
                           </button>
                         </div>
                       </div>
-                    </>
-                  ) : (
-                    <>
-                      <h2>{showAnalysis ? t('app.upload.another') : t('app.upload.title') + " "}<span className="whatsapp-text">WhatsApp</span></h2>
-                      
-                      {/* Carrusel de instrucciones de WhatsApp separado del botón */}
-                      <WhatsappInstructions />
-                      
-                      {/* User subscription status card */}
-                      
-                      <div className="file-upload-container">
-                        <label className="file-upload-label">
-                          <input 
-                            type="file" 
-                            className="file-upload-input" 
-                            accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
-                            onChange={handleFileUpload} 
-                          />
-                          <div className="file-upload-text">
-                            <span className="upload-icon">📂</span>
-                            <span>{t('app.upload.button')}</span>
-                            <span className="file-upload-subtext">{t('app.upload.subtext')}</span>
-                          </div>
-                        </label>
-                        <div className="privacy-option">
-                          <label className="privacy-checkbox-label">
-                            <input
-                              type="checkbox"
-                              checked={skipAIPsychologicalAnalysis}
-                              onChange={(e) => setSkipAIPsychologicalAnalysis(e.target.checked)}
+                    ) : (
+                      <>
+                        <h2>{showAnalysis ? t('app.upload.another') : t('app.upload.title') + " "}<span className="whatsapp-text">WhatsApp</span></h2>
+                        
+                        {/* Carrusel de instrucciones de WhatsApp separado del botón */}
+                        <WhatsappInstructions />
+                        
+                        {/* User subscription status card */}
+                        
+                        <div className="file-upload-container">
+                          <label className="file-upload-label">
+                            <input 
+                              type="file" 
+                              className="file-upload-input" 
+                              accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
+                              onChange={handleFileUpload} 
                             />
-                            <span>{t('app.privacy.no_ai_analysis')}</span>
+                            <div className="file-upload-text">
+                              <span className="upload-icon">📂</span>
+                              <span>{t('app.upload.button')}</span>
+                              <span className="file-upload-subtext">{t('app.upload.subtext')}</span>
+                            </div>
                           </label>
+                          <div className="privacy-option">
+                            <label className="privacy-checkbox-label">
+                              <input
+                                type="checkbox"
+                                checked={skipAIPsychologicalAnalysis}
+                                onChange={(e) => setSkipAIPsychologicalAnalysis(e.target.checked)}
+                              />
+                              <span>{t('app.privacy.no_ai_analysis')}</span>
+                            </label>
+                          </div>
                         </div>
-                      </div>
-                    </>
-                  )}
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {error && (

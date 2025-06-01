@@ -1,178 +1,427 @@
 /* Header.css */
+:root {
+  --primary-green: #25D366;
+  --primary-green-dark: #128C7E;
+  --accent-purple: #8B5CF6;
+  --accent-pink: #E91E63;
+  --accent-orange: #FF6B35;
+  --background-light: #f8f9fa;
+  --background-white: #ffffff;
+  --background-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --text-primary: #0e1318;
+  --text-secondary: #656b73;
+  --border-light: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
 .app-header {
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
-  
-  .header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0.5rem 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .logo {
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-  }
-  
-  /* Nuevos estilos para el logo como texto */
-  .logo-text {
-    display: flex;
-    font-size: 2.2rem;
-    font-weight: 700;
-    line-height: 1;
-  }
-  
-  .logo-chat {
-    color: #4285f4;
-  }
-  
-  .logo-salsa {
-    color: #25D366; /* Color verde de WhatsApp */
-  }
-  
-  .nav-container {
-    display: flex;
-    align-items: center;
-  }
-  
+  background: var(--background-white);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+}
+
+/* Logo mejorado */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.logo-svg {
+  width: 32px;
+  height: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.logo:hover .logo-icon {
+  transform: scale(1.05);
+}
+
+.logo:hover .logo-svg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.logo-text::before {
+  content: 'CS';
+  width: 32px;
+  height: 32px;
+  background: var(--background-gradient);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  transition: transform 0.2s ease;
+}
+
+.logo:hover .logo-text::before {
+  transform: scale(1.05);
+}
+
+.logo-chat {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.logo-salsa {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary-green);
+}
+
+/* Nuevo estilo para ChatSalsa con gradiente moderno */
+.logo-chatsalsa {
+  font-size: 30px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #25D366 0%, #8A2BE2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+}
+
+.logo:hover .logo-chatsalsa {
+  background: linear-gradient(135deg, #128C7E 0%, #7B2CBF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transform: scale(1.02);
+}
+
+/* Navegación */
+.nav-container {
+  display: flex;
+  align-items: center;
+}
+
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 18px;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--primary-green);
+}
+
+.nav-link:first-of-type {
+  color: var(--primary-green);
+}
+
+.nav-link:first-of-type::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary-green);
+  border-radius: 1px;
+}
+
+/* Botón Prueba gratis estilo Canva */
+.nav-link.sign-up {
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.8rem;
+  border-radius: 9999px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.nav-link.sign-up:hover {
+  background: linear-gradient(to right, #128C7E, #7B2CBF);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+/* Botón CTA principal */
+.cta-button {
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.8rem;
+  border-radius: 9999px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button:hover {
+  background: linear-gradient(to right, #128C7E, #7B2CBF);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+/* Menú de usuario */
+.user-menu {
+  position: relative;
+}
+
+.user-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.user-button:hover {
+  background: var(--background-light);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--background-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.menu-item {
+  padding: 12px 16px;
+  font-size: 16px;
+  color: var(--text-primary);
+  text-decoration: none;
+  display: block;
+  transition: background 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background: var(--background-light);
+}
+
+.menu-item:first-child {
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+}
+
+.menu-item:last-child {
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+
+/* Menú móvil */
+.mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 20px;
+  color: var(--text-secondary);
+}
+
+.mobile-menu-button:hover {
+  background: var(--background-light);
+}
+
+.menu-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--background-white);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: var(--shadow-lg);
+}
+
+.mobile-nav-link {
+  display: block;
+  padding: 16px 24px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 18px;
+  border-bottom: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-link:hover {
+  color: var(--primary-green);
+  background: var(--background-light);
+}
+
+.mobile-nav-link:last-child {
+  border-bottom: none;
+}
+
+.mobile-nav-link.mobile-logout {
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  text-align: center;
+  margin: 16px 24px;
+  border-radius: 9999px;
+  border-bottom: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav-link.mobile-logout:hover {
+  background: linear-gradient(to right, #128C7E, #7B2CBF);
+  transform: translateY(-1px);
+}
+
+.mobile-user-info {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--background-light);
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
   .desktop-nav {
-    display: flex;
-    align-items: center;
+    display: none;
   }
-  
-  .nav-link {
-    margin-left: 1.5rem;
-    text-decoration: none;
-    color: #555;
-    font-weight: 500;
-    transition: color 0.2s ease;
-  }
-  
-  .nav-link:hover {
-    color: #4285f4;
-  }
-  
-  .nav-link.sign-up {
-    background-color: #4285f4;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-  }
-  
-  .nav-link.sign-up:hover {
-    background-color: #3367d6;
-  }
-  
-  .user-menu {
-    position: relative;
-    margin-left: 1.5rem;
-  }
-  
-  .user-button {
-    background: none;
-    border: none;
-    color: #4285f4;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-  }
-  
-  .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: white;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    min-width: 150px;
-    z-index: 1000;
-    margin-top: 0.5rem;
-  }
-  
-  .menu-item {
-    padding: 0.75rem 1rem;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .menu-item:hover {
-    background-color: #f5f7fa;
-  }
-  
+
   .mobile-menu-button {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #555;
-  }
-  
-  .mobile-menu {
-    display: none;
-    padding: 1rem;
-    background-color: white;
-    border-top: 1px solid #eee;
-  }
-  
-  .mobile-nav-link {
     display: block;
-    padding: 0.75rem 0;
-    text-decoration: none;
-    color: #555;
-    font-weight: 500;
-    border-bottom: 1px solid #eee;
   }
-  
-  .mobile-nav-link.mobile-logout {
-    color: #d32f2f;
-    background: none;
-    border: none;
-    width: 100%;
-    text-align: left;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #eee;
+
+  .mobile-menu {
+    display: block;
   }
-  
-  .mobile-user-info {
-    padding: 0.75rem 0;
-    font-size: 0.9rem;
-    color: #888;
+
+  .header-container {
+    padding: 14px 20px;
   }
-  
-  /* Responsive Adjustments */
-  @media (max-width: 768px) {
-    .desktop-nav {
-      display: none;
-    }
-    
-    .mobile-menu-button {
-      display: block;
-    }
-    
-    .mobile-menu {
-      display: block;
-    }
-    
-    .logo-text {
-      font-size: 1.6rem; /* Texto más pequeño en móvil pero sigue siendo visible */
-    }
+
+  .logo-text::before {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
   }
+
+  .logo-svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .logo-chat,
+  .logo-salsa {
+    font-size: 20px;
+  }
+
+  .logo-chatsalsa {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: 12px 16px;
+  }
+
+  .logo-text::before {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+
+  .logo-svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .logo-chat,
+  .logo-salsa {
+    font-size: 18px;
+  }
+
+  .logo-chatsalsa {
+    font-size: 22px;
+  }
+}

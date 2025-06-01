@@ -58,7 +58,7 @@
 
 .footer-section h3 {
   color: #000000; /* Cambiado a negro */
-  font-size: 1rem;
+  font-size: 18px;
   margin-bottom: 0.8rem;
   position: relative;
   padding-bottom: 0.5rem;
@@ -104,7 +104,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.95rem;
+  font-size: 16px;
   line-height: 1.4;
   width: fit-content; /* Ajustar al contenido */
 }
@@ -124,7 +124,7 @@
 }
 
 .footer-icon {
-  font-size: 1rem;
+  font-size: 18px;
   color: #25D366;
   transition: transform 0.3s ease;
   flex-shrink: 0;
@@ -158,7 +158,7 @@
 }
 
 .social-icon {
-  font-size: 1.4rem;
+  font-size: 22px;
   color: #000000; /* Cambiado a negro */
   transition: all 0.3s ease;
 }
@@ -183,7 +183,7 @@
 
 .footer-bottom p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 16px;
   color: #000000; /* Cambiado a negro */
 }
 
@@ -259,11 +259,23 @@
   }
   
   .footer-section h3 {
-    font-size: 0.9rem;
+    font-size: 16px;
   }
   
   .footer-link {
-    font-size: 0.9rem;
+    font-size: 15px;
+  }
+  
+  .footer-icon {
+    font-size: 16px;
+  }
+  
+  .social-icon {
+    font-size: 20px;
+  }
+  
+  .footer-bottom p {
+    font-size: 15px;
   }
 }
 
@@ -285,6 +297,26 @@
   .footer-section {
     width: 100%;
     text-align: center; /* Centrar texto en móvil */
+  }
+  
+  .footer-section h3 {
+    font-size: 15px;
+  }
+  
+  .footer-link {
+    font-size: 14px;
+  }
+  
+  .footer-icon {
+    font-size: 15px;
+  }
+  
+  .social-icon {
+    font-size: 18px;
+  }
+  
+  .footer-bottom p {
+    font-size: 14px;
   }
 
   .footer-section h3::after {
