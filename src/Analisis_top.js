@@ -1886,76 +1886,82 @@ const AnalisisTop = ({ operationId, chatData }) => {
   }
 
   return (
-    <div className="analisis-top-container">
-      <h2 className="titulo-principal">{t('app.top_profiles.title')}</h2>
-      
-      {/* Usar la clase de grid específica */}
-      <div className="categorias-grid-container">
-        {(() => {
-          // Número de columnas del grid (2 por defecto, puedes hacerlo dinámico si quieres)
-          const columnas = 2;
-          const categoriasKeys = Object.keys(categoriaIconos).filter(categoria => {
-            // Para la categoría mala_influencia, verificar que tenga datos válidos
-            if (categoria === 'mala_influencia') {
-              return datos && 
-                     datos.categorias && 
-                     datos.categorias[categoria] && 
-                     datos.categorias[categoria].nombre &&
-                     datos.categorias[categoria].menciones_vicios > 0;
-            }
-            // Para el resto de categorías, mantener la lógica original
-            return datos && 
-                   datos.categorias && 
-                   datos.categorias[categoria] && 
-                   datos.categorias[categoria].nombre;
-          });
-          // Dividir en filas
-          const filas = [];
-          for (let i = 0; i < categoriasKeys.length; i += columnas) {
-            filas.push(categoriasKeys.slice(i, i + columnas));
-          }
-          // Renderizar filas
-          return filas.map((fila, filaIdx) => {
-            // ¿Está la seleccionada en esta fila?
-            const idxSeleccionada = fila.indexOf(categoriaSeleccionada);
-            const elementosFila = [];
-            fila.forEach((categoria, idx) => {
-              // Si la seleccionada está en esta fila y es este índice, inserta el detalle antes
-              if (idx === idxSeleccionada) {
-                elementosFila.push(
-                  <div className="detalle-container-grid" key={`detalle-${categoria}`}> 
-                    <div className="detalle-header">
-                      <div className="detalle-icono">{categoriaIconos[categoria].icono}</div>
-                      <div className="detalle-info">
-                        <h3 className="detalle-titulo">{categoriaIconos[categoria].titulo()}</h3>
-                        <p className="detalle-descripcion">{categoriaIconos[categoria].descripcion()}</p>
+    <div className="modern-analysis-top-container">
+      {/* Analysis Section */}
+      <section className="analysis-top-section">
+        <div className="analysis-top-container">
+          <span className="analysis-badge">PERFILES DESTACADOS</span>
+          <h2 className="analysis-title">{t('app.top_profiles.title')}</h2>
+          <p className="analysis-description">Descubre los perfiles más destacados de tu chat y sus características únicas que los hacen especiales.</p>
+          
+          {/* Usar la clase de grid específica */}
+          <div className="profiles-grid-container">
+            {(() => {
+              // Número de columnas del grid (2 por defecto, puedes hacerlo dinámico si quieres)
+              const columnas = 2;
+              const categoriasKeys = Object.keys(categoriaIconos).filter(categoria => {
+                // Para la categoría mala_influencia, verificar que tenga datos válidos
+                if (categoria === 'mala_influencia') {
+                  return datos && 
+                         datos.categorias && 
+                         datos.categorias[categoria] && 
+                         datos.categorias[categoria].nombre &&
+                         datos.categorias[categoria].menciones_vicios > 0;
+                }
+                // Para el resto de categorías, mantener la lógica original
+                return datos && 
+                       datos.categorias && 
+                       datos.categorias[categoria] && 
+                       datos.categorias[categoria].nombre;
+              });
+              // Dividir en filas
+              const filas = [];
+              for (let i = 0; i < categoriasKeys.length; i += columnas) {
+                filas.push(categoriasKeys.slice(i, i + columnas));
+              }
+              // Renderizar filas
+              return filas.map((fila, filaIdx) => {
+                // ¿Está la seleccionada en esta fila?
+                const idxSeleccionada = fila.indexOf(categoriaSeleccionada);
+                const elementosFila = [];
+                fila.forEach((categoria, idx) => {
+                  // Si la seleccionada está en esta fila y es este índice, inserta el detalle antes
+                  if (idx === idxSeleccionada) {
+                    elementosFila.push(
+                      <div className="profile-detail-container" key={`detalle-${categoria}`}> 
+                        <div className="profile-detail-header">
+                          <div className="profile-detail-icon">{categoriaIconos[categoria].icono}</div>
+                          <div className="profile-detail-info">
+                            <h3 className="profile-detail-title">{categoriaIconos[categoria].titulo()}</h3>
+                            <p className="profile-detail-description">{categoriaIconos[categoria].descripcion()}</p>
+                          </div>
+                        </div>
+                        {renderDetalleCategoria(categoria)}
+                      </div>
+                    );
+                  }
+                  elementosFila.push(
+                    <div 
+                      key={categoria}
+                      className={`profile-card ${categoriaSeleccionada === categoria ? 'selected' : ''}`}
+                      onClick={() => setCategoriaSeleccionada(categoria)}
+                    >
+                      <div className="profile-icon">{categoriaIconos[categoria].icono}</div>
+                      <div className="profile-info">
+                        <div className="profile-title">{categoriaIconos[categoria].titulo()}</div>
+                        <div className="profile-description">{categoriaIconos[categoria].descripcion()}</div>
+                        <div className="profile-user">{datos.categorias[categoria].nombre}</div>
                       </div>
                     </div>
-                    {renderDetalleCategoria(categoria)}
-                  </div>
-                );
-              }
-              elementosFila.push(
-                <div 
-                  key={categoria}
-                  className={`categoria-card ${categoriaSeleccionada === categoria ? 'seleccionada' : ''}`}
-                  onClick={() => setCategoriaSeleccionada(categoria)}
-                >
-                  <div className="categoria-icono">{categoriaIconos[categoria].icono}</div>
-                  <div className="categoria-info">
-                    <div className="categoria-titulo">{categoriaIconos[categoria].titulo()}</div>
-                    <div className="categoria-descripcion">{categoriaIconos[categoria].descripcion()}</div>
-                    <div className="categoria-usuario">{datos.categorias[categoria].nombre}</div>
-                  </div>
-                </div>
-              );
-            });
-            return elementosFila;
-          });
-        })()}
-      </div>
-      
+                  );
+                });
+                return elementosFila;
+              });
+            })()}
+          </div>
         </div>
+      </section>
+    </div>
   );
 };
 

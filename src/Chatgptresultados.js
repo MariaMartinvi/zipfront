@@ -133,13 +133,24 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         }
       }
 
+      // NUEVO: Procesar análisis psicológico con estilo moderno
+      try {
+        processedResponse = processResponseWithModernPsychology(processedResponse);
+      } catch (error) {
+        console.error('Error procesando análisis psicológico:', error);
+        // Si hay error, continuar con la respuesta sin procesar la psicología
+      }
+
       // Convertir markdown a HTML
       const htmlContent = marked.parse(processedResponse);
       
       // Sanitizar el HTML
       const sanitizedContent = DOMPurify.sanitize(htmlContent);
       
-      setHtmlContent(sanitizedContent);
+      // NUEVO: Post-procesar el HTML para aplicar el diseño moderno correctamente
+      const finalContent = postProcessPsychologyHTML(sanitizedContent);
+      
+      setHtmlContent(finalContent);
       
       // Incrementar contador de solicitudes
       setRequestCount(prevCount => {
@@ -154,10 +165,22 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   useEffect(() => {
     if (chatGptResponse && headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) {
       try {
-        const processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
+        let processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
+        
+        // NUEVO: Procesar análisis psicológico con estilo moderno
+        try {
+          processedResponse = processResponseWithModernPsychology(processedResponse);
+        } catch (error) {
+          console.error('Error procesando análisis psicológico en useEffect headlinesGameData:', error);
+        }
+        
         const htmlContent = marked.parse(processedResponse);
         const sanitizedContent = DOMPurify.sanitize(htmlContent);
-        setHtmlContent(sanitizedContent);
+        
+        // NUEVO: Post-procesar el HTML para aplicar el diseño moderno correctamente
+        const finalContent = postProcessPsychologyHTML(sanitizedContent);
+        
+        setHtmlContent(finalContent);
       } catch (error) {
         console.error('Error en useEffect de headlinesGameData:', error);
       }
@@ -179,10 +202,22 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
             ? headlinesGameData 
             : null;
           
-          const processedResponse = processHeadlinesSection(chatGptResponse, gameDataToUse);
+          let processedResponse = processHeadlinesSection(chatGptResponse, gameDataToUse);
+          
+          // NUEVO: Procesar análisis psicológico con estilo moderno
+          try {
+            processedResponse = processResponseWithModernPsychology(processedResponse);
+          } catch (error) {
+            console.error('Error procesando análisis psicológico en useEffect idioma:', error);
+          }
+          
           const htmlContent = marked.parse(processedResponse);
           const sanitizedContent = DOMPurify.sanitize(htmlContent);
-          setHtmlContent(sanitizedContent);
+          
+          // NUEVO: Post-procesar el HTML para aplicar el diseño moderno correctamente
+          const finalContent = postProcessPsychologyHTML(sanitizedContent);
+          
+          setHtmlContent(finalContent);
         } catch (error) {
           console.error('Error procesando respuesta:', error);
           setError('Error al procesar la respuesta');
@@ -385,6 +420,308 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     } catch (error) {
       console.error('Error procesando sección de titulares:', error);
       return response; // Devolver respuesta original si hay error
+    }
+  };
+
+  // NUEVA FUNCIÓN para procesar secciones de análisis psicológico con estilo moderno
+  const processResponseWithModernPsychology = (response) => {
+    try {
+      // Buscar y reemplazar secciones de análisis psicológico
+      let processedResponse = response;
+      
+      // Patrones para identificar análisis de personalidades (multi-idioma)
+      const personalityPatterns = [
+        /## 🧠 Análisis de personalidades([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Análisis Psicológico([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Perfiles Psicológicos([\s\S]*?)(?=\n## |$)/gi,
+        /## 👥 Análisis de Personalidades([\s\S]*?)(?=\n## |$)/gi,
+        /## 🎭 Personalidades del Grupo([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Personality Analysis([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Psychological Analysis([\s\S]*?)(?=\n## |$)/gi,
+        /## 👥 Group Personalities([\s\S]*?)(?=\n## |$)/gi
+      ];
+
+      personalityPatterns.forEach(pattern => {
+        processedResponse = processedResponse.replace(pattern, (match, content) => {
+          return transformPsychologySection(match, content);
+        });
+      });
+
+      return processedResponse;
+    } catch (error) {
+      console.error('Error procesando análisis psicológico:', error);
+      return response;
+    }
+  };
+
+  // FUNCIÓN auxiliar para transformar sección de psicología - ACTUALIZADA para el formato del prompt
+  const transformPsychologySection = (fullMatch, content) => {
+    try {
+      // Extraer el título de la sección
+      const titleMatch = fullMatch.match(/## ([^#\n]+)/);
+      const sectionTitle = titleMatch ? titleMatch[1] : '🧠 Análisis Psicológico';
+      
+      // NUEVO: Buscar participantes con el formato ### [Nombre]
+      const participantRegex = /### ([^\n]+)([\s\S]*?)(?=### |$)/g;
+      let personalities = [];
+      let match;
+      
+      while ((match = participantRegex.exec(content)) !== null) {
+        const name = match[1].trim();
+        const participantContent = match[2].trim();
+        
+        if (name && participantContent) {
+          const personality = parseParticipantContent(name, participantContent);
+          if (personality) {
+            personalities.push(personality);
+          }
+        }
+      }
+
+      // Generar HTML moderno si se encontraron personalidades
+      if (personalities.length > 0) {
+        console.log('Generando HTML moderno para', personalities.length, 'personalidades');
+        return generateModernPsychologyHTML(sectionTitle, personalities);
+      }
+      
+      console.log('No se encontraron personalidades, devolviendo formato original');
+      return fullMatch; // Devolver original si no se pudo procesar
+    } catch (error) {
+      console.error('Error transformando sección psicológica:', error);
+      return fullMatch;
+    }
+  };
+
+  // NUEVA FUNCIÓN para parsear el contenido de cada participante
+  const parseParticipantContent = (name, content) => {
+    try {
+      let role = '';
+      let traits = '';
+      let strengths = '';
+      let improvements = '';
+      
+      // Extraer información de las viñetas (multi-idioma)
+      const rolePatterns = [
+        /\*\*Rol en el grupo:\*\*\s*([^\n]+)/i,
+        /\*\*Role in the group:\*\*\s*([^\n]+)/i,
+        /\*\*Group role:\*\*\s*([^\n]+)/i,
+        /\*\*Rôle dans le groupe:\*\*\s*([^\n]+)/i
+      ];
+      
+      const traitsPatterns = [
+        /\*\*Rasgos principales:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
+        /\*\*Main traits:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
+        /\*\*Key characteristics:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
+        /\*\*Traits principaux:\*\*\s*([\s\S]*?)(?=\*\*|$)/i
+      ];
+      
+      const strengthsPatterns = [
+        /\*\*Fortalezas:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
+        /\*\*Strengths:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
+        /\*\*Points forts:\*\*\s*([\s\S]*?)(?=\*\*|$)/i
+      ];
+
+      // Extraer rol
+      for (const pattern of rolePatterns) {
+        const roleMatch = content.match(pattern);
+        if (roleMatch) {
+          role = roleMatch[1].trim();
+          break;
+        }
+      }
+
+      // Extraer rasgos principales
+      for (const pattern of traitsPatterns) {
+        const traitsMatch = content.match(pattern);
+        if (traitsMatch) {
+          traits = traitsMatch[1].trim();
+          break;
+        }
+      }
+
+      // Extraer fortalezas
+      for (const pattern of strengthsPatterns) {
+        const strengthsMatch = content.match(pattern);
+        if (strengthsMatch) {
+          strengths = strengthsMatch[1].trim();
+          break;
+        }
+      }
+
+      // Crear descripción combinada
+      let description = '';
+      if (role) description += `${role}. `;
+      if (traits) description += cleanDescriptionText(traits);
+      
+      if (!description) {
+        // Si no se encontró formato estructurado, usar todo el contenido
+        description = cleanDescriptionText(content);
+      }
+
+      // Extraer traits para las etiquetas
+      const extractedTraits = extractTraitsFromContent(role, traits, strengths);
+
+      return {
+        name: cleanPersonalityName(name),
+        description: description.trim(),
+        traits: extractedTraits
+      };
+    } catch (error) {
+      console.error('Error parseando contenido del participante:', error);
+      return null;
+    }
+  };
+
+  // FUNCIÓN para limpiar texto de descripción
+  const cleanDescriptionText = (text) => {
+    return text
+      .replace(/\*\*/g, '')
+      .replace(/^\s*[\-\*]\s*/gm, '')
+      .replace(/\n\s*\n/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
+  // FUNCIÓN actualizada para extraer traits del contenido estructurado
+  const extractTraitsFromContent = (role, traits, strengths) => {
+    const allText = `${role} ${traits} ${strengths}`.toLowerCase();
+    const extractedTraits = [];
+    
+    // Traits comunes en múltiples idiomas
+    const commonTraits = {
+      // Español
+      'líder': 'Líder', 'lider': 'Líder', 'comunicativo': 'Comunicativo', 'comunicativa': 'Comunicativa',
+      'organizador': 'Organizador', 'organizadora': 'Organizadora', 'sociable': 'Sociable',
+      'reflexivo': 'Reflexivo', 'reflexiva': 'Reflexiva', 'directo': 'Directo', 'directa': 'Directa',
+      'práctico': 'Práctico', 'práctica': 'Práctica', 'alegre': 'Alegre', 'expresivo': 'Expresivo',
+      'expresiva': 'Expresiva', 'positivo': 'Positivo', 'positiva': 'Positiva', 'mediador': 'Mediador',
+      'observador': 'Observador', 'cómico': 'Cómico', 'analítico': 'Analítico', 'creativo': 'Creativo',
+      'empático': 'Empático', 'optimista': 'Optimista', 'paciente': 'Paciente', 'enérgico': 'Enérgico',
+      'coordinador': 'Coordinador', 'proactivo': 'Proactivo', 'humorístico': 'Humorístico',
+      
+      // English
+      'leader': 'Leader', 'communicative': 'Communicative', 'organizer': 'Organizer', 'social': 'Social',
+      'analytical': 'Analytical', 'creative': 'Creative', 'direct': 'Direct', 'practical': 'Practical',
+      'positive': 'Positive', 'mediator': 'Mediator', 'observer': 'Observer', 'funny': 'Funny',
+      'empathetic': 'Empathetic', 'optimistic': 'Optimistic', 'patient': 'Patient', 'energetic': 'Energetic',
+      'coordinator': 'Coordinator', 'proactive': 'Proactive', 'humorous': 'Humorous'
+    };
+
+    // Buscar traits en el texto
+    Object.entries(commonTraits).forEach(([key, value]) => {
+      if (allText.includes(key) && !extractedTraits.includes(value)) {
+        extractedTraits.push(value);
+      }
+    });
+
+    // Si no se encontraron traits específicos, usar traits por defecto basados en el rol
+    if (extractedTraits.length === 0) {
+      const roleToTraits = {
+        'líder': ['Líder', 'Proactivo', 'Organizador'],
+        'leader': ['Leader', 'Proactive', 'Organizer'],
+        'coordinador': ['Coordinador', 'Comunicativo', 'Sociable'],
+        'coordinator': ['Coordinator', 'Communicative', 'Social'],
+        'mediador': ['Mediador', 'Empático', 'Paciente'],
+        'mediator': ['Mediator', 'Empathetic', 'Patient'],
+        'observador': ['Observador', 'Analítico', 'Reflexivo'],
+        'observer': ['Observer', 'Analytical', 'Reflective'],
+        'cómico': ['Cómico', 'Alegre', 'Sociable'],
+        'funny': ['Funny', 'Cheerful', 'Social']
+      };
+
+      const lowerRole = role.toLowerCase();
+      for (const [key, traits] of Object.entries(roleToTraits)) {
+        if (lowerRole.includes(key)) {
+          return traits.slice(0, 3);
+        }
+      }
+
+      // Traits por defecto si no se encuentra nada
+      return ['Comunicativo', 'Sociable', 'Activo'];
+    }
+
+    return extractedTraits.slice(0, 4); // Máximo 4 traits
+  };
+
+  // FUNCIÓN para limpiar nombres de personalidades
+  const cleanPersonalityName = (name) => {
+    return name
+      .replace(/\*\*/g, '')
+      .replace(/^[:\-\s]+|[:\-\s]+$/g, '')
+      .trim();
+  };
+
+  // FUNCIÓN para obtener color de avatar
+  const getAvatarColor = (index, name) => {
+    const colors = ['green', 'purple', 'pink', 'blue', 'orange', 'red', 'teal', 'yellow'];
+    // Usar el índice y el nombre para una distribución más consistente
+    const nameHash = name.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+    return colors[(index + nameHash) % colors.length];
+  };
+
+  // FUNCIÓN para generar HTML moderno del análisis psicológico
+  const generateModernPsychologyHTML = (title, personalities) => {
+    const psychologyItems = personalities.map((personality, index) => {
+      const avatarColor = getAvatarColor(index, personality.name);
+      const firstLetter = personality.name.charAt(0).toUpperCase();
+      
+      const tagsHTML = personality.traits.map(trait => 
+        `<span class="tag ${avatarColor}">${trait}</span>`
+      ).join('');
+
+      return `<div class="psychology-item"><div class="avatar ${avatarColor}-avatar">${firstLetter}</div><div class="psychology-content"><h4>${personality.name}</h4><p>${personality.description}</p><div class="psychology-tags">${tagsHTML}</div></div></div>`;
+    }).join('');
+
+    // CAMBIO: Agregar atributo data para aplicar estilos específicos
+    return `<h2 class="psychology-section-title" data-psychology-title="true">${title}</h2>
+
+<div class="psychology-list">${psychologyItems}</div>`;
+  };
+
+  // NUEVA FUNCIÓN para post-procesar el HTML y aplicar el diseño moderno
+  const postProcessPsychologyHTML = (htmlContent) => {
+    try {
+      // Buscar secciones de psicología que se hayan convertido incorrectamente
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlContent;
+      
+      // NUEVO: Convertir cualquier ## que no se haya procesado a h2
+      let processedHTML = htmlContent;
+      processedHTML = processedHTML.replace(/## ([^#\n]+)/g, '<h2>$1</h2>');
+      tempDiv.innerHTML = processedHTML;
+      
+      // Buscar elementos <pre><code> que contengan psychology-item
+      const preElements = tempDiv.querySelectorAll('pre code');
+      
+      preElements.forEach(codeElement => {
+        const codeContent = codeElement.textContent || codeElement.innerText;
+        
+        // Si el contenido contiene psychology-item, reemplazarlo con HTML real
+        if (codeContent.includes('psychology-item')) {
+          // Decodificar entidades HTML
+          const decodedHTML = codeContent
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&amp;/g, '&');
+          
+          // Crear un contenedor div y reemplazar el pre
+          const newDiv = document.createElement('div');
+          newDiv.className = 'psychology-list';
+          newDiv.innerHTML = decodedHTML;
+          
+          // Reemplazar el elemento pre con el nuevo div
+          const preElement = codeElement.closest('pre');
+          if (preElement && preElement.parentNode) {
+            preElement.parentNode.replaceChild(newDiv, preElement);
+          }
+        }
+      });
+      
+      return tempDiv.innerHTML;
+    } catch (error) {
+      console.error('Error en post-procesamiento:', error);
+      return htmlContent;
     }
   };
 

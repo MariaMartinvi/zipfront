@@ -57,7 +57,7 @@
 .App-main h2 {
   color: #333;                /* Color base para el texto */
   font-weight: bold;
-  font-size: 1.5em;
+  font-size: 18px;
   margin: 20px 0;
   text-align: center;
 }
@@ -250,10 +250,9 @@
 
 .chat-analysis-section h2,
 .analysis-container h2 {
-  background-color: #25D366;
   color: #000000;
   font-weight: bold;
-  font-size: 1.5em;
+  font-size: 18px;
   margin: 20px 0;
   text-align: center;
 }
@@ -263,7 +262,7 @@
 .analysis-container h2 {
   color: #000000;
   font-weight: bold;
-  font-size: 1.5em;
+  font-size: 18px;
   margin: 20px 0;
   text-align: center;
   /* Añadir cualquier otro estilo específico que tenga .chat-analysis-loading h2 */
@@ -419,7 +418,6 @@
   padding: 15px;
   border-radius: 8px;
   background: #f8f9fa;
-  border: 1px solid #e9ecef;
 }
 
 .chat-analysis-loading h2 {

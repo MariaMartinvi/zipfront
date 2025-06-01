@@ -319,10 +319,18 @@ const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
   return null;
 };
 
-// Colores para los gráficos
+// Colores para los gráficos - Nueva paleta moderna
 const COLORS = [
-  '#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', 
-  '#82CA9D', '#F44236', '#E91E63', '#9C27B0', '#673AB7'
+  '#25D366', // Primary green (WhatsApp green)
+  '#8B5CF6', // Accent purple  
+  '#E91E63', // Accent pink
+  '#FF6B35', // Accent orange
+  '#128C7E', // Primary green dark
+  '#7C3AED', // Purple variant
+  '#F472B6', // Pink variant
+  '#FB923C', // Orange variant
+  '#059669', // Green variant
+  '#8B5A2B'  // Brown accent
 ];
 
 // Función para formatear fechas
@@ -1054,471 +1062,503 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
   };
 
   return (
-    <div className="analisis-primer-chat-container">
-      <h3>{t('app.primer_chat.title')}</h3>
-      
-      {/* Tarjeta de resumen principal */}
-      <div className="resumen-card">
-                
-        <div className="resumen-content">
-          <div className="stat-highlight">
-            <div className="stat-value">{formatearFecha(primer_mensaje.fecha, t)}</div>
-            <div className="stat-label">{t('app.primer_chat.date_start')}</div>
-          </div>
+    <div className="modern-analysis-container">
+      {/* Summary Section */}
+      <section className="summary-section">
+        <div className="summary-container">
+          <span className="summary-badge">RESUMEN GENERAL</span>
+          <h2 className="summary-title">{t('app.primer_chat.title')}</h2>
+          <p className="summary-description">Tu análisis completo de conversaciones de WhatsApp está listo. Explora los datos más importantes de tu chat.</p>
           
-          <div className="stats-row">
-            <div className="stat-item">
-              <div className="stat-value">{resumen.total_mensajes.toLocaleString()}</div>
-              <div className="stat-label">{t('app.primer_chat.total_messages')}</div>
+          <div className="summary-content">
+            <div className="stat-highlight-card">
+              <div className="stat-icon">📅</div>
+              <div className="stat-value">{formatearFecha(primer_mensaje.fecha, t)}</div>
+              <div className="stat-label">{t('app.primer_chat.date_start')}</div>
             </div>
-            <div className="stat-item">
-              <div className="stat-value">{resumen.promedio_mensajes_diarios}</div>
-              <div className="stat-label">{t('app.primer_chat.messages_per_day')}</div>
-            </div>
-          </div>
-          
-          <div className="highlight-box">
-            <div className="highlight-title">
-              <span className="highlight-icon">👑</span>
-              <span>{t('app.primer_chat.most_active_user')}</span>
-            </div>
-            <div className="highlight-content">
-              <div className="highlight-value">{resumen.usuario_mas_activo.nombre}</div>
-              <div className="highlight-detail">{t('app.primer_chat.with_messages', { count: resumen.usuario_mas_activo.mensajes.toLocaleString() })}</div>
-            </div>
-          </div>
-          
-          <div className="activity-highlights">
-            <div className="activity-item">
-              <div className="activity-label">{t('app.primer_chat.most_active_day')}</div>
-              <div className="activity-value">
-                {resumen.dia_semana_mas_activo.dia === "Lunes" ? t('weekdays.monday') :
-                 resumen.dia_semana_mas_activo.dia === "Martes" ? t('weekdays.tuesday') :
-                 resumen.dia_semana_mas_activo.dia === "Miércoles" ? t('weekdays.wednesday') :
-                 resumen.dia_semana_mas_activo.dia === "Jueves" ? t('weekdays.thursday') :
-                 resumen.dia_semana_mas_activo.dia === "Viernes" ? t('weekdays.friday') :
-                 resumen.dia_semana_mas_activo.dia === "Sábado" ? t('weekdays.saturday') :
-                 resumen.dia_semana_mas_activo.dia === "Domingo" ? t('weekdays.sunday') :
-                 resumen.dia_semana_mas_activo.dia}
+            
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-value">{resumen.total_mensajes.toLocaleString()}</div>
+                <div className="stat-label">{t('app.primer_chat.total_messages')}</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-value">{resumen.promedio_mensajes_diarios}</div>
+                <div className="stat-label">{t('app.primer_chat.messages_per_day')}</div>
               </div>
             </div>
-            <div className="activity-item">
-              <div className="activity-label">{t('app.primer_chat.most_active_hour')}</div>
-              <div className="activity-value">{resumen.hora_mas_activa.hora ? `${resumen.hora_mas_activa.hora}:00` : "00:00"}</div>
+            
+            <div className="highlight-card">
+              <div className="highlight-icon">👑</div>
+              <div className="highlight-content">
+                <div className="highlight-title">{t('app.primer_chat.most_active_user')}</div>
+                <div className="highlight-value">{resumen.usuario_mas_activo.nombre}</div>
+                <div className="highlight-detail">{t('app.primer_chat.with_messages', { count: resumen.usuario_mas_activo.mensajes.toLocaleString() })}</div>
+              </div>
+            </div>
+            
+            <div className="activity-grid">
+              <div className="activity-card">
+                <div className="activity-icon">📊</div>
+                <div className="activity-label">{t('app.primer_chat.most_active_day')}</div>
+                <div className="activity-value">
+                  {resumen.dia_semana_mas_activo.dia === "Lunes" ? t('weekdays.monday') :
+                   resumen.dia_semana_mas_activo.dia === "Martes" ? t('weekdays.tuesday') :
+                   resumen.dia_semana_mas_activo.dia === "Miércoles" ? t('weekdays.wednesday') :
+                   resumen.dia_semana_mas_activo.dia === "Jueves" ? t('weekdays.thursday') :
+                   resumen.dia_semana_mas_activo.dia === "Viernes" ? t('weekdays.friday') :
+                   resumen.dia_semana_mas_activo.dia === "Sábado" ? t('weekdays.saturday') :
+                   resumen.dia_semana_mas_activo.dia === "Domingo" ? t('weekdays.sunday') :
+                   resumen.dia_semana_mas_activo.dia}
+                </div>
+              </div>
+              <div className="activity-card">
+                <div className="activity-icon">🕒</div>
+                <div className="activity-label">{t('app.primer_chat.most_active_hour')}</div>
+                <div className="activity-value">{resumen.hora_mas_activa.hora ? `${resumen.hora_mas_activa.hora}:00` : "00:00"}</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
       
-      {/* Gráfico de actividad por día de la semana */}
-      <div className="chart-container">
-        <h3>{t('app.primer_chat.activity_by_day')}</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart
-            data={prepararDatosDiaSemana()}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="nombre" 
-              angle={windowWidth <= 480 ? -45 : 0}
-              textAnchor={windowWidth <= 480 ? "end" : "middle"}
-              height={windowWidth <= 480 ? 60 : 30}
-            />
-            <YAxis />
-            <Tooltip formatter={(value) => [`${value} ${t('messages')}`, t('messages')]} />
-            <Legend />
-            <Bar 
-              dataKey="mensajes" 
-              name={t('messages')} 
-              fill="#25D366"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      
-      {/* Gráfico de actividad por hora del día */}
-      <div className="chart-container">
-        <h3>{t('app.primer_chat.activity_by_hour')}</h3>
-        
-        {/* Añadir el mensaje de patrón horario */}
-        {(() => {
-          const datosHora = prepararDatosHora();
-          const patronHorario = obtenerPatronHorario(datosHora);
+      {/* Charts Section */}
+      <section className="charts-section">
+        <div className="charts-container">
+          <span className="charts-badge">ANÁLISIS VISUAL</span>
+          <h2 className="charts-title">Gráficos y estadísticas detalladas</h2>
+          <p className="charts-description">Explora los patrones de comunicación de tu grupo a través de visualizaciones interactivas.</p>
           
-          if (patronHorario) {
-            let mensaje = '';
-            
-            if (patronHorario.tipo === 'madrugadores') {
-              mensaje = t('app.primer_chat.morning_pattern', { 
-                percentage: patronHorario.porcentaje,
-                emoji: patronHorario.icono
-              }) || `${patronHorario.icono} Este es un grupo de madrugadores: el ${patronHorario.porcentaje}% de los mensajes se envían antes del mediodía.`;
-            } else if (patronHorario.tipo === 'nocturnos') {
-              mensaje = t('app.primer_chat.night_pattern', { 
-                percentage: patronHorario.porcentaje,
-                emoji: patronHorario.icono
-              }) || `${patronHorario.icono} Este es un grupo de nocturnos: el ${patronHorario.porcentaje}% de los mensajes se envían después de las 20:00h.`;
-            } else {
-              mensaje = t('app.primer_chat.afternoon_pattern', { 
-                percentage: patronHorario.porcentaje,
-                emoji: patronHorario.icono
-              }) || `${patronHorario.icono} Este es un grupo diurno: el ${patronHorario.porcentaje}% de los mensajes se envían entre las 12:00h y las 20:00h.`;
-            }
-            
-            return (
-              <div className="patron-horario-mensaje">
-                <p>{mensaje}</p>
+          <div className="charts-grid">
+            {/* Gráfico de actividad por día de la semana */}
+            <div className="chart-card">
+              <div className="chart-header">
+                <h3>{t('app.primer_chat.activity_by_day')}</h3>
               </div>
-            );
-          }
-          
-          return null;
-        })()}
-        
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart
-            data={prepararDatosHora()}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="horaFormateada" 
-              interval={getXAxisInterval()}
-              angle={-45}
-              textAnchor="end"
-              height={60}
-            />
-            <YAxis />
-            <Tooltip formatter={(value) => [`${value} ${t('messages')}`, t('messages')]} />
-            <Legend />
-            <Line 
-              type="monotone" 
-              dataKey="mensajes" 
-              name={t('messages')} 
-              stroke="#4285f4"
-              strokeWidth={2}
-              dot={{ stroke: '#4285f4', strokeWidth: 2, r: 4 }}
-              activeDot={{ stroke: '#4285f4', strokeWidth: 2, r: 6 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-      
-      {/* Gráfico de mensajes por usuario (top 5) */}
-      <div className="chart-container">
-        <h3>{t('app.primer_chat.top_users')}</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={prepararDatosUsuarios()}
-              cx="50%"
-              cy="50%"
-              labelLine={windowWidth > 480}
-              outerRadius={windowWidth <= 480 ? 80 : 100}
-              fill="#8884d8"
-              dataKey="mensajes"
-              nameKey="nombre"
-              label={({ nombre, mensajes, percent }) => 
-                windowWidth <= 480 
-                  ? `${(percent * 100).toFixed(0)}%`
-                  : `${acortarNombre(nombre)}: ${mensajes} (${(percent * 100).toFixed(1)}%)`
-              }
-            >
-              {prepararDatosUsuarios().map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(value, name) => [`${value} ${t('messages')}`, acortarNombre(name)]} />
-            {windowWidth <= 480 && (
-              <Legend
-                layout="vertical"
-                verticalAlign="bottom"
-                align="center"
-                formatter={(value) => acortarNombre(value)}
-              />
-            )}
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-      
-      {/* NUEVO: Gráfico de tendencia mes a mes del tiempo de respuesta */}
-      <div className="chart-container tiempo-respuesta-chart">
-        <h3>{t('app.primer_chat.response_time_trend')}</h3>
-        
-        {/* Mostrar tendencia destacada si existe */}
-        {(() => {
-          const tendencia = analizarTendenciaTiempoRespuesta();
-          
-          if (tendencia) {
-            const porcentaje = Math.abs(tendencia.variacionPorcentual).toFixed(0);
-            const nombreUsuario = tendencia.usuario;
-            const accion = tendencia.esIncremento ? t('app.primer_chat.increased') : t('app.primer_chat.decreased');
-            const icono = tendencia.esIncremento ? '⏱️' : '⚡';
-            
-            // Valores iniciales y finales redondeados a 1 decimal
-            const valorInicial = Math.round(tendencia.primerValor * 10) / 10;
-            const valorFinal = Math.round(tendencia.ultimoValor * 10) / 10;
-            
-            // Obtener el índice del usuario para usar el mismo color que en la gráfica
-            const usuariosActivos = obtenerUsuariosUnicos();
-            const usuarioIndex = usuariosActivos.indexOf(nombreUsuario);
-            const colorUsuario = usuarioIndex >= 0 ? COLORS[usuarioIndex % COLORS.length] : '#3498db';
-            
-            // Estilo personalizado para el borde con el color del usuario
-            const estiloPersonalizado = {
-              borderLeftColor: colorUsuario,
-              borderLeftWidth: '4px'
-            };
-            
-            // Texto que indica la duración de la tendencia
-            const duracionMeses = tendencia.duracionMeses;
-            const textoTendencia = duracionMeses > 3 
-              ? t('app.primer_chat.sustained_trend', { count: duracionMeses }) 
-              : '';
-            
-            return (
-              <div 
-                className={`tendencia-destacada ${tendencia.esIncremento ? 'incremento' : 'decremento'}`}
-                style={estiloPersonalizado}
-              >
-                <div className="tendencia-titulo">
-                  <span className="tendencia-icono">{icono}</span>
-                  <span>{t('app.primer_chat.trend_highlight')}</span>
-                </div>
-                <p className="tendencia-mensaje">
-                  <strong style={{ color: colorUsuario }}>{nombreUsuario}</strong>
-                  {` ${accion} ${porcentaje}% ${t('app.primer_chat.response_time_trend_msg')} ${tendencia.mesesAnalizados[0]} ${t('app.primer_chat.to')} ${tendencia.mesesAnalizados[1]}`}
-                  {textoTendencia && <span className="tendencia-duracion"> ({textoTendencia})</span>}
-                  {'.'}
-                </p>
-                <div className="tendencia-detalles">
-                  <div className="tendencia-valor">
-                    <span className="tendencia-etiqueta">{tendencia.mesesAnalizados[0]}:</span>
-                    <span className="tendencia-numero">{formatMinutesToHoursAndMinutes(valorInicial)}</span>
-                  </div>
-                  <div className="tendencia-flecha">→</div>
-                  <div className="tendencia-valor">
-                    <span className="tendencia-etiqueta">{tendencia.mesesAnalizados[1]}:</span>
-                    <span className="tendencia-numero" style={{ color: tendencia.esIncremento ? '#e74c3c' : '#2ecc71' }}>
-                      {formatMinutesToHoursAndMinutes(valorFinal)}
-                    </span>
-                  </div>
-                </div>
+              <div className="chart-content">
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart
+                    data={prepararDatosDiaSemana()}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="nombre" 
+                      angle={windowWidth <= 480 ? -45 : 0}
+                      textAnchor={windowWidth <= 480 ? "end" : "middle"}
+                      height={windowWidth <= 480 ? 60 : 30}
+                    />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`${value} ${t('messages')}`, t('messages')]} />
+                    <Legend />
+                    <Bar 
+                      dataKey="mensajes" 
+                      name={t('messages')} 
+                      fill="#25D366"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
-            );
-          }
-          
-          return null;
-        })()}
-        
-        <ResponsiveContainer width="100%" height={450}>
-          <LineChart
-            data={prepararDatosTiempoRespuesta()}
-            margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="mesFormateado" 
-              angle={-45}
-              textAnchor="end"
-              height={80}
-            />
-            <YAxis 
-              domain={['auto', 'auto']}
-            />
-            <Tooltip 
-              formatter={(value, name) => [`${formatMinutesToHoursAndMinutes(value)}`, acortarNombre(name)]}
-              labelFormatter={(label) => `${t('app.primer_chat.response_time_trend')}: ${label}`}
-            />
-            <Legend 
-              layout="horizontal"
-              verticalAlign="bottom"
-              align="center"
-              wrapperStyle={{paddingTop: '20px', bottom: 0, width: '100%'}}
-              formatter={(value) => acortarNombre(value)}
-            />
-            {(() => {
-              // Verificar si hay datos
-              const datosGrafico = prepararDatosTiempoRespuesta();
-              if (!datosGrafico || datosGrafico.length === 0) {
-                // Eliminar el texto con mensaje de "no_data"
-                return null;
-              }
-              
-              // Obtener los 5 usuarios más activos
-              const usuariosActivos = obtenerUsuariosUnicos();
-              
-              console.log("Usuarios más activos para gráfico de tiempo respuesta:", usuariosActivos);
-              
-              // Renderizar líneas solo para los usuarios más activos
-              return usuariosActivos.map((usuario, index) => (
-                <Line 
-                  key={usuario}
-                  type="monotone" 
-                  dataKey={usuario} 
-                  name={usuario} 
-                  stroke={COLORS[index % COLORS.length]}
-                  strokeWidth={3}
-                  dot={{ stroke: COLORS[index % COLORS.length], strokeWidth: 2, r: 5 }}
-                  activeDot={{ stroke: COLORS[index % COLORS.length], strokeWidth: 2, r: 7 }}
-                  connectNulls
-                />
-              ));
-            })()}
-          </LineChart>
-        </ResponsiveContainer>
-        
-        {/* Mensaje informativo opcional */}
-        {!prepararDatosTiempoRespuesta() || prepararDatosTiempoRespuesta().length === 0 ? (
-          // Eliminar mensaje informativo
-          null
-        ) : null}
-      </div>
-
-      {/* NUEVO: Gráfico de porcentaje de mensajes por usuario por mes */}
-      <div className="chart-container">
-        <h3>{t('app.primer_chat.interest_trend')}</h3>
-        
-        {/* Mostrar tendencia destacada de interés si existe */}
-        {(() => {
-          const tendencia = analizarTendenciaInteres();
-          
-          if (tendencia) {
-            const puntosPorcentuales = Math.abs(tendencia.variacionPuntosPorcentuales).toFixed(1);
-            const nombreUsuario = tendencia.usuario;
-            const accion = tendencia.esIncremento ? t('app.primer_chat.increased_msgs') : t('app.primer_chat.decreased_msgs');
-            const icono = tendencia.esIncremento ? '📈' : '📉';
+            </div>
             
-            // Valores iniciales y finales redondeados a 1 decimal
-            const valorInicialInteres = Math.round(tendencia.valorInicial * 10) / 10;
-            const valorFinalInteres = Math.round(tendencia.valorFinal * 10) / 10;
-            
-            // Obtener el índice del usuario para usar el mismo color que en la gráfica
-            const usuariosActivos = obtenerUsuariosUnicos();
-            const usuarioIndex = usuariosActivos.indexOf(nombreUsuario);
-            const colorUsuario = usuarioIndex >= 0 ? COLORS[usuarioIndex % COLORS.length] : '#3498db';
-            
-            // Estilo personalizado para el borde con el color del usuario
-            const estiloPersonalizado = {
-              borderLeftColor: colorUsuario,
-              borderLeftWidth: '4px'
-            };
-            
-            // Texto que indica la duración de la tendencia
-            const duracionMeses = tendencia.duracionMeses;
-            const textoTendencia = duracionMeses > 3 
-              ? t('app.primer_chat.sustained_trend', { count: duracionMeses }) 
-              : '';
-            
-            return (
-              <div 
-                className={`tendencia-destacada ${tendencia.esIncremento ? 'incremento' : 'decremento'}`}
-                style={estiloPersonalizado}
-              >
-                <div className="tendencia-titulo">
-                  <span className="tendencia-icono">{icono}</span>
-                  <span>{t('app.primer_chat.trend_highlight')}</span>
-                </div>
-                <p className="tendencia-mensaje">
-                  <strong style={{ color: colorUsuario }}>{nombreUsuario}</strong>
-                  {` ${accion} ${puntosPorcentuales} ${t('app.primer_chat.percentage_points')} ${t('app.primer_chat.from')} ${tendencia.mesInicial} ${t('app.primer_chat.to')} ${tendencia.mesFinal}`}
-                  {textoTendencia && <span className="tendencia-duracion"> ({textoTendencia})</span>}
-                  {'.'}
-                </p>
-                <div className="tendencia-detalles">
-                  <div className="tendencia-valor">
-                    <span className="tendencia-etiqueta">{tendencia.mesInicial}:</span>
-                    <span className="tendencia-numero">{valorInicialInteres}%</span>
-                  </div>
-                  <div className="tendencia-flecha">→</div>
-                  <div className="tendencia-valor">
-                    <span className="tendencia-etiqueta">{tendencia.mesFinal}:</span>
-                    <span className="tendencia-numero" style={{ color: tendencia.esIncremento ? '#2ecc71' : '#e74c3c' }}>
-                      {valorFinalInteres}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          }
-          
-          return null;
-        })()}
-        
-        {(() => {
-          const datosGrafico = prepararDatosMensajesPorMes();
-          console.log("Datos para el gráfico de porcentajes:", datosGrafico);
-          return (
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart
-                data={datosGrafico}
-                margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-                stackOffset="expand"
-                layout="horizontal"
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="mesFormateado" 
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                />
-                <YAxis 
-                  tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-                  domain={[0, 1]}
-                />
-                <Tooltip 
-                  formatter={(value, name) => [`${(value * 100).toFixed(1)}%`, acortarNombre(name)]}
-                  labelFormatter={(label) => `${t('app.primer_chat.interest_trend')}: ${label}`}
-                />
-                <Legend 
-                  layout="horizontal"
-                  verticalAlign="bottom" 
-                  align="center"
-                  wrapperStyle={{paddingTop: '20px'}}
-                  formatter={(value) => acortarNombre(value)}
-                />
+            {/* Gráfico de actividad por hora del día */}
+            <div className="chart-card">
+              <div className="chart-header">
+                <h3>{t('app.primer_chat.activity_by_hour')}</h3>
+                
+                {/* Mensaje de patrón horario */}
                 {(() => {
-                  // Si no hay datos, mostrar mensaje
-                  if (datosGrafico.length === 0) {
-                    // Eliminar el texto con mensaje de "no_data"
-                    return null;
+                  const datosHora = prepararDatosHora();
+                  const patronHorario = obtenerPatronHorario(datosHora);
+                  
+                  if (patronHorario) {
+                    let mensaje = '';
+                    
+                    if (patronHorario.tipo === 'madrugadores') {
+                      mensaje = t('app.primer_chat.morning_pattern', { 
+                        percentage: patronHorario.porcentaje,
+                        emoji: patronHorario.icono
+                      }) || `${patronHorario.icono} Este es un grupo de madrugadores: el ${patronHorario.porcentaje}% de los mensajes se envían antes del mediodía.`;
+                    } else if (patronHorario.tipo === 'nocturnos') {
+                      mensaje = t('app.primer_chat.night_pattern', { 
+                        percentage: patronHorario.porcentaje,
+                        emoji: patronHorario.icono
+                      }) || `${patronHorario.icono} Este es un grupo de nocturnos: el ${patronHorario.porcentaje}% de los mensajes se envían después de las 20:00h.`;
+                    } else {
+                      mensaje = t('app.primer_chat.afternoon_pattern', { 
+                        percentage: patronHorario.porcentaje,
+                        emoji: patronHorario.icono
+                      }) || `${patronHorario.icono} Este es un grupo diurno: el ${patronHorario.porcentaje}% de los mensajes se envían entre las 12:00h y las 20:00h.`;
+                    }
+                    
+                    return (
+                      <div className="chart-insight">
+                        <p>{mensaje}</p>
+                      </div>
+                    );
                   }
                   
-                  // Extraer los nombres de usuario del primer elemento (excluyendo props especiales)
-                  const usuariosDisponibles = Object.keys(datosGrafico[0]).filter(
-                    key => !['mes', 'mesFormateado', 'total'].includes(key)
-                  );
-                  
-                  console.log("Usuarios disponibles para gráfico:", usuariosDisponibles);
-                  
-                  // Renderizar barras para cada usuario
-                  return usuariosDisponibles.map((usuario, index) => (
-                    <Bar 
-                      key={`bar-${usuario}`}
-                      dataKey={usuario} 
-                      name={usuario}
-                      stackId="a"
-                      fill={COLORS[index % COLORS.length]}
-                      isAnimationActive={true}
-                    >
-                      <LabelList 
-                        key={`label-${usuario}`}
-                        dataKey={usuario} 
-                        position="center" 
-                        formatter={(value) => (value >= 0.1 ? `${Math.round(value * 100)}%` : '')}
-                        style={{ fill: 'white', fontSize: 10, fontWeight: 'bold' }}
-                      />
-                    </Bar>
-                  ));
+                  return null;
                 })()}
-              </BarChart>
-            </ResponsiveContainer>
-          );
-        })()}
-      </div>
+              </div>
+              <div className="chart-content">
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart
+                    data={prepararDatosHora()}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="horaFormateada" 
+                      interval={getXAxisInterval()}
+                      angle={-45}
+                      textAnchor="end"
+                      height={60}
+                    />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`${value} ${t('messages')}`, t('messages')]} />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="mensajes" 
+                      name={t('messages')} 
+                      stroke="#4285f4"
+                      strokeWidth={2}
+                      dot={{ stroke: '#4285f4', strokeWidth: 2, r: 4 }}
+                      activeDot={{ stroke: '#4285f4', strokeWidth: 2, r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            {/* Gráfico de mensajes por usuario (top 5) */}
+            <div className="chart-card">
+              <div className="chart-header">
+                <h3>{t('app.primer_chat.top_users')}</h3>
+              </div>
+              <div className="chart-content">
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={prepararDatosUsuarios()}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={windowWidth > 480}
+                      outerRadius={windowWidth <= 480 ? 80 : 100}
+                      fill="#8884d8"
+                      dataKey="mensajes"
+                      nameKey="nombre"
+                      label={({ nombre, mensajes, percent }) => 
+                        windowWidth <= 480 
+                          ? `${(percent * 100).toFixed(0)}%`
+                          : `${acortarNombre(nombre)}: ${mensajes} (${(percent * 100).toFixed(1)}%)`
+                      }
+                    >
+                      {prepararDatosUsuarios().map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value, name) => [`${value} ${t('messages')}`, acortarNombre(name)]} />
+                    {windowWidth <= 480 && (
+                      <Legend
+                        layout="vertical"
+                        verticalAlign="bottom"
+                        align="center"
+                        formatter={(value) => acortarNombre(value)}
+                      />
+                    )}
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trends Section */}
+      <section className="trends-section">
+        <div className="trends-container">
+          <span className="trends-badge">TENDENCIAS AVANZADAS</span>
+          <h2 className="trends-title">Análisis de tendencias temporales</h2>
+          <p className="trends-description">Descubre cómo han evolucionado los patrones de comunicación de tu grupo a lo largo del tiempo.</p>
+          
+          <div className="trends-grid">
+            {/* Gráfico de tiempo de respuesta */}
+            <div className="trend-card">
+              <div className="trend-header">
+                <h3>{t('app.primer_chat.response_time_trend')}</h3>
+                
+                {/* Mostrar tendencia destacada si existe */}
+                {(() => {
+                  const tendencia = analizarTendenciaTiempoRespuesta();
+                  
+                  if (tendencia) {
+                    const porcentaje = Math.abs(tendencia.variacionPorcentual).toFixed(0);
+                    const nombreUsuario = tendencia.usuario;
+                    const accion = tendencia.esIncremento ? t('app.primer_chat.increased') : t('app.primer_chat.decreased');
+                    const icono = tendencia.esIncremento ? '⏱️' : '⚡';
+                    
+                    // Valores iniciales y finales redondeados a 1 decimal
+                    const valorInicial = Math.round(tendencia.primerValor * 10) / 10;
+                    const valorFinal = Math.round(tendencia.ultimoValor * 10) / 10;
+                    
+                    // Obtener el índice del usuario para usar el mismo color que en la gráfica
+                    const usuariosActivos = obtenerUsuariosUnicos();
+                    const usuarioIndex = usuariosActivos.indexOf(nombreUsuario);
+                    const colorUsuario = usuarioIndex >= 0 ? COLORS[usuarioIndex % COLORS.length] : '#3498db';
+                    
+                    // Estilo personalizado para el borde con el color del usuario
+                    const estiloPersonalizado = {
+                      borderLeftColor: colorUsuario,
+                      borderLeftWidth: '4px'
+                    };
+                    
+                    // Texto que indica la duración de la tendencia
+                    const duracionMeses = tendencia.duracionMeses;
+                    const textoTendencia = duracionMeses > 3 
+                      ? t('app.primer_chat.sustained_trend', { count: duracionMeses }) 
+                      : '';
+                    
+                    return (
+                      <div 
+                        className={`trend-insight ${tendencia.esIncremento ? 'incremento' : 'decremento'}`}
+                        style={estiloPersonalizado}
+                      >
+                        <div className="trend-insight-header">
+                          <span className="trend-icon">{icono}</span>
+                          <span className="trend-title-text">{t('app.primer_chat.trend_highlight')}</span>
+                        </div>
+                        <p className="trend-message">
+                          <strong style={{ color: colorUsuario }}>{nombreUsuario}</strong>
+                          {` ${accion} ${porcentaje}% ${t('app.primer_chat.response_time_trend_msg')} ${tendencia.mesesAnalizados[0]} ${t('app.primer_chat.to')} ${tendencia.mesesAnalizados[1]}`}
+                          {textoTendencia && <span className="trend-duration"> ({textoTendencia})</span>}
+                          {'.'}
+                        </p>
+                        <div className="trend-details">
+                          <div className="trend-value">
+                            <span className="trend-label">{tendencia.mesesAnalizados[0]}:</span>
+                            <span className="trend-number">{formatMinutesToHoursAndMinutes(valorInicial)}</span>
+                          </div>
+                          <div className="trend-arrow">→</div>
+                          <div className="trend-value">
+                            <span className="trend-label">{tendencia.mesesAnalizados[1]}:</span>
+                            <span className="trend-number" style={{ color: tendencia.esIncremento ? '#e74c3c' : '#2ecc71' }}>
+                              {formatMinutesToHoursAndMinutes(valorFinal)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  return null;
+                })()}
+              </div>
+              
+              <div className="trend-content">
+                <ResponsiveContainer width="100%" height={450}>
+                  <LineChart
+                    data={prepararDatosTiempoRespuesta()}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="mesFormateado" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                    />
+                    <YAxis 
+                      domain={['auto', 'auto']}
+                    />
+                    <Tooltip 
+                      formatter={(value, name) => [`${formatMinutesToHoursAndMinutes(value)}`, acortarNombre(name)]}
+                      labelFormatter={(label) => `${t('app.primer_chat.response_time_trend')}: ${label}`}
+                    />
+                    <Legend 
+                      layout="horizontal"
+                      verticalAlign="bottom"
+                      align="center"
+                      wrapperStyle={{paddingTop: '20px', bottom: 0, width: '100%'}}
+                      formatter={(value) => acortarNombre(value)}
+                    />
+                    {(() => {
+                      // Verificar si hay datos
+                      const datosGrafico = prepararDatosTiempoRespuesta();
+                      if (!datosGrafico || datosGrafico.length === 0) {
+                        return null;
+                      }
+                      
+                      // Obtener los 5 usuarios más activos
+                      const usuariosActivos = obtenerUsuariosUnicos();
+                      
+                      // Renderizar líneas solo para los usuarios más activos
+                      return usuariosActivos.map((usuario, index) => (
+                        <Line 
+                          key={usuario}
+                          type="monotone" 
+                          dataKey={usuario} 
+                          name={usuario} 
+                          stroke={COLORS[index % COLORS.length]}
+                          strokeWidth={3}
+                          dot={{ stroke: COLORS[index % COLORS.length], strokeWidth: 2, r: 5 }}
+                          activeDot={{ stroke: COLORS[index % COLORS.length], strokeWidth: 2, r: 7 }}
+                          connectNulls
+                        />
+                      ));
+                    })()}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Gráfico de porcentaje de mensajes por usuario por mes */}
+            <div className="trend-card">
+              <div className="trend-header">
+                <h3>{t('app.primer_chat.interest_trend')}</h3>
+                
+                {/* Mostrar tendencia destacada de interés si existe */}
+                {(() => {
+                  const tendencia = analizarTendenciaInteres();
+                  
+                  if (tendencia) {
+                    const puntosPorcentuales = Math.abs(tendencia.variacionPuntosPorcentuales).toFixed(1);
+                    const nombreUsuario = tendencia.usuario;
+                    const accion = tendencia.esIncremento ? t('app.primer_chat.increased_msgs') : t('app.primer_chat.decreased_msgs');
+                    const icono = tendencia.esIncremento ? '📈' : '📉';
+                    
+                    // Valores iniciales y finales redondeados a 1 decimal
+                    const valorInicialInteres = Math.round(tendencia.valorInicial * 10) / 10;
+                    const valorFinalInteres = Math.round(tendencia.valorFinal * 10) / 10;
+                    
+                    // Obtener el índice del usuario para usar el mismo color que en la gráfica
+                    const usuariosActivos = obtenerUsuariosUnicos();
+                    const usuarioIndex = usuariosActivos.indexOf(nombreUsuario);
+                    const colorUsuario = usuarioIndex >= 0 ? COLORS[usuarioIndex % COLORS.length] : '#3498db';
+                    
+                    // Estilo personalizado para el borde con el color del usuario
+                    const estiloPersonalizado = {
+                      borderLeftColor: colorUsuario,
+                      borderLeftWidth: '4px'
+                    };
+                    
+                    // Texto que indica la duración de la tendencia
+                    const duracionMeses = tendencia.duracionMeses;
+                    const textoTendencia = duracionMeses > 3 
+                      ? t('app.primer_chat.sustained_trend', { count: duracionMeses }) 
+                      : '';
+                    
+                    return (
+                      <div 
+                        className={`trend-insight ${tendencia.esIncremento ? 'incremento' : 'decremento'}`}
+                        style={estiloPersonalizado}
+                      >
+                        <div className="trend-insight-header">
+                          <span className="trend-icon">{icono}</span>
+                          <span className="trend-title-text">{t('app.primer_chat.trend_highlight')}</span>
+                        </div>
+                        <p className="trend-message">
+                          <strong style={{ color: colorUsuario }}>{nombreUsuario}</strong>
+                          {` ${accion} ${puntosPorcentuales} ${t('app.primer_chat.percentage_points')} ${t('app.primer_chat.from')} ${tendencia.mesInicial} ${t('app.primer_chat.to')} ${tendencia.mesFinal}`}
+                          {textoTendencia && <span className="trend-duration"> ({textoTendencia})</span>}
+                          {'.'}
+                        </p>
+                        <div className="trend-details">
+                          <div className="trend-value">
+                            <span className="trend-label">{tendencia.mesInicial}:</span>
+                            <span className="trend-number">{valorInicialInteres}%</span>
+                          </div>
+                          <div className="trend-arrow">→</div>
+                          <div className="trend-value">
+                            <span className="trend-label">{tendencia.mesFinal}:</span>
+                            <span className="trend-number" style={{ color: tendencia.esIncremento ? '#2ecc71' : '#e74c3c' }}>
+                              {valorFinalInteres}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  return null;
+                })()}
+              </div>
+              
+              <div className="trend-content">
+                {(() => {
+                  const datosGrafico = prepararDatosMensajesPorMes();
+                  return (
+                    <ResponsiveContainer width="100%" height={400}>
+                      <BarChart
+                        data={datosGrafico}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                        stackOffset="expand"
+                        layout="horizontal"
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="mesFormateado" 
+                          angle={-45}
+                          textAnchor="end"
+                          height={80}
+                        />
+                        <YAxis 
+                          tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
+                          domain={[0, 1]}
+                        />
+                        <Tooltip 
+                          formatter={(value, name) => [`${(value * 100).toFixed(1)}%`, acortarNombre(name)]}
+                          labelFormatter={(label) => `${t('app.primer_chat.interest_trend')}: ${label}`}
+                        />
+                        <Legend 
+                          layout="horizontal"
+                          verticalAlign="bottom" 
+                          align="center"
+                          wrapperStyle={{paddingTop: '20px'}}
+                          formatter={(value) => acortarNombre(value)}
+                        />
+                        {(() => {
+                          // Si no hay datos, mostrar mensaje
+                          if (datosGrafico.length === 0) {
+                            return null;
+                          }
+                          
+                          // Extraer los nombres de usuario del primer elemento (excluyendo props especiales)
+                          const usuariosDisponibles = Object.keys(datosGrafico[0]).filter(
+                            key => !['mes', 'mesFormateado', 'total'].includes(key)
+                          );
+                          
+                          // Renderizar barras para cada usuario
+                          return usuariosDisponibles.map((usuario, index) => (
+                            <Bar 
+                              key={`bar-${usuario}`}
+                              dataKey={usuario} 
+                              name={usuario}
+                              stackId="a"
+                              fill={COLORS[index % COLORS.length]}
+                              isAnimationActive={true}
+                            >
+                              <LabelList 
+                                key={`label-${usuario}`}
+                                dataKey={usuario} 
+                                position="center" 
+                                formatter={(value) => (value >= 0.1 ? `${Math.round(value * 100)}%` : '')}
+                                style={{ fill: 'white', fontSize: 10, fontWeight: 'bold' }}
+                              />
+                            </Bar>
+                          ));
+                        })()}
+                      </BarChart>
+                    </ResponsiveContainer>
+                  );
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
