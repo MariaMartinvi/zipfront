@@ -588,7 +588,7 @@
   }
 
   .stats-section h4,
-  .emoji-section h4 {
+  .profiles-section h4 {
     font-size: 19px;
   }
 
@@ -752,7 +752,7 @@
   }
 
   .stats-section h4,
-  .emoji-section h4 {
+  .profiles-section h4 {
     font-size: 18px;
   }
 
@@ -898,7 +898,7 @@
 .process-svg {
   height: 5rem;
   width: 5rem;
-  color: #25D366;
+  color: rgb(138, 43, 226);
   stroke-width: 2;
 }
 
@@ -1197,432 +1197,61 @@
   background: #E91E63;
 }
 
-/* Emoji section */
-.emoji-section h4 {
+/* Profiles section - reemplazando emoji section */
+.profiles-section h4 {
   font-size: 21px;
   font-weight: 600;
   margin-bottom: 20px;
   color: #1a1a1a;
 }
 
-.emoji-grid {
+.profiles-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  margin-top: 10px;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
-.emoji-item {
+.profile-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
+  padding: 16px 18px;
   background: rgba(245, 247, 250, 0.8);
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid rgba(229, 231, 235, 0.8);
   transition: all 0.3s ease;
+  min-height: 60px;
 }
 
-.emoji-item:hover {
+.profile-item:hover {
   background: rgba(37, 211, 102, 0.05);
   border-color: rgba(37, 211, 102, 0.2);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.emoji {
-  font-size: 2.2rem;
-  margin-right: 12px;
+.profile-emoji {
+  font-size: 2.4rem;
+  margin-right: 16px;
 }
 
-.emoji-percentage {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a1a1a;
-  background: linear-gradient(135deg, #25D366, #8A2BE2);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Demo CTA */
-.demo-cta {
-  text-align: center;
-}
-
-.demo-cta-button {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 18px 36px;
-  font-size: 19px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
-}
-
-.demo-cta-button:hover {
-  background: linear-gradient(to right, #128C7E, #7B2CBF);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive móvil para la sección de demostración */
-@media (max-width: 768px) {
-  .demo-section {
-    padding: 80px 20px;
-  }
-
-  .demo-content {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-
-  .demo-card h3 {
-    font-size: 22px;
-  }
-
-  .participation-item {
-    grid-template-columns: 60px 1fr 45px;
-    gap: 8px;
-  }
-
-  .participant-name {
-    font-size: 16px;
-  }
-
-  .percentage {
-    font-size: 16px;
-  }
-
-  .time-chart {
-    height: 100px;
-    gap: 4px;
-  }
-
-  .time-bar {
-    width: 90%;
-  }
-
-  .time-label {
-    font-size: 12px;
-  }
-
-  .emoji-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .emoji-item {
-    padding: 14px 16px;
-  }
-
-  .emoji {
-    font-size: 2rem;
-  }
-
-  .emoji-percentage {
-    font-size: 16px;
-  }
-
-  .psychology-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 15px;
-  }
-
-  .avatar {
-    width: 50px;
-    height: 50px;
-    font-size: 1.2rem;
-  }
-
-  .psychology-tags {
-    justify-content: center;
-  }
-
-  .demo-cta-button {
-    width: 100%;
-    max-width: 280px;
-    font-size: 18px;
-    padding: 16px 32px;
-  }
-}
-
-@media (max-width: 480px) {
-  .demo-card h3 {
-    font-size: 21px;
-  }
-
-  .stats-section h4,
-  .emoji-section h4 {
-    font-size: 18px;
-  }
-
-  .participation-item {
-    grid-template-columns: 50px 1fr 35px;
-    gap: 6px;
-  }
-
-  .participant-name {
-    font-size: 14px;
-  }
-
-  .percentage {
-    font-size: 14px;
-  }
-
-  .psychology-content h4 {
-    font-size: 18px;
-  }
-
-  .psychology-content p {
-    font-size: 14px;
-  }
-
-  .avatar {
-    width: 45px;
-    height: 45px;
-    font-size: 1.1rem;
-  }
-
-  .emoji-item {
-    padding: 12px 14px;
-  }
-
-  .emoji {
-    font-size: 1.8rem;
-  }
-
-  .emoji-percentage {
-    font-size: 15px;
-  }
-
-  .demo-cta-button {
-    font-size: 16px;
-    padding: 14px 28px;
-  }
-}
-
-/* Testimonials Section */
-.testimonials-section {
-  background: white;
-  padding: 100px 20px;
-}
-
-.testimonials-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.testimonials-badge {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 600;
-  font-size: 18px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.testimonials-title {
-  font-size: 3.2rem;
-  font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 20px;
-  color: #1a1a1a;
-  text-align: center;
-}
-
-.testimonials-description {
-  font-size: 22px;
-  line-height: 1.6;
-  color: #666;
-  max-width: 800px;
-  margin: 0 auto 60px;
-  text-align: center;
-}
-
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  margin-top: 60px;
-}
-
-.testimonial-card {
-  background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  text-align: left;
-  position: relative;
-  transition: all 0.3s ease;
-  border: 1px solid #f3f4f6;
-}
-
-.testimonial-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.testimonial-quote {
-  margin-bottom: 1.5rem;
-  position: relative;
-}
-
-.quote-icon {
-  position: absolute;
-  top: -10px;
-  left: 0;
-  font-size: 2.5rem;
-  color: #8A2BE2;
-  opacity: 0.3;
-  font-family: Georgia, serif;
-  line-height: 1;
-}
-
-.testimonial-quote p {
-  font-size: 19px;
-  line-height: 1.6;
-  color: #1a1a1a;
-  margin-bottom: 20px;
-  font-style: italic;
-}
-
-.testimonial-author {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.author-avatar {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #25D366, #8A2BE2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.author-info {
+.profile-info {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
-.author-name {
-  font-size: 18px;
+.profile-name {
+  font-size: 16px;
   font-weight: 600;
   color: #1a1a1a;
+  margin-bottom: 4px;
 }
 
-.testimonial-rating {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.star {
-  color: #FFD700;
-  font-size: 21px;
-}
-
-/* Responsive para la sección de testimonios */
-@media (max-width: 1024px) {
-  .testimonials-section {
-    padding: 80px 20px;
-  }
-
-  .testimonials-grid {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-
-  .testimonial-card {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-}
-
-@media (max-width: 768px) {
-  .testimonials-section {
-    padding: 80px 20px;
-  }
-
-  .testimonials-title {
-    font-size: 2.2rem;
-  }
-
-  .testimonials-grid {
-    grid-template-columns: 1fr;
-    gap: 25px;
-  }
-
-  .testimonial-card {
-    padding: 1.5rem;
-  }
-
-  .testimonial-quote p {
-    font-size: 18px;
-  }
-
-  .author-avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 18px;
-  }
-
-  .author-name {
-    font-size: 16px;
-  }
-
-  .star {
-    font-size: 19px;
-  }
-}
-
-@media (max-width: 480px) {
-  .testimonials-title {
-    font-size: 2rem;
-  }
-
-  .testimonial-card {
-    padding: 1.25rem;
-  }
-
-  .testimonial-quote p {
-    font-size: 16px;
-    padding-left: 15px;
-  }
-
-  .quote-icon {
-    font-size: 2.5rem;
-    top: -8px;
-    left: -8px;
-  }
-
-  .author-avatar {
-    width: 2rem;
-    height: 2rem;
-    font-size: 16px;
-  }
-
-  .author-name {
-    font-size: 15px;
-  }
-
-  .star {
-    font-size: 18px;
-  }
+.profile-user {
+  font-size: 15px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #25D366, #8A2BE2);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 } 

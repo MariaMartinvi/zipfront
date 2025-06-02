@@ -64,7 +64,7 @@ const AppPreview = () => {
                 <span className="feature-icon-large">🧠</span>
               </div>
               <h3>Análisis psicológico</h3>
-              <p>Análisis psicológico detallado de los patrones de comunicación de cada miembro del grupo.</p>
+              <p>Análisis psicológico de los patrones de comunicación de los miembros del grupo. Red flags y consejos.</p>
             </div>
             
             <div className="feature-card">
@@ -121,7 +121,7 @@ const AppPreview = () => {
             <div className="process-card">
               <div className="process-number">1</div>
               <div className="process-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" className="process-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="process-svg" fill="none" viewBox="0 0 24 24" stroke="#22c55e">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                 </svg>
               </div>
@@ -132,7 +132,7 @@ const AppPreview = () => {
             <div className="process-card">
               <div className="process-number">2</div>
               <div className="process-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" className="process-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="process-svg" fill="none" viewBox="0 0 24 24" stroke="#a855f7">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
               </div>
@@ -143,7 +143,7 @@ const AppPreview = () => {
             <div className="process-card">
               <div className="process-number">3</div>
               <div className="process-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" className="process-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="process-svg" fill="none" viewBox="0 0 24 24" stroke="#22c55e">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
               </div>
@@ -240,32 +240,29 @@ const AppPreview = () => {
                   </div>
                 </div>
 
-                <div className="emoji-section">
-                  <h4>Emojis más usados</h4>
-                  <div className="emoji-grid">
-                    <div className="emoji-item">
-                      <span className="emoji">😂</span>
-                      <span className="emoji-percentage">22%</span>
+                <div className="profiles-section">
+                  <h4>Perfiles del grupo</h4>
+                  <div className="profiles-grid">
+                    <div className="profile-item">
+                      <span className="profile-emoji">🤡</span>
+                      <div className="profile-info">
+                        <span className="profile-name">El Cómico</span>
+                        <span className="profile-user">Eva</span>
+                      </div>
                     </div>
-                    <div className="emoji-item">
-                      <span className="emoji">❤️</span>
-                      <span className="emoji-percentage">19%</span>
+                    <div className="profile-item">
+                      <span className="profile-emoji">❤️</span>
+                      <div className="profile-info">
+                        <span className="profile-name">El Amoroso</span>
+                        <span className="profile-user">Eva</span>
+                      </div>
                     </div>
-                    <div className="emoji-item">
-                      <span className="emoji">👍</span>
-                      <span className="emoji-percentage">15%</span>
-                    </div>
-                    <div className="emoji-item">
-                      <span className="emoji">🎉</span>
-                      <span className="emoji-percentage">12%</span>
-                    </div>
-                    <div className="emoji-item">
-                      <span className="emoji">😊</span>
-                      <span className="emoji-percentage">9%</span>
-                    </div>
-                    <div className="emoji-item">
-                      <span className="emoji">🤔</span>
-                      <span className="emoji-percentage">7%</span>
+                    <div className="profile-item">
+                      <span className="profile-emoji">🪞</span>
+                      <div className="profile-info">
+                        <span className="profile-name">El Narcisista</span>
+                        <span className="profile-user">Miguel</span>
+                      </div>
                     </div>
                   </div>
                 </div>

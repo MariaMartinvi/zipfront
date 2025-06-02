@@ -64,11 +64,14 @@
 }
 
 .platform-button.active {
-  background: linear-gradient(135deg, #25D366, #7122AC);
-  color: white;
-  border-color: transparent;
+  background: transparent;
+  color: #25D366;
+  border: 3px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, #25D366, #7122AC) border-box;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+  box-shadow: none;
+  font-weight: 700;
 }
 
 .platform-button:hover:not(.active) {
@@ -112,10 +115,14 @@
 }
 
 .tab-button.active {
-  background: linear-gradient(135deg, #25D366, #7122AC);
-  color: white;
+  background: transparent;
+  color: #25D366;
+  border: 3px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, #25D366, #7122AC) border-box;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+  box-shadow: none;
+  font-weight: 700;
 }
 
 .tab-button:hover:not(.active) {
@@ -234,6 +241,57 @@
   border-radius: 50%;
   box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
   color: white;
+}
+
+/* Estilos para el contenedor process-icon en el carousel */
+.slide-content .process-icon {
+  width: 120px;
+  height: 120px;
+  background: transparent;
+  border: 3px solid #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.slide-content .process-icon:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
+}
+
+/* Estilos para iconos con colores alternados */
+.slide-content .process-icon.green-border {
+  border-color: #25D366;
+}
+
+.slide-content .process-icon.purple-border {
+  border-color: rgb(138, 43, 226);
+}
+
+.slide-content .process-icon.green-border:hover {
+  box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
+}
+
+.slide-content .process-icon.purple-border:hover {
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+}
+
+/* SVG icons en el carousel */
+.slide-content .process-svg {
+  height: 4rem;
+  width: 4rem;
+  stroke-width: 2;
+}
+
+/* Emoji icons en el carousel */
+.slide-content .emoji-icon {
+  font-size: 4.5rem;
+  display: block;
+  line-height: 1;
 }
 
 .slide-text {
@@ -391,6 +449,22 @@
     margin-bottom: 20px;
   }
 
+  /* Estilos responsive para process-icon en móvil */
+  .slide-content .process-icon {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+  }
+
+  .slide-content .process-svg {
+    height: 4rem;
+    width: 4rem;
+  }
+
+  .slide-content .emoji-icon {
+    font-size: 3.5rem;
+  }
+
   .slide-title {
     font-size: 22px;
     margin-bottom: 14px;
@@ -462,6 +536,22 @@
     height: 80px;
     font-size: 3rem;
     margin-bottom: 16px;
+  }
+
+  /* Estilos responsive para process-icon en móvil pequeño */
+  .slide-content .process-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 16px;
+  }
+
+  .slide-content .process-svg {
+    height: 3.5rem;
+    width: 3.5rem;
+  }
+
+  .slide-content .emoji-icon {
+    font-size: 3rem;
   }
 
   .slide-title {

@@ -38,18 +38,8 @@ const Header = ({ user }) => {
         <Link to="/" className="logo">
           <div className="logo-container">
             <div className="logo-icon">
-              <svg className="logo-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="8" fill="url(#gradient)" />
-                {/* Círculo principal de WhatsApp */}
-                <circle cx="16" cy="15" r="8" fill="white"/>
-                {/* Burbuja de mensaje */}
-                <path d="M16 9C12.69 9 10 11.69 10 15C10 16.15 10.37 17.21 11 18.07L10 22L14.08 21.03C14.86 21.57 15.79 21.88 16.8 21.88C20.11 21.88 22.8 19.19 22.8 15.88C22.8 12.57 20.11 9.88 16.8 9.88L16 9ZM16 11C19.03 11 21.5 13.47 21.5 16.5C21.5 19.53 19.03 22 16 22C15.08 22 14.22 21.76 13.47 21.34L11.5 21.83L12.03 19.97C11.38 19.13 11 18.07 11 17C11 13.97 13.47 11.5 16.5 11.5L16 11Z" fill="url(#gradient)"/>
-                <defs>
-                  <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#25D366"/>
-                    <stop offset="1" stopColor="#8A2BE2"/>
-                  </linearGradient>
-                </defs>
+              <svg xmlns="http://www.w3.org/2000/svg" className="logo-clipboard-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
               </svg>
             </div>
             <span className="logo-chatsalsa">ChatSalsa</span>
