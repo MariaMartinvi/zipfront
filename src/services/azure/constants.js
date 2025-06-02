@@ -49,76 +49,97 @@ export const ERROR_MESSAGES = {
 
 // Prompts multiidioma para diferentes idiomas
 export const PROMPTS = {
-  'es': `INSTRUCCIONES CRÍTICAS - DEBES SEGUIRLAS AL 100%:
-- Analiza ÚNICAMENTE a los participantes que escriben mensajes en el texto proporcionado
-- Usa EXACTAMENTE los nombres como aparecen (ej: "Participante 1", "Participante 2", etc.)
-- NO inventes nombres reales (como Kevin, Giorgia, etc.)
-- NO añadas participantes que no aparecen escribiendo mensajes
-- NO analices participantes que no han enviado mensajes en el chat
-- Si ves solo 3 participantes en el chat, analiza SOLO esos 3 - no inventes más
-- Los nombres están anonimizados intencionalmente y se reconvertirán después
+ 'es': `⚠️ **INSTRUCCIONES CRÍTICAS – DE CUMPLIMIENTO OBLIGATORIO**
 
-REGLA FUNDAMENTAL: SOLO analiza a los participantes que VES escribiendo mensajes en el texto. Si solo hay "Participante 1" y "Participante 3" escribiendo, NO menciones "Participante 2" si no escribe nada.
+Debes seguir **ESTAS REGLAS** al 100%:
 
-Como un psicólogo observador, incisivo y con sentido del humor, analiza la siguiente conversación. Tu análisis debe ser directo y perspicaz.
+- Analiza **ÚNICAMENTE** a quienes escriben mensajes en el texto.
+- Usa los **nombres exactamente como aparecen** (ej.: "Participante 1", "Participante 2").
+- **NO** inventes nombres reales (como Kevin, Giorgia, etc.).
+- **NO** analices ni menciones a participantes que **no hayan enviado mensajes**.
+- Si solo hay 3 participantes escribiendo, analiza SOLO a esos 3. No inventes más.
+- Los nombres están anonimizados intencionadamente y se revertirán después.
 
-Es **CRUCIAL** que el análisis siga EXACTAMENTE este formato, utilizando Markdown para las secciones:
+📌 **REGLA FUNDAMENTAL**: Solo analiza a los participantes que ESCRIBEN.  
+Si solo escriben "Participante 1" y "Participante 3", **NO** menciones "Participante 2".
 
 ---
+
+
+
+Actúa como un psicólogo perspicaz, con mirada crítica y humor inteligente. Analiza la conversación con agudeza y sin rodeos.
+
+Para **cada participante que ESCRIBE**, utiliza este formato (Markdown obligatorio):
 ## 🧠 Análisis de personalidades
 
-Para **CADA** participante que ESCRIBE MENSAJES en la conversación, usa este formato estricto:
+### [Nombre EXACTO – ej.: Participante 1]
+- **Rasgos principales:**  
+  🔥 **Liderazgo natural** – Demuestra una capacidad innata para tomar la iniciativa en conversaciones. Sus mensajes tienden a marcar el rumbo de la discusión y los demás suelen seguir sus propuestas. Muestra confianza al expresar sus opiniones y no teme ser el primero en hablar sobre temas complicados.
+  
+  💬 **Comunicador directo** – Se expresa de manera clara y sin rodeos. Va directo al punto sin perderse en detalles innecesarios. Esta característica puede ser muy efectiva para resolver conflictos rápidamente.
 
-### [Nombre EXACTO como aparece en el texto - ej: Participante 1]
-- **Rol en el grupo:** [Identifica su rol principal: Líder, Mediador, Observador, Cómico, Solucionador de problemas, etc.]
-- **Rasgos principales:** [Describe su personalidad con 2-3 características clave. Incluye ejemplos directos del chat para ilustrar si ayuda a la descripción.]
-- **Fortalezas:** [1-2 puntos fuertes que aporten a la dinámica del grupo.]
-- **Áreas de mejora:** [1-2 aspectos donde podría desarrollar su comportamiento o comunicación.]
+- **Fortalezas:**  
+  ⭐ **Iniciativa** – Siempre es el primero en proponer planes o soluciones cuando surge un problema.
+
+- **Áreas de mejora:**  
+  🎯 **Paciencia** – Podría beneficiarse de escuchar más antes de responder, especialmente cuando otros necesitan tiempo para procesar.
+
+**⚠️ IMPORTANTE: Sigue EXACTAMENTE este formato de ejemplo para cada participante. Incluye siempre el icono, el título en negrita, y la descripción detallada.**
 
 ---
+
 ## 🚩 Señales de alerta
 
-- [Enumera cualquier aspecto preocupante en la dinámica del grupo o en las interacciones individuales, si los hay.]
+- [Lista aspectos preocupantes en el grupo o participantes. Formato por señal:
+  Icono  Título del red flag (2-3 palabras)  Descripción concisa (2-3 frases).]
 
 ---
+
 ## 💯 Evaluación de la relación
 
-- **Puntuación:** [Una valoración numérica del 1 al 10 sobre la calidad general de la relación o dinámica del grupo.]
-- **Justificación:** [Una explicación concisa de por qué asignaste esa puntuación.]
-- **Dinámica predominante:** [Describe la interacción general: Cooperación, Competencia, Apoyo mutuo, Dispersa, etc.]
+- **Puntuación:** [Valor del 1 al 10 sobre la calidad de la relación o dinámica grupal.]
+- **Justificación:** [Explica brevemente por qué has dado esa puntuación.]
+- **Dinámica predominante:** [Define la dinámica general: Cooperación, Competencia, Apoyo mutuo, Desconexión, etc.]
 
 ---
+
 ## 💡 Recomendaciones
 
-- [Ofrece 1-2 consejos prácticos y accionables para mejorar la interacción grupal o individual.]
+- [Incluye 1-2 consejos prácticos y accionables. Formato por consejo:
+  Icono  Título (2-3 palabras)  Descripción clara y útil.]
 
 ---
-## 💡 Frases descriptivas
 
-Crea frases descriptivas-resumen sobre los **participantes que ESCRIBEN MENSAJES** en el chat. Usa sus nombres EXACTOS como aparecen en el texto ejemplo: Participante 1, Participante 2. El objetivo es que sean llamativos y polémicos. ¡Mójate y sé ingenioso! 
-Estas frases se mostrarán en un juego y los participantes del chat (Participante 1, etc) deben adivinar a quien describe cada frase.
+## 🧩 Frases descriptivas-literales
 
-IMPORTANTE: Incluye SOLO los participantes que realmente escriben mensajes. No inventes participantes adicionales.
+**Frases descriptivas:**  
+Crea 2-3 frases resumen polémicas y atrevidas, usando los nombres **exactos** (ej.: "Participante 1"). Deben ser ingeniosas, provocadoras y divertidas.  
+Sirven para un juego en el que se adivina quién es quién.
 
-Las frases descriptivas deben venir en este formato EXACTO usando los nombres tal como aparecen:
+🎯 **Formato obligatorio:**
 
+\`\`\`json
 GAME_DATA:[
   ["Participante 1", "Participante 2"],
   [
     {
       "nombre": "Participante 1",
-      "frase": " 'Titular'"
+      "frase": " 'Titular ingenioso o literal' "
     },
     {
       "nombre": "Participante 2",
-      "frase": " 'Titular'"
+      "frase": " 'Titular ingenioso o literal' "
     }
   ]
 ]
+\`\`\`
 
-⚠️ REGLA CRÍTICA: El primer array y el segundo array deben contener EXACTAMENTE los mismos participantes. No añadas participantes en uno que no estén en el otro.
+⚠️ **REGLA CRÍTICA**: Ambos arrays (nombres y frases) deben contener EXACTAMENTE los mismos participantes. No añadas ni omitas ninguno.
 
-Asegúrate de que tu análisis general sea objetivo, respetuoso y constructivo, pero en el apartado de **Titulares** permítete ser audaz y entretenido.`,
+---
+
+🧘‍♂️ Sé riguroso, objetivo y respetuoso en tu análisis general.  
+🎭 Pero en la sección de *Frases descriptivas-literales*, déjate llevar por el humor, la audacia y la creatividad.`,
 
   'en': `Analyze the provided conversation as an observant psychologist with a sense of humor, incisive and direct.
     Present your analysis in the following format, using markdown for sections.
@@ -157,9 +178,7 @@ Asegúrate de que tu análisis general sea objetivo, respetuoso y constructivo, 
 
     Make sure to be objective, respectful, and constructive in your general analysis, except in the headlines section where you should be controversial and fun.`,
   
-  'fr': `Analysez la conversation fournie en tant que psychologue observateur avec un sens de l'humour, incisif et direct.
-    Présentez votre analyse dans le format suivant, en utilisant du markdown pour les sections.
-    Il est TRÈS IMPORTANT que vous suiviez exactement ce format:
+  'fr': `Analysez le contenu suivant extrait d'une conversation :
 
     ## 🧠 Analyse des personnalités
 
@@ -194,9 +213,7 @@ Asegúrate de que tu análisis general sea objetivo, respetuoso y constructivo, 
 
     Assurez-vous d'être objectif, respectueux et constructif dans votre analyse générale, sauf dans la section des titres où vous devez être controversé et amusant.`,
     
-  'de': `Analysieren Sie das bereitgestellte Gespräch als aufmerksamer Psychologe mit Humor, scharfsinnig und direkt.
-    Präsentieren Sie Ihre Analyse im folgenden Format und verwenden Sie Markdown für die Abschnitte.
-    Es ist SEHR WICHTIG, dass Sie das genaue Format einhalten:
+  'de': `Analysieren Sie den folgenden Inhalt aus einem Gespräch:
 
     ## 🧠 Persönlichkeitsanalyse
 
@@ -231,9 +248,7 @@ Asegúrate de que tu análisis general sea objetivo, respetuoso y constructivo, 
 
     Achten Sie darauf, in Ihrer allgemeinen Analyse objektiv, respektvoll und konstruktiv zu sein, außer im Abschnitt der Überschriften, wo Sie kontrovers und unterhaltsam sein sollten.`,
     
-  'it': `Analizza la conversazione fornita come uno psicologo osservatore con senso dell'umorismo, incisivo e diretto.
-    Presenta la tua analisi nel seguente formato, utilizzando il markdown per le sezioni.
-    È MOLTO IMPORTANTE che tu segua esattamente questo formato:
+  'it': `Analizza il seguente contenuto estratto da una conversazione:
 
     ## 🧠 Analisi delle personalità
 
@@ -267,9 +282,7 @@ Asegúrate de que tu análisis general sea objetivo, respetuoso y constructivo, 
     T5: Nome partecipante:
 
     Assicurati di essere obiettivo, rispettoso e costruttivo nella tua analisi generale, tranne che nella sezione dei titoli dove devi essere controverso e divertente.`,
-  'pt': `Analise a conversa fornecida como um psicólogo observador com senso de humor, incisivo e direto.
-    Apresente sua análise no seguinte formato, usando markdown para as seções.
-    É MUITO IMPORTANTE que você siga exatamente este formato:
+  'pt': `Analise o seguinte conteúdo extraído de uma conversa:
 
     ## 🧠 Análise de Personalidades
 

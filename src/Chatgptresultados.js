@@ -426,7 +426,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // NUEVA FUNCIÓN para procesar secciones de análisis psicológico con estilo moderno
   const processResponseWithModernPsychology = (response) => {
     try {
-      // Buscar y reemplazar secciones de análisis psicológico
+      // REACTIVADO: Procesar análisis psicológico con descripciones completas
       let processedResponse = response;
       
       // Patrones para identificar análisis de personalidades (multi-idioma)
@@ -495,76 +495,32 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // NUEVA FUNCIÓN para parsear el contenido de cada participante
   const parseParticipantContent = (name, content) => {
     try {
-      let role = '';
-      let traits = '';
-      let strengths = '';
-      let improvements = '';
+      let traits = [];
       
-      // Extraer información de las viñetas (multi-idioma)
-      const rolePatterns = [
-        /\*\*Rol en el grupo:\*\*\s*([^\n]+)/i,
-        /\*\*Role in the group:\*\*\s*([^\n]+)/i,
-        /\*\*Group role:\*\*\s*([^\n]+)/i,
-        /\*\*Rôle dans le groupe:\*\*\s*([^\n]+)/i
-      ];
+      // Buscar la sección "Rasgos principales" y extraer solo los títulos en negrita
+      const rasgosMatch = content.match(/\*\*Rasgos principales:\*\*\s*([\s\S]*?)(?=\*\*Fortalezas:|$)/i);
       
-      const traitsPatterns = [
-        /\*\*Rasgos principales:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
-        /\*\*Main traits:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
-        /\*\*Key characteristics:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
-        /\*\*Traits principaux:\*\*\s*([\s\S]*?)(?=\*\*|$)/i
-      ];
-      
-      const strengthsPatterns = [
-        /\*\*Fortalezas:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
-        /\*\*Strengths:\*\*\s*([\s\S]*?)(?=\*\*|$)/i,
-        /\*\*Points forts:\*\*\s*([\s\S]*?)(?=\*\*|$)/i
-      ];
-
-      // Extraer rol
-      for (const pattern of rolePatterns) {
-        const roleMatch = content.match(pattern);
-        if (roleMatch) {
-          role = roleMatch[1].trim();
-          break;
+      if (rasgosMatch) {
+        const rasgosSection = rasgosMatch[1];
+        // Extraer títulos que están entre ** (sin incluir los ** en el resultado)
+        const titleMatches = rasgosSection.match(/\*\*([^*]+)\*\*/g);
+        
+        if (titleMatches) {
+          traits = titleMatches.map(match => 
+            match.replace(/\*\*/g, '').trim()
+          );
         }
       }
-
-      // Extraer rasgos principales
-      for (const pattern of traitsPatterns) {
-        const traitsMatch = content.match(pattern);
-        if (traitsMatch) {
-          traits = traitsMatch[1].trim();
-          break;
-        }
-      }
-
-      // Extraer fortalezas
-      for (const pattern of strengthsPatterns) {
-        const strengthsMatch = content.match(pattern);
-        if (strengthsMatch) {
-          strengths = strengthsMatch[1].trim();
-          break;
-        }
-      }
-
-      // Crear descripción combinada
-      let description = '';
-      if (role) description += `${role}. `;
-      if (traits) description += cleanDescriptionText(traits);
       
-      if (!description) {
-        // Si no se encontró formato estructurado, usar todo el contenido
-        description = cleanDescriptionText(content);
+      // Si no encontramos rasgos específicos, usar algunos genéricos como fallback
+      if (traits.length === 0) {
+        traits = ['Comunicativo', 'Sociable', 'Activo'];
       }
-
-      // Extraer traits para las etiquetas
-      const extractedTraits = extractTraitsFromContent(role, traits, strengths);
 
       return {
         name: cleanPersonalityName(name),
-        description: description.trim(),
-        traits: extractedTraits
+        description: content.trim(), // MANTENER TODO EL CONTENIDO ORIGINAL
+        traits: traits.slice(0, 4) // Máximo 4 traits
       };
     } catch (error) {
       console.error('Error parseando contenido del participante:', error);
@@ -669,7 +625,12 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         `<span class="tag ${avatarColor}">${trait}</span>`
       ).join('');
 
-      return `<div class="psychology-item"><div class="avatar ${avatarColor}-avatar">${firstLetter}</div><div class="psychology-content"><h4>${personality.name}</h4><p>${personality.description}</p><div class="psychology-tags">${tagsHTML}</div></div></div>`;
+      // NUEVO: Procesar markdown en la descripción para mantener iconos y negritas
+      const processedDescription = personality.description
+        // Convertir **texto** a <strong>texto</strong>
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      return `<div class="psychology-item"><div class="avatar ${avatarColor}-avatar">${firstLetter}</div><div class="psychology-content"><h4>${personality.name}</h4><p>${processedDescription}</p><div class="psychology-tags">${tagsHTML}</div></div></div>`;
     }).join('');
 
     // CAMBIO: Agregar atributo data para aplicar estilos específicos

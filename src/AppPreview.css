@@ -399,6 +399,184 @@
   transform: scale(1.1);
 }
 
+/* Upgrade Modal Styles */
+.upgrade-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(113, 34, 172, 0.15);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  padding: 20px;
+}
+
+.upgrade-modal-content {
+  background: white;
+  border-radius: 24px;
+  padding: 50px 40px 40px;
+  max-width: 550px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.upgrade-modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+}
+
+/* Botón cerrar reposicionado */
+.upgrade-modal .close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.05);
+  color: #666;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  padding: 0;
+}
+
+.upgrade-modal .close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+  transform: scale(1.1);
+}
+
+.upgrade-modal-content h2 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 28px;
+  line-height: 1.3;
+}
+
+.upgrade-modal-content p {
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+.upgrade-modal-content p:last-of-type {
+  margin-bottom: 40px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 1.6rem;
+}
+
+.upgrade-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.view-plans-button {
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 20px 40px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+  position: relative;
+  overflow: hidden;
+  min-width: 200px;
+}
+
+.view-plans-button:hover {
+  background: linear-gradient(to right, #128C7E, #7B2CBF);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
+}
+
+/* Responsive para upgrade modal */
+@media (max-width: 768px) {
+  .upgrade-modal {
+    padding: 20px;
+  }
+  
+  .upgrade-modal-content {
+    padding: 45px 25px 35px;
+    max-width: 100%;
+  }
+  
+  .upgrade-modal-content h2 {
+    font-size: 2.4rem;
+  }
+  
+  .upgrade-modal-content p {
+    font-size: 1.35rem;
+  }
+  
+  .upgrade-modal-content p:last-of-type {
+    font-size: 1.45rem;
+  }
+  
+  .upgrade-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .view-plans-button {
+    width: 100%;
+    padding: 20px 24px;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .upgrade-modal-content {
+    padding: 40px 20px 30px;
+  }
+  
+  .upgrade-modal-content h2 {
+    font-size: 2.1rem;
+    margin-bottom: 24px;
+  }
+  
+  .upgrade-modal-content p {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+  }
+  
+  .upgrade-modal-content p:last-of-type {
+    margin-bottom: 36px;
+    font-size: 1.35rem;
+  }
+  
+  .view-plans-button {
+    font-size: 1.2rem;
+    padding: 18px 32px;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -656,6 +834,52 @@
   .time-label {
     font-size: 12px;
   }
+
+  .psychology-tags {
+    justify-content: center;
+  }
+
+  .red-flag-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .red-flags-section h4 {
+    font-size: 19px;
+  }
+
+  .red-flag-content h4 {
+    font-size: 19px;
+  }
+
+  .red-flag-content p {
+    font-size: 15px;
+  }
+
+  .red-flag-tags {
+    justify-content: center;
+  }
+
+  .demo-cta-button {
+    width: 100%;
+    max-width: 280px;
+    font-size: 18px;
+    padding: 16px 32px;
+  }
+
+  .profile-emoji {
+    font-size: 2.8rem;
+    margin-right: 18px;
+  }
+
+  .profile-name {
+    font-size: 17px;
+  }
+
+  .profile-user {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -757,11 +981,11 @@
   }
 
   .participant-name {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .percentage {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .psychology-content h4 {
@@ -795,6 +1019,50 @@
   .demo-badge,
   .testimonials-badge {
     font-size: 12px;
+  }
+
+  .psychology-tags {
+    justify-content: center;
+  }
+
+  .red-flag-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .red-flags-section h4 {
+    font-size: 18px;
+  }
+
+  .red-flag-content h4 {
+    font-size: 18px;
+  }
+
+  .red-flag-content p {
+    font-size: 14px;
+  }
+
+  .red-flag-tags {
+    justify-content: center;
+  }
+
+  .demo-cta-button {
+    font-size: 16px;
+    padding: 14px 28px;
+  }
+
+  .profile-emoji {
+    font-size: 2.4rem;
+    margin-right: 14px;
+  }
+
+  .profile-name {
+    font-size: 15px;
+  }
+
+  .profile-user {
+    font-size: 14px;
   }
 }
 
@@ -1032,43 +1300,62 @@
 
 .participation-item {
   display: grid;
-  grid-template-columns: 80px 1fr 50px;
-  gap: 12px;
+  grid-template-columns: 90px 1fr 60px;
+  gap: 16px;
   align-items: center;
+  margin-bottom: 8px;
 }
 
 .participant-name {
   font-size: 18px;
   font-weight: 500;
   color: #1a1a1a;
+  text-align: left;
 }
 
 .progress-bar {
-  height: 8px;
+  height: 12px;
   background: #E5E7EB;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.3s ease;
+  border-radius: 6px;
+  transition: width 0.6s ease-in-out;
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  border-radius: 6px;
 }
 
 .progress-fill.green {
-  background: #25D366;
+  background: linear-gradient(90deg, #128C7E, #25D366);
+  box-shadow: 0 2px 4px rgba(37, 211, 102, 0.3);
 }
 
 .progress-fill.purple {
-  background: #8A2BE2;
+  background: linear-gradient(90deg, #7B2CBF, #8A2BE2);
+  box-shadow: 0 2px 4px rgba(138, 43, 226, 0.3);
 }
 
 .percentage {
   font-size: 18px;
   font-weight: 600;
   color: #1a1a1a;
-  min-width: 40px;
+  text-align: right;
+  min-width: 50px;
 }
 
 /* Time chart */
@@ -1230,8 +1517,9 @@
 }
 
 .profile-emoji {
-  font-size: 2.4rem;
-  margin-right: 16px;
+  font-size: 3.2rem;
+  margin-right: 20px;
+  flex-shrink: 0;
 }
 
 .profile-info {
@@ -1248,10 +1536,964 @@
 }
 
 .profile-user {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 500;
   background: linear-gradient(135deg, #25D366, #8A2BE2);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Demo CTA */
+.demo-cta {
+  text-align: center;
+}
+
+.demo-cta-button {
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 18px 36px;
+  font-size: 19px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+}
+
+.demo-cta-button:hover {
+  background: linear-gradient(to right, #128C7E, #7B2CBF);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  background: white;
+  padding: 100px 20px;
+}
+
+.testimonials-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.testimonials-badge {
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.testimonials-title {
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.testimonials-description {
+  font-size: 22px;
+  line-height: 1.6;
+  color: #666;
+  max-width: 800px;
+  margin: 0 auto 60px;
+  text-align: center;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 60px;
+}
+
+.testimonial-card {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  text-align: left;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid #f3f4f6;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.testimonial-quote {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.quote-icon {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  font-size: 2.5rem;
+  color: #8A2BE2;
+  opacity: 0.3;
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.testimonial-quote p {
+  font-size: 19px;
+  line-height: 1.6;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.author-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25D366, #8A2BE2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.testimonial-rating {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.star {
+  color: #FFD700;
+  font-size: 21px;
+}
+
+/* Responsive para la sección de testimonios */
+@media (max-width: 1024px) {
+  .testimonials-section {
+    padding: 80px 20px;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .testimonial-card {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonials-section {
+    padding: 80px 20px;
+  }
+
+  .testimonials-title {
+    font-size: 2.2rem;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .testimonial-card {
+    padding: 1.5rem;
+  }
+
+  .testimonial-quote p {
+    font-size: 18px;
+  }
+
+  .author-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 18px;
+  }
+
+  .author-name {
+    font-size: 16px;
+  }
+
+  .star {
+    font-size: 19px;
+  }
+
+  .profiles-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .profile-item {
+    padding: 14px 16px;
+    min-height: 60px;
+  }
+
+  .profile-emoji {
+    font-size: 2.8rem;
+    margin-right: 18px;
+  }
+
+  .profile-name {
+    font-size: 17px;
+  }
+
+  .profile-user {
+    font-size: 16px;
+  }
+
+  .psychology-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .psychology-tags {
+    justify-content: center;
+  }
+
+  .demo-cta-button {
+    width: 100%;
+    max-width: 280px;
+    font-size: 18px;
+    padding: 16px 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonials-title {
+    font-size: 2rem;
+  }
+
+  .testimonial-card {
+    padding: 1.25rem;
+  }
+
+  .testimonial-quote p {
+    font-size: 16px;
+    padding-left: 15px;
+  }
+
+  .quote-icon {
+    font-size: 2.5rem;
+    top: -8px;
+    left: -8px;
+  }
+
+  .author-avatar {
+    width: 2rem;
+    height: 2rem;
+    font-size: 16px;
+  }
+
+  .author-name {
+    font-size: 15px;
+  }
+
+  .star {
+    font-size: 18px;
+  }
+
+  .profile-item {
+    padding: 12px 14px;
+    min-height: 50px;
+  }
+
+  .profile-emoji {
+    font-size: 2.4rem;
+    margin-right: 14px;
+  }
+
+  .profile-name {
+    font-size: 15px;
+  }
+
+  .profile-user {
+    font-size: 14px;
+  }
+
+  .demo-cta-button {
+    font-size: 16px;
+    padding: 14px 28px;
+  }
+}
+
+/* Red flags section */
+.red-flags-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.red-flags-section h4 {
+  font-size: 21px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.red-flags-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.red-flag-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.red-avatar {
+  background: #DC2626;
+  font-size: 1.5rem;
+}
+
+.red-flag-content h4 {
+  font-size: 21px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #DC2626;
+}
+
+.red-flag-content p {
+  font-size: 17px;
+  line-height: 1.5;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.red-flag-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag.red {
+  background: #DC2626;
+  color: white;
+}
+
+/* Privacy link styles */
+.privacy-link {
+  color: #25D366;
+  text-decoration: underline;
+  font-weight: 500;
+  font-size: inherit;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.privacy-link:hover {
+  color: #128C7E;
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+.privacy-link:visited {
+  color: #25D366;
+}
+
+/* Cookie Banner Styles - Compacto */
+.cookie-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  animation: slideUp 0.4s ease;
+  border-top: 3px solid transparent;
+  background-image: linear-gradient(white, white), linear-gradient(to right, #25D366, #8A2BE2);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cookie-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cookie-banner-text {
+  flex: 1;
+  min-width: 250px;
+}
+
+.cookie-banner-text h4 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.cookie-banner-text p {
+  font-size: 1.15rem;
+  color: #555;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.cookie-banner-buttons {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.cookie-accept-button {
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(37, 211, 102, 0.2);
+  white-space: nowrap;
+}
+
+.cookie-accept-button:hover {
+  background: linear-gradient(to right, #128C7E, #7B2CBF);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.cookie-decline-button {
+  background: transparent;
+  color: #666;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 25px;
+  padding: 11px 22px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.cookie-decline-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #1a1a1a;
+  transform: translateY(-1px);
+}
+
+.cookie-settings-button {
+  background: transparent;
+  color: #8A2BE2;
+  border: none;
+  padding: 12px 16px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.cookie-settings-button:hover {
+  color: #6A4C93;
+  opacity: 0.8;
+}
+
+/* Versión más compacta para móviles */
+@media (max-width: 768px) {
+  .cookie-banner {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 18px 20px;
+  }
+  
+  .cookie-banner-content {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .cookie-banner-text {
+    min-width: auto;
+  }
+  
+  .cookie-banner-text h4 {
+    font-size: 1.2rem;
+    margin-bottom: 6px;
+  }
+  
+  .cookie-banner-text p {
+    font-size: 1.05rem;
+  }
+  
+  .cookie-banner-buttons {
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  .cookie-accept-button,
+  .cookie-decline-button {
+    flex: 1;
+    padding: 14px 18px;
+    font-size: 1.05rem;
+  }
+  
+  .cookie-settings-button {
+    padding: 10px 0;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cookie-banner {
+    padding: 16px 18px;
+  }
+  
+  .cookie-banner-text h4 {
+    font-size: 1.1rem;
+  }
+  
+  .cookie-banner-text p {
+    font-size: 1rem;
+  }
+  
+  .cookie-banner-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .cookie-accept-button,
+  .cookie-decline-button {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 1rem;
+  }
+  
+  .cookie-settings-button {
+    font-size: 0.95rem;
+  }
+}
+
+/* Animación de entrada */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Banner alternativo - inline para páginas específicas */
+.cookie-banner-inline {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border-top: 3px solid transparent;
+  background-image: linear-gradient(white, white), linear-gradient(to right, #25D366, #8A2BE2);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  margin: 20px 0;
+}
+
+.cookie-banner-inline .cookie-banner-content {
+  display: block;
+  text-align: center;
+}
+
+.cookie-banner-inline .cookie-banner-text {
+  margin-bottom: 20px;
+}
+
+.cookie-banner-inline .cookie-banner-text h4 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.cookie-banner-inline .cookie-banner-text p {
+  font-size: 1.2rem;
+}
+
+.cookie-banner-inline .cookie-banner-buttons {
+  justify-content: center;
+}
+
+/* Estilos para Análisis Psicológico - Secciones mejoradas */
+.analysis-section {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.analysis-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--section-gradient);
+}
+
+/* Títulos principales de secciones */
+.analysis-section-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  padding: 20px 25px;
+  background: var(--section-bg);
+  border-radius: 16px;
+  border: 1px solid var(--section-border);
+}
+
+.analysis-section-icon {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.analysis-section-title h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  background: var(--section-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Colores temáticos para cada sección */
+.analysis-personalities {
+  --section-gradient: linear-gradient(135deg, #25D366, #128C7E);
+  --section-bg: rgba(37, 211, 102, 0.05);
+  --section-border: rgba(37, 211, 102, 0.2);
+  border-left-color: #25D366;
+}
+
+.analysis-alerts {
+  --section-gradient: linear-gradient(135deg, #FF9800, #F57C00);
+  --section-bg: rgba(255, 152, 0, 0.05);
+  --section-border: rgba(255, 152, 0, 0.2);
+  border-left-color: #FF9800;
+}
+
+.analysis-relationship {
+  --section-gradient: linear-gradient(135deg, #E91E63, #C2185B);
+  --section-bg: rgba(233, 30, 99, 0.05);
+  --section-border: rgba(233, 30, 99, 0.2);
+  border-left-color: #E91E63;
+}
+
+.analysis-recommendations {
+  --section-gradient: linear-gradient(135deg, #2196F3, #1976D2);
+  --section-bg: rgba(33, 150, 243, 0.05);
+  --section-border: rgba(33, 150, 243, 0.2);
+  border-left-color: #2196F3;
+}
+
+.analysis-phrases {
+  --section-gradient: linear-gradient(135deg, #9C27B0, #7B1FA2);
+  --section-bg: rgba(156, 39, 176, 0.05);
+  --section-border: rgba(156, 39, 176, 0.2);
+  border-left-color: #9C27B0;
+}
+
+.analysis-redflags {
+  --section-gradient: linear-gradient(135deg, #F44336, #D32F2F);
+  --section-bg: rgba(244, 67, 54, 0.05);
+  --section-border: rgba(244, 67, 54, 0.2);
+  border-left-color: #F44336;
+}
+
+.analysis-psychological {
+  --section-gradient: linear-gradient(135deg, #8A2BE2, #6A4C93);
+  --section-bg: rgba(138, 43, 226, 0.05);
+  --section-border: rgba(138, 43, 226, 0.2);
+  border-left-color: #8A2BE2;
+}
+
+/* Subtítulos dentro de cada sección */
+.analysis-subsection {
+  margin-bottom: 20px;
+}
+
+.analysis-subsection h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+  padding: 12px 18px;
+  background: rgba(245, 247, 250, 0.8);
+  border-radius: 12px;
+  border-left: 4px solid var(--section-color);
+}
+
+.analysis-subsection h3::before {
+  content: var(--subsection-icon);
+  font-size: 1.4rem;
+}
+
+/* Iconos para subtítulos según la sección */
+.analysis-personalities .analysis-subsection h3 {
+  --section-color: #25D366;
+  --subsection-icon: "👤";
+}
+
+.analysis-alerts .analysis-subsection h3 {
+  --section-color: #FF9800;
+  --subsection-icon: "⚠️";
+}
+
+.analysis-relationship .analysis-subsection h3 {
+  --section-color: #E91E63;
+  --subsection-icon: "💕";
+}
+
+.analysis-redflags .analysis-subsection h3 {
+  --section-color: #F44336;
+  --subsection-icon: "🚩";
+}
+
+/* Tarjetas de personalidad mejoradas */
+.personality-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 2px solid rgba(37, 211, 102, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.personality-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.15);
+  border-color: rgba(37, 211, 102, 0.3);
+}
+
+.personality-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.personality-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.personality-name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.personality-description {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+/* Tags de personalidad coloridos */
+.personality-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.personality-tag {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.2);
+}
+
+/* Red flags con estilo dramático */
+.red-flag-card {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.05), rgba(244, 67, 54, 0.02));
+  border: 2px solid rgba(244, 67, 54, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.red-flag-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+}
+
+.red-flag-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  background: linear-gradient(135deg, #F44336, #D32F2F);
+  color: white;
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.red-flag-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #D32F2F;
+  margin: 0;
+}
+
+.red-flag-description {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.red-flag-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.red-flag-tag {
+  background: linear-gradient(135deg, #F44336, #D32F2F);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
+}
+
+/* Responsive para análisis psicológico */
+@media (max-width: 768px) {
+  .analysis-section {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .analysis-section-title {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+    padding: 16px 20px;
+  }
+  
+  .analysis-section-icon {
+    font-size: 2rem;
+  }
+  
+  .analysis-section-title h2 {
+    font-size: 1.5rem;
+  }
+  
+  .personality-header,
+  .red-flag-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .personality-avatar,
+  .red-flag-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .analysis-section {
+    padding: 16px;
+  }
+  
+  .analysis-section-title {
+    padding: 14px 16px;
+  }
+  
+  .analysis-section-title h2 {
+    font-size: 1.3rem;
+  }
+  
+  .personality-card,
+  .red-flag-card {
+    padding: 16px;
+  }
+  
+  .personality-tags,
+  .red-flag-tags {
+    justify-content: center;
+  }
 } 

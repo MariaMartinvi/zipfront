@@ -55,7 +55,7 @@ const AppPreview = () => {
       <section className="features-section">
         <div className="features-container">
           <span className="features-badge">CARACTERÍSTICAS</span>
-          <h2 className="features-title">Descubre todo lo que WhatsAnalyzer puede hacer</h2>
+          <h2 className="features-title">Descubre todo lo que Chatsalsa puede hacer</h2>
           <p className="features-description">Nuestra plataforma combina análisis estadístico avanzado con inteligencia artificial para ofrecerte insights únicos sobre tus conversaciones.</p>
           
           <div className="features-grid">
@@ -96,9 +96,9 @@ const AppPreview = () => {
                 <span className="feature-icon-large">🔒</span>
               </div>
               <h3>100% Privado</h3>
-              <p>El análisis estadístico se realiza en tu dispositivo y el chat no sale de tu dispositivo. Tu privacidad es nuestra prioridad.</p>
-          </div>
-          
+              <p>El análisis estadístico se realiza en tu dispositivo y el chat no sale de tu dispositivo. Tu privacidad es nuestra prioridad. <a href="/privacy" className="privacy-link">Cómo lo hacemos</a></p>
+            </div>
+            
             <div className="feature-card">
               <div className="feature-icon-new gradient-bg rotate-right">
                 <span className="feature-icon-large">⚡</span>
@@ -168,7 +168,7 @@ const AppPreview = () => {
       <section className="demo-section">
         <div className="demo-container">
           <span className="demo-badge">DEMOSTRACIÓN</span>
-          <h2 className="demo-title">Mira lo que WhatsAnalyzer puede hacer</h2>
+          <h2 className="demo-title">Mira lo que Chatsalsa puede hacer</h2>
           <p className="demo-description">Descubre el tipo de información que puedes obtener de tus conversaciones de WhatsApp.</p>
           
           <div className="demo-content">
@@ -258,7 +258,7 @@ const AppPreview = () => {
                       </div>
                     </div>
                     <div className="profile-item">
-                      <span className="profile-emoji">🪞</span>
+                      <span className="profile-emoji">🤳</span>
                       <div className="profile-info">
                         <span className="profile-name">El Narcisista</span>
                         <span className="profile-user">Miguel</span>
@@ -298,16 +298,20 @@ const AppPreview = () => {
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="psychology-item">
-                    <div className="avatar pink-avatar">S</div>
-                    <div className="psychology-content">
-                      <h4>Sara</h4>
-                      <p>Alegre y expresiva. Le encanta compartir momentos especiales y usar muchos emojis.</p>
-                      <div className="psychology-tags">
-                        <span className="tag pink">Alegre</span>
-                        <span className="tag pink">Expresiva</span>
-                        <span className="tag pink">Positiva</span>
+                <div className="red-flags-section">
+                  <h4>Red flags en la relación</h4>
+                  <div className="red-flags-list">
+                    <div className="red-flag-item">
+                      <div className="avatar red-avatar">⚠️</div>
+                      <div className="red-flag-content">
+                        <h4>Comunicación pasivo-agresiva</h4>
+                        <p>Se detectan patrones de mensajes con doble sentido y respuestas evasivas.</p>
+                        <div className="red-flag-tags">
+                          <span className="tag red">Evasión</span>
+                          <span className="tag red">Pasivo-agresivo</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -332,7 +336,7 @@ const AppPreview = () => {
         <div className="testimonials-container">
           <span className="testimonials-badge">TESTIMONIOS</span>
           <h2 className="testimonials-title">{t('preview.testimonials.title')}</h2>
-          <p className="testimonials-description">Descubre cómo WhatsAnalyzer ha ayudado a personas de todo el mundo a entender mejor sus conversaciones.</p>
+          <p className="testimonials-description">Descubre cómo Chatsalsa ha ayudado a personas de todo el mundo a entender mejor sus conversaciones.</p>
           
           <div className="testimonials-grid">
             {t('preview.testimonials.reviews', { returnObjects: true }).map((review, index) => (

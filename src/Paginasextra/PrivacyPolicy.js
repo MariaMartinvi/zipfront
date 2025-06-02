@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import './Pages.css';
+import '../AppPreview.css';
 
 const PrivacyPolicy = () => {
   const { t, i18n } = useTranslation();
@@ -32,8 +32,7 @@ const PrivacyPolicy = () => {
             items: [
               "La anonimización de tu chat se hace en tu dispositivo.",
               "Los chats son anonimizados en tu dispositivo antes de mandarlos a Microsoft Azure. Solo mandamos un fragmento de alrededor 20-50k caracteres. Mandamos los chats sin datos personales.",
-              "Los chats anonimizados pasan directamente de tu dispositivo a Microsoft Azure, sin pasar por un servidor de Chatsalsa ni ser tratados por el camino.",
-              "En Microsoft Azure tus chats no se usan para entrenar la IA."
+              "Los chats anonimizados pasan directamente de tu dispositivo a Microsoft Azure, sin pasar por un servidor de Chatsalsa ni ser tratados por el camino."
             ]
           },
           conclusion: {
@@ -171,8 +170,7 @@ const PrivacyPolicy = () => {
             items: [
               "Chat anonymization is done on your device.",
               "Chats are anonymized on your device before being sent to Microsoft Azure. We only send a fragment of about 20-50k characters. We send chats without personal data.",
-              "Anonymized chats go directly from your device to Microsoft Azure, without passing through a Chatsalsa server or being processed along the way.",
-              "In Microsoft Azure, your chats are not used to train AI."
+              "Anonymized chats go directly from your device to Microsoft Azure, without passing through a Chatsalsa server or being processed along the way."
             ]
           },
           conclusion: {
@@ -287,154 +285,180 @@ const PrivacyPolicy = () => {
   const content = isSpanish ? spanishContent : englishContent;
 
   return (
-    <div className="privacy-policy">
-      <div className="privacy-header">
-        <h1>{content.title}</h1>
-        <p>{content.lastUpdate}</p>
-      </div>
-
-      <div className="privacy-content">
-        <p className="introduction">{content.introduction}</p>
-
-        <section>
-          <h2>{content.sections.responsible.title}</h2>
-          <p>{content.sections.responsible.description}</p>
-          <ul>
-            {content.sections.responsible.details.map((detail, index) => (
-              <li key={index}>{detail}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2>{content.sections.important.title}</h2>
-          
-          <div className="subsection">
-            <h3>{content.sections.important.subsections.stats.title}</h3>
-            <ul>
-              {content.sections.important.subsections.stats.items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
+    <div className="modern-preview-container">
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-content" style={{ gridTemplateColumns: '1fr', textAlign: 'center', gap: '40px' }}>
+          <div className="hero-text">
+            <h1 className="hero-title">{content.title}</h1>
+            <p className="hero-description">{content.lastUpdate}</p>
+            <p className="hero-description">{content.introduction}</p>
           </div>
+        </div>
+      </section>
 
-          <div className="subsection">
-            <h3>{content.sections.important.subsections.psych.title}</h3>
-            <ul>
-              {content.sections.important.subsections.psych.items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
+      {/* Content Section */}
+      <section className="features-section">
+        <div className="features-container">
+          <div className="features-grid" style={{ gridTemplateColumns: '1fr', gap: '40px' }}>
+            
+            {/* Responsible Section */}
+            <div className="feature-card">
+              <h3>{content.sections.responsible.title}</h3>
+              <p style={{ fontSize: '18px', lineHeight: '1.6' }}>{content.sections.responsible.description}</p>
+              <ul style={{ textAlign: 'left', margin: '20px 0', fontSize: '18px', lineHeight: '1.6' }}>
+                {content.sections.responsible.details.map((detail, index) => (
+                  <li key={index} style={{ marginBottom: '12px' }}>{detail}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Important Section */}
+            <div className="feature-card">
+              <h3>{content.sections.important.title}</h3>
+              
+              <div style={{ textAlign: 'left', marginTop: '20px' }}>
+                <h4 style={{ color: '#25D366', marginBottom: '15px', fontSize: '20px' }}>{content.sections.important.subsections.stats.title}</h4>
+                <ul style={{ marginBottom: '20px', fontSize: '18px', lineHeight: '1.6' }}>
+                  {content.sections.important.subsections.stats.items.map((item, index) => (
+                    <li key={index} style={{ marginBottom: '12px' }}>{item}</li>
+                  ))}
+                </ul>
+
+                <h4 style={{ color: '#25D366', marginBottom: '15px', fontSize: '20px' }}>{content.sections.important.subsections.psych.title}</h4>
+                <ul style={{ marginBottom: '20px', fontSize: '18px', lineHeight: '1.6' }}>
+                  {content.sections.important.subsections.psych.items.map((item, index) => (
+                    <li key={index} style={{ marginBottom: '12px' }}>{item}</li>
+                  ))}
+                </ul>
+
+                <h4 style={{ color: '#25D366', marginBottom: '15px', fontSize: '20px' }}>{content.sections.important.subsections.conclusion.title}</h4>
+                <ul style={{ fontSize: '18px', lineHeight: '1.6' }}>
+                  {content.sections.important.subsections.conclusion.items.map((item, index) => (
+                    <li key={index} style={{ marginBottom: '12px' }}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Data Collection Section */}
+            <div className="feature-card">
+              <h3>{content.sections.data.title}</h3>
+              
+              <div style={{ textAlign: 'left', marginTop: '20px' }}>
+                <h4 style={{ color: '#8A2BE2', marginBottom: '15px', fontSize: '20px' }}>{content.sections.data.subsections.user.title}</h4>
+                <p style={{ marginBottom: '10px', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.data.subsections.user.description}</p>
+                <p style={{ marginBottom: '20px', fontStyle: 'italic', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.data.subsections.user.note}</p>
+
+                <h4 style={{ color: '#8A2BE2', marginBottom: '15px', fontSize: '20px' }}>{content.sections.data.subsections.payments.title}</h4>
+                <p style={{ fontSize: '18px', lineHeight: '1.6' }}>{content.sections.data.subsections.payments.description}</p>
+              </div>
+            </div>
+
+            {/* Chat Processing Section */}
+            <div className="feature-card">
+              <h3>{content.sections.chatProcessing.title}</h3>
+              <p style={{ textAlign: 'left', marginBottom: '20px', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.chatProcessing.description}</p>
+              
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '12px', marginBottom: '20px' }}>
+                  <h4 style={{ color: '#DC2626', marginBottom: '15px', fontSize: '20px' }}>{content.sections.chatProcessing.important.title}</h4>
+                  <ul style={{ fontSize: '18px', lineHeight: '1.6' }}>
+                    {content.sections.chatProcessing.important.items.map((item, index) => (
+                      <li key={index} style={{ marginBottom: '12px' }}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <p style={{ marginBottom: '20px', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.chatProcessing.additional.description}</p>
+
+                <h4 style={{ color: '#8A2BE2', marginBottom: '15px', fontSize: '20px' }}>{content.sections.chatProcessing.anonymization.title}</h4>
+                <p style={{ marginBottom: '15px', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.chatProcessing.anonymization.description}</p>
+                <ul style={{ fontSize: '18px', lineHeight: '1.6' }}>
+                  {content.sections.chatProcessing.anonymization.items.map((item, index) => (
+                    <li key={index} style={{ marginBottom: '12px' }}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Azure Section */}
+            <div className="feature-card">
+              <h3>{content.sections.azure.title}</h3>
+              <p style={{ textAlign: 'left', marginBottom: '20px', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.azure.description}</p>
+              
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '12px', marginBottom: '20px' }}>
+                  <h4 style={{ color: '#DC2626', marginBottom: '15px', fontSize: '20px' }}>{content.sections.azure.important.title}</h4>
+                  <ul style={{ fontSize: '18px', lineHeight: '1.6' }}>
+                    {content.sections.azure.important.items.map((item, index) => (
+                      <li key={index} style={{ marginBottom: '12px' }}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <p style={{ fontSize: '18px', lineHeight: '1.6' }}><a href={content.sections.azure.link.split(': ')[1]} target="_blank" rel="noopener noreferrer" className="privacy-link">{content.sections.azure.link}</a></p>
+              </div>
+            </div>
+
+            {/* Purposes Section */}
+            <div className="feature-card">
+              <h3>{content.sections.purposes.title}</h3>
+              <p style={{ textAlign: 'left', marginBottom: '15px', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.purposes.description}</p>
+              <ul style={{ textAlign: 'left', fontSize: '18px', lineHeight: '1.6' }}>
+                {content.sections.purposes.items.map((item, index) => (
+                  <li key={index} style={{ marginBottom: '12px' }}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Rights Section */}
+            <div className="feature-card">
+              <h3>{content.sections.rights.title}</h3>
+              <p style={{ textAlign: 'left', marginBottom: '15px', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.rights.description}</p>
+              <ul style={{ textAlign: 'left', marginBottom: '15px', fontSize: '18px', lineHeight: '1.6' }}>
+                {content.sections.rights.items.map((item, index) => (
+                  <li key={index} style={{ marginBottom: '12px' }}>{item}</li>
+                ))}
+              </ul>
+              <p style={{ textAlign: 'left', fontWeight: '600', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.rights.contact}</p>
+            </div>
+
+            {/* Retention Section */}
+            <div className="feature-card">
+              <h3>{content.sections.retention.title}</h3>
+              <ul style={{ textAlign: 'left', fontSize: '18px', lineHeight: '1.6' }}>
+                {content.sections.retention.items.map((item, index) => (
+                  <li key={index} style={{ marginBottom: '12px' }}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Changes Section */}
+            <div className="feature-card">
+              <h3>{content.sections.changes.title}</h3>
+              <p style={{ textAlign: 'left', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.changes.description}</p>
+            </div>
+
+            {/* Contact Section */}
+            <div className="feature-card">
+              <h3>{content.sections.contact.title}</h3>
+              <p style={{ textAlign: 'left', marginBottom: '15px', fontSize: '18px', lineHeight: '1.6' }}>{content.sections.contact.description}</p>
+              <p style={{ textAlign: 'left', fontSize: '18px', fontWeight: '600', lineHeight: '1.6' }}>{content.sections.contact.email}</p>
+            </div>
+
           </div>
+        </div>
+      </section>
 
-          <div className="subsection">
-            <h3>{content.sections.important.subsections.conclusion.title}</h3>
-            <ul>
-              {content.sections.important.subsections.conclusion.items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section>
-          <h2>{content.sections.data.title}</h2>
-          
-          <div className="subsection">
-            <h3>{content.sections.data.subsections.user.title}</h3>
-            <p>{content.sections.data.subsections.user.description}</p>
-            <p>{content.sections.data.subsections.user.note}</p>
-          </div>
-
-          <div className="subsection">
-            <h3>{content.sections.data.subsections.payments.title}</h3>
-            <p>{content.sections.data.subsections.payments.description}</p>
-          </div>
-        </section>
-
-        <section>
-          <h2>{content.sections.chatProcessing.title}</h2>
-          <p>{content.sections.chatProcessing.description}</p>
-          
-          <div className="important">
-            <h3>{content.sections.chatProcessing.important.title}</h3>
-            <ul>
-              {content.sections.chatProcessing.important.items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-
-          <p>{content.sections.chatProcessing.additional.description}</p>
-
-          <div className="subsection">
-            <h3>{content.sections.chatProcessing.anonymization.title}</h3>
-            <p>{content.sections.chatProcessing.anonymization.description}</p>
-            <ul>
-              {content.sections.chatProcessing.anonymization.items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section>
-          <h2>{content.sections.azure.title}</h2>
-          <p>{content.sections.azure.description}</p>
-          
-          <div className="important">
-            <h3>{content.sections.azure.important.title}</h3>
-            <ul>
-              {content.sections.azure.important.items.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-          
-          <p><a href={content.sections.azure.link.split(': ')[1]} target="_blank" rel="noopener noreferrer">{content.sections.azure.link}</a></p>
-        </section>
-
-        <section>
-          <h2>{content.sections.purposes.title}</h2>
-          <p>{content.sections.purposes.description}</p>
-          <ul>
-            {content.sections.purposes.items.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2>{content.sections.rights.title}</h2>
-          <p>{content.sections.rights.description}</p>
-          <ul>
-            {content.sections.rights.items.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-          <p>{content.sections.rights.contact}</p>
-        </section>
-
-        <section>
-          <h2>{content.sections.retention.title}</h2>
-          <ul>
-            {content.sections.retention.items.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2>{content.sections.changes.title}</h2>
-          <p>{content.sections.changes.description}</p>
-        </section>
-
-        <section>
-          <h2>{content.sections.contact.title}</h2>
-          <p>{content.sections.contact.description}</p>
-          <p>{content.sections.contact.email}</p>
-        </section>
-      </div>
+      {/* Security Badge */}
+      <section className="security-section">
+        <div className="security-badge-modern">
+          <span className="security-icon">🔒</span>
+          <span className="security-text">100% Privado y Seguro</span>
+          <span className="security-icon">✓</span>
+        </div>
+      </section>
     </div>
   );
 };
