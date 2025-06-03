@@ -49,13 +49,14 @@
 }
 
 .headlines-game-header p {
-  font-size: 1.25rem;
+  font-size: 2.8rem;
   opacity: 0.95;
   line-height: 1.6;
   max-width: 600px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  color: white !important;
 }
 
 /* Estilos para las tarjetas de preguntas */
@@ -251,33 +252,40 @@
 
 .score-display p {
   margin-bottom: 30px;
-  font-size: 1.25rem;
+  font-size: 1.8rem;
   line-height: 1.6;
   position: relative;
   z-index: 1;
+  color: white !important;
 }
 
 .reset-button {
-  background: white;
-  color: #7122AC;
-  border: 2px solid white;
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  text-align: center;
+  border: none;
   border-radius: 50px;
   padding: 16px 40px;
-  font-size: 16px;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: block;
   margin: 30px auto;
   position: relative;
   z-index: 1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
 .reset-button:hover {
-  background: transparent;
-  color: white;
+  background: linear-gradient(to right, #128C7E, #7B2CBF);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+.reset-button:active {
+  color: #000000;
+  transform: translateY(-1px);
 }
 
 .answers-review {
@@ -529,7 +537,7 @@
   }
   
   .headlines-game-header p {
-    font-size: 1.1rem;
+    font-size: 2rem;
   }
   
   .question-block {
@@ -568,7 +576,7 @@
   }
   
   .headlines-game-header p {
-    font-size: 1rem;
+    font-size: 1.7rem;
   }
   
   .question-block {

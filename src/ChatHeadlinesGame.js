@@ -183,11 +183,6 @@ const ChatHeadlinesGame = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (Object.keys(userAnswers).length === 0) {
-      alert('Por favor, responde al menos una pregunta antes de enviar.');
-      return;
-    }
 
     let correctAnswers = 0;
     const totalQuestions = gameData.headlines.length;

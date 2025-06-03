@@ -35,6 +35,11 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   const [headlinesUrl, setHeadlinesUrl] = useState("");
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
   
+  // NUEVO: Estados para el juego de personalidades
+  const [personalityGameUrl, setPersonalityGameUrl] = useState('');
+  const [showPersonalityModal, setShowPersonalityModal] = useState(false);
+  const [showPersonalityCopiedMessage, setShowPersonalityCopiedMessage] = useState(false);
+  
   // Estados para gestión de solicitudes
   const [activeRequests, setActiveRequests] = useState(new Set());
   
@@ -462,6 +467,33 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           // ESPECIAL: Si es la sección de datos del juego, procesar el JSON
           if (icon === '🎯') {
             processedContent = processGameDataContent(processedContent);
+          } else if (icon === '🚩') {
+            // ESPECIAL: Si es la sección de señales de alerta, poner negritas en rojo Y agregar bolitas
+            
+            // Extraer textos que están en negrita para las bolitas
+            const boldTexts = [];
+            const boldMatches = processedContent.matchAll(/\*\*(.*?)\*\*/g);
+            for (const match of boldMatches) {
+              const text = match[1].trim();
+              if (text && text.length > 0) {
+                boldTexts.push(text);
+              }
+            }
+            
+            // Procesar contenido normal
+            processedContent = processedContent
+              .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #dc3545;">$1</strong>')
+              .replace(/\n\n/g, '</p><p>')
+              .replace(/^(.+)$/gm, '<p>$1</p>')
+              .replace(/<p><\/p>/g, '')
+              .replace(/- (.*?)(?=\n|$)/g, '<li>$1</li>')
+              .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            
+            // Agregar bolitas rojas al final si hay textos en negrita
+            if (boldTexts.length > 0) {
+              const redTags = boldTexts.map(text => `<span class="tag red">${text}</span>`).join('');
+              processedContent += `<div class="psychology-tags" style="margin-top: 15px;">${redTags}</div>`;
+            }
           } else {
             // Procesamiento normal para otras secciones
             processedContent = processedContent
@@ -796,7 +828,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
 
   // FUNCIÓN para obtener color de avatar
   const getAvatarColor = (index, name) => {
-    const colors = ['green', 'purple', 'pink', 'blue', 'orange', 'red', 'teal', 'yellow'];
+    const colors = ['green', 'purple', 'pink', 'blue', 'orange', 'teal', 'yellow'];
     // Usar el índice y el nombre para una distribución más consistente
     const nameHash = name.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
     return colors[(index + nameHash) % colors.length];
@@ -993,6 +1025,103 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     window.open(whatsappUrl, '_blank');
   };
 
+  // NUEVO: Funciones para el juego de personalidades (copiadas de App.js)
+  const generatePersonalityGameUrl = () => {
+    try {
+      // Verificar que tengamos datos de análisis
+      const data = window.lastAnalysisTopData;
+      
+      if (!data || !data.categorias || !data.usuarios) {
+        alert("No hay datos de análisis para compartir. Por favor, asegúrate de que el análisis estadístico esté completo.");
+        return;
+      }
+
+      // Mapeo de categorías completas a códigos de una letra
+      const catCodes = {
+        'profesor': 'p', 'rollero': 'r', 'pistolero': 's', 'vampiro': 'v',
+        'cafeconleche': 'c', 'dejaenvisto': 'd', 'narcicista': 'n', 
+        'puntofinal': 'f', 'fosforo': 'o', 'menosesmas': 'm',
+        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'sicopata': 'x',
+        'comico': 'co', 'agradecido': 'ag', 'disculpon': 'di', 'curioso': 'cu'
+      };
+      
+      // Obtener usuarios
+      let users = [];
+      if (Array.isArray(data.usuarios)) {
+        users = data.usuarios;
+      } else if (typeof data.usuarios === 'object') {
+        users = Object.keys(data.usuarios);
+      }
+      
+      // Crear array de nombres únicos para eliminar redundancia
+      const names = [...new Set(
+        Object.values(data.categorias)
+          .filter(c => c && c.nombre)
+          .map(c => c.nombre)
+      )];
+      
+      // Crear pares [código, índice] para cada categoría
+      const cats = [];
+      Object.entries(catCodes).forEach(([cat, code]) => {
+        if (data.categorias[cat]?.nombre) {
+          const idx = names.indexOf(data.categorias[cat].nombre);
+          if (idx >= 0) {
+            cats.push([code, idx]);
+          }
+        }
+      });
+      
+      // Estructura final: [usuarios, nombres, categorías]
+      const result = [users, names, cats];
+      
+      // Comprimir con LZ-String
+      const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(result));
+      
+      // URL con parámetro z (más corto)
+      const url = `${window.location.origin}/chat-game?z=${compressed}`;
+      
+      console.log("Datos del juego de personalidades generados:", result);
+      
+      // Actualizar estado y mostrar modal
+      setPersonalityGameUrl(url);
+      setShowPersonalityModal(true);
+      
+      return url;
+    } catch (error) {
+      console.error("Error generando URL del juego de personalidades:", error);
+      alert("Error generando URL del juego de personalidades");
+      return null;
+    }
+  };
+
+  // Función para copiar URL del juego de personalidades al portapapeles
+  const copyPersonalityToClipboard = () => {
+    navigator.clipboard.writeText(personalityGameUrl)
+      .then(() => {
+        setShowPersonalityCopiedMessage(true);
+        setTimeout(() => setShowPersonalityCopiedMessage(false), 2000);
+      })
+      .catch(err => {
+        console.error("Error copiando al portapapeles:", err);
+        // Fallback para navegadores que no soportan clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = personalityGameUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setShowPersonalityCopiedMessage(true);
+        setTimeout(() => setShowPersonalityCopiedMessage(false), 2000);
+      });
+  };
+
+  // Función para compartir juego de personalidades en WhatsApp
+  const sharePersonalityOnWhatsApp = () => {
+    const message = `¡Juega a adivinar quién es quién en nuestro chat de WhatsApp!\n\n${personalityGameUrl}\n\n🎮 Juego de adivinar personalidades`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   // Si está cargando pero ya tenemos contenido para mostrar, mostramos ambos
   if (isLoading) {
     return (
@@ -1076,23 +1205,49 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
       
-      {/* Botón del juego de titulares */}
+      {/* Sección de Juegos al final */}
       {headlinesGameData && (
-        <div className="headlines-game-section">
-          <span className="headlines-game-badge">JUEGO INTERACTIVO</span>
-          <h3 className="headlines-game-title">
-            🎯 {t('share.game_title', '¿Quién dijo qué?')}
-          </h3>
-          <p className="headlines-game-description">
-            {t('share.game_description', 'Descubre quién corresponde a cada titular polémico')}
-          </p>
-          <button 
-            className="headlines-game-button"
-            onClick={generateHeadlinesGameUrl}
-          >
-            🚀 {t('share.share_game_button', 'Compartir Juego de Titulares')}
-          </button>
-        </div>
+        <>
+          <h2 className="analysis-special-title">🎮 Juegos</h2>
+          
+          <div className="games-container">
+            {/* Card 1: Juego de Titulares */}
+            <div className="game-card">
+              <div className="game-icon">🎯</div>
+              <div className="game-content">
+                <span className="game-badge">JUEGO INTERACTIVO</span>
+                <h3 className="game-title">¿Quién dijo qué?</h3>
+                <p className="game-description">
+                  {t('share.game_description', 'Descubre quién corresponde a cada titular polémico')}
+                </p>
+                <button 
+                  className="game-button"
+                  onClick={generateHeadlinesGameUrl}
+                >
+                  🚀 {t('share.share_game_button', 'Jugar Ahora')}
+                </button>
+              </div>
+            </div>
+
+            {/* Card 2: Juego de Personalidades */}
+            <div className="game-card">
+              <div className="game-icon">🎭</div>
+              <div className="game-content">
+                <span className="game-badge">JUEGO INTERACTIVO</span>
+                <h3 className="game-title">🎮 Compartir juego de personalidades</h3>
+                <p className="game-description">
+                  Comparte un juego para que tus amigos adivinen quién es el profesor, el vampiro y otras personalidades de tu chat.
+                </p>
+                <button 
+                  className="game-button"
+                  onClick={generatePersonalityGameUrl}
+                >
+                  🚀 Crear juego
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
       
       {/* Modal para compartir juego */}
@@ -1132,6 +1287,44 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
               onClick={() => setShowShareGameModal(false)}
             >
               {t('share.close_button', 'Cerrar')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* NUEVO: Modal para compartir juego de personalidades */}
+      {showPersonalityModal && (
+        <div className="share-game-modal">
+          <div className="share-game-modal-content">
+            <span className="close-modal" onClick={() => setShowPersonalityModal(false)}>&times;</span>
+            <h3>¡Comparte el juego!</h3>
+            <p>Envía este enlace a tus amigos para que adivinen quién es el profesor, el vampiro y demás personalidades del chat.</p>
+            
+            <div className="game-url-container">
+              <input 
+                type="text" 
+                value={personalityGameUrl} 
+                readOnly 
+                onClick={(e) => e.target.select()} 
+              />
+              <button onClick={copyPersonalityToClipboard}>
+                Copiar
+              </button>
+              {showPersonalityCopiedMessage && <span className="copied-message">¡Copiado!</span>}
+            </div>
+            
+            <div className="share-options">
+              <button className="whatsapp-share" onClick={sharePersonalityOnWhatsApp}>
+                <span>WhatsApp</span>
+                <span>📱</span>
+              </button>
+            </div>
+            
+            <button 
+              className="close-modal-button"
+              onClick={() => setShowPersonalityModal(false)}
+            >
+              Cerrar
             </button>
           </div>
         </div>

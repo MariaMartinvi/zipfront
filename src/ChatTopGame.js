@@ -363,17 +363,9 @@ const ChatTopGame = () => {
           </div>
           
           <div className="submit-container">
-            <button 
-              type="submit" 
-              disabled={Object.keys(userAnswers).length === 0}
-            >
+            <button type="submit">
               {t('chatTopGame.button.viewResults', 'Ver resultados')}
             </button>
-            {Object.keys(userAnswers).length === 0 && (
-              <p className="form-hint">
-                {t('chatTopGame.formHint', 'Responde al menos una pregunta para continuar')}
-              </p>
-            )}
           </div>
         </form>
       )}

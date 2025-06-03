@@ -2311,24 +2311,7 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
                 
-                {/* Botón para compartir juego al final del análisis */}
-                {operationId && chatData && !isLoading && !isFetchingMistral && user && (
-                  <div className="personality-game-section">
-                    <span className="personality-game-badge">JUEGO INTERACTIVO</span>
-                    <h3 className="personality-game-title">
-                      🎮 Compartir juego de personalidades
-                    </h3>
-                    <p className="personality-game-description">
-                      Comparte un juego para que tus amigos adivinen quién es el profesor, el vampiro y otras personalidades de tu chat.
-                    </p>
-                    <button 
-                      className="personality-game-button"
-                      onClick={generateGameUrl}
-                    >
-                      🚀 Crear juego
-                    </button>
-                  </div>
-                )}
+                {/* Botón para compartir juego al final del análisis - MOVIDO A CHATGPTRESULTADOS.JS */}
 
                 {/* Vista previa de la aplicación para usuarios no logueados */}
                 {!user && <AppPreview />}
