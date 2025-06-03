@@ -408,7 +408,7 @@
     },
     "security": {
       "title": "100% Private and Secure",
-      "subtitle": "Personal data never leaves your device"
+      "subtitle": "Personal chat data never leaves your device"
     },
     "mockup": {
       "title": "Instant results",
@@ -421,7 +421,7 @@
     "title": "Discover the secrets of your WhatsApp conversations",
     "description": "We combine statistics and advanced Artificial Intelligence to reveal fascinating insights about participants' psychological profiles and group dynamics.",
     "security": {
-      "badge": "100% private and secure - Personal data never leaves your device"
+      "badge": "100% private and secure - Personal chat data never leaves your device"
     },
     "features": {
       "psychological": "Psychological analysis of communication patterns.",
@@ -430,9 +430,9 @@
       "discover": "Play Who's Who with your WhatsApp group - Guaranteed fun."
     },
     "privacy": {
-      "encryption": "Statistical analysis is performed on your device and the chat never leaves your device.",
+      "encryption": "Statistical analysis is performed on your device and the chat doesn't leave your device.",
       "protection": "Your chat is anonymized and fragmented for AI processing.",
-      "deletion": "Personal data never leaves your device."
+      "deletion": "Personal chat data never leaves your device."
     },
     "cta": "Discover the psychology of your chat!",
     "image": {
@@ -456,7 +456,7 @@
           "author": "Ann M."
         },
         {
-          "content": "Complete peace of mind knowing that my personal data never leaves my device: computer or phone.",
+          "content": "Complete peace of mind knowing that my personal chat data never leaves my device: computer or phone.",
           "author": "Laura T."
         }
       ]
@@ -594,7 +594,7 @@
         },
         {
           "question": "Is it safe to upload my chats?",
-          "answer": "Yes, privacy is our priority. Your personal data never leaves your device. Statistical analysis is performed 100% on your device. For psychological analysis, chats are anonymized and fragmented on your device before being sent to Microsoft Azure. We only send a fragment of around 20-50k characters. We send chats without personal data. You can review our privacy policy for more details. If you still prefer that no data leaves your device, you can choose the 'no psychological analysis' option when uploading the file.",
+          "answer": "Yes, privacy is our priority. Your personal chat data never leaves your device. Statistical analysis is performed 100% on your device. For psychological analysis, chats are anonymized and fragmented on your device before being sent to Microsoft Azure. We only send a fragment of around 20-50k characters. We send chats without personal data. You can review our privacy policy for more details. If you still prefer that no data leaves your device, you can choose the 'no psychological analysis' option when uploading the file.",
           "icon": "🔒"
         },
         {

@@ -395,7 +395,7 @@
     "title": "Entdecken Sie die Geheimnisse Ihrer WhatsApp-Konversationen",
     "description": "Wir kombinieren Statistik und fortschrittliche Künstliche Intelligenz, um faszinierende Einblicke in die psychologischen Profile der Teilnehmer und Gruppendynamiken zu liefern.",
     "security": {
-      "badge": "100% privat und sicher - Persönliche Daten verlassen nie Ihr Gerät"
+      "badge": "100% privat und sicher - Persönliche Chat-Daten verlassen niemals Ihr Gerät"
     },
     "features": {
       "psychological": "Psychologische Analyse der Kommunikationsmuster.",
@@ -404,9 +404,9 @@
       "discover": "Spielen Sie Wer ist wer mit Ihrer WhatsApp-Gruppe - Garantierter Spaß."
     },
     "privacy": {
-      "encryption": "Die statistische Analyse erfolgt auf Ihrem Gerät und der Chat verlässt nie Ihr Gerät.",
-      "protection": "Ihr Chat wird für die KI-Verarbeitung anonymisiert und fragmentiert. Persönliche Daten verlassen nie Ihr Gerät.",
-      "deletion": "Persönliche Daten verlassen niemals Ihr Gerät."
+      "encryption": "Die statistische Analyse wird auf Ihrem Gerät durchgeführt und der Chat verlässt Ihr Gerät nicht.",
+      "protection": "Ihr Chat wird anonymisiert und fragmentiert für die KI-Verarbeitung.",
+      "deletion": "Persönliche Chat-Daten verlassen niemals Ihr Gerät."
     },
     "cta": "Entdecken Sie die Psychologie Ihres Chats!",
     "image": {
@@ -430,7 +430,7 @@
           "author": "Anna M."
         },
         {
-          "content": "Völlige Sicherheit, da meine persönlichen Daten mein Gerät nie verlassen: Computer oder Telefon.",
+          "content": "Völlige Sicherheit, da die persönlichen Daten meiner Chats mein Gerät nie verlassen: Computer oder Telefon.",
           "author": "Laura T."
         }
       ]
@@ -449,7 +449,7 @@
     },
     "security": {
       "title": "100% Privat und Sicher",
-      "subtitle": "Persönliche Daten verlassen niemals Ihr Gerät"
+      "subtitle": "Persönliche Chat-Daten verlassen niemals Ihr Gerät"
     },
     "mockup": {
       "title": "Sofortige Ergebnisse",
@@ -620,7 +620,7 @@
         },
         "private": {
           "title": "100% Privat",
-          "description": "Die persönlichen Daten Ihrer Chats verlassen niemals Ihr Gerät"
+          "description": "Persönliche Chat-Daten verlassen niemals Ihr Gerät"
         },
         "accurate": {
           "title": "Genaue Analyse",
@@ -955,7 +955,7 @@
     },
     "privacy": {
       "title": "100% Privat",
-      "description": "Die statistische Analyse wird auf Ihrem Gerät durchgeführt und der Chat verlässt nie Ihr Gerät. Ihre Privatsphäre ist unsere Priorität.",
+      "description": "Die statistische Analyse wird auf Ihrem Gerät durchgeführt und der Chat verlässt Ihr Gerät nicht. Ihre Privatsphäre ist unsere Priorität.",
       "link": "Wie wir es machen"
     },
     "instant": {

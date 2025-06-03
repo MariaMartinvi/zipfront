@@ -409,7 +409,7 @@
     "title": "Descubra os segredos das suas conversas do",
     "description": "Combinamos estatísticas e Inteligência Artificial avançada para revelar dados fascinantes sobre os perfis psicológicos dos participantes e dinâmicas de grupo.",
     "security": {
-      "badge": "100% privado e seguro - Os dados pessoais nunca saem do seu dispositivo"
+      "badge": "100% privado e seguro - Os dados pessoais dos chats nunca saem do seu dispositivo"
     },
     "features": {
       "psychological": "Análise psicológica dos padrões de comunicação.",
@@ -418,9 +418,9 @@
       "discover": "Jogue Quem é Quem com seu grupo do WhatsApp - Diversão garantida."
     },
     "privacy": {
-      "encryption": "Os chats são criptografados, analisados no momento e excluídos com segurança.",
-      "protection": "Seus dados estão 100% protegidos com criptografia AES.",
-      "deletion": "Os dados pessoais nunca saem do seu dispositivo."
+      "encryption": "A análise estatística é realizada no seu dispositivo e o chat não sai do seu dispositivo.",
+      "protection": "Sua conversa é anonimizada e fragmentada para processamento por IA.",
+      "deletion": "Os dados pessoais dos chats nunca saem do seu dispositivo."
     },
     "cta": "Descubra a psicologia do seu chat!",
     "image": {
@@ -444,7 +444,7 @@
           "author": "Ana M."
         },
         {
-          "content": "Tranquilidade total sabendo que meus dados pessoais nunca saem do meu dispositivo: computador ou telefone.",
+          "content": "Tranquilidade total sabendo que os dados pessoais dos meus chats nunca saem do meu dispositivo: computador ou telefone.",
           "author": "Laura T."
         }
       ]
@@ -463,7 +463,7 @@
     },
     "security": {
       "title": "100% Privado e Seguro",
-      "subtitle": "Os dados pessoais nunca saem do seu dispositivo"
+      "subtitle": "Os dados pessoais dos chats nunca saem do seu dispositivo"
     },
     "mockup": {
       "title": "Resultados instantâneos",
@@ -603,7 +603,7 @@
         },
         {
           "question": "É seguro fazer upload dos meus chats?",
-          "answer": "Sim, a privacidade é nossa prioridade. Seus dados pessoais nunca saem do seu dispositivo. A análise estatística é realizada 100% no seu dispositivo. Para a análise psicológica, os chats são anonimizados e fragmentados no seu dispositivo antes de serem enviados para o Microsoft Azure. Enviamos apenas um fragmento de cerca de 20-50k caracteres. Enviamos os chats sem dados pessoais. Você pode revisar nossa política de privacidade para mais detalhes. Se ainda assim preferir que nenhum dado saia do seu dispositivo, pode escolher a opção 'sem análise psicológica' ao fazer upload do arquivo.",
+          "answer": "Sim, a privacidade é nossa prioridade. Os dados pessoais dos chats nunca saem do seu dispositivo. A análise estatística é realizada 100% no seu dispositivo. Para a análise psicológica, os chats são anonimizados e fragmentados no seu dispositivo antes de serem enviados para o Microsoft Azure. Enviamos apenas um fragmento de cerca de 20-50k caracteres. Enviamos os chats sem dados pessoais. Você pode revisar nossa política de privacidade para mais detalhes. Se ainda preferir que nenhum dado saia do seu dispositivo, pode escolher a opção 'sem análise psicológica' ao fazer upload do arquivo.",
           "icon": "🔒"
         },
         {
@@ -640,7 +640,7 @@
         },
         "private": {
           "title": "100% Privado",
-          "description": "Os dados pessoais dos seus chats nunca saem do seu dispositivo"
+          "description": "Os dados pessoais dos chats nunca saem do seu dispositivo"
         },
         "accurate": {
           "title": "Análise Precisa",

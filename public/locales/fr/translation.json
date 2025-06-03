@@ -381,7 +381,7 @@
     "title": "Découvrez les secrets de vos conversations",
     "description": "Nous combinons les statistiques et l'Intelligence Artificielle avancée pour révéler des données fascinantes sur les profils psychologiques des participants et les dynamiques de groupe.",
     "security": {
-      "badge": "100% privé et sécurisé - Les données personnelles ne quittent jamais votre appareil"
+      "badge": "100% privé et sécurisé - Les données personnelles des chats ne quittent jamais votre appareil"
     },
     "features": {
       "psychological": "Analyse psychologique des modèles de communication.",
@@ -390,9 +390,9 @@
       "discover": "Jouez à Qui est qui avec votre groupe WhatsApp - Divertissement garanti."
     },
     "privacy": {
-      "encryption": "L'analyse statistique est effectuée sur votre appareil et la conversation ne quitte jamais votre appareil.",
-      "protection": "Votre conversation est anonymisée et fragmentée pour le traitement par l'IA. Les données personnelles ne quittent jamais votre appareil.",
-      "deletion": "Les données personnelles ne quittent jamais votre appareil."
+      "encryption": "L'analyse statistique est effectuée sur votre appareil et le chat ne quitte pas votre appareil.",
+      "protection": "Votre conversation est anonymisée et fragmentée pour le traitement par l'IA.",
+      "deletion": "Les données personnelles des chats ne quittent jamais votre appareil."
     },
     "cta": "Découvrez la psychologie de votre chat!",
     "image": {
@@ -416,7 +416,7 @@
           "author": "Anne M."
         },
         {
-          "content": "Une tranquillité totale sachant que mes données personnelles ne quittent jamais mon appareil : ordinateur ou téléphone.",
+          "content": "Une tranquillité totale sachant que les données personnelles de mes chats ne quittent jamais mon appareil : ordinateur ou téléphone.",
           "author": "Laura T."
         }
       ]
@@ -574,7 +574,7 @@
         },
         "private": {
           "title": "100% Privé",
-          "description": "Les données personnelles de vos chats ne quittent jamais votre appareil"
+          "description": "Les données personnelles des chats ne quittent jamais votre appareil"
         },
         "accurate": {
           "title": "Analyse Précise",
@@ -760,7 +760,7 @@
     },
     "security": {
       "title": "100% Privé et Sécurisé",
-      "subtitle": "Les données personnelles ne quittent jamais votre appareil"
+      "subtitle": "Les données personnelles des chats ne quittent jamais votre appareil"
     },
     "mockup": {
       "title": "Résultats instantanés",

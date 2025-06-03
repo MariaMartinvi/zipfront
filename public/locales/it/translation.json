@@ -22,7 +22,7 @@
     },
     "security": {
       "title": "100% Privato e Sicuro",
-      "subtitle": "I dati personali non lasciano mai il tuo dispositivo"
+      "subtitle": "I dati personali delle chat non lasciano mai il tuo dispositivo"
     },
     "mockup": {
       "title": "Risultati istantanei",
@@ -270,7 +270,7 @@
     "title": "Scopri i segreti delle tue conversazioni",
     "description": "Combiniamo statistiche e Intelligenza Artificiale avanzata per rivelare dati affascinanti sui profili psicologici dei partecipanti e le dinamiche di gruppo.",
     "security": {
-      "badge": "100% privato e sicuro - I dati personali non escono mai dal tuo dispositivo"
+      "badge": "100% privato e sicuro - I dati personali delle chat non escono mai dal tuo dispositivo"
     },
     "features": {
       "psychological": "Analisi psicologica dei modelli di comunicazione.",
@@ -279,9 +279,9 @@
       "discover": "Gioca a Chi è chi con il tuo gruppo WhatsApp - Divertimento garantito."
     },
     "privacy": {
-      "encryption": "L'analisi statistica viene eseguita sul tuo dispositivo e la chat non esce mai dal tuo dispositivo.",
-      "protection": "La tua chat viene anonimizzata e frammentata per il trattamento con l'IA. I dati personali non escono mai dal tuo dispositivo.",
-      "deletion": "I dati personali non escono mai dal tuo dispositivo."
+      "encryption": "L'analisi statistica viene eseguita sul tuo dispositivo e la chat non lascia il tuo dispositivo.",
+      "protection": "La tua conversazione viene anonimizzata e frammentata per l'elaborazione AI.",
+      "deletion": "I dati personali delle chat non lasciano mai il tuo dispositivo."
     },
     "cta": "Inizia Gratuitamente",
     "image": {
@@ -301,7 +301,7 @@
           "author": "Marco Rossi, Responsabile Marketing"
         },
         {
-          "content": "Tranquillità totale sapendo che i miei dati personali non lasciano mai il mio dispositivo: computer o telefono.",
+          "content": "Tranquillità totale sapendo che i dati personali delle mie chat non lasciano mai il mio dispositivo: computer o telefono.",
           "author": "Laura T."
         },
         {
@@ -622,7 +622,7 @@
         },
         "private": {
           "title": "100% Privato",
-          "description": "I dati personali delle tue chat non lasciano mai il tuo dispositivo"
+          "description": "I dati personali delle chat non lasciano mai il tuo dispositivo"
         },
         "accurate": {
           "title": "Analisi Accurata",

@@ -60,7 +60,7 @@ const PrivacyPolicy = () => {
       },
       chatProcessing: {
         title: "3. Tratamiento de Datos de Chat",
-        description: "Importante: Los datos del chat sin anonimizar no salen nunca de tu dispositivo. Al subir un chat sólo se mandan a azure (microsoft) para el apartado \"análisis sicológico\", el resto se procesa en local en tu ordenador, dispositivo y los datos personales no salen de tu dispositivo.",
+        description: "Importante: Los datos del chat sin anonimizar no salen nunca de tu dispositivo. Al subir un chat sólo se mandan a azure (microsoft) para el apartado \"análisis sicológico\", el resto se procesa en local en tu ordenador, dispositivo y los datos personales de los chats no salen de tu dispositivo.",
         important: {
           title: "Importante sobre los chats:",
           items: [
@@ -198,7 +198,7 @@ const PrivacyPolicy = () => {
       },
       chatProcessing: {
         title: "3. Chat Data Processing",
-        description: "Important: Non-anonymized chat data never leaves your device. When uploading a chat, it is only sent to Azure (Microsoft) for the \"psychological analysis\" section; the rest is processed locally on your computer/device, and personal data never leaves your device.",
+        description: "Important: Non-anonymized chat data never leaves your device. When uploading a chat, it is only sent to Azure (Microsoft) for the \"psychological analysis\" section; the rest is processed locally on your computer/device, and personal chat data never leaves your device.",
         important: {
           title: "Important about chats:",
           items: [

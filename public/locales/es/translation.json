@@ -445,7 +445,7 @@
     },
     "security": {
       "title": "100% Privado y Seguro",
-      "subtitle": "Los datos personales no salen de tu dispositivo"
+      "subtitle": "Los datos personales de los chats no salen de tu dispositivo"
     },
     "mockup": {
       "title": "Resultados instantáneos",
@@ -458,7 +458,7 @@
     "title": "Descubre los secretos de tus conversaciones de WhatsApp",
     "description": "Combinamos la estadística y la Inteligencia Artificial avanzada para revelarte datos fascinantes sobre los perfiles psicológicos de los participantes y las dinámicas de grupo.",
     "security": {
-      "badge": "100% privado y seguro - Los datos personales no salen de tu dispositivo"
+      "badge": "100% privado y seguro - Los datos personales de los chats no salen de tu dispositivo"
     },
     "features": {
       "psychological": "Análisis psicológico de los patrones de comunicación.",
@@ -493,7 +493,7 @@
           "author": "Ana M."
         },
         {
-          "content": "Tranquilidad total sabiendo que mis datos personales jamás salen de mi dispositivo: ordenador o teléfono.",
+          "content": "Tranquilidad total sabiendo que los datos personales de mis chats jamás salen de mi dispositivo: ordenador o teléfono.",
           "author": "Laura T."
         }
       ]
@@ -630,7 +630,7 @@
         },
         {
           "question": "¿Es seguro subir mis chats?",
-          "answer": "Sí, la privacidad es nuestra prioridad. Tus datos personales no salen de tu dispositivo. El análisis estadístico se realiza en tu dispositivo al 100%. Para el análisis psicológico los chats se anonimizan y fragmentan en tu dispositivo antes de mandarlos a Microsoft Azure. Solo mandamos un fragmento de alrededor 20-50k caracteres. Mandamos los chats sin datos personales. Puedes revisar nuestra política de privacidad para obtener más detalles. Si aún así prefieres que ningún dato salga de tu dispositivo puedes elegir la opción 'sin análisis psicológico' al subir el archivo.",
+          "answer": "Sí, la privacidad es nuestra prioridad. Los datos personales de los chats no salen de tu dispositivo. El análisis estadístico se realiza en tu dispositivo al 100%. Para el análisis psicológico los chats se anonimizan y fragmentan en tu dispositivo antes de mandarlos a Microsoft Azure. Solo mandamos un fragmento de alrededor 20-50k caracteres. Mandamos los chats sin datos personales. Puedes revisar nuestra política de privacidad para obtener más detalles. Si aún así prefieres que ningún dato salga de tu dispositivo puedes elegir la opción 'sin análisis psicológico' al subir el archivo.",
           "icon": "🔒"
         },
         {
