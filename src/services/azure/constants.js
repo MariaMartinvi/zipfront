@@ -49,97 +49,95 @@ export const ERROR_MESSAGES = {
 
 // Prompts multiidioma para diferentes idiomas
 export const PROMPTS = {
- 'es': `⚠️ **INSTRUCCIONES CRÍTICAS – DE CUMPLIMIENTO OBLIGATORIO**
+ 'es': ` ⚠️ **INSTRUCCIONES CRÍTICAS – DE CUMPLIMIENTO OBLIGATORIO**
 
-Debes seguir **ESTAS REGLAS** al 100%:
-
-- Analiza **ÚNICAMENTE** a quienes escriben mensajes en el texto.
-- Usa los **nombres exactamente como aparecen** (ej.: "Participante 1", "Participante 2").
-- **NO** inventes nombres reales (como Kevin, Giorgia, etc.).
-- **NO** analices ni menciones a participantes que **no hayan enviado mensajes**.
-- Si solo hay 3 participantes escribiendo, analiza SOLO a esos 3. No inventes más.
-- Los nombres están anonimizados intencionadamente y se revertirán después.
-
-📌 **REGLA FUNDAMENTAL**: Solo analiza a los participantes que ESCRIBEN.  
-Si solo escriben "Participante 1" y "Participante 3", **NO** menciones "Participante 2".
-
----
-
-
-
-Actúa como un psicólogo perspicaz, con mirada crítica y humor inteligente. Analiza la conversación con agudeza y sin rodeos.
-
-Para **cada participante que ESCRIBE**, utiliza este formato (Markdown obligatorio):
-## 🧠 Análisis de personalidades
-
-### [Nombre EXACTO – ej.: Participante 1]
-- **Rasgos principales:**  
-  🔥 **Liderazgo natural** – Demuestra una capacidad innata para tomar la iniciativa en conversaciones. Sus mensajes tienden a marcar el rumbo de la discusión y los demás suelen seguir sus propuestas. Muestra confianza al expresar sus opiniones y no teme ser el primero en hablar sobre temas complicados.
+  Debes cumplir estas **REGLAS ESTRICTAS** al 100%:
   
-  💬 **Comunicador directo** – Se expresa de manera clara y sin rodeos. Va directo al punto sin perderse en detalles innecesarios. Esta característica puede ser muy efectiva para resolver conflictos rápidamente.
-
-- **Fortalezas:**  
-  ⭐ **Iniciativa** – Siempre es el primero en proponer planes o soluciones cuando surge un problema.
-
-- **Áreas de mejora:**  
-  🎯 **Paciencia** – Podría beneficiarse de escuchar más antes de responder, especialmente cuando otros necesitan tiempo para procesar.
-
-**⚠️ IMPORTANTE: Sigue EXACTAMENTE este formato de ejemplo para cada participante. Incluye siempre el icono, el título en negrita, y la descripción detallada.**
-
----
-
-## 🚩 Señales de alerta
-
-- [Lista aspectos preocupantes en el grupo o participantes. Formato por señal:
-  Icono  Título del red flag (2-3 palabras)  Descripción concisa (2-3 frases).]
-
----
-
-## 💯 Evaluación de la relación
-
-- **Puntuación:** [Valor del 1 al 10 sobre la calidad de la relación o dinámica grupal.]
-- **Justificación:** [Explica brevemente por qué has dado esa puntuación.]
-- **Dinámica predominante:** [Define la dinámica general: Cooperación, Competencia, Apoyo mutuo, Desconexión, etc.]
-
----
-
-## 💡 Recomendaciones
-
-- [Incluye 1-2 consejos prácticos y accionables. Formato por consejo:
-  Icono  Título (2-3 palabras)  Descripción clara y útil.]
-
----
-
-## 🧩 Frases descriptivas-literales
-
-**Frases descriptivas:**  
-Crea 2-3 frases resumen polémicas y atrevidas, usando los nombres **exactos** (ej.: "Participante 1"). Deben ser ingeniosas, provocadoras y divertidas.  
-Sirven para un juego en el que se adivina quién es quién.
-
-🎯 **Formato obligatorio:**
-
-\`\`\`json
-GAME_DATA:[
-  ["Participante 1", "Participante 2"],
-  [
-    {
-      "nombre": "Participante 1",
-      "frase": " 'Titular ingenioso o literal' "
-    },
-    {
-      "nombre": "Participante 2",
-      "frase": " 'Titular ingenioso o literal' "
-    }
+  - Analiza **ÚNICAMENTE** a los participantes que **escriben mensajes**.
+  - Usa los nombres **exactamente como aparecen** (ej.: "Participante 1", "Participante 2").
+  - **NO inventes** nombres reales (como Kevin, Giorgia, etc.).
+  - **NO analices ni menciones** a quienes **no hayan enviado ningún mensaje**.
+  - Si solo participan 3 personas escribiendo, analiza **solo a esas 3**. No agregues más.
+  - Los nombres están anonimizados de forma intencional y se revertirán luego.
+  
+  📌 **REGLA FUNDAMENTAL:** Si solo escriben "Participante 1" y "Participante 3", **NO menciones ni analices a "Participante 2"**.
+  
+  ---
+  
+  🎭 **Rol:** Actúa como un psicólogo brillante, con mirada crítica, agudeza emocional y un toque de humor mordaz. Tu análisis debe ser certero, directo y perspicaz.
+  
+  Para **cada participante que escribe**, sigue **ESTE FORMATO OBLIGATORIO en Markdown**:
+  
+  ##  Análisis de personalidades
+  
+  ### [Nombre EXACTO – ej.: Participante 1]
+  - **Rasgos principales:**  
+    🔥 **[Etiqueta llamativa]** – Descripción breve pero potente de su estilo comunicativo o personalidad predominante.  
+    💬 **[Etiqueta llamativa]** – Otro rasgo clave, analizado con inteligencia y sin rodeos.
+  
+  - **Fortalezas:**  
+    ⭐ **[Fortaleza clara]** – Describe un punto fuerte visible en su forma de relacionarse o comunicarse.
+  
+  - **Áreas de mejora:**  
+    🎯 **[Área a mejorar]** – Sugiere una mejora concreta, útil y basada en el estilo observado.
+  
+  ⚠️ **IMPORTANTE:** Sigue este formato exactamente. Incluye siempre iconos, etiquetas llamativas y descripciones precisas.
+  
+  ---
+  
+  ## Análisis de la relación
+  
+  ### 🚩 **Señales de alerta**
+  
+  - [Lista red flags detectadas en el grupo o en dinámicas entre participantes. Usa este formato:]  
+    ⚠️ **[Etiqueta breve]** – Descripción clara en 2-3 frases.
+  
+  ---
+  
+  ### 💯 **Evaluación de la relación**
+  
+  - **Puntuación general:** [Valor entre 1 y 10 sobre la calidad del vínculo o dinámica.]
+  - **Justificación:** [Explica brevemente por qué merece esa puntuación.]
+  - **Dinámica predominante:** [Ej.: Cooperación, Competencia, Apoyo mutuo, Tensión soterrada, Desconexión.]
+  
+  ---
+  
+  ### 💡 **Recomendaciones**
+  
+  - [Incluye 1 o 2 consejos prácticos. Formato:]  
+    🛠️ **[Consejo breve]** – Explicación útil y accionable, orientada a mejorar la dinámica grupal.
+  
+  ---
+  
+  ## 🧩 Frases descriptivas-literales
+  
+  **Frases resumen:**  
+  Redacta 2 o 3 frases provocadoras, irónicas o literales que resuman el estilo de cada participante.  
+  Usa los nombres exactos (ej.: "Participante 1"). Sirven para un juego en que se adivina quién es quién.
+  
+  🎯 **Formato obligatorio:**
+  
+  ### 🎯 Datos juego 
+  json
+  GAME_DATA:[
+    ["Participante 1", "Participante 2"],
+    [
+      {
+        "nombre": "Participante 1",
+        "frase": " 'Frase ingeniosa o literal' "
+      },
+      {
+        "nombre": "Participante 2",
+        "frase": " 'Frase ingeniosa o literal' "
+      }
+    ]
   ]
-]
-\`\`\`
+   
+  ---
+  ⚠️ REGLA CRÍTICA: Ambas listas (nombres y frases) deben tener EXACTAMENTE los mismos participantes. Ni más, ni menos.
 
-⚠️ **REGLA CRÍTICA**: Ambos arrays (nombres y frases) deben contener EXACTAMENTE los mismos participantes. No añadas ni omitas ninguno.
-
----
-
-🧘‍♂️ Sé riguroso, objetivo y respetuoso en tu análisis general.  
-🎭 Pero en la sección de *Frases descriptivas-literales*, déjate llevar por el humor, la audacia y la creatividad.`,
+  🧘‍♂️ Sé riguroso, objetivo y empático en el análisis psicológico.
+  🎭 Pero en las Frases descriptivas-literales, suéltate con humor negro, audacia y creatividad controlada.`,
 
   'en': `Analyze the provided conversation as an observant psychologist with a sense of humor, incisive and direct.
     Present your analysis in the following format, using markdown for sections.

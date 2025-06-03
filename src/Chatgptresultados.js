@@ -119,7 +119,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         }
       }
 
-      // Procesar la respuesta para reemplazar la sección de titulares
+      // Procesar la respuesta para reemplazar la sección de Titulares (CON VALIDACIÓN)
       let processedResponse = chatGptResponse;
       
       // Si hay datos del juego, reemplazar la sección de Titulares (CON VALIDACIÓN)
@@ -139,6 +139,14 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       } catch (error) {
         console.error('Error procesando análisis psicológico:', error);
         // Si hay error, continuar con la respuesta sin procesar la psicología
+      }
+
+      // NUEVO: Procesar subsecciones con cajas modernas
+      try {
+        processedResponse = processSubsectionsWithModernCards(processedResponse);
+      } catch (error) {
+        console.error('Error procesando subsecciones:', error);
+        // Si hay error, continuar con la respuesta sin procesar las subsecciones
       }
 
       // Convertir markdown a HTML
@@ -172,6 +180,13 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           processedResponse = processResponseWithModernPsychology(processedResponse);
         } catch (error) {
           console.error('Error procesando análisis psicológico en useEffect headlinesGameData:', error);
+        }
+        
+        // NUEVO: Procesar subsecciones con cajas modernas
+        try {
+          processedResponse = processSubsectionsWithModernCards(processedResponse);
+        } catch (error) {
+          console.error('Error procesando subsecciones en useEffect headlinesGameData:', error);
         }
         
         const htmlContent = marked.parse(processedResponse);
@@ -209,6 +224,13 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
             processedResponse = processResponseWithModernPsychology(processedResponse);
           } catch (error) {
             console.error('Error procesando análisis psicológico en useEffect idioma:', error);
+          }
+          
+          // NUEVO: Procesar subsecciones con cajas modernas
+          try {
+            processedResponse = processSubsectionsWithModernCards(processedResponse);
+          } catch (error) {
+            console.error('Error procesando subsecciones en useEffect idioma:', error);
           }
           
           const htmlContent = marked.parse(processedResponse);
@@ -362,6 +384,121 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     }
   };
 
+  // NUEVA FUNCIÓN para procesar subsecciones con cajas modernas
+  const processSubsectionsWithModernCards = (response) => {
+    try {
+      console.log('🔧 Procesando subsecciones con cajas modernas...');
+      console.log('📄 Contenido a analizar (primeros 500 chars):', response.substring(0, 500));
+      
+      // DEBUGGING: Buscar todas las líneas que empiecen con ###
+      const allSubsections = response.match(/### [^\n]*/g);
+      console.log('🔍 Todas las subsecciones encontradas:', allSubsections);
+      
+      // Patrones para las 4 subsecciones específicas - SOLO ICONO + CONTENIDO
+      const subsectionPatterns = [
+        {
+          pattern: /### 🚩[^\n]*([\s\S]*?)(?=---|\n##|$)/gi,
+          className: 'alert-section',
+          icon: '🚩'
+        },
+        {
+          pattern: /### 💯[^\n]*([\s\S]*?)(?=---|\n##|$)/gi,
+          className: 'evaluation-section',
+          icon: '💯'
+        },
+        {
+          pattern: /### 💡[^\n]*([\s\S]*?)(?=---|\n##|$)/gi,
+          className: 'recommendations-section',
+          icon: '💡'
+        },
+        {
+          pattern: /### 🎯[^\n]*([\s\S]*?)(?=---|\n##|$)/gi,
+          className: 'game-data-section',
+          icon: '🎯'
+        }
+      ];
+
+      let processedResponse = response;
+      let sectionsFound = 0;
+
+      subsectionPatterns.forEach(({ pattern, className, icon }) => {
+        const matches = [...response.matchAll(pattern)];
+        console.log(`🔍 Buscando patrón ${icon}: ${matches.length} coincidencias encontradas`);
+        
+        // DEBUG ESPECIAL para 🎯
+        if (icon === '🎯') {
+          console.log(`🎯 DEBUG: Patrón usado:`, pattern);
+          console.log(`🎯 DEBUG: Buscando en texto que contiene "### 🎯":`, response.includes('### 🎯'));
+          
+          // Buscar manualmente la sección
+          const manualMatch = response.match(/### 🎯[^#]*?([\s\S]*?)(?=---|\n##|$)/gi);
+          console.log(`🎯 DEBUG: Búsqueda manual encontró:`, manualMatch ? manualMatch.length : 0, 'coincidencias');
+          if (manualMatch) {
+            console.log(`🎯 DEBUG: Primera coincidencia manual:`, manualMatch[0].substring(0, 200) + '...');
+          }
+        }
+        
+        matches.forEach((match, index) => {
+          const firstLine = match[0].split('\n')[0];
+          const title = firstLine.replace(`### ${icon}`, '').replace(/<\/?strong>/g, '').replace(/\*\*/g, '').trim();
+          console.log(`📦 Match ${index + 1} - Título: "${title}", Contenido: ${match[1]?.substring(0, 100)}...`);
+        });
+        
+        processedResponse = processedResponse.replace(pattern, (match, content) => {
+          sectionsFound++;
+          console.log(`✅ Procesando subsección ${sectionsFound} con icono ${icon}`);
+          
+          // Extraer el título de la primera línea del match
+          const firstLine = match.split('\n')[0];
+          const cleanTitle = firstLine
+            .replace(`### ${icon}`, '') // Usar el icono específico en lugar de clase de caracteres
+            .replace(/<\/?strong>/g, '')
+            .replace(/\*\*/g, '')
+            .trim();
+
+          // Procesar el contenido para mantener markdown básico
+          let processedContent = content.trim();
+          
+          // ESPECIAL: Si es la sección de datos del juego, procesar el JSON
+          if (icon === '🎯') {
+            processedContent = processGameDataContent(processedContent);
+          } else {
+            // Procesamiento normal para otras secciones
+            processedContent = processedContent
+              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+              .replace(/\n\n/g, '</p><p>')
+              .replace(/^(.+)$/gm, '<p>$1</p>')
+              .replace(/<p><\/p>/g, '')
+              .replace(/- (.*?)(?=\n|$)/g, '<li>$1</li>')
+              .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+          }
+
+          // Generar HTML de la subsección
+          return `<div class="subsection-item ${className}">
+  <div class="subsection-header">
+    <h4><span class="subsection-icon">${icon}</span>${cleanTitle}</h4>
+  </div>
+  <div class="subsection-content">
+    ${processedContent}
+  </div>
+</div>`;
+        });
+      });
+
+      console.log(`📊 Total de subsecciones procesadas: ${sectionsFound}`);
+
+      // Remover las líneas --- que quedan
+      processedResponse = processedResponse.replace(/^---\s*$/gm, '');
+
+      console.log('✅ Subsecciones procesadas correctamente');
+      return processedResponse;
+      
+    } catch (error) {
+      console.error('❌ Error procesando subsecciones:', error);
+      return response;
+    }
+  };
+
   // FUNCIÓN processHeadlinesSection - debe estar ANTES del return condicional
   const processHeadlinesSection = (response, gameData) => {
     try {
@@ -431,7 +568,9 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       
       // Patrones para identificar análisis de personalidades (multi-idioma)
       const personalityPatterns = [
+        /## Análisis de personalidades([\s\S]*?)(?=\n## |$)/gi,
         /## 🧠 Análisis de personalidades([\s\S]*?)(?=\n## |$)/gi,
+        /## 🔍 Análisis de personalidades([\s\S]*?)(?=\n## |$)/gi,
         /## 🧠 Análisis Psicológico([\s\S]*?)(?=\n## |$)/gi,
         /## 🧠 Perfiles Psicológicos([\s\S]*?)(?=\n## |$)/gi,
         /## 👥 Análisis de Personalidades([\s\S]*?)(?=\n## |$)/gi,
@@ -461,6 +600,9 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       const titleMatch = fullMatch.match(/## ([^#\n]+)/);
       const sectionTitle = titleMatch ? titleMatch[1] : '🧠 Análisis Psicológico';
       
+      console.log('🔍 Procesando sección psicológica:', sectionTitle);
+      console.log('📄 Contenido a procesar:', content.substring(0, 200) + '...');
+      
       // NUEVO: Buscar participantes con el formato ### [Nombre]
       const participantRegex = /### ([^\n]+)([\s\S]*?)(?=### |$)/g;
       let personalities = [];
@@ -470,24 +612,32 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         const name = match[1].trim();
         const participantContent = match[2].trim();
         
+        console.log(`👤 Encontrado participante: "${name}"`);
+        console.log(`📝 Contenido del participante (primeros 100 chars): ${participantContent.substring(0, 100)}...`);
+        
         if (name && participantContent) {
           const personality = parseParticipantContent(name, participantContent);
           if (personality) {
+            console.log(`✅ Personalidad procesada exitosamente:`, personality);
             personalities.push(personality);
+          } else {
+            console.warn(`⚠️ No se pudo procesar la personalidad para: ${name}`);
           }
         }
       }
 
+      console.log(`📊 Total personalidades encontradas: ${personalities.length}`);
+
       // Generar HTML moderno si se encontraron personalidades
       if (personalities.length > 0) {
-        console.log('Generando HTML moderno para', personalities.length, 'personalidades');
+        console.log('🎨 Generando HTML moderno para', personalities.length, 'personalidades');
         return generateModernPsychologyHTML(sectionTitle, personalities);
       }
       
-      console.log('No se encontraron personalidades, devolviendo formato original');
+      console.log('⚠️ No se encontraron personalidades, devolviendo formato original');
       return fullMatch; // Devolver original si no se pudo procesar
     } catch (error) {
-      console.error('Error transformando sección psicológica:', error);
+      console.error('❌ Error transformando sección psicológica:', error);
       return fullMatch;
     }
   };
@@ -495,12 +645,15 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // NUEVA FUNCIÓN para parsear el contenido de cada participante
   const parseParticipantContent = (name, content) => {
     try {
+      console.log(`🔧 Parseando contenido para: ${name}`);
       let traits = [];
       
-      // Buscar la sección "Rasgos principales" y extraer solo los títulos en negrita
-      const rasgosMatch = content.match(/\*\*Rasgos principales:\*\*\s*([\s\S]*?)(?=\*\*Fortalezas:|$)/i);
+      // MEJORADO: Buscar múltiples patrones para extraer traits
+      // 1. Buscar la sección "Rasgos principales"
+      const rasgosMatch = content.match(/\*\*Rasgos principales:\*\*\s*([\s\S]*?)(?=\*\*[^*]|\n\n|$)/i);
       
       if (rasgosMatch) {
+        console.log(`📋 Encontrada sección "Rasgos principales" para ${name}`);
         const rasgosSection = rasgosMatch[1];
         // Extraer títulos que están entre ** (sin incluir los ** en el resultado)
         const titleMatches = rasgosSection.match(/\*\*([^*]+)\*\*/g);
@@ -509,21 +662,55 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           traits = titleMatches.map(match => 
             match.replace(/\*\*/g, '').trim()
           );
+          console.log(`🎯 Traits extraídos de "Rasgos principales":`, traits);
+        }
+      } else {
+        console.log(`⚠️ No se encontró sección "Rasgos principales" para ${name}`);
+      }
+      
+      // 2. Si no encontramos en "Rasgos principales", buscar cualquier texto en negrita que parezca un trait
+      if (traits.length === 0) {
+        console.log(`🔍 Buscando traits en cualquier texto en negrita para ${name}`);
+        const allBoldMatches = content.match(/\*\*([^*]+)\*\*/g);
+        if (allBoldMatches) {
+          console.log(`📝 Textos en negrita encontrados:`, allBoldMatches);
+          // Filtrar para obtener solo traits (evitar palabras como "Fortalezas", "Debilidades", etc.)
+          const excludeWords = ['rasgos principales', 'fortalezas', 'debilidades', 'áreas de mejora', 'strengths', 'weaknesses'];
+          traits = allBoldMatches
+            .map(match => match.replace(/\*\*/g, '').trim())
+            .filter(text => {
+              const lowerText = text.toLowerCase();
+              return !excludeWords.some(word => lowerText.includes(word)) && 
+                     text.length > 2 && text.length < 30; // Longitud razonable para un trait
+            })
+            .slice(0, 4); // Máximo 4 traits
+          console.log(`🎯 Traits filtrados de textos en negrita:`, traits);
         }
       }
       
-      // Si no encontramos rasgos específicos, usar algunos genéricos como fallback
+      // 3. Si aún no tenemos traits, buscar en todo el contenido palabras clave
       if (traits.length === 0) {
+        console.log(`🔍 Usando extracción de keywords para ${name}`);
+        traits = extractTraitsFromContent('', content, '');
+        console.log(`🎯 Traits extraídos por keywords:`, traits);
+      }
+      
+      // 4. Fallback final si no se encuentran traits
+      if (traits.length === 0) {
+        console.log(`🎯 Usando traits por defecto para ${name}`);
         traits = ['Comunicativo', 'Sociable', 'Activo'];
       }
 
-      return {
+      const result = {
         name: cleanPersonalityName(name),
         description: content.trim(), // MANTENER TODO EL CONTENIDO ORIGINAL
         traits: traits.slice(0, 4) // Máximo 4 traits
       };
+      
+      console.log(`✅ Resultado final para ${name}:`, result);
+      return result;
     } catch (error) {
-      console.error('Error parseando contenido del participante:', error);
+      console.error(`❌ Error parseando contenido del participante ${name}:`, error);
       return null;
     }
   };
@@ -683,6 +870,71 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     } catch (error) {
       console.error('Error en post-procesamiento:', error);
       return htmlContent;
+    }
+  };
+
+  // NUEVA FUNCIÓN para procesar el contenido de datos del juego de forma amigable
+  const processGameDataContent = (content) => {
+    try {
+      // Si hay GAME_DATA disponible desde headlinesGameData
+      if (headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) {
+        const [usuarios, headlines] = headlinesGameData;
+        
+        if (headlines && Array.isArray(headlines)) {
+          let formattedData = '<div class="game-data-display">';
+          
+          headlines.forEach(headline => {
+            if (headline && headline.nombre && headline.frase) {
+              const fraseClean = headline.frase.replace(/'/g, '').trim();
+              formattedData += `<p><strong>${headline.nombre}:</strong> ${fraseClean}</p>`;
+            }
+          });
+          
+          formattedData += '</div>';
+          return formattedData;
+        }
+      }
+      
+      // Si no hay headlinesGameData, buscar en el contenido texto JSON
+      const jsonMatch = content.match(/\[([\s\S]*?)\]/);
+      if (jsonMatch) {
+        try {
+          // Intentar extraer datos del JSON en el texto
+          const jsonStr = jsonMatch[0];
+          const parsedData = JSON.parse(jsonStr);
+          
+          if (Array.isArray(parsedData) && parsedData.length >= 2) {
+            const [usuarios, headlines] = parsedData;
+            
+            if (headlines && Array.isArray(headlines)) {
+              let formattedData = '<div class="game-data-display">';
+              
+              headlines.forEach(headline => {
+                if (headline && headline.nombre && headline.frase) {
+                  const fraseClean = headline.frase.replace(/'/g, '').trim();
+                  formattedData += `<p><strong>${headline.nombre}:</strong> ${fraseClean}</p>`;
+                }
+              });
+              
+              formattedData += '</div>';
+              return formattedData;
+            }
+          }
+        } catch (error) {
+          console.log('Error parseando JSON en datos del juego:', error);
+        }
+      }
+      
+      // Fallback: mostrar contenido original procesado
+      return content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(.+)$/gm, '<p>$1</p>')
+        .replace(/<p><\/p>/g, '');
+        
+    } catch (error) {
+      console.error('Error procesando datos del juego:', error);
+      return content;
     }
   };
 
