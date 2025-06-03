@@ -372,6 +372,28 @@
       ]
     }
   },
+  "hero": {
+    "badge": "KONVERSATIONSANALYSE",
+    "title": {
+      "discover": "Entdecken Sie die Geheimnisse",
+      "conversations": "Ihrer WhatsApp-Unterhaltungen"
+    },
+    "description": "Wir kombinieren Statistik und fortgeschrittene Künstliche Intelligenz, um faszinierende Einblicke in die psychologischen Profile der Teilnehmer und Gruppendynamik zu enthüllen.",
+    "buttons": {
+      "analyze": "Meinen Chat analysieren",
+      "how_it_works": "Wie es funktioniert"
+    },
+    "security": {
+      "title": "100% Privat und Sicher",
+      "subtitle": "Persönliche Daten verlassen niemals Ihr Gerät"
+    },
+    "mockup": {
+      "title": "Sofortige Ergebnisse",
+      "profile": "Extrovertiert, natürlicher Gruppenführer.",
+      "description": "Startet normalerweise die meisten Unterhaltungen.",
+      "view_analysis": "Vollständige Analyse anzeigen"
+    }
+  },
   "auth": {
     "login": {
       "title": "Anmelden",

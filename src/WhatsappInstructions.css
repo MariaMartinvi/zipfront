@@ -49,7 +49,7 @@
 .platform-button {
   background: white;
   color: #4a4a4a;
-  border: 2px solid #E5E7EB;
+  border: 2px solid transparent;
   border-radius: 16px;
   padding: 16px 32px;
   font-size: 16px;
@@ -61,24 +61,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .platform-button.active {
-  background: transparent;
+  background: white;
   color: #25D366;
-  border: 3px solid transparent;
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(135deg, #25D366, #7122AC) border-box;
+  border: 3px solid #25D366;
   transform: translateY(-2px);
-  box-shadow: none;
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
   font-weight: 700;
 }
 
 .platform-button:hover:not(.active) {
   background-color: #f8f9fa;
-  border-color: #25D366;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .platform-button:focus {
@@ -102,9 +100,9 @@
 
 .tab-button {
   flex: 1;
-  background: transparent;
+  background: white;
   color: #6b7280;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 12px;
   padding: 16px 24px;
   font-size: 16px;
@@ -112,16 +110,15 @@
   cursor: pointer;
   transition: all 0.3s ease;
   min-height: 48px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tab-button.active {
-  background: transparent;
+  background: white;
   color: #25D366;
-  border: 3px solid transparent;
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(135deg, #25D366, #7122AC) border-box;
+  border: 3px solid #25D366;
   transform: translateY(-2px);
-  box-shadow: none;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
   font-weight: 700;
 }
 
@@ -129,7 +126,7 @@
   background: white;
   color: #374151;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Estilos del carrusel */

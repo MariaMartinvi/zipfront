@@ -9,7 +9,7 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick }) => {
     <section className="hero-section">
       <div className="hero-content">
         <div className="hero-text">
-          <span className="new-hero-badge">ANÁLISIS DE WHATSAPP</span>
+          <span className="new-hero-badge">{t('hero.badge', 'ANÁLISIS DE WHATSAPP')}</span>
           <h1 className="hero-title">
             {t('hero.title.discover', 'Descubre los secretos de')}
             <span className="gradient-text"> {t('hero.title.conversations', 'tus conversaciones de')}</span>

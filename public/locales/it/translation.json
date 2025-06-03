@@ -9,9 +9,26 @@
     "logout": "Esci"
   },
   "hero": {
-    "title": "Analisi WhatsApp per il tuo Negozio",
-    "subtitle": "Scopri i pattern di conversazione e migliora il servizio clienti",
-    "cta": "Inizia Ora"
+    "badge": "ANALISI DELLE CONVERSAZIONI",
+    "title": {
+      "discover": "Scopri i segreti delle",
+      "conversations": "tue conversazioni WhatsApp"
+    },
+    "description": "Combiniamo statistiche e Intelligenza Artificiale avanzata per rivelare approfondimenti affascinanti sui profili psicologici dei partecipanti e le dinamiche di gruppo.",
+    "buttons": {
+      "analyze": "Analizza la mia chat",
+      "how_it_works": "Come funziona"
+    },
+    "security": {
+      "title": "100% Privato e Sicuro",
+      "subtitle": "I dati personali non lasciano mai il tuo dispositivo"
+    },
+    "mockup": {
+      "title": "Risultati istantanei",
+      "profile": "Estroversa, leader naturale del gruppo.",
+      "description": "Di solito inizia la maggior parte delle conversazioni.",
+      "view_analysis": "Visualizza analisi completa"
+    }
   },
   "features": {
     "title": "Caratteristiche Principali",

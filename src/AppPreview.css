@@ -633,6 +633,17 @@
   .testimonials-badge {
     font-size: 16px;
   }
+  
+  /* Hacer responsive la sección demo para tablets */
+  .demo-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-bottom: 50px;
+  }
+  
+  .demo-card {
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 768px) {

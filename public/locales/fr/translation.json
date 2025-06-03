@@ -618,6 +618,28 @@
       "december": "décembre"
     }
   },
+  "hero": {
+    "badge": "ANALYSE DE CONVERSATIONS",
+    "title": {
+      "discover": "Découvrez les secrets de",
+      "conversations": "vos conversations WhatsApp"
+    },
+    "description": "Nous combinons les statistiques et l'Intelligence Artificielle avancée pour révéler des informations fascinantes sur les profils psychologiques des participants et la dynamique de groupe.",
+    "buttons": {
+      "analyze": "Analyser mon chat",
+      "how_it_works": "Comment ça marche"
+    },
+    "security": {
+      "title": "100% Privé et Sécurisé",
+      "subtitle": "Les données personnelles ne quittent jamais votre appareil"
+    },
+    "mockup": {
+      "title": "Résultats instantanés",
+      "profile": "Extravertie, leader naturel du groupe.",
+      "description": "Initie généralement la plupart des conversations.",
+      "view_analysis": "Voir l'analyse complète"
+    }
+  },
   "pwa": {
     "install_button": "Installer l'application"
   },
