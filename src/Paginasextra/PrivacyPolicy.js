@@ -153,8 +153,8 @@ const PrivacyPolicy = () => {
         title: "1. Data Controller",
         description: "The controller of your personal data is:",
         details: [
-          "ChatSalsa - Maria Martín",
-          "Calle Martí 136, 08028 Barcelona",
+          "ChatSalsa",
+          "Avenida Roma 153, 08011 Barcelona",
           "Email: info@comartinvi.com"
         ]
       },
