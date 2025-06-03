@@ -537,7 +537,7 @@
         },
         {
           "question": "Est-il sûr de télécharger mes chats ?",
-          "answer": "Oui, la confidentialité est notre priorité. Vos données personnelles ne quittent jamais votre appareil. L'analyse statistique est réalisée à 100% sur votre appareil. Pour l'analyse psychologique, les chats sont anonymisés et fragmentés sur votre appareil avant d'être envoyés à Microsoft Azure. Nous n'envoyons qu'un fragment d'environ 20-50k caractères. Nous envoyons les chats sans données personnelles. Vous pouvez consulter notre politique de confidentialité pour plus de détails. Si vous préférez qu'aucune donnée ne quitte votre appareil, vous pouvez choisir l'option 'sans analyse psychologique' lors du téléchargement du fichier.",
+          "answer": "Oui, la confidentialité est notre priorité. Les données personnelles de vos chats ne quittent jamais votre appareil. L'analyse statistique est réalisée à 100% sur votre appareil. Pour l'analyse psychologique, les chats sont anonymisés et fragmentés sur votre appareil avant d'être envoyés à Microsoft Azure. Nous n'envoyons qu'un fragment d'environ 20-50k caractères. Nous envoyons les chats sans données personnelles. Vous pouvez consulter notre politique de confidentialité pour plus de détails. Si vous préférez qu'aucune donnée ne quitte votre appareil, vous pouvez choisir l'option 'sans analyse psychologique' lors du téléchargement du fichier.",
           "icon": "🔒"
         },
         {
@@ -574,7 +574,7 @@
         },
         "private": {
           "title": "100% Privé",
-          "description": "Vos données ne quittent jamais votre appareil"
+          "description": "Les données personnelles de vos chats ne quittent jamais votre appareil"
         },
         "accurate": {
           "title": "Analyse Précise",

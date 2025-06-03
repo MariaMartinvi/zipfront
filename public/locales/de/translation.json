@@ -583,7 +583,7 @@
         },
         {
           "question": "Ist es sicher, meine Chats hochzuladen?",
-          "answer": "Ja, Datenschutz ist unsere Priorität. Ihre persönlichen Daten verlassen niemals Ihr Gerät. Die statistische Analyse wird zu 100% auf Ihrem Gerät durchgeführt. Für die psychologische Analyse werden die Chats auf Ihrem Gerät anonymisiert und fragmentiert, bevor sie an Microsoft Azure gesendet werden. Wir senden nur ein Fragment von etwa 20-50k Zeichen. Wir senden die Chats ohne persönliche Daten. Sie können unsere Datenschutzrichtlinie für weitere Details einsehen. Wenn Sie dennoch bevorzugen, dass keine Daten Ihr Gerät verlassen, können Sie die Option 'ohne psychologische Analyse' beim Hochladen der Datei wählen.",
+          "answer": "Ja, Datenschutz ist unsere Priorität. Die persönlichen Daten Ihrer Chats verlassen niemals Ihr Gerät. Die statistische Analyse wird zu 100% auf Ihrem Gerät durchgeführt. Für die psychologische Analyse werden die Chats auf Ihrem Gerät anonymisiert und fragmentiert, bevor sie an Microsoft Azure gesendet werden. Wir senden nur ein Fragment von etwa 20-50k Zeichen. Wir senden die Chats ohne persönliche Daten. Sie können unsere Datenschutzrichtlinie für weitere Details einsehen. Wenn Sie dennoch bevorzugen, dass keine Daten Ihr Gerät verlassen, können Sie die Option 'ohne psychologische Analyse' beim Hochladen der Datei wählen.",
           "icon": "🔒"
         },
         {
@@ -620,7 +620,7 @@
         },
         "private": {
           "title": "100% Privat",
-          "description": "Ihre Daten verlassen niemals Ihr Gerät"
+          "description": "Die persönlichen Daten Ihrer Chats verlassen niemals Ihr Gerät"
         },
         "accurate": {
           "title": "Genaue Analyse",

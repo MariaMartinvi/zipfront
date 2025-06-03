@@ -585,7 +585,7 @@
         },
         {
           "question": "È sicuro caricare i miei chat?",
-          "answer": "Sì, la privacy è la nostra priorità. I tuoi dati personali non lasciano mai il tuo dispositivo. L'analisi statistica viene eseguita al 100% sul tuo dispositivo. Per l'analisi psicologica, i chat vengono anonimizzati e frammentati sul tuo dispositivo prima di essere inviati a Microsoft Azure. Inviamo solo un frammento di circa 20-50k caratteri. Inviamo i chat senza dati personali. Puoi consultare la nostra politica sulla privacy per maggiori dettagli. Se preferisci comunque che nessun dato lasci il tuo dispositivo, puoi scegliere l'opzione 'senza analisi psicologica' durante il caricamento del file.",
+          "answer": "Sì, la privacy è la nostra priorità. I dati personali delle tue chat non lasciano mai il tuo dispositivo. L'analisi statistica viene eseguita al 100% sul tuo dispositivo. Per l'analisi psicologica, i chat vengono anonimizzati e frammentati sul tuo dispositivo prima di essere inviati a Microsoft Azure. Inviamo solo un frammento di circa 20-50k caratteri. Inviamo i chat senza dati personali. Puoi consultare la nostra politica sulla privacy per maggiori dettagli. Se preferisci comunque che nessun dato lasci il tuo dispositivo, puoi scegliere l'opzione 'senza analisi psicologica' durante il caricamento del file.",
           "icon": "🔒"
         },
         {
@@ -622,7 +622,7 @@
         },
         "private": {
           "title": "100% Privato",
-          "description": "I tuoi dati non lasciano mai il tuo dispositivo"
+          "description": "I dati personali delle tue chat non lasciano mai il tuo dispositivo"
         },
         "accurate": {
           "title": "Analisi Accurata",
