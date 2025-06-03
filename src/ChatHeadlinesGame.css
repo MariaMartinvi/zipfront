@@ -670,6 +670,17 @@
   text-align: center;
 }
 
+.warning-message {
+  color: #8B1538 !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  margin-bottom: 15px !important;
+  padding: 8px 12px;
+  background-color: rgba(139, 21, 56, 0.1);
+  border-radius: 6px;
+  border-left: 4px solid #8B1538;
+}
+
 .game-url-container {
   display: flex;
   margin-bottom: 20px;
@@ -702,21 +713,56 @@
 
 .copied-message {
   position: absolute;
-  bottom: -25px;
+  bottom: -55px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #25D366;
+  background-color: #4CAF50;
   color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-  animation: fadeInOut 2s ease;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 1001;
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  animation: slideInFromBottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), fadeOutAfter 2.5s ease-in-out;
+  animation-fill-mode: both;
+  min-width: fit-content;
+  border: 2px solid #45a049;
 }
 
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  15% { opacity: 1; }
-  85% { opacity: 1; }
+.copied-message::before {
+  content: "✓";
+  font-weight: bold;
+  font-size: 18px;
+  background: white;
+  color: #4CAF50;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@keyframes slideInFromBottom {
+  0% { 
+    opacity: 0; 
+    transform: translateX(-50%) translateY(15px) scale(0.8); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateX(-50%) translateY(0) scale(1); 
+  }
+}
+
+@keyframes fadeOutAfter {
+  0%, 80% { opacity: 1; }
   100% { opacity: 0; }
 }
 

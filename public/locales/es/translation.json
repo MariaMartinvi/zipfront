@@ -143,6 +143,26 @@
         "description": "Menciona más vicios y bebidas alcohólicas",
         "mentions": "Menciones de vicios",
         "percentage": "Porcentaje de mensajes con menciones"
+      },
+      "comico": {
+        "title": "El Cómico",
+        "description": "Tiene el don de hacer reír a los demás"
+      },
+      "agradecido": {
+        "title": "El Agradecido",
+        "description": "Siempre da las gracias por todo"
+      },
+      "disculpon": {
+        "title": "El Disculpón",
+        "description": "Pide perdón más que nadie"
+      },
+      "curioso": {
+        "title": "El Curioso",
+        "description": "Siempre haciendo preguntas"
+      },
+      "mala_influencia": {
+        "title": "La Mala Influencia",
+        "description": "Menciona más vicios y usa más palabrotas"
       }
     },
     "login_required": {
@@ -801,7 +821,7 @@
     }
   },
   "headlines_game": {
-    "title": "¿Quién dijo qué?",
+    "title": "¿Quién es quién?",
     "subtitle": "Adivina quién corresponde a cada titular",
     "question": "Pregunta",
     "select_person": "Selecciona una persona...",
@@ -817,8 +837,8 @@
     "play_again": "Jugar de Nuevo"
   },
   "share": {
-    "whatsapp_message": "🎯 ¡Juego: ¿Quién dijo qué?!\n\n¿Puedes adivinar quién corresponde a cada titular polémico?\n\n👇 Juega aquí:\n{{url}}",
-    "game_title": "¿Quién dijo qué?",
+    "whatsapp_message": "🎯 ¡Juego: ¿Quién es quién?!\n\n¿Puedes adivinar quién corresponde a cada titular polémico?\n\n👇 Juega aquí:\n{{url}}",
+    "game_title": "¿Quién es quién?",
     "game_description": "Descubre quién corresponde a cada titular polémico",
     "share_game_button": "Compartir Juego de Titulares",
     "modal_title": "Compartir Juego",

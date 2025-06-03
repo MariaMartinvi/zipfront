@@ -660,7 +660,7 @@
 }
 
 .game-description {
-  font-size: 1rem !important;
+  font-size: 1.325rem !important;
   line-height: 1.6 !important;
   color: #666 !important;
   margin-bottom: 24px !important;
@@ -673,7 +673,7 @@
   border: none !important;
   border-radius: 50px !important;
   padding: 16px 24px !important;
-  font-size: 1rem !important;
+  font-size: 1.1rem !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
@@ -716,12 +716,12 @@
   }
   
   .game-description {
-    font-size: 0.9rem !important;
+    font-size: 1.225rem !important;
   }
   
   .game-button {
     padding: 14px 20px !important;
-    font-size: 0.9rem !important;
+    font-size: 1rem !important;
   }
 }
 
@@ -735,13 +735,13 @@
   }
   
   .game-description {
-    font-size: 0.85rem !important;
+    font-size: 1.125rem !important;
     margin-bottom: 20px !important;
   }
   
   .game-button {
     padding: 12px 18px !important;
-    font-size: 0.85rem !important;
+    font-size: 0.95rem !important;
   }
 }
 
@@ -803,6 +803,17 @@
   line-height: 1.6;
 }
 
+.warning-message {
+  color: #8B1538 !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  margin-bottom: 15px !important;
+  padding: 8px 12px;
+  background-color: rgba(139, 21, 56, 0.1);
+  border-radius: 6px;
+  border-left: 4px solid #8B1538;
+}
+
 .game-url-container {
   display: flex;
   gap: 10px;
@@ -842,20 +853,54 @@
 
 .copied-message {
   position: absolute;
-  top: -35px;
+  top: -55px;
   right: 0;
-  background: #4CAF50;
+  background-color: #4CAF50;
   color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  animation: fadeInOut 2s ease-in-out;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 1001;
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideInFromTop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), fadeOutAfter 2.5s ease-in-out;
+  animation-fill-mode: both;
+  border: 2px solid #45a049;
 }
 
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0; transform: translateY(10px); }
-  50% { opacity: 1; transform: translateY(0); }
+.copied-message::before {
+  content: "✓";
+  font-weight: bold;
+  font-size: 18px;
+  background: white;
+  color: #4CAF50;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@keyframes slideInFromTop {
+  0% { 
+    opacity: 0; 
+    transform: translateY(-15px) scale(0.8); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+@keyframes fadeOutAfter {
+  0%, 80% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .share-options {
@@ -917,9 +962,10 @@
   }
   
   .copied-message {
-    top: auto;
-    bottom: -35px;
+    top: -35px;
     right: 50%;
     transform: translateX(50%);
+    font-size: 13px;
+    padding: 6px 12px;
   }
 }

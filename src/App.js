@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next'; // Importar useTranslation
 // NUEVO: Importar el componente del juego
 import ChatTopGame from './ChatTopGame';
 import ChatHeadlinesGame from './ChatHeadlinesGame';
+import Juegos from './Juegos'; // NUEVO: Componente independiente para juegos
 import { userSession } from './utils/userSession';
 import DebugLogger from './DebugLogger'; // Añadir import del DebugLogger
 import HeroSection from './components/HeroSection';
@@ -362,15 +363,18 @@ function AppContent() {
   // Get user-related state from AuthContext instead of managing locally
   const { user, userProfile, setUserProfile, isAuthLoading, setUser } = useAuth();
   
-  // NUEVO: Estado para mostrar el diálogo de compartir juego
+  // Estados para juegos
   const [showShareGameModal, setShowShareGameModal] = useState(false);
-  // NUEVO: Estado para almacenar la URL del juego
+  // State para la URL del juego
   const [gameUrl, setGameUrl] = useState("");
-    // NUEVO: Estado para mostrar mensaje de copiado al portapapeles
+  // State para mostrar el mensaje de "copiado"
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
   
-  // Estado para controlar si omitir el análisis psicológico con IA
+  // Configuración de privacidad
   const [skipAIPsychologicalAnalysis, setSkipAIPsychologicalAnalysis] = useState(false);
+  
+  // NUEVO: Estado para datos del juego de titulares
+  const [headlinesGameData, setHeadlinesGameData] = useState(null);
   
   // Tracking para evitar procesamiento duplicado
   const processedShareIds = useRef(new Set());
@@ -1194,6 +1198,65 @@ function AppContent() {
         addDebugMessage('Respuesta de Azure recibida con éxito');
         setChatGptResponse(result.response);
         setShowChatGptResponse(true);
+        
+        // NUEVO: Extraer datos del juego de titulares de la respuesta
+        try {
+          const azureResponse = window.lastAzureResponse;
+          if (azureResponse) {
+            const gameDataMatch = azureResponse.match(/GAME_DATA:/);
+            if (gameDataMatch) {
+              // Buscar la posición inicial del array
+              const startIndex = azureResponse.indexOf('GAME_DATA:[');
+              if (startIndex !== -1) {
+                // Extraer desde '[' hasta encontrar el ']' que cierra el array principal
+                let arrayStart = azureResponse.indexOf('[', startIndex);
+                let bracketCount = 0;
+                let endIndex = arrayStart;
+                
+                for (let i = arrayStart; i < azureResponse.length; i++) {
+                  if (azureResponse[i] === '[') {
+                    bracketCount++;
+                  } else if (azureResponse[i] === ']') {
+                    bracketCount--;
+                    if (bracketCount === 0) {
+                      endIndex = i;
+                      break;
+                    }
+                  }
+                }
+                
+                // Extraer el JSON completo
+                let jsonStr = azureResponse.substring(arrayStart, endIndex + 1);
+                const parsedData = JSON.parse(jsonStr);
+                
+                if (parsedData && Array.isArray(parsedData) && parsedData.length >= 2) {
+                  let [usuarios, headlines] = parsedData;
+                  
+                  // Convertir iniciales a nombres completos si hay nameMapping disponible
+                  if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+                    const inverseMapping = {};
+                    Object.entries(window.lastNameMapping).forEach(([fullName, initials]) => {
+                      inverseMapping[initials] = fullName;
+                    });
+                    
+                    usuarios = usuarios.map(user => inverseMapping[user] || user);
+                    if (Array.isArray(headlines)) {
+                      headlines = headlines.map(headline => ({
+                        ...headline,
+                        nombre: inverseMapping[headline.nombre] || headline.nombre
+                      }));
+                    }
+                  }
+                  
+                  setHeadlinesGameData([usuarios, headlines]);
+                  addDebugMessage('Datos del juego de titulares extraídos correctamente');
+                }
+              }
+            }
+          }
+        } catch (error) {
+          addDebugMessage(`Error extrayendo datos del juego: ${error.message}`);
+        }
         
         // Guardar en localStorage que el análisis está completo
         localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
@@ -2308,6 +2371,14 @@ const tryDeleteFiles = async (operationId) => {
                         usuarioId={user?.uid || "anonymous"} 
                       />
                     )}
+                    
+                    {/* NUEVO: Componente independiente para juegos */}
+                    <Juegos 
+                      headlinesGameData={headlinesGameData}
+                      topData={window.lastAnalysisTopData}
+                      showHeadlinesGame={!!headlinesGameData && !!chatGptResponse}
+                      showTopGame={!!window.lastAnalysisTopData}
+                    />
                   </div>
                 )}
                 
@@ -2478,6 +2549,7 @@ const tryDeleteFiles = async (operationId) => {
               <span className="close-modal" onClick={() => setShowShareGameModal(false)}>&times;</span>
               <h3>¡Comparte el juego!</h3>
               <p>Envía este enlace a tus amigos para que adivinen quién es el profesor, el vampiro y demás personalidades del chat.</p>
+              <p className="warning-message">⚠️ Enlace sólo válido para este chat</p>
               
               <div className="game-url-container">
                 <input 
@@ -2489,7 +2561,7 @@ const tryDeleteFiles = async (operationId) => {
                 <button onClick={copyToClipboard}>
                   Copiar
                 </button>
-                {showCopiedMessage && <span className="copied-message">¡Copiado!</span>}
+                {showCopiedMessage && <div className="copied-message">¡Copiado!</div>}
               </div>
               
               <div className="share-options">

@@ -1100,7 +1100,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
             <div className="activity-grid">
               <div className="activity-card">
                 <div className="activity-icon">📊</div>
-                <div className="activity-label">{t('app.primer_chat.most_active_day')}</div>
+                <div className="activity-label">{t('app.primer_chat.most_active_day')} ({t('messages')})</div>
                 <div className="activity-value">
                   {resumen.dia_semana_mas_activo.dia === "Lunes" ? t('weekdays.monday') :
                    resumen.dia_semana_mas_activo.dia === "Martes" ? t('weekdays.tuesday') :
@@ -1114,7 +1114,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
               </div>
               <div className="activity-card">
                 <div className="activity-icon">🕒</div>
-                <div className="activity-label">{t('app.primer_chat.most_active_hour')}</div>
+                <div className="activity-label">{t('app.primer_chat.most_active_hour')} ({t('messages')})</div>
                 <div className="activity-value">{resumen.hora_mas_activa.hora ? `${resumen.hora_mas_activa.hora}:00` : "00:00"}</div>
               </div>
             </div>
@@ -1133,7 +1133,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
             {/* Gráfico de actividad por día de la semana */}
             <div className="chart-card">
               <div className="chart-header">
-                <h3>{t('app.primer_chat.activity_by_day')}</h3>
+                <h3>{t('app.primer_chat.activity_by_day')} ({t('messages')})</h3>
               </div>
               <div className="chart-content">
                 <ResponsiveContainer width="100%" height={300}>
@@ -1150,7 +1150,6 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                     />
                     <YAxis />
                     <Tooltip formatter={(value) => [`${value} ${t('messages')}`, t('messages')]} />
-                    <Legend />
                     <Bar 
                       dataKey="mensajes" 
                       name={t('messages')} 
@@ -1165,7 +1164,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
             {/* Gráfico de actividad por hora del día */}
             <div className="chart-card">
               <div className="chart-header">
-                <h3>{t('app.primer_chat.activity_by_hour')}</h3>
+                <h3>{t('app.primer_chat.activity_by_hour')} ({t('messages')})</h3>
                 
                 {/* Mensaje de patrón horario */}
                 {(() => {
@@ -1218,7 +1217,6 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                     />
                     <YAxis />
                     <Tooltip formatter={(value) => [`${value} ${t('messages')}`, t('messages')]} />
-                    <Legend />
                     <Line 
                       type="monotone" 
                       dataKey="mensajes" 
@@ -1239,14 +1237,14 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                 <h3>{t('app.primer_chat.top_users')}</h3>
               </div>
               <div className="chart-content">
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={400}>
                   <PieChart>
                     <Pie
                       data={prepararDatosUsuarios()}
                       cx="50%"
                       cy="50%"
                       labelLine={windowWidth > 480}
-                      outerRadius={windowWidth <= 480 ? 80 : 100}
+                      outerRadius={windowWidth <= 480 ? 80 : 120}
                       fill="#8884d8"
                       dataKey="mensajes"
                       nameKey="nombre"
@@ -1255,20 +1253,34 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                           ? `${(percent * 100).toFixed(0)}%`
                           : `${acortarNombre(nombre)}: ${mensajes} (${(percent * 100).toFixed(1)}%)`
                       }
+                      labelStyle={{
+                        fontSize: windowWidth <= 480 ? '14px' : '16px',
+                        fontWeight: 'bold',
+                        fill: '#333'
+                      }}
                     >
                       {prepararDatosUsuarios().map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value, name) => [`${value} ${t('messages')}`, acortarNombre(name)]} />
-                    {windowWidth <= 480 && (
-                      <Legend
-                        layout="vertical"
-                        verticalAlign="bottom"
-                        align="center"
-                        formatter={(value) => acortarNombre(value)}
-                      />
-                    )}
+                    <Tooltip 
+                      formatter={(value, name) => [`${value} ${t('messages')}`, acortarNombre(name)]}
+                      contentStyle={{
+                        fontSize: '16px',
+                        fontWeight: 'bold'
+                      }}
+                    />
+                    <Legend
+                      layout={windowWidth <= 480 ? "vertical" : "horizontal"}
+                      verticalAlign="bottom"
+                      align="center"
+                      wrapperStyle={{
+                        fontSize: '18px', 
+                        fontWeight: 'bold',
+                        paddingTop: '20px'
+                      }}
+                      formatter={(value) => acortarNombre(value)}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -1381,7 +1393,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                       layout="horizontal"
                       verticalAlign="bottom"
                       align="center"
-                      wrapperStyle={{paddingTop: '20px', bottom: 0, width: '100%'}}
+                      wrapperStyle={{paddingTop: '20px', bottom: 0, width: '100%', fontSize: '16px', fontWeight: 'bold'}}
                       formatter={(value) => acortarNombre(value)}
                     />
                     {(() => {
@@ -1516,7 +1528,7 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
                           layout="horizontal"
                           verticalAlign="bottom" 
                           align="center"
-                          wrapperStyle={{paddingTop: '20px'}}
+                          wrapperStyle={{paddingTop: '20px', fontSize: '16px', fontWeight: 'bold'}}
                           formatter={(value) => acortarNombre(value)}
                         />
                         {(() => {

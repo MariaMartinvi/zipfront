@@ -25,6 +25,117 @@ const palabrasVicios = {
   }
 };
 
+// Diccionario de palabrotas/malsonantes por idioma
+const palabrasMalsonantes = {
+  es: [
+    // Tier 1 (suaves)
+    'joder', 'jolines', 'jopé', 'jope', 'jobar',
+    'mierda', 'miércoles', 'mierdecilla',
+    'cabrón', 'cabreo', 'cabronada', 'cabronazo',
+    'coño', 'coñe', 'coñazo', 'coñoñazo',
+    'hostia', 'ostras', 'hostias', 'ostiaputa',
+    'leches', 'mecagüen', 'mecago', 'cagada',
+    'gilipollas', 'gilipichis', 'gilipollo', 'gili',
+    'tonto', 'idiota', 'imbécil', 'estúpido',
+    'puta', 'putada', 'putilla', 'puto',
+    'follar', 'joder', 'fuck', 'fuckin',
+    'culo', 'ojete', 'ano', 'trasero',
+    'tetas', 'teta', 'pecho', 'polla',
+    'chocho', 'chochete', 'coñete',
+    
+    // Tier 2 (moderadas)
+    'que te jodan', 'jódete', 'vete a la mierda',
+    'me cago en', 'cagarse', 'cagar',
+    'hijo de', 'hijoputa', 'hijo de puta',
+    'capullo', 'capullada', 'capullazo',
+    'mamón', 'mamonazo', 'mamada',
+    'bollera', 'maricón', 'marica',
+    'zorra', 'zorron', 'putón',
+    'caballo', 'caballazo', 'bestia'
+  ],
+  
+  en: [
+    'fuck', 'fucking', 'fucked', 'fucker', 'fucks',
+    'shit', 'shitty', 'shits', 'bullshit',
+    'damn', 'damned', 'dammit', 'damnit',
+    'hell', 'bloody', 'crap', 'crappy',
+    'ass', 'asshole', 'arse', 'arsehole',
+    'bitch', 'bitches', 'bitchy', 'bastard',
+    'piss', 'pissed', 'pissing', 'pisses',
+    'cock', 'dick', 'penis', 'pussy',
+    'tits', 'boobs', 'breast', 'vagina',
+    'whore', 'slut', 'slutty', 'sluts',
+    'gay', 'fag', 'faggot', 'homo',
+    'retard', 'retarded', 'stupid', 'idiot',
+    'moron', 'dumbass', 'jackass', 'douche'
+  ],
+  
+  fr: [
+    'merde', 'putain', 'bordel', 'con',
+    'connard', 'connasse', 'salope', 'pute',
+    'bite', 'queue', 'pine', 'verge',
+    'chatte', 'foufoune', 'minou', 'sexe',
+    'cul', 'fesses', 'nichons', 'seins',
+    'baiser', 'niquer', 'enculer', 'foutre',
+    'faire chier', 'emmerdeur', 'chieur',
+    'fils de pute', 'enfoiré', 'salopard',
+    'crétin', 'débile', 'abruti', 'con',
+    'pédé', 'tapette', 'tarlouze', 'pd'
+  ],
+  
+  de: [
+    'scheiße', 'scheiss', 'mist', 'verdammt',
+    'fick', 'ficken', 'gefickt', 'arsch',
+    'arschloch', 'fotze', 'muschi', 'möse',
+    'schwanz', 'pimmel', 'lümmel', 'rute',
+    'titten', 'brüste', 'möpse', 'hupen',
+    'hure', 'nutte', 'schlampe', 'bitsch',
+    'wichser', 'penner', 'idiot', 'depp',
+    'vollidiot', 'vollpfosten', 'dummkopf',
+    'scheißkerl', 'arschgesicht', 'mistkerl'
+  ],
+  
+  it: [
+    'merda', 'cazzo', 'stronzo', 'figa',
+    'fica', 'fregna', 'puttana', 'troia',
+    'coglione', 'coglioni', 'minchia', 'pirla',
+    'deficiente', 'idiota', 'scemo', 'stupido',
+    'bastardo', 'figlio di puttana', 'vaffanculo',
+    'fanculo', 'porco', 'porcodio', 'madonna',
+    'cretino', 'imbecille', 'rompicoglioni',
+    'pezzo di merda', 'testa di cazzo'
+  ],
+  
+  pt: [
+    'merda', 'caralho', 'foda', 'foder',
+    'puta', 'putaria', 'porra', 'buceta',
+    'cu', 'rabo', 'bunda', 'bundão',
+    'peito', 'tetas', 'pau', 'pinto',
+    'idiota', 'imbecil', 'burro', 'estúpido',
+    'filho da puta', 'fdp', 'vai se foder',
+    'cacete', 'caralho', 'desgraça',
+    'babaca', 'otário', 'bosta', 'viado'
+  ],
+  
+  ca: [
+    'merda', 'cagar', 'cagada', 'pixar',
+    'puta', 'putada', 'fill de puta', 'hostia',
+    'cony', 'foder', 'follar', 'joder',
+    'capullo', 'gilipolles', 'imbècil',
+    'idiota', 'estúpid', 'cretí', 'bestiesa',
+    'collons', 'ous', 'polla', 'verga',
+    'tetes', 'mamelles', 'cul', 'culet'
+  ],
+  
+  eu: [
+    'kaka', 'txarra', 'zakarra', 'putain',
+    'puta', 'kurra', 'ergel', 'txoro',
+    'zakil', 'ipurdi', 'ipurtu', 'titiak',
+    'ugatz', 'zakil handia', 'ergela',
+    'tontoa', 'burutxuria', 'leloa'
+  ]
+};
+
 // Función para detectar menciones de vicios en un texto
 const detectarMencionesVicios = (texto, idioma) => {
   const palabras = texto.toLowerCase().split(/\s+/);
@@ -37,6 +148,27 @@ const detectarMencionesVicios = (texto, idioma) => {
       if (palabras.includes(palabra)) {
         menciones++;
       }
+    }
+  }
+  
+  return menciones;
+};
+
+// Función para detectar menciones de palabrotas en un texto
+const detectarMencionesPalabrotas = (texto, idioma) => {
+  const palabras = texto.toLowerCase().split(/\s+/);
+  const listaPalabrotas = palabrasMalsonantes[idioma] || palabrasMalsonantes.es;
+  let menciones = 0;
+  
+  // Buscar menciones exactas
+  for (const palabrota of listaPalabrotas) {
+    // Para palabras sueltas
+    if (palabras.includes(palabrota)) {
+      menciones++;
+    }
+    // Para expresiones de múltiples palabras
+    if (palabrota.includes(' ') && texto.toLowerCase().includes(palabrota)) {
+      menciones++;
     }
   }
   
@@ -157,7 +289,8 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
         mensajes_agradece: 0,   // Para el agradecido: mensajes de agradecimiento
         mensajes_disculpa: 0,   // Para el disculpón: mensajes de disculpa
         mensajes_pregunta: 0,    // Para el curioso: mensajes con preguntas
-        menciones_vicios: 0  // Nueva propiedad
+        menciones_vicios: 0,  // Para vicios (alcohol, drogas, etc.)
+        menciones_palabrotas: 0  // Para palabrotas/malsonantes
       };
     });
     
@@ -358,6 +491,10 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       // Contar menciones de vicios
       const mencionesVicios = detectarMencionesVicios(texto, idiomaChat);
       usuarios[usuario].menciones_vicios += mencionesVicios;
+      
+      // Contar menciones de palabrotas
+      const mencionesPalabrotas = detectarMencionesPalabrotas(texto, idiomaChat);
+      usuarios[usuario].menciones_palabrotas += mencionesPalabrotas;
     }
     
     // Calcular estadísticas agregadas
@@ -1079,43 +1216,54 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       }
     }
     
-    // Añadir el análisis de mala influencia
-    const usuariosConVicios = [];
+    // Añadir el análisis de mala influencia (vicios + palabrotas)
+    const usuariosConMalaInfluencia = [];
     for (const [usuario, datos] of Object.entries(usuarios)) {
-      if (datos.mensajes > 0 && datos.menciones_vicios > 0) {
-        const porcentaje = (datos.menciones_vicios / datos.mensajes) * 100;
-        usuariosConVicios.push([usuario, datos.menciones_vicios, porcentaje]);
+      if (datos.mensajes > 0) {
+        const totalMencionesNegativas = datos.menciones_vicios + datos.menciones_palabrotas;
+        if (totalMencionesNegativas > 0) {
+          const porcentaje = (totalMencionesNegativas / datos.mensajes) * 100;
+          usuariosConMalaInfluencia.push([usuario, totalMencionesNegativas, porcentaje, datos.menciones_vicios, datos.menciones_palabrotas]);
+        }
       }
     }
     
-    if (usuariosConVicios.length > 0) {
-      const [usuarioMalaInfluencia] = usuariosConVicios.sort((a, b) => b[1] - a[1])[0];
-      const mencionesVicios = usuarios[usuarioMalaInfluencia].menciones_vicios;
-      const porcentaje = (mencionesVicios / usuarios[usuarioMalaInfluencia].mensajes) * 100;
+    if (usuariosConMalaInfluencia.length > 0) {
+      const [usuarioMalaInfluencia, totalMenciones, porcentaje, mencionesVicios, mencionesPalabrotas] = usuariosConMalaInfluencia.sort((a, b) => b[1] - a[1])[0];
       
       // Calcular la media del resto del grupo sin el mala influencia
       let totalMencionesViciosResto = 0;
+      let totalMencionesPalabrotasResto = 0;
       let totalMensajesResto = 0;
       
       for (const [usuario, datos] of Object.entries(usuarios)) {
         if (usuario !== usuarioMalaInfluencia) {
           totalMencionesViciosResto += datos.menciones_vicios;
+          totalMencionesPalabrotasResto += datos.menciones_palabrotas;
           totalMensajesResto += datos.mensajes;
         }
       }
       
       const mediaMencionesViciosResto = Object.keys(usuarios).length > 1 ? 
         totalMencionesViciosResto / (Object.keys(usuarios).length - 1) : 0;
-      const mediaPorcentajeResto = totalMensajesResto > 0 ? 
-        (totalMencionesViciosResto / totalMensajesResto) * 100 : 0;
+      const mediaMencionesPalabrotasResto = Object.keys(usuarios).length > 1 ? 
+        totalMencionesPalabrotasResto / (Object.keys(usuarios).length - 1) : 0;
+      const porcentajeViciosResto = totalMensajesResto > 0 ? (totalMencionesViciosResto / totalMensajesResto) * 100 : 0;
+      const porcentajePalabrotasResto = totalMensajesResto > 0 ? (totalMencionesPalabrotasResto / totalMensajesResto) * 100 : 0;
       
       categorias.mala_influencia = {
         nombre: usuarioMalaInfluencia,
         menciones_vicios: mencionesVicios,
-        porcentaje: porcentaje,
+        menciones_palabrotas: mencionesPalabrotas,
+        total_menciones: totalMenciones,
+        porcentaje_vicios: mencionesVicios > 0 ? (mencionesVicios / usuarios[usuarioMalaInfluencia].mensajes) * 100 : 0,
+        porcentaje_palabrotas: mencionesPalabrotas > 0 ? (mencionesPalabrotas / usuarios[usuarioMalaInfluencia].mensajes) * 100 : 0,
+        porcentaje_total: porcentaje,
         mensajes: usuarios[usuarioMalaInfluencia].mensajes,
         media_menciones_vicios_resto: mediaMencionesViciosResto,
-        media_porcentaje_resto: mediaPorcentajeResto
+        media_menciones_palabrotas_resto: mediaMencionesPalabrotasResto,
+        media_porcentaje_vicios_resto: porcentajeViciosResto,
+        media_porcentaje_palabrotas_resto: porcentajePalabrotasResto
       };
     }
     
@@ -1345,7 +1493,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
       descripcion: () => t('app.top_profiles.ghost.description') 
     },
     'narcicista': { 
-      icono: '🪞', 
+      icono: '🤳', 
       titulo: () => t('app.top_profiles.narcissist.title'), 
       descripcion: () => t('app.top_profiles.narcissist.description') 
     },
@@ -1386,28 +1534,28 @@ const AnalisisTop = ({ operationId, chatData }) => {
     },
     'comico': { 
       icono: '🤡', 
-      titulo: () => 'El cómico', 
-      descripcion: () => 'Tiene el don de hacer reír a los demás' 
+      titulo: () => t('app.top_profiles.comico.title'), 
+      descripcion: () => t('app.top_profiles.comico.description') 
     },
     'agradecido': { 
       icono: '🙏', 
-      titulo: () => 'El agradecido', 
-      descripcion: () => 'Siempre da las gracias por todo' 
+      titulo: () => t('app.top_profiles.agradecido.title'), 
+      descripcion: () => t('app.top_profiles.agradecido.description') 
     },
     'disculpon': { 
       icono: '🙇', 
-      titulo: () => 'El disculpón', 
-      descripcion: () => 'Pide perdón más que nadie' 
+      titulo: () => t('app.top_profiles.disculpon.title'), 
+      descripcion: () => t('app.top_profiles.disculpon.description') 
     },
     'curioso': { 
       icono: '🧐', 
-      titulo: () => 'El curioso', 
-      descripcion: () => 'Siempre haciendo preguntas' 
+      titulo: () => t('app.top_profiles.curioso.title'), 
+      descripcion: () => t('app.top_profiles.curioso.description') 
     },
     'mala_influencia': { 
       icono: '👹', 
-      titulo: () => 'La mala influencia', 
-      descripcion: () => 'Menciona más bebidas y marcas de alcohol' 
+      titulo: () => t('app.top_profiles.mala_influencia.title'), 
+      descripcion: () => t('app.top_profiles.mala_influencia.description') 
     }
   };
   
@@ -1828,12 +1976,22 @@ const AnalisisTop = ({ operationId, chatData }) => {
             <div className="estadistica">
               <span className="valor">{catData.menciones_vicios || 0}</span>
               <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_menciones_vicios_resto)}</span></span>
-              <span className="label">{t('app.top_profiles.bad_influence.mentions')}</span>
+              <span className="label">Menciones de vicios</span>
             </div>
             <div className="estadistica">
-              <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
-              <span className="label">{t('app.top_profiles.bad_influence.percentage')}</span>
+              <span className="valor">{formatNumber(catData.porcentaje_vicios)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_vicios_resto)}%</span></span>
+              <span className="label">% mensajes con vicios</span>
+            </div>
+            <div className="estadistica">
+              <span className="valor">{catData.menciones_palabrotas || 0}</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_menciones_palabrotas_resto)}</span></span>
+              <span className="label">Menciones de palabrotas</span>
+            </div>
+            <div className="estadistica">
+              <span className="valor">{formatNumber(catData.porcentaje_palabrotas)}%</span>
+              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_palabrotas_resto)}%</span></span>
+              <span className="label">% mensajes con palabrotas</span>
             </div>
           </>
         );
@@ -1906,7 +2064,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
                          datos.categorias && 
                          datos.categorias[categoria] && 
                          datos.categorias[categoria].nombre &&
-                         datos.categorias[categoria].menciones_vicios > 0;
+                         (datos.categorias[categoria].menciones_vicios > 0 || datos.categorias[categoria].menciones_palabrotas > 0);
                 }
                 // Para el resto de categorías, mantener la lógica original
                 return datos && 

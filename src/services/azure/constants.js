@@ -109,10 +109,10 @@ export const PROMPTS = {
   
   ---
   
-  ## 🧩 Frases descriptivas-literales
+  ## Frases descriptivas-literales
   
   **Frases resumen:**  
-  Redacta 2 o 3 frases provocadoras, irónicas o literales que resuman el estilo de cada participante.  
+  Redacta 4 o 5 frases provocadoras, irónicas o literales que resuman el estilo de cada participante.  
   Usa los nombres exactos (ej.: "Participante 1"). Sirven para un juego en que se adivina quién es quién.
   
   🎯 **Formato obligatorio:**

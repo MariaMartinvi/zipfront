@@ -225,7 +225,7 @@ const ChatHeadlinesGame = () => {
   return (
     <div className="headlines-game-container">
       <div className="headlines-game-header">
-        <h2>🎯 {t('headlines_game.title', '¿Quién dijo qué?')}</h2>
+        <h2>🎯 {t('headlines_game.title', '¿Quién es quién?')}</h2>
         <p>{t('headlines_game.subtitle', 'Adivina quién corresponde a cada titular')}</p>
       </div>
 

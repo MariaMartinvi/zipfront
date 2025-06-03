@@ -4,7 +4,18 @@ import { useTranslation } from 'react-i18next';
 import './ChatTopGame.css';
 import lzString from 'lz-string'; // Importar lz-string para descomprimir los datos
 
-// Mapeo de categorías con íconos
+// Categorías específicas que queremos mostrar en el juego
+const SELECTED_CATEGORIES = [
+  'rollero',
+  'narcicista', 
+  'fosforo',
+  'amoroso',
+  'sicopata',
+  'comico',
+  'mala_influencia'
+];
+
+// Mapeo de categorías con íconos - usando exactamente los mismos que en Analisis_top.js
 const CATEGORY_ICONS = {
   profesor: '👨‍🏫',
   rollero: '📜',
@@ -12,7 +23,7 @@ const CATEGORY_ICONS = {
   vampiro: '🧛',
   cafeconleche: '☕',
   dejaenvisto: '👻',
-  narcicista: '🪞',
+  narcicista: '🤳',
   puntofinal: '🔚',
   fosforo: '🔥',
   menosesmas: '🔍',
@@ -22,9 +33,90 @@ const CATEGORY_ICONS = {
   sicopata: '🔪',
   comico: '🤡',
   agradecido: '🙏',
+  disculpon: '🤝',
   curioso: '🧐',
   negativo: '😔',
-  mala_influencia: '🍸'
+  mala_influencia: '👹'
+};
+
+// Mapeo de categorías con traducciones - usando exactamente las mismas claves que en Analisis_top.js
+const CATEGORY_TRANSLATIONS = {
+  profesor: {
+    title: 'app.top_profiles.professor.title',
+    description: 'app.top_profiles.professor.description'
+  },
+  rollero: {
+    title: 'app.top_profiles.verbose.title',
+    description: 'app.top_profiles.verbose.description'
+  },
+  pistolero: {
+    title: 'app.top_profiles.gunslinger.title',
+    description: 'app.top_profiles.gunslinger.description'
+  },
+  vampiro: {
+    title: 'app.top_profiles.vampire.title',
+    description: 'app.top_profiles.vampire.description'
+  },
+  cafeconleche: {
+    title: 'app.top_profiles.morning.title',
+    description: 'app.top_profiles.morning.description'
+  },
+  dejaenvisto: {
+    title: 'app.top_profiles.ghost.title',
+    description: 'app.top_profiles.ghost.description'
+  },
+  narcicista: {
+    title: 'app.top_profiles.narcissist.title',
+    description: 'app.top_profiles.narcissist.description'
+  },
+  puntofinal: {
+    title: 'app.top_profiles.finisher.title',
+    description: 'app.top_profiles.finisher.description'
+  },
+  fosforo: {
+    title: 'app.top_profiles.initiator.title',
+    description: 'app.top_profiles.initiator.description'
+  },
+  menosesmas: {
+    title: 'app.top_profiles.concise.title',
+    description: 'app.top_profiles.concise.description'
+  },
+  chismoso: {
+    title: 'app.top_profiles.gossip.title',
+    description: 'app.top_profiles.gossip.description'
+  },
+  happyflower: {
+    title: 'app.top_profiles.emoji.title',
+    description: 'app.top_profiles.emoji.description'
+  },
+  amoroso: {
+    title: 'app.top_profiles.amoroso.title',
+    description: 'app.top_profiles.amoroso.description'
+  },
+  sicopata: {
+    title: 'app.top_profiles.sicopata.title',
+    description: 'app.top_profiles.sicopata.description'
+  },
+  comico: {
+    title: 'app.top_profiles.comico.title',
+    description: 'app.top_profiles.comico.description'
+  },
+  agradecido: {
+    title: 'app.top_profiles.agradecido.title',
+    description: 'app.top_profiles.agradecido.description'
+  },
+  disculpon: {
+    title: 'app.top_profiles.disculpon.title',
+    description: 'app.top_profiles.disculpon.description'
+  },
+  curioso: {
+    title: 'app.top_profiles.curioso.title',
+    description: 'app.top_profiles.curioso.description'
+  },
+  mala_influencia: {
+    title: 'app.top_profiles.mala_influencia.title',
+    description: 'app.top_profiles.mala_influencia.description'
+  }
 };
 
 const ChatTopGame = () => {
@@ -106,7 +198,7 @@ const ChatTopGame = () => {
             'f': 'puntofinal', 'o': 'fosforo', 'm': 'menosesmas',
             'h': 'chismoso', 'y': 'happyflower', 'a': 'amoroso', 'x': 'sicopata',
             'co': 'comico', 'ag': 'agradecido', 'cu': 'curioso',
-            'ne': 'negativo'
+            'ne': 'negativo', 'mi': 'mala_influencia'
           };
           
           if (Array.isArray(usuarios)) {
@@ -259,7 +351,9 @@ const ChatTopGame = () => {
   }
   
   // Obtener categorías y usuarios disponibles
-  const categories = Object.keys(gameData?.categorias || {});
+  const allCategories = Object.keys(gameData?.categorias || {});
+  // Filtrar solo las categorías seleccionadas que existen en los datos
+  const categories = allCategories.filter(category => SELECTED_CATEGORIES.includes(category));
   const usuarios = Array.isArray(gameData?.usuarios) ? gameData.usuarios : [];
   
   return (
@@ -302,8 +396,8 @@ const ChatTopGame = () => {
                   <div className="category-info">
                     <div className="category-icon">{CATEGORY_ICONS[category] || '🏆'}</div>
                     <div className="category-details">
-                      <div className="category-name">{t(`chatTopGame.categories.${categoryKey}.name`, category.charAt(0).toUpperCase() + category.slice(1))}</div>
-                      <div className="category-description">{t(`chatTopGame.categories.${categoryKey}.description`, category)}</div>
+                      <div className="category-name">{CATEGORY_TRANSLATIONS[category] ? t(CATEGORY_TRANSLATIONS[category].title) : category.charAt(0).toUpperCase() + category.slice(1)}</div>
+                      <div className="category-description">{CATEGORY_TRANSLATIONS[category] ? t(CATEGORY_TRANSLATIONS[category].description) : category}</div>
                     </div>
                   </div>
                   
@@ -339,11 +433,13 @@ const ChatTopGame = () => {
                 <div key={category} className="question-card">
                   <div className="question-header">
                     <div className="category-icon">{CATEGORY_ICONS[category] || '🏆'}</div>
-                    <h3>{t('chatTopGame.question.whoIs', '¿Quién es {{categoryName}}?', { categoryName: t(`chatTopGame.categories.${categoryKey}.name`, category.charAt(0).toUpperCase() + category.slice(1)) })}</h3>
+                    <h3>{t('chatTopGame.question.whoIs', '¿Quién es {{categoryName}}?', { 
+                      categoryName: CATEGORY_TRANSLATIONS[category] ? t(CATEGORY_TRANSLATIONS[category].title) : category.charAt(0).toUpperCase() + category.slice(1)
+                    })}</h3>
                   </div>
                   
                   <div className="question-description">
-                    {t(`chatTopGame.categories.${categoryKey}.description`, category)}
+                    {CATEGORY_TRANSLATIONS[category] ? t(CATEGORY_TRANSLATIONS[category].description) : category}
                   </div>
                   
                   <select 

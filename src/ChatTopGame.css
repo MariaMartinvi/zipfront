@@ -49,13 +49,16 @@
 }
 
 .game-header p {
-  font-size: 1.25rem;
-  opacity: 0.95;
+  font-size: 2rem;
+  opacity: 1;
   line-height: 1.6;
   max-width: 600px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  color: white !important;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Estilos para las tarjetas de preguntas */
@@ -226,6 +229,19 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
 }
 
+.game-results h3 {
+  color: #7122AC;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 40px 0 30px 0;
+  text-align: center;
+  background: linear-gradient(to right, #7122AC, #25D366);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+
 .score-card {
   text-align: center;
   background: linear-gradient(135deg, #25D366, #7122AC);
@@ -283,10 +299,13 @@
 
 .score-card p {
   margin-bottom: 30px;
-  font-size: 1.25rem;
+  font-size: 1.8rem;
   line-height: 1.6;
   position: relative;
   z-index: 1;
+  color: white !important;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .score-card button {
@@ -508,7 +527,7 @@
   }
   
   .game-header p {
-    font-size: 1.1rem;
+    font-size: 1.7rem;
   }
   
   .question-card {
@@ -548,6 +567,15 @@
     font-size: 2rem;
   }
   
+  .score-card p {
+    font-size: 1.5rem;
+  }
+  
+  .game-results h3 {
+    font-size: 1.7rem;
+    margin: 30px 0 20px 0;
+  }
+  
   .answer-card {
     grid-template-columns: 1fr;
     padding: 20px 15px;
@@ -576,7 +604,7 @@
   }
   
   .game-header p {
-    font-size: 1rem;
+    font-size: 1.4rem;
   }
   
   .question-card {
@@ -603,6 +631,15 @@
   
   .score-total {
     font-size: 1.8rem;
+  }
+  
+  .score-card p {
+    font-size: 1.3rem;
+  }
+  
+  .game-results h3 {
+    font-size: 1.4rem;
+    margin: 25px 0 15px 0;
   }
   
   .submit-container button,
