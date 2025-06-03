@@ -79,7 +79,7 @@ const Header = ({ user }) => {
             ) : (
               <>
                 <Link to="/login" className="nav-link">{t('header.login')}</Link>
-                <Link to="/register" className="nav-link sign-up">Prueba gratis</Link>
+                <Link to="/register" className="nav-link sign-up">{t('header.free_trial')}</Link>
                 <LanguageSwitcher />
               </>
             )}
@@ -119,7 +119,7 @@ const Header = ({ user }) => {
           ) : (
             <>
               <Link to="/login" className="mobile-nav-link" onClick={toggleMenu}>{t('header.login')}</Link>
-              <Link to="/register" className="mobile-nav-link" onClick={toggleMenu}>Prueba gratis</Link>
+              <Link to="/register" className="mobile-nav-link" onClick={toggleMenu}>{t('header.free_trial')}</Link>
               <LanguageSwitcher />
             </>
           )}

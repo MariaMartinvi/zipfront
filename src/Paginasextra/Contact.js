@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../AppPreview.css';
 
 const Contact = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,7 +22,7 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // TODO: Implement actual form submission logic
-    alert('Mensaje enviado. Gracias por contactarnos!');
+    alert(t('contact_page.form.success_alert'));
     setFormData({
       name: '',
       email: '',
@@ -35,12 +37,12 @@ const Contact = () => {
       <section className="hero-section">
         <div className="hero-content" style={{ gridTemplateColumns: '1fr', textAlign: 'center', gap: '40px' }}>
           <div className="hero-text">
-            <h1 className="hero-title">Contáctanos</h1>
+            <h1 className="hero-title">{t('contact_page.hero.title')}</h1>
             <p className="hero-description">
-              ¿Tienes alguna pregunta o sugerencia? Estamos aquí para ayudarte.
+              {t('contact_page.hero.description1')}
             </p>
             <p className="hero-description">
-              Nuestro equipo estará encantado de resolver todas tus dudas sobre ChatSalsa.
+              {t('contact_page.hero.description2')}
             </p>
           </div>
         </div>
@@ -49,10 +51,10 @@ const Contact = () => {
       {/* Contact Section */}
       <section className="features-section">
         <div className="features-container">
-          <span className="features-badge">PONTE EN CONTACTO</span>
-          <h2 className="features-title">Escríbenos</h2>
+          <span className="features-badge">{t('contact_page.section.badge')}</span>
+          <h2 className="features-title">{t('contact_page.section.title')}</h2>
           <p className="features-description">
-            Completa el formulario y nos pondremos en contacto contigo lo antes posible.
+            {t('contact_page.section.description')}
           </p>
           
           <div className="demo-content" style={{ marginTop: '60px' }}>
@@ -62,29 +64,29 @@ const Contact = () => {
                 <div className="feature-icon-new gradient-bg rotate-left">
                   <span className="feature-icon-large">📍</span>
                 </div>
-                <h3 style={{ color: '#8A2BE2', marginBottom: '25px' }}>Información de Contacto</h3>
+                <h3 style={{ color: '#8A2BE2', marginBottom: '25px' }}>{t('contact_page.info.title')}</h3>
                 <div style={{ textAlign: 'left' }}>
                   <div style={{ marginBottom: '25px', padding: '20px', background: '#f8f9fa', borderRadius: '12px' }}>
                     <h4 style={{ color: '#25D366', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span>📧</span> Email
+                      <span>📧</span> {t('contact_page.info.email_label')}
                     </h4>
                     <p style={{ margin: '0', fontSize: '18px', fontWeight: '500' }}>maria@comartinvi.com</p>
                   </div>
                   
                   <div style={{ marginBottom: '25px', padding: '20px', background: '#f8f9fa', borderRadius: '12px' }}>
                     <h4 style={{ color: '#25D366', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span>🏢</span> Empresa
+                      <span>🏢</span> {t('contact_page.info.company_label')}
                     </h4>
                     <p style={{ margin: '0', fontSize: '18px', fontWeight: '500' }}>Comartinvi</p>
                   </div>
                   
                   <div style={{ padding: '20px', background: '#f8f9fa', borderRadius: '12px' }}>
                     <h4 style={{ color: '#25D366', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span>📍</span> Dirección
+                      <span>📍</span> {t('contact_page.info.address_label')}
                     </h4>
                     <p style={{ margin: '0', fontSize: '18px', fontWeight: '500' }}>
-                      Avenida Roma 153<br />
-                      08011 Barcelona, España
+                      {t('contact_page.info.address_line1')}<br />
+                      {t('contact_page.info.address_line2')}
                     </p>
                   </div>
                 </div>
@@ -97,7 +99,7 @@ const Contact = () => {
                 <div className="feature-icon-new gradient-bg rotate-right">
                   <span className="feature-icon-large">✉️</span>
                 </div>
-                <h3 style={{ color: '#8A2BE2', marginBottom: '25px' }}>Envíanos un Mensaje</h3>
+                <h3 style={{ color: '#8A2BE2', marginBottom: '25px' }}>{t('contact_page.form.title')}</h3>
                 
                 <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
                   <div style={{ marginBottom: '20px' }}>
@@ -111,7 +113,7 @@ const Contact = () => {
                         fontSize: '16px'
                       }}
                     >
-                      Nombre Completo
+                      {t('contact_page.form.name_label')}
                     </label>
                     <input
                       type="text"
@@ -152,7 +154,7 @@ const Contact = () => {
                         fontSize: '16px'
                       }}
                     >
-                      Correo Electrónico
+                      {t('contact_page.form.email_label')}
                     </label>
                     <input
                       type="email"
@@ -193,7 +195,7 @@ const Contact = () => {
                         fontSize: '16px'
                       }}
                     >
-                      Asunto
+                      {t('contact_page.form.subject_label')}
                     </label>
                     <input
                       type="text"
@@ -234,7 +236,7 @@ const Contact = () => {
                         fontSize: '16px'
                       }}
                     >
-                      Mensaje
+                      {t('contact_page.form.message_label')}
                     </label>
                     <textarea
                       id="message"
@@ -271,7 +273,7 @@ const Contact = () => {
                     className="process-cta-button"
                     style={{ width: '100%', margin: '0' }}
                   >
-                    Enviar Mensaje
+                    {t('contact_page.form.submit_button')}
                   </button>
                 </form>
               </div>
@@ -289,8 +291,8 @@ const Contact = () => {
               <div className="process-icon">
                 <span style={{ fontSize: '3rem' }}>⚡</span>
               </div>
-              <h3>Respuesta Rápida</h3>
-              <p>Nos comprometemos a responder tu consulta en un plazo máximo de 24 horas.</p>
+              <h3>{t('contact_page.features.fast_response.title')}</h3>
+              <p>{t('contact_page.features.fast_response.description')}</p>
             </div>
             
             <div className="process-card">
@@ -298,8 +300,8 @@ const Contact = () => {
               <div className="process-icon">
                 <span style={{ fontSize: '3rem' }}>🤝</span>
               </div>
-              <h3>Soporte Personalizado</h3>
-              <p>Cada consulta recibe atención personalizada adaptada a tus necesidades específicas.</p>
+              <h3>{t('contact_page.features.personalized_support.title')}</h3>
+              <p>{t('contact_page.features.personalized_support.description')}</p>
             </div>
             
             <div className="process-card">
@@ -307,8 +309,8 @@ const Contact = () => {
               <div className="process-icon">
                 <span style={{ fontSize: '3rem' }}>🔒</span>
               </div>
-              <h3>Privacidad Garantizada</h3>
-              <p>Tu información personal y consultas son tratadas con total confidencialidad.</p>
+              <h3>{t('contact_page.features.privacy_guaranteed.title')}</h3>
+              <p>{t('contact_page.features.privacy_guaranteed.description')}</p>
             </div>
           </div>
         </div>

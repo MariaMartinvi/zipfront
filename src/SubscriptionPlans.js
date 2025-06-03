@@ -182,13 +182,18 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
             key={plan.id} 
             className={`plan-card ${userPlan === plan.id ? 'current-plan' : ''}`}
           >
+            {userPlan === plan.id && (
+              <div className="current-plan-badge">
+                {t('subscription.current_plan_badge')}
+              </div>
+            )}
             <div className="plan-header">
               <h3 className="plan-name">{getPlanName(plan)}</h3>
               <div className="plan-price">
                 {plan.price > 0 ? (
                   <>
                     <span className="price-amount">{plan.price}€</span>
-                    <span className="price-period">/mes</span>
+                    <span className="price-period">{t('subscription.per_month')}</span>
                   </>
                 ) : (
                   <span className="price-free">{t('subscription.plans.free.price')}</span>

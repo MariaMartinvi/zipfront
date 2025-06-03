@@ -31,7 +31,22 @@
       "top_users": "Top 5 der aktivsten Benutzer",
       "response_time_trend": "Trend der Antwortzeit (Minuten)",
       "interest_trend": "Interessenstrend (Nachrichten pro Benutzer pro Monat)",
-      "insufficient_data": "Nicht genügend Daten, um Antwortzeiten anzuzeigen."
+      "insufficient_data": "Nicht genügend Daten, um Antwortzeiten anzuzeigen.",
+      "morning_pattern": "{{emoji}} Das ist eine Frühaufsteher-Gruppe: {{percentage}}% der Nachrichten werden vor Mittag gesendet.",
+      "afternoon_pattern": "{{emoji}} Das ist eine Tagesgruppe: {{percentage}}% der Nachrichten werden zwischen 12:00 und 20:00 Uhr gesendet.",
+      "night_pattern": "{{emoji}} Das ist eine Nachtgruppe: {{percentage}}% der Nachrichten werden nach 20:00 Uhr gesendet.",
+      "trend_highlight": "Hervorstechendstes Datum",
+      "increased": "hat seine Antwortzeit um",
+      "decreased": "hat seine Antwortzeit um",
+      "increased_msgs": "hat seine Nachrichtenhäufigkeit um",
+      "decreased_msgs": "hat seine Nachrichtenhäufigkeit um",
+      "percentage_points": "Prozentpunkte",
+      "between": "zwischen",
+      "from": "von",
+      "to": "bis",
+      "sustained_trend": "anhaltender Trend über {{count}} Monate",
+      "response_time_trend_msg": "in seiner Antwortzeit zwischen",
+      "and": "und"
     },
     "top_profiles": {
       "title": "Hervorgehobene Chat-Profile",
@@ -86,6 +101,18 @@
         "total_emojis": "Insgesamt verwendete Emojis",
         "emojis_per_message": "Emojis pro Nachricht (Durchschnitt)"
       },
+      "amoroso": {
+        "title": "Der Romantiker",
+        "description": "Verwendet mehr liebesbezogene Emojis",
+        "love_emojis": "Verwendete Liebes-Emojis",
+        "percentage": "Seiner Emojis sind liebesbezogen"
+      },
+      "sicopata": {
+        "title": "Der Psychopath",
+        "description": "Sendet mehr aufeinanderfolgende Nachrichten ohne Antwort",
+        "consecutive_messages": "Aufeinanderfolgende Nachrichten (Maximum)",
+        "record": "Sein Rekord an Nachrichten ohne Antwort"
+      },
       "finisher": {
         "title": "Der Beender",
         "description": "Beendet mehr Gespräche",
@@ -100,6 +127,26 @@
         "title": "Der Minimalistische",
         "description": "Kürzere Nachrichten",
         "avg_length": "Zeichen pro Nachricht (Durchschnitt)"
+      },
+      "comico": {
+        "title": "Der Komiker",
+        "description": "Hat die Gabe, andere zum Lachen zu bringen"
+      },
+      "agradecido": {
+        "title": "Der Dankbare",
+        "description": "Bedankt sich immer für alles"
+      },
+      "disculpon": {
+        "title": "Der Entschuldiger",
+        "description": "Entschuldigt sich mehr als alle anderen"
+      },
+      "curioso": {
+        "title": "Der Neugierige",
+        "description": "Stellt immer Fragen"
+      },
+      "mala_influencia": {
+        "title": "Der Schlechte Einfluss",
+        "description": "Erwähnt mehr Laster und verwendet mehr Schimpfwörter"
       },
       "total_messages": "Gesamtnachrichten",
       "no_data": "Nicht genügend Daten für die Analyse gefunden"
@@ -159,6 +206,20 @@
     },
     "privacy": {
       "no_ai_analysis": "Meine Daten nicht mit KI für psychologische Analyse teilen (Daten werden nicht an Azure gesendet)"
+    },
+    "stats_labels": {
+      "vice_mentions": "Laster-Erwähnungen",
+      "vice_percentage": "% Nachrichten mit Lastern",
+      "profanity_mentions": "Schimpfwort-Erwähnungen", 
+      "profanity_percentage": "% Nachrichten mit Schimpfwörtern",
+      "questions_asked": "Gestellte Fragen",
+      "questions_percentage": "% der Nachrichten mit Fragen",
+      "apologies_count": "Entschuldigungen",
+      "apologies_percentage": "% der Nachrichten mit Entschuldigungen",
+      "thanks_count": "Dankesworte",
+      "thanks_percentage": "% der Nachrichten mit Dank",
+      "funny_messages": "Lustige Nachrichten",
+      "funny_percentage": "% der Nachrichten die lustig sind"
     }
   },
   "header": {
@@ -168,7 +229,8 @@
     "contact": "Kontakt",
     "login": "Anmelden",
     "register": "Registrieren",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "free_trial": "Kostenlos testen"
   },
   "actions": {
     "upload": "Datei hochladen",
@@ -355,7 +417,9 @@
       "modal_alt": "Vollständiges Analysebeispiel"
     },
     "testimonials": {
+      "badge": "ERFAHRUNGSBERICHTE",
       "title": "Was unsere Nutzer sagen",
+      "description": "Entdecken Sie, wie Chatsalsa Menschen auf der ganzen Welt geholfen hat, ihre Gespräche besser zu verstehen.",
       "reviews": [
         {
           "content": "Erstaunlich! Die psychologische Analyse hat mir geholfen, meine Freunde und unsere Reaktionsweisen besser zu verstehen.",
@@ -376,7 +440,7 @@
     "badge": "KONVERSATIONSANALYSE",
     "title": {
       "discover": "Entdecken Sie die Geheimnisse",
-      "conversations": "Ihrer WhatsApp-Unterhaltungen"
+      "conversations": "Ihrer Unterhaltungen auf"
     },
     "description": "Wir kombinieren Statistik und fortgeschrittene Künstliche Intelligenz, um faszinierende Einblicke in die psychologischen Profile der Teilnehmer und Gruppendynamik zu enthüllen.",
     "buttons": {
@@ -479,7 +543,9 @@
       "stats": "Vollständige statistische Analyse",
       "psych": "Detaillierte psychologische Analyse",
       "renewal": "Automatische monatliche Verlängerung"
-    }
+    },
+    "per_month": "/Monat",
+    "current_plan_badge": "✓ Aktueller Plan"
   },
   "payment": {
     "success": {
@@ -504,33 +570,68 @@
   "pages": {
     "faq": {
       "title": "Häufig gestellte Fragen",
-      "subtitle": "Finden Sie Antworten auf die häufigsten Fragen zu unserem Service",
+      "subtitle": "Finden Sie Antworten auf die häufigsten Fragen zu unserem Service.",
+      "description": "Alles, was Sie über ChatSalsa wissen müssen, finden Sie hier. Wenn Sie Ihre Antwort nicht finden, kontaktieren Sie uns!",
+      "badge": "HÄUFIG GESTELLTE FRAGEN",
+      "section_title": "Haben Sie Fragen?",
+      "section_description": "Hier finden Sie die Antworten auf die häufigsten Fragen zu ChatSalsa. Klicken Sie auf eine beliebige Frage, um die vollständige Antwort zu sehen.",
       "questions": [
         {
-          "question": "Wie funktioniert die WhatsApp-Chat-Analyse?",
-          "answer": "Unser System analysiert den Inhalt Ihrer exportierten WhatsApp-Unterhaltungen, identifiziert Muster, Statistiken und Trends. Wir verwenden fortschrittliche Algorithmen und natürliche Sprachverarbeitung, um wertvolle Einblicke in Ihre Kommunikation zu gewinnen."
+          "question": "Wie funktioniert die WhatsApp-Gesprächsanalyse?",
+          "answer": "Unser Service analysiert Ihre WhatsApp-Chats, nachdem Sie sie als ZIP-Datei exportiert haben. Wir verwenden fortschrittliche Datenanalysetechniken und KI, um Ihnen detaillierte Einblicke in Ihre Gespräche zu geben, einschließlich Kommunikationsmustern, psychologischer Analyse und detaillierter Statistiken.",
+          "icon": "🔍"
         },
         {
-          "question": "Ist es sicher, meine Konversationen hochzuladen?",
-          "answer": "Ja, Ihre Privatsphäre ist unsere Priorität. Wir verwenden eine Ende-zu-Ende-Verschlüsselung, und Ihre Daten werden nach der Analyse automatisch gelöscht. Wir speichern niemals dauerhaft Konversationen und geben Ihre Informationen niemals an Dritte weiter."
+          "question": "Ist es sicher, meine Chats hochzuladen?",
+          "answer": "Ja, Datenschutz ist unsere Priorität. Ihre persönlichen Daten verlassen niemals Ihr Gerät. Die statistische Analyse wird zu 100% auf Ihrem Gerät durchgeführt. Für die psychologische Analyse werden die Chats auf Ihrem Gerät anonymisiert und fragmentiert, bevor sie an Microsoft Azure gesendet werden. Wir senden nur ein Fragment von etwa 20-50k Zeichen. Wir senden die Chats ohne persönliche Daten. Sie können unsere Datenschutzrichtlinie für weitere Details einsehen. Wenn Sie dennoch bevorzugen, dass keine Daten Ihr Gerät verlassen, können Sie die Option 'ohne psychologische Analyse' beim Hochladen der Datei wählen.",
+          "icon": "🔒"
         },
         {
-          "question": "Welche Dateiformate werden unterstützt?",
-          "answer": "Wir unterstützen derzeit WhatsApp-Chat-Dateien, die im .txt-Format exportiert wurden, sowie .zip-Dateien, die WhatsApp-Exporte enthalten."
+          "question": "Welche Art von Analyse bietet die Plattform?",
+          "answer": "Wir bieten eine umfassende Analyse, die Folgendes umfasst: detaillierte Gesprächsstatistiken, Kommunikationsmuster, Zeitplan- und Aktivitätsanalyse, Emoji-Verwendung und häufigste Wörter, Analyse begonnener und beendeter Gespräche und eine optionale psychologische Analyse, die von KI generiert wird. Alle Analysen werden visuell und interaktiv präsentiert.",
+          "icon": "📊"
         },
         {
-          "question": "Wie viele Konversationen kann ich mit meinem Plan analysieren?",
-          "answer": "Die Anzahl der Konversationen, die Sie analysieren können, hängt von Ihrem Abonnementplan ab. Kostenlose Nutzer können eine begrenzte Anzahl von Chats analysieren, während Premium-Abonnenten ein höheres monatliches Kontingent genießen. Weitere Details finden Sie auf unserer Planseite."
+          "question": "Wie kann ich meine WhatsApp-Chats exportieren?",
+          "answer": "Gehen Sie in WhatsApp zu einem Chat, wählen Sie 'Chat exportieren' und speichern Sie als ZIP-Datei ohne Medien. Die Plattform akzeptiert WhatsApp-ZIP-Dateien sowohl von Android als auch von iOS und erkennt das Format automatisch. Sie können die Datei direkt auf unsere Plattform hochladen.",
+          "icon": "📱"
         },
         {
-          "question": "Wie exportiere ich eine WhatsApp-Konversation?",
-          "answer": "Öffnen Sie in WhatsApp den Chat, den Sie exportieren möchten, tippen Sie auf die drei vertikalen Punkte > Mehr > Chat exportieren. Sie können wählen, ob Sie Mediendateien einbeziehen möchten oder nicht. Wählen Sie dann aus, wie Sie die exportierte Datei teilen möchten, und speichern Sie sie, um sie auf unsere Plattform hochzuladen."
+          "question": "Was kostet der Service?",
+          "answer": "Wir bieten verschiedene Pläne: einen kostenlosen Plan mit grundlegenden Analysen und Premium-Pläne mit detaillierteren Analysen, höherer Nutzungsfrequenz und erweiterten Funktionen. Alle Pläne beinhalten die Option, die KI-psychologische Analyse zu überspringen, wenn Sie es vorziehen.",
+          "icon": "💰"
         },
         {
-          "question": "Kann ich mein Abonnement jederzeit kündigen?",
-          "answer": "Ja, Sie können Ihr Abonnement jederzeit über Ihr Dashboard kündigen. Die Kündigung wird am Ende des aktuellen Abrechnungszeitraums wirksam."
+          "question": "Kann ich den Service auf jedem Gerät nutzen?",
+          "answer": "Ja, unsere Plattform ist vollständig webbasiert und responsiv. Sie können von jedem Gerät darauf zugreifen (Computer, Tablets und Mobiltelefone) und die Analysen passen sich automatisch an Ihren Bildschirm an. Außerdem können Sie die Ergebnisse einfach mit anderen teilen.",
+          "icon": "📱"
         }
-      ]
+      ],
+      "help_section": {
+        "title": "Finden Sie Ihre Antwort nicht?",
+        "description": "Wenn Sie eine Frage haben, die nicht in dieser Liste steht, zögern Sie nicht, uns zu kontaktieren. Unser Team hilft Ihnen gerne weiter.",
+        "contact_button": "Support kontaktieren",
+        "privacy_button": "Datenschutzrichtlinie anzeigen"
+      },
+      "features": {
+        "instant": {
+          "title": "Sofortige Analyse",
+          "description": "Ergebnisse in Sekunden, nicht Stunden"
+        },
+        "private": {
+          "title": "100% Privat",
+          "description": "Ihre Daten verlassen niemals Ihr Gerät"
+        },
+        "accurate": {
+          "title": "Genaue Analyse",
+          "description": "Fortschrittliche KI für detaillierte Einblicke"
+        },
+        "multiplatform": {
+          "title": "Multiplattform",
+          "description": "Funktioniert auf allen Geräten"
+        }
+      },
+      "security_badge": "Fragen Beantwortet"
     },
     "contact": {
       "title": "Kontakt",
@@ -551,38 +652,80 @@
       }
     },
     "terms": {
-      "title": "Allgemeine Geschäftsbedingungen",
-      "updated": "Zuletzt aktualisiert: 1. Juni 2023",
-      "content": [
+      "title": "Nutzungsbedingungen",
+      "updated": "Letzte Aktualisierung: April 2024",
+      "subtitle": "Diese Bedingungen legen die Konditionen fest, unter denen Sie unseren WhatsApp-Gesprächsanalysedienst nutzen können.",
+      "badge": "ALLGEMEINE GESCHÄFTSBEDINGUNGEN",
+      "section_title": "Nutzungsbedingungen",
+      "section_description": "Bitte lesen Sie diese Bedingungen sorgfältig durch, bevor Sie unseren Service nutzen. Durch die Nutzung von ChatSalsa stimmen Sie zu, an diese Bedingungen gebunden zu sein.",
+      "sections": [
         {
-          "section": "1. Einleitung",
-          "text": "Diese Allgemeinen Geschäftsbedingungen regeln die Nutzung des WhatsApp-Konversationsanalyseservices von ChatSalsa. Durch die Nutzung unseres Services akzeptieren Sie diese Bedingungen vollständig. Wenn Sie mit einem Teil dieser Bedingungen nicht einverstanden sind, dürfen Sie unseren Service nicht nutzen."
+          "title": "1. Annahme der Bedingungen",
+          "icon": "✅",
+          "content": "Durch den Zugriff auf und die Nutzung unseres WhatsApp-Gesprächsanalysedienstes akzeptieren Sie diese Nutzungsbedingungen in ihrer Gesamtheit. Wenn Sie mit einem dieser Bedingungen nicht einverstanden sind, sollten Sie unseren Service nicht nutzen."
         },
         {
-          "section": "2. Nutzung des Services",
-          "text": "Unser Service ermöglicht es Benutzern, exportierte WhatsApp-Unterhaltungen zu analysieren. Es liegt in Ihrer Verantwortung, sicherzustellen, dass Sie das gesetzliche Recht haben, solche Unterhaltungen hochzuladen und zu analysieren. Sie dürfen unseren Service nicht für illegale oder unbefugte Zwecke nutzen."
+          "title": "2. Servicebeschreibung",
+          "icon": "🔍",
+          "content": "Wir bieten eine Webplattform, die es Benutzern ermöglicht, WhatsApp-Gespräche hochzuladen und zu analysieren, die als ZIP-Dateien exportiert wurden, und bieten verschiedene statistische und KI-Analysen."
         },
         {
-          "section": "3. Datenschutz und Datensicherheit",
-          "text": "Wir respektieren Ihre Privatsphäre und schützen Ihre persönlichen Daten. Wir verwenden sichere Verschlüsselung und löschen Ihre Konversationen nach der Analyse. Weitere Informationen finden Sie in unserer Datenschutzrichtlinie."
+          "title": "3. Servicenutzung",
+          "icon": "👤",
+          "content": "",
+          "items": [
+            "Sie müssen mindestens 18 Jahre alt sein, um unseren Service zu nutzen.",
+            "Sie sind verantwortlich für die Aufrechterhaltung der Vertraulichkeit Ihres Kontos.",
+            "Sie verpflichten sich, den Service nicht für illegale oder unbefugte Aktivitäten zu nutzen."
+          ]
         },
         {
-          "section": "4. Abonnements und Zahlungen",
-          "text": "Wir bieten verschiedene Abonnementpläne mit unterschiedlichen Funktionen an. Zahlungen werden über sichere Zahlungsanbieter abgewickelt. Abonnements verlängern sich automatisch, bis sie gekündigt werden. Sie können Ihr Abonnement jederzeit über Ihr Dashboard kündigen."
+          "title": "4. Datenschutz und Daten",
+          "icon": "🔒",
+          "content": "Wir verpflichten uns, Ihre Privatsphäre zu schützen. Dateien, die Sie hochladen, werden vorübergehend verarbeitet und nach der Analyse automatisch gelöscht. Weitere Einzelheiten finden Sie in unserer Datenschutzrichtlinie."
         },
         {
-          "section": "5. Haftungsbeschränkung",
-          "text": "ChatSalsa stellt diesen Service 'wie er ist' zur Verfügung und garantiert nicht, dass der Service unterbrechungsfrei oder fehlerfrei sein wird. Wir sind nicht verantwortlich für direkte, indirekte, zufällige oder Folgeschäden, die aus der Nutzung unseres Services resultieren."
+          "title": "5. Rechte an geistigem Eigentum",
+          "icon": "©️",
+          "content": "Alle Inhalte, Funktionen und Funktionalitäten unseres Services sind unser Eigentum und durch Urheberrechte, Marken und andere Gesetze zum geistigen Eigentum geschützt."
         },
         {
-          "section": "6. Änderungen der Bedingungen",
-          "text": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Änderungen treten sofort nach Veröffentlichung auf unserer Website in Kraft. Es liegt in Ihrer Verantwortung, diese Bedingungen regelmäßig zu überprüfen."
+          "title": "6. Haftungsbeschränkung",
+          "icon": "⚠️",
+          "content": "Unser Service wird \"wie besehen\" bereitgestellt, ohne Garantien jeglicher Art. Wir haften nicht für direkte, indirekte, zufällige oder Folgeschäden, die aus der Nutzung unseres Services entstehen."
         },
         {
-          "section": "7. Kontakt",
-          "text": "Wenn Sie Fragen zu diesen Allgemeinen Geschäftsbedingungen haben, können Sie uns unter support@chatsalsa.com kontaktieren."
+          "title": "7. Service-Änderungen",
+          "icon": "🔄",
+          "content": "Wir behalten uns das Recht vor, den Service jederzeit mit oder ohne Vorankündigung zu ändern oder einzustellen. Wir haften nicht gegenüber Ihnen oder Dritten für Änderungen, Aussetzungen oder Einstellungen des Services."
+        },
+        {
+          "title": "8. Pläne und Abonnements",
+          "icon": "💳",
+          "content": "Wir bieten kostenlose und kostenpflichtige Pläne an. Die spezifischen Bedingungen jedes Plans, einschließlich Preise, Funktionen und Nutzungslimits, sind auf unserer Pläne-Seite detailliert beschrieben."
+        },
+        {
+          "title": "9. Kündigung",
+          "icon": "🚪",
+          "content": "Wir können Ihr Konto und den Zugang zum Service sofort beenden oder aussetzen, ohne Vorankündigung oder Haftung, aus jedem Grund, einschließlich Verletzung dieser Bedingungen."
+        },
+        {
+          "title": "10. Anwendbares Recht",
+          "icon": "⚖️",
+          "content": "Diese Bedingungen unterliegen den Gesetzen Spaniens und werden entsprechend ausgelegt, ohne Rücksicht auf Kollisionsrechtsprinzipien."
+        },
+        {
+          "title": "11. Kontakt",
+          "icon": "📧",
+          "content": "Wenn Sie Fragen zu diesen Bedingungen haben, kontaktieren Sie uns bitte."
         }
-      ]
+      ],
+      "important_notice": {
+        "title": "Wichtiger Hinweis",
+        "description": "Durch die weitere Nutzung unseres Services akzeptieren Sie diese Nutzungsbedingungen. Wenn Sie Fragen haben, zögern Sie nicht,",
+        "contact_link": "uns zu kontaktieren"
+      },
+      "security_badge": "Aktualisierte Bedingungen"
     },
     "privacy": {
       "title": "Datenschutzrichtlinie",
@@ -748,6 +891,7 @@
   },
   "share": {
     "whatsapp_message": "🎯 Spiel: Wer hat was gesagt?\n\nKönnen Sie erraten, wer zu welcher kontroversen Überschrift gehört?\n\n👇 Hier spielen:\n{{url}}",
+    "personality_whatsapp_message": "🎭 Spielen Sie, wer ist wer in unserem WhatsApp-Chat!\n\n{{url}}\n\n🎮 Persönlichkeits-Ratespiel",
     "game_title": "Wer hat was gesagt?",
     "game_description": "Entdecken Sie, wer zu welcher kontroversen Überschrift gehört",
     "share_game_button": "Überschriften-Spiel teilen",
@@ -788,5 +932,325 @@
         }
       }
     }
+  },
+  "features_page": {
+    "badge": "Funktionen",
+    "title": "Entdecken Sie alles, was ChatSalsa kann",
+    "description": "Unsere Plattform kombiniert fortgeschrittene statistische Analyse mit künstlicher Intelligenz, um Ihnen einzigartige Einblicke in Ihre Gespräche zu bieten.",
+    "psychological": {
+      "title": "Psychologische Analyse",
+      "description": "Psychologische Analyse der Kommunikationsmuster der Gruppenmitglieder. Warnsignale und Ratschläge."
+    },
+    "statistics": {
+      "title": "Detaillierte Statistiken", 
+      "description": "Vollständige Statistiken darüber, wer Gespräche dominiert, aktive Zeiten und häufige Themen."
+    },
+    "emotional": {
+      "title": "Emotionale Analyse",
+      "description": "Emotionale Interpretation basierend auf Emoji- und Sprachgebrauch, um den Ton der Gespräche zu verstehen."
+    },
+    "games": {
+      "title": "Lustige Spiele",
+      "description": "Spielen Sie \"Wer ist wer?\" mit Ihrer WhatsApp-Gruppe und entdecken Sie, wer wer ist, basierend auf ihrem Kommunikationsstil."
+    },
+    "privacy": {
+      "title": "100% Privat",
+      "description": "Die statistische Analyse wird auf Ihrem Gerät durchgeführt und der Chat verlässt nie Ihr Gerät. Ihre Privatsphäre ist unsere Priorität.",
+      "link": "Wie wir es machen"
+    },
+    "instant": {
+      "title": "Sofortige Analyse",
+      "description": "Erhalten Sie Ergebnisse in Sekunden mit unserer fortgeschrittenen KI, ohne Warten oder komplizierte Prozesse."
+    }
+  },
+  "process": {
+    "badge": "Einfacher Prozess",
+    "title": "Wie funktioniert es?",
+    "description": "In nur drei Schritten können Sie alle Geheimnisse Ihrer WhatsApp-Gespräche entdecken.",
+    "steps": {
+      "export": {
+        "title": "Exportieren Sie Ihren Chat",
+        "description": "Exportieren Sie das WhatsApp-Gespräch, das Sie analysieren möchten, aus der offiziellen App."
+      },
+      "upload": {
+        "title": "Laden Sie die Datei hoch",
+        "description": "Laden Sie die Chat-Datei auf unsere Plattform hoch. Denken Sie daran, dass die Analyse auf Ihrem Gerät durchgeführt wird."
+      },
+      "discover": {
+        "title": "Entdecken Sie die Ergebnisse",
+        "description": "Erhalten Sie sofort eine umfassende Analyse mit Statistiken, psychologischen Profilen und interaktiven Spielen."
+      }
+    },
+    "cta": {
+      "text": "Bereit, die Geheimnisse Ihrer Gespräche zu entdecken?",
+      "button": "Meinen Chat jetzt analysieren"
+    }
+  },
+  "demo": {
+    "badge": "Demo",
+    "title": "Sehen Sie, was Chatsalsa kann",
+    "description": "Entdecken Sie, welche Informationen Sie aus Ihren WhatsApp-Gesprächen erhalten können.",
+    "stats": {
+      "title": "Statistiken der Gruppe \"Familie WhatsApp\"",
+      "participation": "Chat-Beteiligung",
+      "active_hours": "Aktive Stunden",
+      "profiles": "Gruppenprofile"
+    },
+    "psychology": {
+      "title": "Psychologische Analyse"
+    },
+    "users": {
+      "eva": "Eva",
+      "miguel": "Miguel", 
+      "ana": "Ana"
+    },
+    "user_profiles": {
+      "ana": {
+        "description": "Kommunikativ und organisiert. Immer über alles informiert, was in der Familie passiert.",
+        "traits": ["Kommunikativ", "Organisiert", "Gesellig"]
+      },
+      "miguel": {
+        "description": "Nachdenklich und vorsichtig. Bevorzugt direkte Nachrichten und kommt in Gesprächen auf den Punkt.",
+        "traits": ["Nachdenklich", "Direkt", "Praktisch"]
+      }
+    },
+    "red_flags": {
+      "title": "Warnsignale in der Beziehung",
+      "items": {
+        "passive_aggressive": {
+          "title": "Passiv-aggressive Kommunikation",
+          "description": "Muster von Nachrichten mit Doppeldeutigkeit und ausweichenden Antworten erkannt.",
+          "tags": ["Ausweichung", "Passiv-aggressiv"]
+        }
+      }
+    }
+  },
+  "analysis_summary": {
+    "badge": "ALLGEMEINE ZUSAMMENFASSUNG",
+    "description": "Ihre vollständige WhatsApp-Gesprächsanalyse ist bereit. Erkunden Sie die wichtigsten Daten Ihres Chats.",
+    "visual_analysis": {
+      "badge": "VISUELLE ANALYSE",
+      "title": "Detaillierte Diagramme und Statistiken",
+      "description": "Erkunden Sie die Kommunikationsmuster Ihrer Gruppe durch interaktive Visualisierungen."
+    },
+    "trends": {
+      "badge": "ERWEITERTE TRENDS",
+      "title": "Zeitliche Trendanalyse",
+      "description": "Entdecken Sie, wie sich die Kommunikationsmuster Ihrer Gruppe im Laufe der Zeit entwickelt haben."
+    },
+    "profiles": {
+      "description": "Entdecken Sie die herausragendsten Profile in Ihrem Chat und ihre einzigartigen Eigenschaften, die sie besonders machen."
+    }
+  },
+  "games": {
+    "title": "🎮 Spiele",
+    "badge": "INTERAKTIVES SPIEL",
+    "share_button": "🚀 Spiel teilen",
+    "headlines": {
+      "title": "Wer ist wer?",
+      "description": "Entdecken Sie, wer zu welcher kontroversen Schlagzeile gehört"
+    },
+    "personality": {
+      "title": "Wer ist mehr...?",
+      "description": "Teilen Sie ein Spiel, damit Ihre Freunde erraten können, wer der Professor, der Vampir und andere Persönlichkeiten in Ihrem Chat sind."
+    },
+    "share_modal": {
+      "title": "Teilen Sie das Spiel!",
+      "description": "Senden Sie diesen Link an Ihre Freunde, damit sie erraten können, wer der Professor, der Vampir und andere Persönlichkeiten im Chat sind.",
+      "warning": "⚠️ Link nur für diesen Chat gültig",
+      "copy_button": "Kopieren",
+      "copied_message": "Kopiert!",
+      "close_button": "Schließen",
+      "whatsapp": "WhatsApp"
+    },
+    "alerts": {
+      "no_game_data": "Keine Spieldaten verfügbar",
+      "generate_error": "Fehler beim Generieren des Spiel-Links",
+      "no_analysis_data": "Keine Analysedaten zum Teilen verfügbar. Bitte stellen Sie sicher, dass die statistische Analyse vollständig ist.",
+      "personality_error": "Fehler beim Generieren der Persönlichkeitsspiel-URL"
+    }
+  },
+  "offline": {
+    "mode_title": "⚠️ Offline-Modus",
+    "mode_description": "Der Server ist nicht verfügbar. Die Anwendung funktioniert mit lokalen Daten."
+  },
+  "contact_page": {
+    "hero": {
+      "title": "Kontaktieren Sie uns",
+      "description1": "Haben Sie Fragen oder Anregungen? Wir sind hier, um Ihnen zu helfen.",
+      "description2": "Unser Team beantwortet gerne alle Ihre Fragen zu ChatSalsa."
+    },
+    "section": {
+      "badge": "KONTAKT AUFNEHMEN",
+      "title": "Schreiben Sie uns",
+      "description": "Füllen Sie das Formular aus und wir werden uns so schnell wie möglich bei Ihnen melden."
+    },
+    "info": {
+      "title": "Kontaktinformationen",
+      "email_label": "E-Mail",
+      "company_label": "Unternehmen",
+      "address_label": "Adresse",
+      "address_line1": "Roma Avenue 153",
+      "address_line2": "08011 Barcelona, Spanien"
+    },
+    "form": {
+      "title": "Senden Sie uns eine Nachricht",
+      "name_label": "Vollständiger Name",
+      "email_label": "E-Mail-Adresse",
+      "subject_label": "Betreff",
+      "message_label": "Nachricht",
+      "submit_button": "Nachricht senden",
+      "success_alert": "Nachricht gesendet. Vielen Dank, dass Sie uns kontaktiert haben!"
+    },
+    "features": {
+      "fast_response": {
+        "title": "Schnelle Antwort",
+        "description": "Wir verpflichten uns, Ihre Anfrage so schnell wie möglich zu beantworten."
+      },
+      "personalized_support": {
+        "title": "Personalisierter Support",
+        "description": "Jede Anfrage erhält personalisierte Aufmerksamkeit, die auf Ihre spezifischen Bedürfnisse zugeschnitten ist."
+      },
+      "privacy_guaranteed": {
+        "title": "Datenschutz garantiert",
+        "description": "Ihre persönlichen Informationen und Anfragen werden mit vollständiger Vertraulichkeit behandelt."
+      }
+    }
+  },
+  "cookies": {
+    "title": "Cookie-Richtlinie",
+    "updated": "Letzte Aktualisierung: Dezember 2024",
+    "subtitle": "Informationen darüber, wie wir Cookies auf unserer Website verwenden, um Ihre Browser-Erfahrung zu verbessern.",
+    "badge": "COOKIE-RICHTLINIE",
+    "section_title": "Cookie-Verwaltung",
+    "section_description": "Erfahren Sie, welche Cookies wir verwenden, wofür wir sie nutzen und wie Sie Ihre Präferenzen verwalten können.",
+    "sections": {
+      "what_are_cookies": {
+        "title": "Was sind Cookies?",
+        "description": "Cookies sind kleine Textdateien, die auf Ihrem Gerät gespeichert werden, wenn Sie unsere Website besuchen. Diese Cookies helfen uns, Ihre Browser-Erfahrung zu verbessern und Ihnen einen personalisierten Service zu bieten."
+      },
+      "types_of_cookies": {
+        "title": "Arten von Cookies, die wir verwenden",
+        "strictly_necessary": {
+          "title": "Unbedingt erforderliche Cookies",
+          "description": "Diese Cookies sind für das Funktionieren der Website unerlässlich und können nicht deaktiviert werden. Sie umfassen:",
+          "items": [
+            "Firebase Auth: Benutzerauthentifizierung und Sitzungsverwaltung",
+            "Stripe: Sichere Zahlungsabwicklung und Betrugsvorbeugung",
+            "Workbox PWA: Progressive Web-App-Funktionalität und Offline-Cache",
+            "Einverständnis-Cookies: Ihre Cookie-Präferenzen merken"
+          ]
+        },
+        "analytics": {
+          "title": "Analyse-Cookies",
+          "description": "Werden verwendet, um zu verstehen, wie Sie mit unserer Website interagieren. Sie umfassen:",
+          "items": [
+            "Google Analytics (GTM): Nutzungs- und Verhaltensstatistiken",
+            "Microsoft Clarity: Verhaltensanalyse und Heatmaps (falls aktiviert)",
+            "Interne Metriken: Zur Verbesserung des Chat-Analyse-Services"
+          ]
+        },
+        "marketing": {
+          "title": "Marketing-Cookies",
+          "description": "Werden verwendet, um Werbung zu personalisieren und deren Wirksamkeit zu messen. Sie umfassen:",
+          "items": [
+            "Google Ads: Personalisierte Werbung und Remarketing",
+            "Facebook Pixel: Conversion-Tracking und benutzerdefinierte Zielgruppen",
+            "TikTok Pixel: TikTok Ads Conversion-Tracking"
+          ]
+        },
+        "functionality": {
+          "title": "Funktionalitäts-Cookies",
+          "description": "Ermöglichen es, Ihre Einstellungen zu speichern, um Ihnen eine personalisierte Erfahrung zu bieten. Sie umfassen:",
+          "items": [
+            "Sprachpräferenzen: Ihre ausgewählte Sprache merken",
+            "Interface-Einstellungen: Theme, Layout und Anzeigepräferenzen",
+            "Benutzerdaten: Nicht-sensible Informationen zur Personalisierung der Erfahrung"
+          ]
+        }
+      },
+      "specific_cookies": {
+        "title": "Spezifische Cookies, die wir verwenden",
+        "warning": "⚠️ Wichtiger Hinweis: Die folgende Liste enthält alle Cookies, die je nach konfigurierten Services generiert werden können. Die spezifischen Cookies, die auf Ihrem Gerät installiert werden, hängen von Ihren Einverständnispräferenzen, aktiven Services und Ihrer Browser-Konfiguration ab.",
+        "own_cookies": {
+          "title": "Unsere eigenen Cookies:",
+          "items": [
+            "cookieConsent: Speichert, ob Sie der Cookie-Nutzung zugestimmt haben (1 Jahr)",
+            "cookiePreferences: Speichert Ihre spezifischen Präferenzen nach Cookie-Kategorie (1 Jahr)",
+            "cookieConsentDate: Datum, an dem Sie Ihr Einverständnis für Cookies gegeben haben (1 Jahr)"
+          ]
+        },
+        "third_party_cookies": {
+          "title": "Drittanbieter-Cookies - Google Tag Manager:",
+          "note": "Die folgenden Cookies werden nur generiert, wenn die entsprechenden Tags in GTM aktiv sind:",
+          "items": [
+            "_ga: Haupt-Google Analytics Cookie (2 Jahre)",
+            "_ga_[ID]: Google Analytics 4 Cookie (2 Jahre)",
+            "_gid: Google Analytics Cookie (24 Stunden)",
+            "_fbp: Facebook Pixel Cookie (90 Tage)",
+            "_ttp: TikTok Pixel Cookie (13 Monate)"
+          ]
+        },
+        "firebase_stripe": {
+          "title": "Firebase und Stripe Cookies:",
+          "items": [
+            "firebase-heartbeat-store: Verbindung mit Firebase",
+            "__stripe_mid: Stripe Betrugserkennung (1 Jahr)",
+            "__stripe_sid: Stripe Sitzung (30 Minuten)"
+          ]
+        }
+      },
+      "cookie_management": {
+        "title": "Cookie-Verwaltung",
+        "description": "Sie können Cookies auf verschiedene Weise kontrollieren und verwalten:",
+        "ways": [
+          "Über unser Cookie-Banner beim Besuch der Website",
+          "Durch Konfiguration Ihres Browsers zum Blockieren oder Löschen von Cookies",
+          "Über die Datenschutzoptionen Ihres Geräts"
+        ],
+        "browser_settings": {
+          "title": "Browser-Einstellungen:",
+          "browsers": [
+            "Chrome: Einstellungen → Datenschutz und Sicherheit → Cookies",
+            "Firefox: Optionen → Datenschutz und Sicherheit → Cookies",
+            "Safari: Einstellungen → Datenschutz → Cookies",
+            "Edge: Einstellungen → Cookies und Website-Berechtigungen"
+          ]
+        }
+      },
+      "retention_deletion": {
+        "title": "Cookie-Aufbewahrung und -Löschung",
+        "retention_time": {
+          "title": "Aufbewahrungszeit:",
+          "items": [
+            "Sitzungs-Cookies: Werden beim Schließen des Browsers gelöscht",
+            "Temporäre Cookies: Zwischen 30 Minuten und 24 Stunden",
+            "Analyse-Cookies: Bis zu 2 Jahre (Google Analytics)",
+            "Präferenz-Cookies: 1 Jahr",
+            "Authentifizierungs-Cookies: Bis zu 2 Jahre"
+          ]
+        },
+        "how_to_delete": {
+          "title": "So löschen Sie alle Cookies:",
+          "items": [
+            "Von unserer Website: Widerrufen Sie Ihr Einverständnis im Cookie-Banner",
+            "Von Ihrem Browser: Löschen Sie spezifische Cookies von \"chatsalsa.com\"",
+            "Inkognito-Modus: Cookies werden automatisch beim Schließen gelöscht",
+            "Automatische Einstellungen: Konfigurieren Sie Ihren Browser zum Löschen von Cookies beim Beenden"
+          ]
+        }
+      },
+      "updates_contact": {
+        "title": "Aktualisierungen und Kontakt",
+        "updates_description": "Wir können diese Cookie-Richtlinie gelegentlich aktualisieren, um Änderungen in unseren Praktiken oder aus rechtlichen Gründen zu reflektieren. Wir werden Sie über alle wesentlichen Änderungen informieren.",
+        "contact_description": "Wenn Sie Fragen zu unserer Cookie-Richtlinie haben, bitte",
+        "contact_link": "kontaktieren Sie uns"
+      }
+    },
+    "consent_section": {
+      "title": "Cookie-Einverständnis",
+      "description": "Durch die weitere Nutzung unserer Website stimmen Sie der Verwendung von Cookies wie in dieser Richtlinie beschrieben zu."
+    },
+    "security_badge": "Transparente Cookies"
   }
 } 

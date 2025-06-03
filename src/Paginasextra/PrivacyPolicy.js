@@ -15,8 +15,8 @@ const PrivacyPolicy = () => {
         title: "1. Responsable del Tratamiento",
         description: "El responsable del tratamiento de tus datos personales es:",
         details: [
-          "ChatSalsa - Maria Martín",
-          "Calle Martí 136, 08028 Barcelona",
+          "Comartinvi (Propietario de Chatsalsa.com)",
+          "Avinguda Roma 153, 08011 Barcelona",
           "Correo electrónico: info@comartinvi.com"
         ]
       },

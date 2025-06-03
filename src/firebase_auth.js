@@ -504,8 +504,8 @@ export const getUserProfile = async (userId) => {
               box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             `;
             notification.innerHTML = `
-              <div style="font-weight: bold; margin-bottom: 5px;">⚠️ Modo sin conexión</div>
-              <div style="font-size: 14px;">El servidor no está disponible. La aplicación funciona con datos locales.</div>
+              <div style="font-weight: bold; margin-bottom: 5px;">${i18next.t('offline.mode_title')}</div>
+              <div style="font-size: 14px;">${i18next.t('offline.mode_description')}</div>
             `;
             
             document.body.appendChild(notification);

@@ -226,8 +226,7 @@
   box-shadow: 0 25px 70px rgba(37, 211, 102, 0.2);
 }
 
-.plan-card.current-plan::after {
-  content: '✓ Plan Actual';
+.current-plan-badge {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -642,5 +641,12 @@
     padding: 12px 16px;
     font-size: 14px;
     height: 48px;
+  }
+
+  .current-plan-badge {
+    top: 15px;
+    right: 15px;
+    padding: 6px 12px;
+    font-size: 10px;
   }
 }

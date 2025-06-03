@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../AppPreview.css';
 
 const FAQItem = ({ question, answer, icon, isOpen, onClick }) => {
@@ -48,6 +49,7 @@ const FAQItem = ({ question, answer, icon, isOpen, onClick }) => {
 };
 
 const FAQ = () => {
+  const { t } = useTranslation();
   const [openItems, setOpenItems] = useState({});
 
   const toggleItem = (index) => {
@@ -57,38 +59,8 @@ const FAQ = () => {
     }));
   };
 
-  const faqs = [
-    {
-      question: "¿Cómo funciona el análisis de conversaciones de WhatsApp?",
-      answer: "Nuestro servicio analiza tus chats de WhatsApp después de exportarlos como archivo ZIP. Utilizamos técnicas avanzadas de análisis de datos y IA para proporcionarte insights detallados sobre tus conversaciones, incluyendo patrones de comunicación, análisis psicológico y estadísticas detalladas.",
-      icon: "🔍"
-    },
-    {
-      question: "¿Es seguro subir mis chats?",
-      answer: "Sí, la privacidad es nuestra prioridad. Tus archivos se eliminan automáticamente después del análisis, y no guardamos ningún contenido de tus conversaciones. Además, ofrecemos la opción de omitir el análisis psicológico por IA si lo prefieres. Nuestro proceso cumple con los más altos estándares de seguridad de datos.",
-      icon: "🔒"
-    },
-    {
-      question: "¿Qué tipo de análisis ofrece la plataforma?",
-      answer: "Ofrecemos un análisis completo que incluye: estadísticas detalladas de conversación, patrones de comunicación, análisis de horarios y actividad, uso de emojis y palabras más frecuentes, análisis de conversaciones iniciadas y terminadas, y un análisis psicológico opcional generado por IA. Todos los análisis se presentan de forma visual e interactiva.",
-      icon: "📊"
-    },
-    {
-      question: "¿Cómo puedo exportar mis chats de WhatsApp?",
-      answer: "En WhatsApp, ve a un chat, selecciona 'Exportar chat' y guarda como archivo ZIP sin multimedia. La plataforma acepta archivos ZIP de WhatsApp tanto de Android como de iOS, y detecta automáticamente el formato. Puedes subir el archivo directamente en nuestra plataforma.",
-      icon: "📱"
-    },
-    {
-      question: "¿Cuánto cuesta el servicio?",
-      answer: "Ofrecemos diferentes planes: un plan gratuito con análisis básicos y planes premium con análisis más detallados, mayor frecuencia de uso y características avanzadas. Todos los planes incluyen la opción de omitir el análisis psicológico por IA si lo prefieres.",
-      icon: "💰"
-    },
-    {
-      question: "¿Puedo usar el servicio en cualquier dispositivo?",
-      answer: "Sí, nuestra plataforma es completamente web y responsive. Puedes acceder desde cualquier dispositivo (computadoras, tablets y teléfonos móviles) y los análisis se adaptan automáticamente a tu pantalla. Además, puedes compartir los resultados fácilmente con otros.",
-      icon: "📱"
-    }
-  ];
+  // Obtener las preguntas desde las traducciones
+  const faqs = t('pages.faq.questions', { returnObjects: true }) || [];
 
   return (
     <div className="modern-preview-container">
@@ -96,12 +68,12 @@ const FAQ = () => {
       <section className="hero-section">
         <div className="hero-content" style={{ gridTemplateColumns: '1fr', textAlign: 'center', gap: '40px' }}>
           <div className="hero-text">
-            <h1 className="hero-title">Preguntas Frecuentes</h1>
+            <h1 className="hero-title">{t('pages.faq.title')}</h1>
             <p className="hero-description">
-              Encuentra respuestas a las consultas más comunes sobre nuestro servicio.
+              {t('pages.faq.subtitle')}
             </p>
             <p className="hero-description">
-              Todo lo que necesitas saber sobre ChatSalsa está aquí. Si no encuentras tu respuesta, ¡contáctanos!
+              {t('pages.faq.description')}
             </p>
           </div>
         </div>
@@ -110,11 +82,10 @@ const FAQ = () => {
       {/* FAQ Section */}
       <section className="features-section">
         <div className="features-container">
-          <span className="features-badge">PREGUNTAS FRECUENTES</span>
-          <h2 className="features-title">¿Tienes dudas?</h2>
+          <span className="features-badge">{t('pages.faq.badge')}</span>
+          <h2 className="features-title">{t('pages.faq.section_title')}</h2>
           <p className="features-description">
-            Aquí encontrarás las respuestas a las preguntas más comunes sobre ChatSalsa. 
-            Haz clic en cualquier pregunta para ver la respuesta completa.
+            {t('pages.faq.section_description')}
           </p>
           
           <div style={{ maxWidth: '900px', margin: '60px auto 0', textAlign: 'left' }}>
@@ -139,10 +110,9 @@ const FAQ = () => {
             <div className="feature-icon-new gradient-bg rotate-right">
               <span className="feature-icon-large">🤝</span>
             </div>
-            <h3 style={{ color: '#8A2BE2', marginBottom: '20px' }}>¿No encuentras tu respuesta?</h3>
+            <h3 style={{ color: '#8A2BE2', marginBottom: '20px' }}>{t('pages.faq.help_section.title')}</h3>
             <p style={{ textAlign: 'center', fontSize: '18px', lineHeight: '1.6', marginBottom: '25px' }}>
-              Si tienes una pregunta que no está en esta lista, no dudes en contactarnos. 
-              Nuestro equipo estará encantado de ayudarte.
+              {t('pages.faq.help_section.description')}
             </p>
             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <a 
@@ -150,14 +120,14 @@ const FAQ = () => {
                 className="process-cta-button"
                 style={{ textDecoration: 'none', display: 'inline-block' }}
               >
-                Contactar Soporte
+                {t('pages.faq.help_section.contact_button')}
               </a>
               <a 
                 href="/privacy" 
                 className="btn-secondary"
                 style={{ textDecoration: 'none', display: 'inline-block' }}
               >
-                Ver Política de Privacidad
+                {t('pages.faq.help_section.privacy_button')}
               </a>
             </div>
           </div>
@@ -172,32 +142,32 @@ const FAQ = () => {
               <div className="feature-icon-new gradient-bg rotate-left">
                 <span className="feature-icon-large">⚡</span>
               </div>
-              <h3 style={{ color: '#25D366' }}>Análisis Instantáneo</h3>
-              <p>Resultados en segundos, no en horas</p>
+              <h3 style={{ color: '#25D366' }}>{t('pages.faq.features.instant.title')}</h3>
+              <p>{t('pages.faq.features.instant.description')}</p>
             </div>
             
             <div className="feature-card" style={{ textAlign: 'center' }}>
               <div className="feature-icon-new gradient-bg rotate-right">
                 <span className="feature-icon-large">🔒</span>
               </div>
-              <h3 style={{ color: '#8A2BE2' }}>100% Privado</h3>
-              <p>Tus datos nunca salen de tu dispositivo</p>
+              <h3 style={{ color: '#8A2BE2' }}>{t('pages.faq.features.private.title')}</h3>
+              <p>{t('pages.faq.features.private.description')}</p>
             </div>
             
             <div className="feature-card" style={{ textAlign: 'center' }}>
               <div className="feature-icon-new gradient-bg rotate-left">
                 <span className="feature-icon-large">🎯</span>
               </div>
-              <h3 style={{ color: '#E91E63' }}>Análisis Preciso</h3>
-              <p>IA avanzada para insights detallados</p>
+              <h3 style={{ color: '#E91E63' }}>{t('pages.faq.features.accurate.title')}</h3>
+              <p>{t('pages.faq.features.accurate.description')}</p>
             </div>
             
             <div className="feature-card" style={{ textAlign: 'center' }}>
               <div className="feature-icon-new gradient-bg rotate-right">
                 <span className="feature-icon-large">🌐</span>
               </div>
-              <h3 style={{ color: '#FF9800' }}>Multiplataforma</h3>
-              <p>Funciona en todos los dispositivos</p>
+              <h3 style={{ color: '#FF9800' }}>{t('pages.faq.features.multiplatform.title')}</h3>
+              <p>{t('pages.faq.features.multiplatform.description')}</p>
             </div>
           </div>
         </div>
@@ -207,7 +177,7 @@ const FAQ = () => {
       <section className="security-section">
         <div className="security-badge-modern">
           <span className="security-icon">❓</span>
-          <span className="security-text">Dudas Resueltas</span>
+          <span className="security-text">{t('pages.faq.security_badge')}</span>
           <span className="security-icon">✓</span>
         </div>
       </section>

@@ -27,7 +27,7 @@ function Juegos({
   const generateHeadlinesGameUrl = () => {
     try {
       if (!headlinesGameData) {
-        alert("No hay datos de juego disponibles");
+        alert(t('games.alerts.no_game_data'));
         return;
       }
       
@@ -42,7 +42,7 @@ function Juegos({
       
     } catch (error) {
       console.error('Error generando URL del juego:', error);
-      alert("Error al generar el enlace del juego");
+      alert(t('games.alerts.generate_error'));
     }
   };
 
@@ -81,7 +81,7 @@ function Juegos({
       const data = topData || window.lastAnalysisTopData;
       
       if (!data || !data.categorias || !data.usuarios) {
-        alert("No hay datos de análisis para compartir. Por favor, asegúrate de que el análisis estadístico esté completo.");
+        alert(t('games.alerts.no_analysis_data'));
         return;
       }
 
@@ -138,7 +138,7 @@ function Juegos({
       return url;
     } catch (error) {
       console.error("Error generando URL del juego de personalidades:", error);
-      alert("Error generando URL del juego de personalidades");
+      alert(t('games.alerts.personality_error'));
       return null;
     }
   };
@@ -166,7 +166,7 @@ function Juegos({
 
   // Función para compartir juego de personalidades en WhatsApp
   const sharePersonalityOnWhatsApp = () => {
-    const message = `¡Juega a adivinar quién es quién en nuestro chat de WhatsApp!\n\n${personalityGameUrl}\n\n🎮 Juego de adivinar personalidades`;
+    const message = t('share.personality_whatsapp_message', '🎭 ¡Juega a adivinar quién es quién en nuestro chat de WhatsApp!\n\n{{url}}\n\n🎮 Juego de adivinar personalidades', { url: personalityGameUrl });
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -181,7 +181,7 @@ function Juegos({
   return (
     <>
       {/* Sección de Juegos */}
-      <h2 className="analysis-special-title">🎮 Juegos</h2>
+      <h2 className="analysis-special-title">{t('games.title')}</h2>
       
       <div className="games-container">
         {/* Card 1: Juego de Titulares - Solo si está disponible */}
@@ -189,16 +189,16 @@ function Juegos({
           <div className="game-card">
             <div className="game-icon">🎯</div>
             <div className="game-content">
-              <span className="game-badge">JUEGO INTERACTIVO</span>
-              <h3 className="game-title">¿Quién es quién?</h3>
+              <span className="game-badge">{t('games.badge')}</span>
+              <h3 className="game-title">{t('games.headlines.title')}</h3>
               <p className="game-description">
-                {t('share.game_description', 'Descubre quién corresponde a cada titular polémico')}
+                {t('games.headlines.description')}
               </p>
               <button 
                 className="game-button"
                 onClick={generateHeadlinesGameUrl}
               >
-                🚀 Compartir juego
+                {t('games.share_button')}
               </button>
             </div>
           </div>
@@ -209,16 +209,16 @@ function Juegos({
           <div className="game-card">
             <div className="game-icon">🎭</div>
             <div className="game-content">
-              <span className="game-badge">JUEGO INTERACTIVO</span>
-              <h3 className="game-title">¿Quién es más...?</h3>
+              <span className="game-badge">{t('games.badge')}</span>
+              <h3 className="game-title">{t('games.personality.title')}</h3>
               <p className="game-description">
-                Comparte un juego para que tus amigos adivinen quién es el profesor, el vampiro y otras personalidades de tu chat.
+                {t('games.personality.description')}
               </p>
               <button 
                 className="game-button"
                 onClick={generatePersonalityGameUrl}
               >
-                🚀 Compartir juego
+                {t('games.share_button')}
               </button>
             </div>
           </div>
@@ -231,7 +231,7 @@ function Juegos({
           <div className="share-game-modal-content">
             <h3>{t('share.modal_title', 'Compartir Juego')}</h3>
             <p>{t('share.modal_description', 'Comparte este enlace con tus amigos para que puedan jugar:')}</p>
-            <p className="warning-message">⚠️ Enlace sólo válido para este chat</p>
+            <p className="warning-message">{t('games.share_modal.warning')}</p>
             
             <div className="game-url-container">
               <input 
@@ -241,19 +241,19 @@ function Juegos({
                 onClick={(e) => e.target.select()}
               />
               <button onClick={copyToClipboard}>
-                {t('share.copy_button', 'Copiar')}
+                {t('games.share_modal.copy_button')}
               </button>
             </div>
             
             {showCopiedMessage && (
               <div className="copied-message">
-                {t('share.copied_message', '¡Enlace copiado!')}
+                {t('games.share_modal.copied_message')}
               </div>
             )}
             
             <div className="share-options">
               <button className="whatsapp-share" onClick={shareOnWhatsApp}>
-                <span>WhatsApp</span>
+                <span>{t('games.share_modal.whatsapp')}</span>
                 <span>📱</span>
               </button>
             </div>
@@ -262,7 +262,7 @@ function Juegos({
               className="close-modal-button"
               onClick={() => setShowShareGameModal(false)}
             >
-              {t('share.close_button', 'Cerrar')}
+              {t('games.share_modal.close_button')}
             </button>
           </div>
         </div>
@@ -273,9 +273,9 @@ function Juegos({
         <div className="share-game-modal">
           <div className="share-game-modal-content">
             <span className="close-modal" onClick={() => setShowPersonalityModal(false)}>&times;</span>
-            <h3>¡Comparte el juego!</h3>
-            <p>Envía este enlace a tus amigos para que adivinen quién es el profesor, el vampiro y demás personalidades del chat.</p>
-            <p className="warning-message">⚠️ Enlace sólo válido para este chat</p>
+            <h3>{t('games.share_modal.title')}</h3>
+            <p>{t('games.share_modal.description')}</p>
+            <p className="warning-message">{t('games.share_modal.warning')}</p>
             
             <div className="game-url-container">
               <input 
@@ -285,14 +285,14 @@ function Juegos({
                 onClick={(e) => e.target.select()} 
               />
               <button onClick={copyPersonalityToClipboard}>
-                Copiar
+                {t('games.share_modal.copy_button')}
               </button>
-              {showPersonalityCopiedMessage && <div className="copied-message">¡Copiado!</div>}
+              {showPersonalityCopiedMessage && <div className="copied-message">{t('games.share_modal.copied_message')}</div>}
             </div>
             
             <div className="share-options">
               <button className="whatsapp-share" onClick={sharePersonalityOnWhatsApp}>
-                <span>WhatsApp</span>
+                <span>{t('games.share_modal.whatsapp')}</span>
                 <span>📱</span>
               </button>
             </div>
@@ -301,7 +301,7 @@ function Juegos({
               className="close-modal-button"
               onClick={() => setShowPersonalityModal(false)}
             >
-              Cerrar
+              {t('games.share_modal.close_button')}
             </button>
           </div>
         </div>

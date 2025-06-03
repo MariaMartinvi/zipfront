@@ -34,7 +34,19 @@
       "insufficient_data": "Not enough data to display response times.",
       "morning_pattern": "{{emoji}} This is an early bird group: {{percentage}}% of messages are sent before noon.",
       "afternoon_pattern": "{{emoji}} This is a daytime group: {{percentage}}% of messages are sent between 12:00 and 8:00 PM.",
-      "night_pattern": "{{emoji}} This is a night owl group: {{percentage}}% of messages are sent after 8:00 PM."
+      "night_pattern": "{{emoji}} This is a night owl group: {{percentage}}% of messages are sent after 8:00 PM.",
+      "trend_highlight": "Most notable data",
+      "increased": "has increased their response time by",
+      "decreased": "has reduced their response time by",
+      "increased_msgs": "has increased their message frequency by",
+      "decreased_msgs": "has decreased their message frequency by",
+      "percentage_points": "percentage points",
+      "between": "between",
+      "from": "from",
+      "to": "to",
+      "sustained_trend": "sustained trend over {{count}} months",
+      "response_time_trend_msg": "in their response time between",
+      "and": "and"
     },
     "top_profiles": {
       "title": "Highlighted Chat Profiles",
@@ -123,6 +135,26 @@
         "description": "Mentions more vices and alcoholic beverages",
         "mentions": "Vice mentions",
         "percentage": "Percentage of messages with mentions"
+      },
+      "comico": {
+        "title": "The Comic",
+        "description": "Has the gift of making others laugh"
+      },
+      "agradecido": {
+        "title": "The Grateful",
+        "description": "Always says thank you for everything"
+      },
+      "disculpon": {
+        "title": "The Apologizer",
+        "description": "Apologizes more than anyone else"
+      },
+      "curioso": {
+        "title": "The Curious",
+        "description": "Always asking questions"
+      },
+      "mala_influencia": {
+        "title": "The Bad Influence",
+        "description": "Mentions more vices and uses more profanity"
       }
     },
     "login_required": {
@@ -180,6 +212,20 @@
     },
     "privacy": {
       "no_ai_analysis": "Do not share my data with AI for psychological analysis (data will not be sent to Azure)"
+    },
+    "stats_labels": {
+      "vice_mentions": "Vice mentions",
+      "vice_percentage": "% messages with vices",
+      "profanity_mentions": "Profanity mentions", 
+      "profanity_percentage": "% messages with profanity",
+      "questions_asked": "Questions asked",
+      "questions_percentage": "% of messages with questions",
+      "apologies_count": "Times apologized",
+      "apologies_percentage": "% of messages with apologies",
+      "thanks_count": "Times said thanks",
+      "thanks_percentage": "% of messages with thanks",
+      "funny_messages": "Messages that make laugh",
+      "funny_percentage": "% of messages that are funny"
     }
   },
   "header": {
@@ -189,7 +235,8 @@
     "contact": "Contact",
     "login": "Login",
     "register": "Register",
-    "logout": "Logout"
+    "logout": "Logout",
+    "free_trial": "Free trial"
   },
   "actions": {
     "upload": "Upload file",
@@ -396,7 +443,9 @@
       "modal_alt": "Complete analysis example"
     },
     "testimonials": {
+      "badge": "TESTIMONIALS",
       "title": "What our users say",
+      "description": "Discover how Chatsalsa has helped people around the world better understand their conversations.",
       "reviews": [
         {
           "content": "Amazing! The psychological analysis allowed me to better understand my friends and why we respond the way we do.",
@@ -497,8 +546,10 @@
       "chats": "{{quota}} chat analyses per month",
       "stats": "Complete statistical analysis",
       "psych": "Detailed psychological analysis",
-      "renewal": "Monthly automatic renewal"
-    }
+      "renewal": "Automatic monthly renewal"
+    },
+    "per_month": "/month",
+    "current_plan_badge": "✓ Current Plan"
   },
   "weekdays": {
     "monday": "Monday",
@@ -530,33 +581,68 @@
   "pages": {
     "faq": {
       "title": "Frequently Asked Questions",
-      "subtitle": "Find answers to the most common questions about our service",
+      "subtitle": "Find answers to the most common questions about our service.",
+      "description": "Everything you need to know about ChatSalsa is here. If you can't find your answer, contact us!",
+      "badge": "FREQUENTLY ASKED QUESTIONS",
+      "section_title": "Have questions?",
+      "section_description": "Here you'll find answers to the most common questions about ChatSalsa. Click on any question to see the complete answer.",
       "questions": [
         {
-          "question": "How does the WhatsApp chat analysis work?",
-          "answer": "Our system analyzes the content of your exported WhatsApp conversations, identifying patterns, statistics, and trends. We use advanced algorithms and natural language processing to provide valuable insights about your communications."
+          "question": "How does WhatsApp conversation analysis work?",
+          "answer": "Our service analyzes your WhatsApp chats after exporting them as a ZIP file. We use advanced data analysis techniques and AI to provide you with detailed insights about your conversations, including communication patterns, psychological analysis, and detailed statistics.",
+          "icon": "🔍"
         },
         {
-          "question": "Is it safe to upload my conversations?",
-          "answer": "Yes, your privacy is our priority. We use end-to-end encryption, and your data is automatically deleted after analysis. We never permanently store any conversations and never share your information with third parties."
+          "question": "Is it safe to upload my chats?",
+          "answer": "Yes, privacy is our priority. Your personal data never leaves your device. Statistical analysis is performed 100% on your device. For psychological analysis, chats are anonymized and fragmented on your device before being sent to Microsoft Azure. We only send a fragment of around 20-50k characters. We send chats without personal data. You can review our privacy policy for more details. If you still prefer that no data leaves your device, you can choose the 'no psychological analysis' option when uploading the file.",
+          "icon": "🔒"
         },
         {
-          "question": "What file formats are supported?",
-          "answer": "We currently support WhatsApp chat files exported in .txt format and .zip files containing WhatsApp exports."
+          "question": "What type of analysis does the platform offer?",
+          "answer": "We offer comprehensive analysis that includes: detailed conversation statistics, communication patterns, schedule and activity analysis, emoji usage and most frequent words, analysis of started and ended conversations, and optional psychological analysis generated by AI. All analyses are presented in a visual and interactive way.",
+          "icon": "📊"
         },
         {
-          "question": "How many conversations can I analyze with my plan?",
-          "answer": "The number of conversations you can analyze depends on your subscription plan. Free users can analyze a limited number of chats, while premium subscribers enjoy a higher monthly quota. Check our Plans page for more details."
+          "question": "How can I export my WhatsApp chats?",
+          "answer": "In WhatsApp, go to a chat, select 'Export chat' and save as a ZIP file without media. The platform accepts WhatsApp ZIP files from both Android and iOS, and automatically detects the format. You can upload the file directly to our platform.",
+          "icon": "📱"
         },
         {
-          "question": "How do I export a WhatsApp conversation?",
-          "answer": "In WhatsApp, open the chat you want to export, tap the three vertical dots > More > Export chat. You can choose to include media files or not. Then select how you want to share the exported file and save it to upload to our platform."
+          "question": "How much does the service cost?",
+          "answer": "We offer different plans: a free plan with basic analysis and premium plans with more detailed analysis, higher usage frequency, and advanced features. All plans include the option to skip AI psychological analysis if you prefer.",
+          "icon": "💰"
         },
         {
-          "question": "Can I cancel my subscription at any time?",
-          "answer": "Yes, you can cancel your subscription at any time from your dashboard. The cancellation will be effective at the end of the current billing period."
+          "question": "Can I use the service on any device?",
+          "answer": "Yes, our platform is completely web-based and responsive. You can access it from any device (computers, tablets, and mobile phones) and the analyses automatically adapt to your screen. You can also easily share results with others.",
+          "icon": "📱"
         }
-      ]
+      ],
+      "help_section": {
+        "title": "Can't find your answer?",
+        "description": "If you have a question that's not on this list, don't hesitate to contact us. Our team will be happy to help you.",
+        "contact_button": "Contact Support",
+        "privacy_button": "View Privacy Policy"
+      },
+      "features": {
+        "instant": {
+          "title": "Instant Analysis",
+          "description": "Results in seconds, not hours"
+        },
+        "private": {
+          "title": "100% Private",
+          "description": "Your data never leaves your device"
+        },
+        "accurate": {
+          "title": "Accurate Analysis",
+          "description": "Advanced AI for detailed insights"
+        },
+        "multiplatform": {
+          "title": "Multiplatform",
+          "description": "Works on all devices"
+        }
+      },
+      "security_badge": "Questions Resolved"
     },
     "contact": {
       "title": "Contact Us",
@@ -577,38 +663,80 @@
       }
     },
     "terms": {
-      "title": "Terms and Conditions",
-      "updated": "Last updated: June 1, 2023",
-      "content": [
+      "title": "Terms of Service",
+      "updated": "Last updated: April 2024",
+      "subtitle": "These terms set out the conditions under which you may use our WhatsApp conversation analysis service.",
+      "badge": "TERMS AND CONDITIONS",
+      "section_title": "Conditions of Use",
+      "section_description": "Please read these terms carefully before using our service. By using ChatSalsa, you agree to be bound by these terms.",
+      "sections": [
         {
-          "section": "1. Introduction",
-          "text": "These Terms and Conditions govern the use of the WhatsApp conversation analysis service provided by ChatSalsa. By using our service, you accept these terms in full. If you disagree with any part of these terms, you must not use our service."
+          "title": "1. Acceptance of Terms",
+          "icon": "✅",
+          "content": "By accessing and using our WhatsApp conversation analysis service, you accept these terms of service in their entirety. If you do not agree with any of these terms, you should not use our service."
         },
         {
-          "section": "2. Service Use",
-          "text": "Our service allows users to analyze exported WhatsApp conversations. It is your responsibility to ensure that you have the legal right to upload and analyze such conversations. You must not use our service for illegal or unauthorized purposes."
+          "title": "2. Service Description",
+          "icon": "🔍",
+          "content": "We provide a web platform that allows users to upload and analyze WhatsApp conversations exported as ZIP files, offering various insights and statistical and AI analysis."
         },
         {
-          "section": "3. Privacy and Data Protection",
-          "text": "We respect your privacy and protect your personal data. We use secure encryption and delete your conversations after analysis. For more information, please refer to our Privacy Policy."
+          "title": "3. Service Use",
+          "icon": "👤",
+          "content": "",
+          "items": [
+            "You must be at least 18 years old to use our service.",
+            "You are responsible for maintaining the confidentiality of your account.",
+            "You agree not to use the service for illegal or unauthorized activities."
+          ]
         },
         {
-          "section": "4. Subscriptions and Payments",
-          "text": "We offer different subscription plans with various features. Payments are processed through secure payment providers. Subscriptions automatically renew until canceled. You can cancel your subscription at any time from your dashboard."
+          "title": "4. Privacy and Data",
+          "icon": "🔒",
+          "content": "We are committed to protecting your privacy. Files you upload are processed temporarily and automatically deleted after analysis. See our Privacy Policy for more details."
         },
         {
-          "section": "5. Limitation of Liability",
-          "text": "ChatSalsa provides this service 'as is' and does not guarantee that the service will be uninterrupted or error-free. We are not responsible for any direct, indirect, incidental, or consequential damages resulting from the use of our service."
+          "title": "5. Intellectual Property Rights",
+          "icon": "©️",
+          "content": "All content, features and functionality of our service are our property and are protected by copyright, trademarks and other intellectual property laws."
         },
         {
-          "section": "6. Changes to Terms",
-          "text": "We reserve the right to modify these terms at any time. Modifications will take effect immediately upon posting on our website. It is your responsibility to review these terms periodically."
+          "title": "6. Limitation of Liability",
+          "icon": "⚠️",
+          "content": "Our service is provided \"as is\", without warranties of any kind. We are not liable for any direct, indirect, incidental or consequential damages arising from the use of our service."
         },
         {
-          "section": "7. Contact",
-          "text": "If you have any questions about these Terms and Conditions, you can contact us at support@chatsalsa.com."
+          "title": "7. Service Modifications",
+          "icon": "🔄",
+          "content": "We reserve the right to modify or discontinue the service at any time, with or without notice. We will not be liable to you or any third party for any modification, suspension or discontinuation of the service."
+        },
+        {
+          "title": "8. Plans and Subscriptions",
+          "icon": "💳",
+          "content": "We offer free and paid plans. The specific terms of each plan, including pricing, features and usage limits, are detailed on our plans page."
+        },
+        {
+          "title": "9. Termination",
+          "icon": "🚪",
+          "content": "We may terminate or suspend your account and access to the service immediately, without prior notice or liability, for any reason, including breach of these terms."
+        },
+        {
+          "title": "10. Applicable Law",
+          "icon": "⚖️",
+          "content": "These terms shall be governed and interpreted in accordance with the laws of Spain, without regard to its conflict of law principles."
+        },
+        {
+          "title": "11. Contact",
+          "icon": "📧",
+          "content": "If you have any questions about these terms, please contact us."
         }
-      ]
+      ],
+      "important_notice": {
+        "title": "Important Notice",
+        "description": "By continuing to use our service, you accept these terms of service. If you have any questions, don't hesitate to",
+        "contact_link": "contact us"
+      },
+      "security_badge": "Updated Terms"
     },
     "privacy": {
       "title": "Privacy Policy",
@@ -784,6 +912,7 @@
   },
   "share": {
     "whatsapp_message": "🎯 Game: Who Said What?\n\nCan you guess who corresponds to each controversial headline?\n\n👇 Play here:\n{{url}}",
+    "personality_whatsapp_message": "🎭 Play guess who's who in our WhatsApp chat!\n\n{{url}}\n\n🎮 Personality guessing game",
     "game_title": "Who Said What?",
     "game_description": "Discover who corresponds to each controversial headline",
     "share_game_button": "Share Headlines Game",
@@ -873,9 +1002,13 @@
         "name": "Grateful",
         "description": "Uses more gratitude emojis"
       },
+      "disculpon": {
+        "name": "Apologizer",
+        "description": "Apologizes more than anyone else"
+      },
       "curioso": {
         "name": "Curious",
-        "description": "Asks more questions"
+        "description": "Always asking questions"
       },
       "negativo": {
         "name": "Negative",
@@ -883,7 +1016,7 @@
       },
       "mala_influencia": {
         "name": "Bad Influence",
-        "description": "Mentions more vices"
+        "description": "Mentions more vices and uses more profanity"
       }
     },
     "results": {
@@ -933,5 +1066,325 @@
         }
       }
     }
+  },
+  "features_page": {
+    "badge": "Features",
+    "title": "Discover everything ChatSalsa can do",
+    "description": "Our platform combines advanced statistical analysis with artificial intelligence to offer you unique insights about your conversations.",
+    "psychological": {
+      "title": "Psychological Analysis",
+      "description": "Psychological analysis of group members' communication patterns. Red flags and advice."
+    },
+    "statistics": {
+      "title": "Detailed Statistics", 
+      "description": "Complete statistics about who dominates conversations, active hours and frequent topics."
+    },
+    "emotional": {
+      "title": "Emotional Analysis",
+      "description": "Emotional interpretation based on emoji and language usage to understand conversation tone."
+    },
+    "games": {
+      "title": "Fun Games",
+      "description": "Play \"Who's Who?\" with your WhatsApp group and discover who's who based on their communication style."
+    },
+    "privacy": {
+      "title": "100% Private",
+      "description": "Statistical analysis is performed on your device and the chat never leaves your device. Your privacy is our priority.",
+      "link": "How we do it"
+    },
+    "instant": {
+      "title": "Instant Analysis",
+      "description": "Get results in seconds with our advanced AI, no waiting or complicated processes."
+    }
+  },
+  "process": {
+    "badge": "Simple Process",
+    "title": "How does it work?",
+    "description": "In just three steps you can discover all the secrets of your WhatsApp conversations.",
+    "steps": {
+      "export": {
+        "title": "Export your chat",
+        "description": "Export the WhatsApp conversation you want to analyze from the official app."
+      },
+      "upload": {
+        "title": "Upload the file",
+        "description": "Upload the chat file to our platform. Remember that analysis is performed on your device."
+      },
+      "discover": {
+        "title": "Discover the results",
+        "description": "Get instant comprehensive analysis with statistics, psychological profiles and interactive games."
+      }
+    },
+    "cta": {
+      "text": "Ready to discover the secrets of your conversations?",
+      "button": "Analyze my chat now"
+    }
+  },
+  "demo": {
+    "badge": "Demo",
+    "title": "See what Chatsalsa can do",
+    "description": "Discover the type of information you can get from your WhatsApp conversations.",
+    "stats": {
+      "title": "Statistics for the group \"Family WhatsApp\"",
+      "participation": "Chat participation",
+      "active_hours": "Active hours",
+      "profiles": "Group profiles"
+    },
+    "psychology": {
+      "title": "Psychological analysis"
+    },
+    "users": {
+      "eva": "Eva",
+      "miguel": "Miguel", 
+      "ana": "Ana"
+    },
+    "user_profiles": {
+      "ana": {
+        "description": "Communicative and organized. Always stays on top of everything happening in the family.",
+        "traits": ["Communicative", "Organized", "Social"]
+      },
+      "miguel": {
+        "description": "Thoughtful and careful. Prefers direct messages and gets straight to the point in conversations.",
+        "traits": ["Thoughtful", "Direct", "Practical"]
+      }
+    },
+    "red_flags": {
+      "title": "Red flags in the relationship",
+      "items": {
+        "passive_aggressive": {
+          "title": "Passive-aggressive communication",
+          "description": "Patterns of messages with double meaning and evasive responses detected.",
+          "tags": ["Evasion", "Passive-aggressive"]
+        }
+      }
+    }
+  },
+  "analysis_summary": {
+    "badge": "GENERAL SUMMARY",
+    "description": "Your complete WhatsApp conversation analysis is ready. Explore the most important data from your chat.",
+    "visual_analysis": {
+      "badge": "VISUAL ANALYSIS",
+      "title": "Detailed charts and statistics",
+      "description": "Explore your group's communication patterns through interactive visualizations."
+    },
+    "trends": {
+      "badge": "ADVANCED TRENDS",
+      "title": "Temporal trend analysis",
+      "description": "Discover how your group's communication patterns have evolved over time."
+    },
+    "profiles": {
+      "description": "Discover the most outstanding profiles in your chat and their unique characteristics that make them special."
+    }
+  },
+  "games": {
+    "title": "🎮 Games",
+    "badge": "INTERACTIVE GAME",
+    "share_button": "🚀 Share game",
+    "headlines": {
+      "title": "Who's Who?",
+      "description": "Discover who corresponds to each controversial headline"
+    },
+    "personality": {
+      "title": "Who is more...?",
+      "description": "Share a game for your friends to guess who is the professor, the vampire and other personalities in your chat."
+    },
+    "share_modal": {
+      "title": "Share the game!",
+      "description": "Send this link to your friends so they can guess who is the professor, the vampire and other personalities in the chat.",
+      "warning": "⚠️ Link only valid for this chat",
+      "copy_button": "Copy",
+      "copied_message": "Copied!",
+      "close_button": "Close",
+      "whatsapp": "WhatsApp"
+    },
+    "alerts": {
+      "no_game_data": "No game data available",
+      "generate_error": "Error generating game link",
+      "no_analysis_data": "No analysis data to share. Please make sure the statistical analysis is complete.",
+      "personality_error": "Error generating personality game URL"
+    }
+  },
+  "offline": {
+    "mode_title": "⚠️ Offline mode",
+    "mode_description": "The server is not available. The application works with local data."
+  },
+  "contact_page": {
+    "hero": {
+      "title": "Contact Us",
+      "description1": "Do you have any questions or suggestions? We're here to help you.",
+      "description2": "Our team will be delighted to resolve all your questions about ChatSalsa."
+    },
+    "section": {
+      "badge": "GET IN TOUCH",
+      "title": "Write to Us",
+      "description": "Fill out the form and we'll get in touch with you as soon as possible."
+    },
+    "info": {
+      "title": "Contact Information",
+      "email_label": "Email",
+      "company_label": "Company",
+      "address_label": "Address",
+      "address_line1": "Roma Avenue 153",
+      "address_line2": "08011 Barcelona, Spain"
+    },
+    "form": {
+      "title": "Send Us a Message",
+      "name_label": "Full Name",
+      "email_label": "Email Address",
+      "subject_label": "Subject",
+      "message_label": "Message",
+      "submit_button": "Send Message",
+      "success_alert": "Message sent. Thank you for contacting us!"
+    },
+    "features": {
+      "fast_response": {
+        "title": "Fast Response",
+        "description": "We commit to responding to your inquiry as soon as possible."
+      },
+      "personalized_support": {
+        "title": "Personalized Support",
+        "description": "Each inquiry receives personalized attention tailored to your specific needs."
+      },
+      "privacy_guaranteed": {
+        "title": "Privacy Guaranteed",
+        "description": "Your personal information and inquiries are treated with complete confidentiality."
+      }
+    }
+  },
+  "cookies": {
+    "title": "Cookie Policy",
+    "updated": "Last updated: December 2024",
+    "subtitle": "Information about how we use cookies on our website to improve your browsing experience.",
+    "badge": "COOKIE POLICY",
+    "section_title": "Cookie Management",
+    "section_description": "Learn about what cookies we use, what we use them for, and how you can manage your preferences.",
+    "sections": {
+      "what_are_cookies": {
+        "title": "What are cookies?",
+        "description": "Cookies are small text files that are stored on your device when you visit our website. These cookies help us improve your browsing experience and provide you with a more personalized service."
+      },
+      "types_of_cookies": {
+        "title": "Types of cookies we use",
+        "strictly_necessary": {
+          "title": "Strictly necessary cookies",
+          "description": "These cookies are essential for the website to function and cannot be disabled. They include:",
+          "items": [
+            "Firebase Auth: User authentication and session management",
+            "Stripe: Secure payment processing and fraud prevention",
+            "Workbox PWA: Progressive web app functionality and offline cache",
+            "Consent cookies: Remember your cookie preferences"
+          ]
+        },
+        "analytics": {
+          "title": "Analytics cookies",
+          "description": "Used to understand how you interact with our website. They include:",
+          "items": [
+            "Google Analytics (GTM): Usage and behavior statistics",
+            "Microsoft Clarity: Behavior analysis and heat maps (if enabled)",
+            "Internal metrics: To improve the chat analysis service"
+          ]
+        },
+        "marketing": {
+          "title": "Marketing cookies",
+          "description": "Used to personalize advertising and measure its effectiveness. They include:",
+          "items": [
+            "Google Ads: Personalized advertising and remarketing",
+            "Facebook Pixel: Conversion tracking and custom audiences",
+            "TikTok Pixel: TikTok Ads conversion tracking"
+          ]
+        },
+        "functionality": {
+          "title": "Functionality cookies",
+          "description": "Allow us to remember your settings to offer you a personalized experience. They include:",
+          "items": [
+            "Language preferences: Remember your selected language",
+            "Interface settings: Theme, layout and display preferences",
+            "User data: Non-sensitive information to personalize the experience"
+          ]
+        }
+      },
+      "specific_cookies": {
+        "title": "Specific cookies we use",
+        "warning": "⚠️ Important note: The following list includes all cookies that may be generated based on configured services. The specific cookies installed on your device depend on your consent preferences, active services, and your browser configuration.",
+        "own_cookies": {
+          "title": "Our own cookies:",
+          "items": [
+            "cookieConsent: Stores whether you have accepted cookie usage (1 year)",
+            "cookiePreferences: Saves your specific preferences by cookie category (1 year)",
+            "cookieConsentDate: Date when you gave your consent for cookies (1 year)"
+          ]
+        },
+        "third_party_cookies": {
+          "title": "Third-party cookies - Google Tag Manager:",
+          "note": "The following cookies are only generated if the corresponding tags are active in GTM:",
+          "items": [
+            "_ga: Main Google Analytics cookie (2 years)",
+            "_ga_[ID]: Google Analytics 4 cookie (2 years)",
+            "_gid: Google Analytics cookie (24 hours)",
+            "_fbp: Facebook Pixel cookie (90 days)",
+            "_ttp: TikTok Pixel cookie (13 months)"
+          ]
+        },
+        "firebase_stripe": {
+          "title": "Firebase and Stripe cookies:",
+          "items": [
+            "firebase-heartbeat-store: Connection with Firebase",
+            "__stripe_mid: Stripe fraud detection (1 year)",
+            "__stripe_sid: Stripe session (30 minutes)"
+          ]
+        }
+      },
+      "cookie_management": {
+        "title": "Cookie management",
+        "description": "You can control and manage cookies in several ways:",
+        "ways": [
+          "Through our cookie banner when visiting the site",
+          "By configuring your browser to block or delete cookies",
+          "Using your device's privacy options"
+        ],
+        "browser_settings": {
+          "title": "Browser settings:",
+          "browsers": [
+            "Chrome: Settings → Privacy and security → Cookies",
+            "Firefox: Options → Privacy and security → Cookies",
+            "Safari: Preferences → Privacy → Cookies",
+            "Edge: Settings → Cookies and site permissions"
+          ]
+        }
+      },
+      "retention_deletion": {
+        "title": "Cookie retention and deletion",
+        "retention_time": {
+          "title": "Retention time:",
+          "items": [
+            "Session cookies: Deleted when closing the browser",
+            "Temporary cookies: Between 30 minutes and 24 hours",
+            "Analytics cookies: Up to 2 years (Google Analytics)",
+            "Preference cookies: 1 year",
+            "Authentication cookies: Up to 2 years"
+          ]
+        },
+        "how_to_delete": {
+          "title": "How to delete all cookies:",
+          "items": [
+            "From our site: Revoke your consent in the cookie banner",
+            "From your browser: Delete specific cookies from \"chatsalsa.com\"",
+            "Incognito mode: Cookies are automatically deleted when closing",
+            "Automatic settings: Configure your browser to delete cookies on exit"
+          ]
+        }
+      },
+      "updates_contact": {
+        "title": "Updates and contact",
+        "updates_description": "We may update this Cookie Policy occasionally to reflect changes in our practices or for legal reasons. We will notify you of any significant changes.",
+        "contact_description": "If you have any questions about our Cookie Policy, please",
+        "contact_link": "contact us"
+      }
+    },
+    "consent_section": {
+      "title": "Cookie Consent",
+      "description": "By continuing to use our website, you accept the use of cookies as described in this policy."
+    },
+    "security_badge": "Transparent Cookies"
   }
 } 

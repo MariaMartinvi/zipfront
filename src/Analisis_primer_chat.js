@@ -1066,9 +1066,9 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       {/* Summary Section */}
       <section className="summary-section">
         <div className="summary-container">
-          <span className="summary-badge">RESUMEN GENERAL</span>
+          <span className="summary-badge">{t('analysis_summary.badge')}</span>
           <h2 className="summary-title">{t('app.primer_chat.title')}</h2>
-          <p className="summary-description">Tu análisis completo de conversaciones de WhatsApp está listo. Explora los datos más importantes de tu chat.</p>
+          <p className="summary-description">{t('analysis_summary.description')}</p>
           
           <div className="summary-content">
             <div className="stat-highlight-card">
@@ -1125,9 +1125,9 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       {/* Charts Section */}
       <section className="charts-section">
         <div className="charts-container">
-          <span className="charts-badge">ANÁLISIS VISUAL</span>
-          <h2 className="charts-title">Gráficos y estadísticas detalladas</h2>
-          <p className="charts-description">Explora los patrones de comunicación de tu grupo a través de visualizaciones interactivas.</p>
+          <span className="charts-badge">{t('analysis_summary.visual_analysis.badge')}</span>
+          <h2 className="charts-title">{t('analysis_summary.visual_analysis.title')}</h2>
+          <p className="charts-description">{t('analysis_summary.visual_analysis.description')}</p>
           
           <div className="charts-grid">
             {/* Gráfico de actividad por día de la semana */}
@@ -1292,9 +1292,9 @@ const AnalisisPrimerChat = ({ operationId, chatData }) => {
       {/* Trends Section */}
       <section className="trends-section">
         <div className="trends-container">
-          <span className="trends-badge">TENDENCIAS AVANZADAS</span>
-          <h2 className="trends-title">Análisis de tendencias temporales</h2>
-          <p className="trends-description">Descubre cómo han evolucionado los patrones de comunicación de tu grupo a lo largo del tiempo.</p>
+          <span className="trends-badge">{t('analysis_summary.trends.badge')}</span>
+          <h2 className="trends-title">{t('analysis_summary.trends.title')}</h2>
+          <p className="trends-description">{t('analysis_summary.trends.description')}</p>
           
           <div className="trends-grid">
             {/* Gráfico de tiempo de respuesta */}
