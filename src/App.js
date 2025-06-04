@@ -1722,11 +1722,56 @@ const tryDeleteFiles = async (operationId) => {
       const debugDiv = document.getElementById('mobile-debug') || document.createElement('div');
       if (!document.getElementById('mobile-debug')) {
         debugDiv.id = 'mobile-debug';
-        debugDiv.style.cssText = `position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); color: white; padding: 8px; font-size: 11px; border-radius: 5px; max-width: 250px; font-family: monospace;`;
+        debugDiv.style.cssText = `position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); color: white; padding: 8px; font-size: 10px; border-radius: 5px; max-width: 280px; font-family: monospace; overflow-y: auto; max-height: 90vh;`;
         document.body.appendChild(debugDiv);
       }
       const listeners = typeof window.getEventListeners !== 'undefined' ? window.getEventListeners(window).beforeunload?.length : 'DevTools only';
-      debugDiv.innerHTML = `🔍 DEBUG PWA<br>hasValuableData: ${hasValuableData}<br>isAnalysisComplete: ${isAnalysisComplete}<br>isRecoveringState: ${isRecoveringState}<br>isLoading: ${isLoading}<br>REACT VARS:<br>chatGptResponse: ${!!chatGptResponse}<br>operationId: ${!!operationId}<br>beforeunload listeners: ${listeners}<br>DEBERÍA funcionar`;
+      
+      // Información completa para comparar contextos
+      const contextInfo = {
+        // Window/Document
+        referrer: document.referrer,
+        visibilityState: document.visibilityState,
+        isSecure: window.isSecureContext,
+        
+        // PWA context
+        standalone: window.matchMedia('(display-mode: standalone)').matches,
+        navStandalone: navigator.standalone || false,
+        
+        // URL/Navigation
+        href: window.location.href,
+        search: window.location.search,
+        hash: window.location.hash,
+        historyLength: window.history.length,
+        
+        // Service Worker
+        swController: !!navigator.serviceWorker.controller,
+        
+        // User Agent
+        userAgent: navigator.userAgent.includes('Chrome'),
+        
+        // Document ready state
+        readyState: document.readyState
+      };
+      
+      debugDiv.innerHTML = `🔍 DEBUG CONTEXT<br>
+      hasValuableData: ${hasValuableData}<br>
+      isAnalysisComplete: ${isAnalysisComplete}<br>
+      isLoading: ${isLoading}<br>
+      REACT: chatGpt:${!!chatGptResponse} opId:${!!operationId}<br>
+      beforeunload listeners: ${listeners}<br>
+      <br>CONTEXT COMPARISON:<br>
+      referrer: ${contextInfo.referrer}<br>
+      visibilityState: ${contextInfo.visibilityState}<br>
+      standalone: ${contextInfo.standalone}<br>
+      navStandalone: ${contextInfo.navStandalone}<br>
+      URL: ${contextInfo.href}<br>
+      search: ${contextInfo.search}<br>
+      hash: ${contextInfo.hash}<br>
+      historyLength: ${contextInfo.historyLength}<br>
+      swController: ${contextInfo.swController}<br>
+      readyState: ${contextInfo.readyState}<br>
+      DEBERÍA funcionar`;
     }
     
     // Verificar si estamos procesando un archivo compartido desde WhatsApp
