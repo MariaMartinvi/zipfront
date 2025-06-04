@@ -619,9 +619,22 @@ export const canUploadChat = async (userId) => {
     const userProfile = userDoc.data();
     const plan = userProfile.plan || 'free';
     const currentUsage = userProfile.currentPeriodUsage || 0;
+    const isAdmin = userProfile.is_admin || false;
     
-    console.log(`[canUploadChat] Plan: ${plan}, Uso actual: ${currentUsage}`);
+    console.log(`[canUploadChat] Plan: ${plan}, Uso actual: ${currentUsage}, Es Admin: ${isAdmin}`);
     console.log(`[canUploadChat] Datos completos del usuario:`, userProfile);
+    
+    // Verificar si el usuario es administrador - uploads ilimitados
+    if (isAdmin) {
+      console.log(`[canUploadChat] Usuario ADMINISTRADOR - Uploads ilimitados permitidos`);
+      return {
+        canUpload: true,
+        plan: plan,
+        currentUsage: currentUsage,
+        quota: 'unlimited',
+        message: 'Usuario administrador - uploads ilimitados'
+      };
+    }
     
     let canUpload = false;
     let quota = 0;
@@ -905,5 +918,95 @@ export const handleGoogleRedirectResult = async () => {
 export const onAuthStateChanged = (auth, callback) => {
   return firebaseAuthStateChanged(auth, callback);
 };
+
+// Función helper para establecer un usuario como administrador
+export const setUserAsAdmin = async (userId, isAdmin = true) => {
+  try {
+    console.log(`Estableciendo usuario ${userId} como administrador: ${isAdmin}`);
+    
+    if (!userId) {
+      throw new Error('ID de usuario requerido');
+    }
+    
+    const userRef = doc(db, 'users', userId);
+    
+    // Verificar si el usuario existe
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      console.log('Usuario no encontrado, creando nuevo documento...');
+      // Crear nuevo documento de usuario como administrador
+      await setDoc(userRef, {
+        is_admin: isAdmin,
+        plan: 'free', // Plan por defecto
+        currentPeriodUsage: 0,
+        totalUploads: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      console.log(`✅ Usuario ${userId} creado como administrador: ${isAdmin}`);
+    } else {
+      // Actualizar usuario existente
+      await updateDoc(userRef, {
+        is_admin: isAdmin,
+        updatedAt: serverTimestamp()
+      });
+      console.log(`✅ Usuario ${userId} actualizado como administrador: ${isAdmin}`);
+    }
+    
+    // Verificar la actualización
+    const updatedDoc = await getDoc(userRef);
+    const userData = updatedDoc.data();
+    
+    console.log('Datos del usuario actualizado:');
+    console.log(`- ID: ${userId}`);
+    console.log(`- Email: ${userData.email || 'No email'}`);
+    console.log(`- Es Admin: ${userData.is_admin}`);
+    console.log(`- Plan: ${userData.plan}`);
+    console.log(`- Uso actual: ${userData.currentPeriodUsage || 0}`);
+    
+    return userData;
+    
+  } catch (error) {
+    console.error('Error estableciendo usuario como administrador:', error);
+    throw error;
+  }
+};
+
+// Función específica para mariamartinvillaro@gmail.com
+// Esta función se puede llamar desde la consola del navegador
+export const setMariaAsAdmin = async (userId) => {
+  console.log('Estableciendo mariamartinvillaro@gmail.com como administrador...');
+  console.log('IMPORTANTE: Asegúrate de usar el UID correcto de Firebase Auth');
+  
+  if (!userId) {
+    console.error('Error: Debes proporcionar el UID del usuario de Firebase Auth');
+    console.log('Para encontrar el UID:');
+    console.log('1. Ve a Firebase Console > Authentication > Users');
+    console.log('2. Busca el email mariamartinvillaro@gmail.com');
+    console.log('3. Copia el UID de ese usuario');
+    console.log('4. Ejecuta: setMariaAsAdmin("UID_AQUI")');
+    return;
+  }
+  
+  try {
+    const result = await setUserAsAdmin(userId, true);
+    console.log('✅ SUCCESS: mariamartinvillaro@gmail.com establecido como administrador');
+    console.log('El usuario ahora tiene uploads ilimitados');
+    return result;
+  } catch (error) {
+    console.error('❌ ERROR:', error.message);
+    throw error;
+  }
+};
+
+// Exponer funciones globalmente en desarrollo para fácil acceso
+if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+  window.setUserAsAdmin = setUserAsAdmin;
+  window.setMariaAsAdmin = setMariaAsAdmin;
+  console.log('🔧 Funciones de administrador disponibles:');
+  console.log('- setUserAsAdmin(userId, true/false)');
+  console.log('- setMariaAsAdmin(userId)');
+}
 
 export { auth, db };

@@ -650,3 +650,60 @@
     font-size: 10px;
   }
 }
+
+/* Estilos para usuarios administradores */
+.admin-badge {
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+  animation: adminGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes adminGlow {
+  from { box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3); }
+  to { box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5); }
+}
+
+.plan-card.admin-user {
+  border: 2px solid #ff6b35 !important;
+  background: linear-gradient(135deg, #fff, #fff8f5);
+}
+
+.plan-card.admin-user .plan-header {
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  color: white;
+  border-radius: 8px 8px 0 0;
+  margin: -15px -15px 15px -15px;
+  padding: 15px;
+}
+
+.plan-card.admin-user .plan-name {
+  color: white !important;
+}
+
+.plan-button.admin {
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: not-allowed;
+  opacity: 0.9;
+}
+
+.plan-button.admin:hover {
+  background: linear-gradient(135deg, #ff8c42, #ff6b35);
+}
+
+.usage-bar-container .usage-bar[style*="#4CAF50"] {
+  background: linear-gradient(90deg, #4CAF50, #66BB6A) !important;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Badge especial en la esquina para usuarios admin */
+.plan-card.admin-user::before {
+  content: "👑";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 16px;
+  z-index: 10;
+}

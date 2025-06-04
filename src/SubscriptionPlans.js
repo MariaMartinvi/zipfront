@@ -4,6 +4,7 @@ import { PLANS, redirectToCheckout, manageSubscription, getUserPlan } from './st
 import './SubscriptionPlans.css';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getUserProfile } from './firebase_auth';
 
 // Add paymentSuccess prop
 const SubscriptionPlans = ({ userId, paymentSuccess }) => {
@@ -13,6 +14,7 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   
   // Show success message if redirected from successful payment
@@ -53,10 +55,28 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
       
       try {
         setIsLoading(true);
-        // Usar datos por defecto para evitar llamadas problemáticas
-        console.log('Usando datos por defecto para evitar errores CORS');
-        setUserPlan('free');
-        setUserUsage(0);
+        
+        // Intentar obtener el perfil del usuario primero
+        try {
+          const userProfile = await getUserProfile(userId);
+          if (userProfile) {
+            setUserPlan(userProfile.plan || 'free');
+            setUserUsage(userProfile.currentPeriodUsage || 0);
+            setIsAdmin(userProfile.is_admin || false);
+            console.log('Perfil de usuario cargado:', userProfile);
+          } else {
+            // Fallback a datos por defecto
+            console.log('Usando datos por defecto para evitar errores CORS');
+            setUserPlan('free');
+            setUserUsage(0);
+            setIsAdmin(false);
+          }
+        } catch (profileError) {
+          console.warn('Error cargando perfil, usando datos por defecto:', profileError);
+          setUserPlan('free');
+          setUserUsage(0);
+          setIsAdmin(false);
+        }
       } catch (error) {
         console.error('Error loading user data:', error);
         setError(t('subscription.error.load'));
@@ -112,8 +132,18 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
 
   // Calculate quota usage and limits
   const currentPlan = Object.values(PLANS).find(p => p.id === userPlan) || PLANS.FREE;
-  const usagePercentage = Math.min((userUsage / currentPlan.quota) * 100, 100);
-  const remainingUploads = Math.max(currentPlan.quota - userUsage, 0);
+  
+  // Para administradores, mostrar información especial
+  let usagePercentage, remainingUploads, displayQuota;
+  if (isAdmin) {
+    usagePercentage = 0; // Siempre 0% para admin
+    remainingUploads = 'Ilimitado';
+    displayQuota = 'Ilimitado';
+  } else {
+    usagePercentage = Math.min((userUsage / currentPlan.quota) * 100, 100);
+    remainingUploads = Math.max(currentPlan.quota - userUsage, 0);
+    displayQuota = currentPlan.quota;
+  }
 
   // Traducir nombres de planes
   const getPlanName = (plan) => {
@@ -152,21 +182,45 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
         </div>
       )}
       
+      {/* Mostrar badge especial para administradores */}
+      {isAdmin && (
+        <div className="admin-badge" style={{
+          backgroundColor: "#ff6b35",
+          color: "white",
+          padding: "15px",
+          borderRadius: "8px",
+          marginBottom: "20px",
+          textAlign: "center",
+          fontWeight: "bold",
+          border: "2px solid #ff8c42"
+        }}>
+          🔧 CUENTA ADMINISTRADOR - UPLOADS ILIMITADOS
+        </div>
+      )}
+      
       <div className="current-plan-info">
         <h3>{t('subscription.current_plan', { planName: getPlanName(currentPlan) })}</h3>
         <div className="usage-info">
           <div className="usage-text">
-            <span>{t('subscription.usage', { used: userUsage, total: currentPlan.quota })}</span>
+            <span>
+              {isAdmin 
+                ? `Uploads utilizados: ${userUsage} / Ilimitado` 
+                : t('subscription.usage', { used: userUsage, total: displayQuota })
+              }
+            </span>
           </div>
           <div className="usage-bar-container">
             <div 
               className="usage-bar" 
-              style={{ width: `${usagePercentage}%` }}
+              style={{ 
+                width: `${usagePercentage}%`,
+                backgroundColor: isAdmin ? "#4CAF50" : undefined
+              }}
             ></div>
           </div>
         </div>
         
-        {userPlan !== 'free' && (
+        {userPlan !== 'free' && !isAdmin && (
           <button 
             className="manage-subscription-button"
             onClick={handleManageSubscription}
@@ -174,13 +228,29 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
             {t('subscription.manage_button')}
           </button>
         )}
+        
+        {isAdmin && (
+          <div style={{
+            marginTop: "15px",
+            padding: "10px",
+            backgroundColor: "#f0f8ff",
+            borderRadius: "5px",
+            fontSize: "14px",
+            color: "#666"
+          }}>
+            <strong>Privilegios de Administrador:</strong><br/>
+            • Uploads ilimitados de informes<br/>
+            • Acceso completo a todas las funcionalidades<br/>
+            • Sin restricciones de cuota
+          </div>
+        )}
       </div>
       
       <div className="plans-grid">
         {Object.values(PLANS).map((plan) => (
           <div 
             key={plan.id} 
-            className={`plan-card ${userPlan === plan.id ? 'current-plan' : ''}`}
+            className={`plan-card ${userPlan === plan.id ? 'current-plan' : ''} ${isAdmin ? 'admin-user' : ''}`}
           >
             {userPlan === plan.id && (
               <div className="current-plan-badge">
@@ -223,7 +293,11 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
             </div>
             
             <div className="plan-action">
-              {userPlan === plan.id ? (
+              {isAdmin ? (
+                <button className="plan-button admin" disabled>
+                  Administrador
+                </button>
+              ) : userPlan === plan.id ? (
                 <button className="plan-button current" disabled>
                   {t('subscription.current_button')}
                 </button>
@@ -247,7 +321,7 @@ const SubscriptionPlans = ({ userId, paymentSuccess }) => {
         ))}
       </div>
       
-      {userPlan === 'premium' && userUsage >= PLANS.PREMIUM.quota && (
+      {userPlan === 'premium' && userUsage >= PLANS.PREMIUM.quota && !isAdmin && (
         <div className="quota-exceeded-message">
           {t('subscription.quota_exceeded')}
         </div>
