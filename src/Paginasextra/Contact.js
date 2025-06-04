@@ -70,7 +70,7 @@ const Contact = () => {
                     <h4 style={{ color: '#25D366', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span>📧</span> {t('contact_page.info.email_label')}
                     </h4>
-                    <p style={{ margin: '0', fontSize: '18px', fontWeight: '500' }}>maria@comartinvi.com</p>
+                    <p style={{ margin: '0', fontSize: '18px', fontWeight: '500' }}>info@comartinvi.com</p>
                   </div>
                   
                   <div style={{ marginBottom: '25px', padding: '20px', background: '#f8f9fa', borderRadius: '12px' }}>

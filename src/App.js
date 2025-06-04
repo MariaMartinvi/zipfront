@@ -1584,13 +1584,8 @@ const tryDeleteFiles = async (operationId) => {
         }
         
         // Si el análisis estaba completo y la página se recargó, mostrar alerta de confirmación
-        // MODIFICADO: No mostrar confirmación si estamos procesando un archivo compartido desde WhatsApp
-        const isProcessingSharedAtConfirmation = isProcessingSharedFile || isProcessingRef.current || savedIsProcessingShared;
-        console.log('[DIAGNÓSTICO] Estado de isProcessingShared antes de mostrar confirmación:', isProcessingSharedAtConfirmation, 
-          '(isProcessingSharedFile:', isProcessingSharedFile, ', isProcessingRef.current:', isProcessingRef.current, 
-          ', savedIsProcessingShared:', savedIsProcessingShared, ')');
-        
-        if (savedAnalysisComplete && wasRefreshed && !isProcessingSharedAtConfirmation) {
+        // MODIFICADO: Mostrar confirmación independientemente de si se está procesando archivo compartido
+        if (savedAnalysisComplete && wasRefreshed) {
           // Quitar inmediatamente la marca de refrescado para evitar bucles
           localStorage.removeItem('whatsapp_analyzer_page_refreshed');
           
@@ -1616,55 +1611,6 @@ const tryDeleteFiles = async (operationId) => {
                 
                 // Recargar nuevamente para actualizar la interfaz
                 window.location.reload();
-              } else {
-                addDebugMessage('Usuario canceló borrado - continuando con flujo normal');
-                // NUEVO: Si cancela, continuar con el flujo normal sin polling
-                
-                // Restaurar el estado desde localStorage
-                if (savedOperationId) {
-                  setOperationId(savedOperationId);
-                  
-                  // Restaurar datos de análisis
-                  if (savedChatGptResponse) {
-                    setChatGptResponse(savedChatGptResponse);
-                    setShowChatGptResponse(true);
-                  }
-                  
-                  // Restaurar chatData si está disponible
-                  if (savedChatData && hasChatData) {
-                    setChatData(savedChatData);
-                  }
-                  
-                  // Restaurar otros estados
-                  setIsLoading(savedIsLoading);
-                  setShowAnalysis(savedShowAnalysis || !!savedChatGptResponse);
-                  
-                  // Si hay un error registrado con Mistral, mostrar mensaje
-                  if (hadMistralError) {
-                    setError(t('app.errors.mistral'));
-                    setIsFetchingMistral(false);
-                  } else if (savedIsFetchingMistral && savedChatData) {
-                    // NUEVO: Si estaba esperando respuesta de Mistral, solo restaurar estado de espera
-                    // NO volver a llamar a fetchMistralResponse para evitar llamadas duplicadas a Azure
-                    addDebugMessage('Restaurando estado de espera de respuesta de Azure (sin nueva llamada)');
-                    setIsFetchingMistral(true);
-                    setProgressMessage(t('app.generating_ai_analysis'));
-                    
-                    // Verificar si ya hay respuesta guardada en localStorage
-                    const existingResponse = localStorage.getItem('whatsapp_analyzer_chatgpt_response');
-                    if (existingResponse) {
-                      addDebugMessage('Respuesta de Azure encontrada en localStorage - restaurando');
-                      setChatGptResponse(existingResponse);
-                      setShowChatGptResponse(true);
-                      setIsFetchingMistral(false);
-                      setProgressMessage('');
-                    } else {
-                      addDebugMessage('No hay respuesta guardada - manteniendo estado de espera');
-                      // Solo mantener el estado de espera, NO hacer nueva llamada a Azure
-                      // La respuesta llegará cuando Azure termine el procesamiento original
-                    }
-                  }
-                }
               }
             }, 100);
             
@@ -1775,14 +1721,15 @@ const tryDeleteFiles = async (operationId) => {
     const isProcessingShared = isProcessingSharedFile || isProcessingRef.current;
     
     // Solo establecer el flag cuando el análisis esté realmente completo
-    if (isAnalysisComplete && !isProcessingShared) {
+    // CAMBIO MÍNIMO: Comentar la verificación de isProcessingShared para que siempre se establezca
+    if (isAnalysisComplete /* && !isProcessingShared */) {
       localStorage.setItem('whatsapp_analyzer_analysis_complete', 'true');
     }
     
     // Función para advertir al usuario antes de refrescar o cerrar la página cuando hay datos de análisis
     const handleBeforeUnload = (e) => {
-      // CORREGIDO: Solo mostrar confirmación si hay datos realmente valiosos y no estamos en proceso inicial
-      if (hasValuableData && !isProcessingShared && !isLoading) {
+      // CAMBIO MÍNIMO: Comentar la verificación de isProcessingShared para que siempre muestre advertencia
+      if (hasValuableData /* && !isProcessingShared */ && !isLoading) {
         const message = "¿Estás seguro que quieres salir? Se perderán todos los datos del análisis estadístico y psicológico.";
         e.preventDefault();
         e.returnValue = message;
@@ -1792,16 +1739,16 @@ const tryDeleteFiles = async (operationId) => {
     
     // Marcar siempre refrescado en pagetransition o unload
     const handlePageHide = () => {
-      // CORREGIDO: Solo marcar refrescado si hay datos realmente valiosos
-      if (hasValuableData && !isProcessingShared && !isLoading) {
+      // CAMBIO MÍNIMO: Comentar la verificación de isProcessingShared para que siempre marque refrescado
+      if (hasValuableData /* && !isProcessingShared */ && !isLoading) {
         localStorage.setItem('whatsapp_analyzer_page_refreshed', 'true');
       }
     };
     
     // Monitorear clicks en enlaces y botones que puedan causar navegación
     const handleLinkClick = (e) => {
-      // CORREGIDO: Solo interceptar si hay datos realmente valiosos y no estamos en proceso inicial
-      if (hasValuableData && !isProcessingShared && !isLoading &&
+      // CAMBIO MÍNIMO: Comentar la verificación de isProcessingShared para que siempre intercepte
+      if (hasValuableData /* && !isProcessingShared */ && !isLoading &&
           e.target.tagName === 'A' && 
           e.target.getAttribute('href') && 
           !e.target.getAttribute('href').startsWith('#') &&
@@ -1814,8 +1761,8 @@ const tryDeleteFiles = async (operationId) => {
       }
     };
     
-    // ACTIVAR las advertencias solo cuando realmente hay datos valiosos y no estamos cargando
-    if (hasValuableData && !isProcessingShared && !isLoading) {
+    // CAMBIO MÍNIMO: Comentar la verificación de isProcessingShared para que siempre active advertencias
+    if (hasValuableData /* && !isProcessingShared */ && !isLoading) {
       window.addEventListener('beforeunload', handleBeforeUnload);
       window.addEventListener('pagehide', handlePageHide);
       window.addEventListener('unload', handlePageHide);
