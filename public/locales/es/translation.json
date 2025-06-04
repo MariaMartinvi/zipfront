@@ -273,7 +273,8 @@
     "faq": "Preguntas Frecuentes",
     "cookies": "Política de Cookies",
     "rights": "Analizador de Chats - Todos los derechos reservados",
-    "scroll_top": "Volver arriba"
+    "scroll_top": "Volver arriba",
+    "navigation": "Navegación"
   },
   "messages": {
     "loading": "Cargando...",
@@ -1360,6 +1361,10 @@
       "generate_error": "Error al generar el enlace del juego",
       "no_analysis_data": "No hay datos de análisis para compartir. Por favor, asegúrate de que el análisis estadístico esté completo.",
       "personality_error": "Error generando URL del juego de personalidades"
+    },
+    "banner": {
+      "description": "¡Comparte tu análisis como un juego de adivinar personalidades!",
+      "share": "Compartir Juego"
     }
   },
   "contact_page": {

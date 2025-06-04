@@ -1717,6 +1717,17 @@ const tryDeleteFiles = async (operationId) => {
     const isRecoveringState = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
     const hasValuableData = isAnalysisComplete || isRecoveringState;
     
+    // DEBUGGER TEMPORAL - MÍNIMO CAMBIO para investigar PWA
+    if (hasValuableData) {
+      const debugDiv = document.getElementById('mobile-debug') || document.createElement('div');
+      if (!document.getElementById('mobile-debug')) {
+        debugDiv.id = 'mobile-debug';
+        debugDiv.style.cssText = `position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); color: white; padding: 8px; font-size: 11px; border-radius: 5px; max-width: 250px; font-family: monospace;`;
+        document.body.appendChild(debugDiv);
+      }
+      debugDiv.innerHTML = `🔍 DEBUG PWA<br>hasValuableData: ${hasValuableData}<br>isAnalysisComplete: ${isAnalysisComplete}<br>isRecoveringState: ${isRecoveringState}<br>isLoading: ${isLoading}<br>beforeunload DEBERÍA funcionar`;
+    }
+    
     // Verificar si estamos procesando un archivo compartido desde WhatsApp
     const isProcessingShared = isProcessingSharedFile || isProcessingRef.current;
     
