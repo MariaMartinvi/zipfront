@@ -1717,8 +1717,9 @@ const tryDeleteFiles = async (operationId) => {
     const isRecoveringState = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
     const hasValuableData = isAnalysisComplete || isRecoveringState;
     
-    // DEBUGGER TEMPORAL - MÍNIMO CAMBIO para investigar PWA
-    if (hasValuableData) {
+    // DEBUGGER TEMPORAL - EXPANDIDO para mostrar también durante procesamiento
+    const shouldShowDebugger = hasValuableData || isLoading || isFetchingMistral;
+    if (shouldShowDebugger) {
       const debugDiv = document.getElementById('mobile-debug') || document.createElement('div');
       if (!document.getElementById('mobile-debug')) {
         debugDiv.id = 'mobile-debug';
@@ -1754,10 +1755,15 @@ const tryDeleteFiles = async (operationId) => {
         readyState: document.readyState
       };
       
+      // Estado del procesamiento
+      const processingState = isLoading ? '🔄 PROCESANDO' : (isFetchingMistral ? '🧠 ANALIZANDO IA' : '✅ COMPLETADO');
+      
       debugDiv.innerHTML = `🔍 DEBUG CONTEXT<br>
+      ESTADO: ${processingState}<br>
       hasValuableData: ${hasValuableData}<br>
       isAnalysisComplete: ${isAnalysisComplete}<br>
       isLoading: ${isLoading}<br>
+      isFetchingMistral: ${isFetchingMistral}<br>
       REACT: chatGpt:${!!chatGptResponse} opId:${!!operationId}<br>
       beforeunload listeners: ${listeners}<br>
       <br>CONTEXT COMPARISON:<br>
@@ -1771,7 +1777,7 @@ const tryDeleteFiles = async (operationId) => {
       historyLength: ${contextInfo.historyLength}<br>
       swController: ${contextInfo.swController}<br>
       readyState: ${contextInfo.readyState}<br>
-      DEBERÍA funcionar`;
+      ${isLoading || isFetchingMistral ? 'PROCESANDO - refresh puede interrumpir' : 'DEBERÍA funcionar'}`;
     }
     
     // Verificar si estamos procesando un archivo compartido desde WhatsApp
