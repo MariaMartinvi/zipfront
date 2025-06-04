@@ -1725,7 +1725,7 @@ const tryDeleteFiles = async (operationId) => {
         debugDiv.style.cssText = `position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); color: white; padding: 8px; font-size: 11px; border-radius: 5px; max-width: 250px; font-family: monospace;`;
         document.body.appendChild(debugDiv);
       }
-      const listeners = typeof getEventListeners !== 'undefined' ? getEventListeners(window).beforeunload?.length : 'N/A';
+      const listeners = typeof window.getEventListeners !== 'undefined' ? window.getEventListeners(window).beforeunload?.length : 'DevTools only';
       debugDiv.innerHTML = `🔍 DEBUG PWA<br>hasValuableData: ${hasValuableData}<br>isAnalysisComplete: ${isAnalysisComplete}<br>isRecoveringState: ${isRecoveringState}<br>isLoading: ${isLoading}<br>REACT VARS:<br>chatGptResponse: ${!!chatGptResponse}<br>operationId: ${!!operationId}<br>beforeunload listeners: ${listeners}<br>DEBERÍA funcionar`;
     }
     
