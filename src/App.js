@@ -1853,7 +1853,7 @@ const tryDeleteFiles = async (operationId) => {
       window.removeEventListener('unload', handlePageHide);
       document.removeEventListener('click', handleLinkClick, true);
     };
-  }, [chatGptResponse, operationId, isLoading, isFetchingMistral, isProcessingSharedFile]);
+  }, [chatGptResponse, operationId, isLoading, isFetchingMistral]); // Removido isProcessingSharedFile para evitar interferencias
 
   // Função para continuar con la acción después de la confirmación
   // COMENTADO: Ya no se usa popup personalizado
