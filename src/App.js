@@ -1719,27 +1719,6 @@ const tryDeleteFiles = async (operationId) => {
     }
   }, [operationId, isLoading, isFetchingMistral, showAnalysis, chatGptResponse, chatData]);
 
-  // Simplificar el efecto de beforeunload para mostrar advertencia SIEMPRE
-  useEffect(() => {
-    alert('REGISTRANDO BEFOREUNLOAD');
-    // Función para mostrar popup del sistema SIEMPRE
-    const handleBeforeUnload = (e) => {
-        alert('BEFOREUNLOAD EJECUTADO');
-        e.preventDefault();
-    };
-    
-    // Registrar SIEMPRE - sin condiciones
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('pagehide', handleBeforeUnload);
-    window.addEventListener('unload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('pagehide', handleBeforeUnload);
-      window.removeEventListener('unload', handleBeforeUnload);
-    };
-  }, []); // Sin dependencias - se ejecuta una sola vez
-
   // Limpieza cuando el usuario finaliza explícitamente el análisis o reinicia
   const handleReset = () => {
     // Limpiar variables globales de Azure
@@ -2303,6 +2282,27 @@ const tryDeleteFiles = async (operationId) => {
 }
 
 function App() {
+  // Registrar beforeunload en el componente principal que nunca se desmonta
+  useEffect(() => {
+    alert('REGISTRANDO BEFOREUNLOAD EN APP PRINCIPAL');
+    // Función para mostrar popup del sistema SIEMPRE
+    const handleBeforeUnload = (e) => {
+        alert('BEFOREUNLOAD EJECUTADO');
+        e.preventDefault();
+    };
+    
+    // Registrar SIEMPRE - sin condiciones
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handleBeforeUnload);
+    window.addEventListener('unload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handleBeforeUnload);
+      window.removeEventListener('unload', handleBeforeUnload);
+    };
+  }, []); // Sin dependencias - se ejecuta una sola vez
+
   return (
     <div className="app-container">
       <Router>
