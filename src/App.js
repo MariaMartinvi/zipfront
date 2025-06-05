@@ -2326,7 +2326,7 @@ function App() {
           alert('PULL-TO-REFRESH DETECTADO');
           
           // Mostrar confirmación nativa
-          if (confirm('¿Estás seguro que quieres recargar? Se perderán todos los datos.')) {
+          if (window.confirm('¿Estás seguro que quieres recargar? Se perderán todos los datos.')) {
             // Usuario confirmó, permitir recarga
             window.location.reload();
           } else {
