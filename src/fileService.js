@@ -389,16 +389,6 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
       { role: "user", content: `${userPrefix}\n\n${processedContent}` }
     ];
 
-    // Guardar el chat localmente antes de enviarlo
-    await saveChatLocally({
-      timestamp: new Date().toISOString(),
-      messages: messages,
-      language: language,
-      contentLength: processedContent.length,
-      model: apisToTry[0].model,
-      nameMapping // Incluir el mapeo de nombres en el archivo guardado
-    });
-    
     // Intentar cada API en secuencia
     console.log(`>>> APIs disponibles para fallback: ${apisToTry.length}`);
     for (let i = 0; i < apisToTry.length; i++) {

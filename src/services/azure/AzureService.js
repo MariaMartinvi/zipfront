@@ -100,14 +100,6 @@ export class AzureService {
         { role: "system", content: systemPrompt },
         { role: "user", content: `${userPrefix}\n\n${userContent}` }
       ];
-
-      // Guardar el chat localmente antes de enviarlo
-      await saveChatLocally({
-        timestamp: new Date().toISOString(),
-        messages: messages,
-        language: language,
-        contentLength: contentLength
-      });
       
       // Seleccionar el modelo óptimo
       const { model, temperature } = selectOptimalModel(contentLength);

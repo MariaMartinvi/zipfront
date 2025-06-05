@@ -23,6 +23,44 @@ function Juegos({
 
   // =================== FUNCIONES PARA JUEGO DE TITULARES ===================
   
+  // Función para ver el juego de titulares directamente
+  const viewHeadlinesGame = () => {
+    try {
+      if (!headlinesGameData) {
+        alert(t('games.alerts.no_game_data'));
+        return;
+      }
+      
+      // Comprimir datos con LZ-String
+      const compressedData = lzString.compressToEncodedURIComponent(JSON.stringify(headlinesGameData));
+      
+      // Crear URL del juego y abrirla en popup a pantalla completa
+      const url = `${window.location.origin}/headlines-game?h=${compressedData}`;
+      
+      // Configuración del popup a pantalla completa
+      const popupFeatures = `
+        fullscreen=yes,
+        toolbar=no,
+        location=no,
+        directories=no,
+        status=no,
+        menubar=no,
+        scrollbars=yes,
+        resizable=yes,
+        width=${window.screen.width},
+        height=${window.screen.height},
+        top=0,
+        left=0
+      `.replace(/\s/g, '');
+      
+      window.open(url, '_blank', popupFeatures);
+      
+    } catch (error) {
+      console.error('Error abriendo el juego:', error);
+      alert(t('games.alerts.generate_error'));
+    }
+  };
+
   // Función para generar URL del juego de titulares
   const generateHeadlinesGameUrl = () => {
     try {
@@ -73,6 +111,85 @@ function Juegos({
   };
 
   // =================== FUNCIONES PARA JUEGO DE PERSONALIDADES ===================
+  
+  // Función para ver el juego de personalidades directamente
+  const viewPersonalityGame = () => {
+    try {
+      // Usar topData pasado como prop o fallback a la variable global
+      const data = topData || window.lastAnalysisTopData;
+      
+      if (!data || !data.categorias || !data.usuarios) {
+        alert(t('games.alerts.no_analysis_data'));
+        return;
+      }
+
+      // Mapeo de categorías completas a códigos de una letra
+      const catCodes = {
+        'profesor': 'p', 'rollero': 'r', 'pistolero': 's', 'vampiro': 'v',
+        'cafeconleche': 'c', 'dejaenvisto': 'd', 'narcicista': 'n', 
+        'puntofinal': 'f', 'fosforo': 'o', 'menosesmas': 'm',
+        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'sicopata': 'x',
+        'comico': 'co', 'agradecido': 'ag', 'disculpon': 'di', 'curioso': 'cu'
+      };
+      
+      // Obtener usuarios
+      let users = [];
+      if (Array.isArray(data.usuarios)) {
+        users = data.usuarios;
+      } else if (typeof data.usuarios === 'object') {
+        users = Object.keys(data.usuarios);
+      }
+      
+      // Crear array de nombres únicos para eliminar redundancia
+      const names = [...new Set(
+        Object.values(data.categorias)
+          .filter(c => c && c.nombre)
+          .map(c => c.nombre)
+      )];
+      
+      // Crear pares [código, índice] para cada categoría
+      const cats = [];
+      Object.entries(catCodes).forEach(([cat, code]) => {
+        if (data.categorias[cat]?.nombre) {
+          const idx = names.indexOf(data.categorias[cat].nombre);
+          if (idx >= 0) {
+            cats.push([code, idx]);
+          }
+        }
+      });
+      
+      // Estructura final: [usuarios, nombres, categorías]
+      const result = [users, names, cats];
+      
+      // Comprimir con LZ-String
+      const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(result));
+      
+      // URL con parámetro z y abrirla en popup a pantalla completa
+      const url = `${window.location.origin}/chat-game?z=${compressed}`;
+      
+      // Configuración del popup a pantalla completa
+      const popupFeatures = `
+        fullscreen=yes,
+        toolbar=no,
+        location=no,
+        directories=no,
+        status=no,
+        menubar=no,
+        scrollbars=yes,
+        resizable=yes,
+        width=${window.screen.width},
+        height=${window.screen.height},
+        top=0,
+        left=0
+      `.replace(/\s/g, '');
+      
+      window.open(url, '_blank', popupFeatures);
+      
+    } catch (error) {
+      console.error("Error abriendo el juego de personalidades:", error);
+      alert(t('games.alerts.personality_error'));
+    }
+  };
   
   // Función para generar URL del juego de personalidades
   const generatePersonalityGameUrl = () => {
@@ -194,12 +311,20 @@ function Juegos({
               <p className="game-description">
                 {t('games.headlines.description')}
               </p>
-              <button 
-                className="game-button"
-                onClick={generateHeadlinesGameUrl}
-              >
-                {t('games.share_button')}
-              </button>
+              <div className="game-buttons">
+                <span 
+                  className="game-link"
+                  onClick={viewHeadlinesGame}
+                >
+                  {t('games.view_button', 'Ver juego')}
+                </span>
+                <button 
+                  className="game-button"
+                  onClick={generateHeadlinesGameUrl}
+                >
+                  {t('games.share_button')}
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -214,12 +339,20 @@ function Juegos({
               <p className="game-description">
                 {t('games.personality.description')}
               </p>
-              <button 
-                className="game-button"
-                onClick={generatePersonalityGameUrl}
-              >
-                {t('games.share_button')}
-              </button>
+              <div className="game-buttons">
+                <span 
+                  className="game-link"
+                  onClick={viewPersonalityGame}
+                >
+                  {t('games.view_button', 'Ver juego')}
+                </span>
+                <button 
+                  className="game-button"
+                  onClick={generatePersonalityGameUrl}
+                >
+                  {t('games.share_button')}
+                </button>
+              </div>
             </div>
           </div>
         )}
