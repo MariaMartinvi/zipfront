@@ -1721,8 +1721,10 @@ const tryDeleteFiles = async (operationId) => {
 
   // Simplificar el efecto de beforeunload para mostrar advertencia SIEMPRE
   useEffect(() => {
+    alert('REGISTRANDO BEFOREUNLOAD');
     // Función para mostrar popup del sistema SIEMPRE
     const handleBeforeUnload = (e) => {
+        alert('BEFOREUNLOAD EJECUTADO');
         e.preventDefault();
     };
     
