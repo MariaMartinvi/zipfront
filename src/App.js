@@ -1148,6 +1148,13 @@ function AppContent() {
       setIsFetchingMistral(false);
       setChatGptResponse("El usuario ha elegido no compartir datos con la IA para el análisis psicológico. Para obtener el perfil psicológico, vuelve a subir el archivo y desmarca la opción correspondiente.");
       setShowChatGptResponse(true);
+      
+      // NUEVO: Limpiar datos del análisis anterior cuando el usuario no quiere compartir con IA
+      window.lastAzureResponse = null;
+      window.lastAnalysisTopData = null; 
+      window.lastNameMapping = null;
+      setHeadlinesGameData(null);
+      
       return;
     }
     
@@ -1568,13 +1575,12 @@ const tryDeleteFiles = async (operationId) => {
           setIsProcessingSharedFile(true);
           isProcessingRef.current = true;
           
-          // NUEVO: Si estamos procesando un archivo compartido desde WhatsApp,
-          // limpiamos cualquier análisis previo para evitar interferencia
-          if (savedAnalysisComplete) {
-            addDebugMessage('Detectado análisis previo con archivo compartido - limpiando datos conflictivos');
-            localStorage.removeItem('whatsapp_analyzer_analysis_complete');
-            localStorage.removeItem('whatsapp_analyzer_page_refreshed');
-          }
+          // COMENTADO: Evitar eliminar el análisis completo para mantener comportamiento consistente del popup
+          // if (savedAnalysisComplete) {
+          //   addDebugMessage('Detectado análisis previo con archivo compartido - limpiando datos conflictivos');
+          //   localStorage.removeItem('whatsapp_analyzer_analysis_complete');
+          //   localStorage.removeItem('whatsapp_analyzer_page_refreshed');
+          // }
         }
         
         // Verificar si estamos procesando un archivo compartido desde WhatsApp (cualquier fuente)
@@ -1715,10 +1721,11 @@ const tryDeleteFiles = async (operationId) => {
 
   // Modificar el efecto de beforeunload para mostrar advertencia cuando el análisis esté completo
   useEffect(() => {
-    // CORREGIDO: Ser más específico sobre cuándo hay datos valiosos
+    // MEJORADO: Incluir análisis estadístico como datos valiosos
+    const hasStatisticalAnalysis = chatData && operationId && showAnalysis;
     const isAnalysisComplete = chatGptResponse && operationId && !isLoading && !isFetchingMistral;
     const isRecoveringState = localStorage.getItem('whatsapp_analyzer_analysis_complete') === 'true';
-    const hasValuableData = isAnalysisComplete || isRecoveringState;
+    const hasValuableData = hasStatisticalAnalysis || isAnalysisComplete || isRecoveringState;
     
     // DEBUGGER TEMPORAL - EXPANDIDO para mostrar también durante procesamiento
     const shouldShowDebugger = hasValuableData || isLoading || isFetchingMistral;
@@ -1764,6 +1771,7 @@ const tryDeleteFiles = async (operationId) => {
       debugDiv.innerHTML = `🔍 DEBUG CONTEXT<br>
       ESTADO: ${processingState}<br>
       hasValuableData: ${hasValuableData}<br>
+      hasStatisticalAnalysis: ${hasStatisticalAnalysis}<br>
       isAnalysisComplete: ${isAnalysisComplete}<br>
       isLoading: ${isLoading}<br>
       isFetchingMistral: ${isFetchingMistral}<br>
@@ -2525,44 +2533,6 @@ const tryDeleteFiles = async (operationId) => {
           </div>
         )}
         
-        {/* Alerta de confirmación cuando el usuario intenta salir con análisis completo */}
-        {/* COMENTADO: Ya no usamos popup personalizado
-        {showRefreshConfirmation && (
-          <div className="refresh-confirmation">
-            <div className="refresh-confirmation-icon">⚠️</div>
-            <div className="refresh-confirmation-content">
-              <h3>¿Estás seguro?</h3>
-              <p>Si continúas, se perderán todos los datos del análisis actual (tanto estadístico como psicológico). ¿Deseas continuar?</p>
-              <div className="refresh-confirmation-buttons">
-                <button 
-                  className="refresh-confirmation-cancel" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('[BOTÓN] Clic en botón Cancelar');
-                    handleCancelRefresh();
-                  }}
-                >
-                  Cancelar
-                </button>
-                <button 
-                  className="refresh-confirmation-confirm" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('[BOTÓN] Clic en botón Confirmar');
-                    console.log('[BOTÓN] Estado pendingZipFile:', pendingZipFile ? 'EXISTE' : 'NO EXISTE');
-                    handleConfirmRefresh();
-                  }}
-                >
-                  Sí, continuar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        */}
-
         {/* NUEVO: Modal para compartir juego */}
         {showShareGameModal && (
           <div className="share-game-modal">
