@@ -2284,80 +2284,72 @@ const tryDeleteFiles = async (operationId) => {
 function App() {
   // Registrar beforeunload en el componente principal que nunca se desmonta
   useEffect(() => {
-    alert('REGISTRANDO BEFOREUNLOAD EN APP PRINCIPAL');
-    // Función para mostrar popup del sistema SIEMPRE
-    const handleBeforeUnload = (e) => {
-        alert('BEFOREUNLOAD EJECUTADO');
-        e.preventDefault();
+    console.log('Registrando beforeunload en app principal');
+    
+    let startY = 0;
+    let currentY = 0;
+    let isAtTop = false;
+    
+    // Función para verificar si estamos al top
+    const checkIfAtTop = () => {
+      return window.scrollY === 0 || document.documentElement.scrollTop === 0;
     };
     
-    // Registrar SIEMPRE - sin condiciones
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('pagehide', handleBeforeUnload);
-    window.addEventListener('unload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('pagehide', handleBeforeUnload);
-      window.removeEventListener('unload', handleBeforeUnload);
-    };
-  }, []); // Sin dependencias - se ejecuta una sola vez
-
-  // NUEVO: Interceptar pull-to-refresh específicamente
-  useEffect(() => {
-    let startY = null;
-    let pullToRefreshTriggered = false;
-
+    // Estrategia robusta de interceptación de pull-to-refresh
     const handleTouchStart = (e) => {
-      if (window.scrollY === 0) {
-        startY = e.touches[0].clientY;
-        pullToRefreshTriggered = false;
-      }
+      startY = e.touches[0].clientY;
+      isAtTop = checkIfAtTop();
     };
-
+    
     const handleTouchMove = (e) => {
-      if (startY && !pullToRefreshTriggered && window.scrollY === 0) {
-        const currentY = e.touches[0].clientY;
-        const pullDistance = currentY - startY;
+      if (!isAtTop) return;
+      
+      currentY = e.touches[0].clientY;
+      const deltaY = currentY - startY;
+      
+      // Si arrastra hacia abajo más de 50px desde el top
+      if (deltaY > 50 && isAtTop) {
+        e.preventDefault(); // Bloquear el pull-to-refresh
+        e.stopPropagation();
         
-        // Si pull-to-refresh está siendo activado (más de 50px hacia abajo)
-        if (pullDistance > 50) {
-          pullToRefreshTriggered = true;
-          alert('PULL-TO-REFRESH DETECTADO');
-          
-          // Mostrar confirmación nativa
-          if (window.confirm('¿Estás seguro que quieres recargar? Se perderán todos los datos.')) {
-            // Usuario confirmó, permitir recarga
-            window.location.reload();
-          } else {
-            // Usuario canceló, bloquear el pull-to-refresh
-            e.preventDefault();
-            startY = null;
-          }
+        // SIEMPRE mostrar confirmación
+        const confirmRefresh = window.confirm('¿Realmente quieres refrescar la página?');
+        if (confirmRefresh) {
+          // Permitir el refresh explícitamente
+          window.location.reload();
         }
       }
     };
-
-    const handleTouchEnd = () => {
-      startY = null;
-      pullToRefreshTriggered = false;
-    };
-
-    // Solo en dispositivos táctiles (móviles)
-    if ('ontouchstart' in window) {
-      document.addEventListener('touchstart', handleTouchStart, { passive: false });
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
-      document.addEventListener('touchend', handleTouchEnd);
-    }
-
-    return () => {
-      if ('ontouchstart' in window) {
-        document.removeEventListener('touchstart', handleTouchStart);
-        document.removeEventListener('touchmove', handleTouchMove);
-        document.removeEventListener('touchend', handleTouchEnd);
+    
+    // Estrategia alternativa: bloquear scroll bounce
+    const preventOverscroll = (e) => {
+      if (isAtTop && e.deltaY < 0) {
+        e.preventDefault();
       }
     };
-  }, []);
+
+    const handleBeforeUnload = (event) => {
+      console.log('beforeunload ejecutado - SIEMPRE mostrar popup');
+      // SIEMPRE mostrar el popup sin condiciones
+      const message = '¿Estás seguro de que quieres salir?';
+      event.preventDefault();
+      event.returnValue = message;
+      return message;
+    };
+
+    // Event listeners con passive: false para poder usar preventDefault
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('wheel', preventOverscroll, { passive: false });
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove); 
+      document.removeEventListener('wheel', preventOverscroll);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []); // Sin dependencias - se ejecuta una sola vez
 
   return (
     <div className="app-container">

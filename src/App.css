@@ -1933,3 +1933,14 @@ li {
 }
 
 /* Sección de carga de archivos - Estilo moderno consistente */
+
+/* Bloquear pull-to-refresh en PWA */
+html, body {
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+}
+
+.app-container {
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+}
