@@ -351,8 +351,6 @@ function AppContent() {
   const [isDeleting, setIsDeleting] = useState(false);
   // Nuevo estado para los datos extraídos del chat
   const [chatData, setChatData] = useState(null);
-  // Nuevo estado para alerta de confirmación
-  const [showRefreshConfirmation, setShowRefreshConfirmation] = useState(false);
   // Estado para controlar si mostrar el botón de ver análisis
   const [showViewAnalysisButton, setShowViewAnalysisButton] = useState(false);
   // Estado para mensajes de progreso
@@ -737,11 +735,16 @@ function AppContent() {
     
     // Si ya hay un análisis en curso, guardar el nuevo archivo y mostrar confirmación
     if (operationId && (chatData || chatGptResponse)) {
-      // Guardar el archivo pendiente para procesarlo después de la confirmación
-      setPendingZipFile(analyzedFile);
-      // Mostrar el diálogo de confirmación
-      setShowRefreshConfirmation(true);
-      return;
+      // Directamente procesar el nuevo archivo sin popup de confirmación
+      // Limpiar datos anteriores
+      setOperationId(null);
+      setChatGptResponse("");
+      setShowChatGptResponse(false);
+      setChatData(null);
+      setShowAnalysis(false);
+      
+      // Continuar con el procesamiento del nuevo archivo
+      console.log("Reemplazando análisis anterior con nuevo archivo:", analyzedFile.name);
     }
     
     const currentUser = window._tempUser || await getCurrentUser();
@@ -1817,10 +1820,13 @@ const tryDeleteFiles = async (operationId) => {
           !e.target.getAttribute('href').startsWith('#') &&
           !e.target.closest('.analysis-container') &&
           !e.target.closest('.upload-section')) {
-        e.preventDefault();
-        e.stopPropagation();
-        setShowRefreshConfirmation(true);
-        return false;
+        // Ya no mostramos popup personalizado, permitir navegación normal
+        // El navegador seguirá mostrando su advertencia nativa con beforeunload
+        console.log('Navegación interceptada, pero permitiendo continuar (sin popup personalizado)');
+        // Comentado: setShowRefreshConfirmation(true);
+        // Comentado: e.preventDefault();
+        // Comentado: e.stopPropagation();
+        // Comentado: return false;
       }
     };
     
@@ -1842,6 +1848,8 @@ const tryDeleteFiles = async (operationId) => {
   }, [chatGptResponse, operationId, isLoading, isFetchingMistral, isProcessingSharedFile]);
 
   // Função para continuar con la acción después de la confirmación
+  // COMENTADO: Ya no se usa popup personalizado
+  /*
   const handleConfirmRefresh = () => {
     console.log("[DIAGNÓSTICO] Iniciando handleConfirmRefresh");
     console.log("[DIAGNÓSTICO] Estado del archivo pendiente:", pendingZipFile ? "EXISTE" : "NO EXISTE");
@@ -1997,6 +2005,7 @@ const tryDeleteFiles = async (operationId) => {
       console.log('[DIAGNÓSTICO] Detectado procesamiento de archivo compartido en curso - preservando estado');
     }
   };
+  */
 
   // Limpieza cuando el usuario finaliza explícitamente el análisis o reinicia
   const handleReset = () => {
@@ -2517,6 +2526,7 @@ const tryDeleteFiles = async (operationId) => {
         )}
         
         {/* Alerta de confirmación cuando el usuario intenta salir con análisis completo */}
+        {/* COMENTADO: Ya no usamos popup personalizado
         {showRefreshConfirmation && (
           <div className="refresh-confirmation">
             <div className="refresh-confirmation-icon">⚠️</div>
@@ -2551,6 +2561,7 @@ const tryDeleteFiles = async (operationId) => {
             </div>
           </div>
         )}
+        */}
 
         {/* NUEVO: Modal para compartir juego */}
         {showShareGameModal && (
