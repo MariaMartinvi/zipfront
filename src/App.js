@@ -2303,6 +2303,62 @@ function App() {
     };
   }, []); // Sin dependencias - se ejecuta una sola vez
 
+  // NUEVO: Interceptar pull-to-refresh específicamente
+  useEffect(() => {
+    let startY = null;
+    let pullToRefreshTriggered = false;
+
+    const handleTouchStart = (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+        pullToRefreshTriggered = false;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (startY && !pullToRefreshTriggered && window.scrollY === 0) {
+        const currentY = e.touches[0].clientY;
+        const pullDistance = currentY - startY;
+        
+        // Si pull-to-refresh está siendo activado (más de 50px hacia abajo)
+        if (pullDistance > 50) {
+          pullToRefreshTriggered = true;
+          alert('PULL-TO-REFRESH DETECTADO');
+          
+          // Mostrar confirmación nativa
+          if (confirm('¿Estás seguro que quieres recargar? Se perderán todos los datos.')) {
+            // Usuario confirmó, permitir recarga
+            window.location.reload();
+          } else {
+            // Usuario canceló, bloquear el pull-to-refresh
+            e.preventDefault();
+            startY = null;
+          }
+        }
+      }
+    };
+
+    const handleTouchEnd = () => {
+      startY = null;
+      pullToRefreshTriggered = false;
+    };
+
+    // Solo en dispositivos táctiles (móviles)
+    if ('ontouchstart' in window) {
+      document.addEventListener('touchstart', handleTouchStart, { passive: false });
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd);
+    }
+
+    return () => {
+      if ('ontouchstart' in window) {
+        document.removeEventListener('touchstart', handleTouchStart);
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleTouchEnd);
+      }
+    };
+  }, []);
+
   return (
     <div className="app-container">
       <Router>
