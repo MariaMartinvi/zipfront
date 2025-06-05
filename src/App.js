@@ -2286,48 +2286,6 @@ function App() {
   useEffect(() => {
     console.log('Registrando beforeunload en app principal');
     
-    let startY = 0;
-    let currentY = 0;
-    let isAtTop = false;
-    
-    // Función para verificar si estamos al top
-    const checkIfAtTop = () => {
-      return window.scrollY === 0 || document.documentElement.scrollTop === 0;
-    };
-    
-    // Estrategia robusta de interceptación de pull-to-refresh
-    const handleTouchStart = (e) => {
-      startY = e.touches[0].clientY;
-      isAtTop = checkIfAtTop();
-    };
-    
-    const handleTouchMove = (e) => {
-      if (!isAtTop) return;
-      
-      currentY = e.touches[0].clientY;
-      const deltaY = currentY - startY;
-      
-      // Si arrastra hacia abajo más de 50px desde el top
-      if (deltaY > 50 && isAtTop) {
-        e.preventDefault(); // Bloquear el pull-to-refresh
-        e.stopPropagation();
-        
-        // SIEMPRE mostrar confirmación
-        const confirmRefresh = window.confirm('¿Realmente quieres refrescar la página?');
-        if (confirmRefresh) {
-          // Permitir el refresh explícitamente
-          window.location.reload();
-        }
-      }
-    };
-    
-    // Estrategia alternativa: bloquear scroll bounce
-    const preventOverscroll = (e) => {
-      if (isAtTop && e.deltaY < 0) {
-        e.preventDefault();
-      }
-    };
-
     const handleBeforeUnload = (event) => {
       console.log('beforeunload ejecutado - SIEMPRE mostrar popup');
       // SIEMPRE mostrar el popup sin condiciones
@@ -2337,16 +2295,10 @@ function App() {
       return message;
     };
 
-    // Event listeners con passive: false para poder usar preventDefault
-    document.addEventListener('touchstart', handleTouchStart, { passive: false });
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('wheel', preventOverscroll, { passive: false });
+    // Solo registrar beforeunload - más simple y funciona para todo tipo de navegación
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove); 
-      document.removeEventListener('wheel', preventOverscroll);
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []); // Sin dependencias - se ejecuta una sola vez
