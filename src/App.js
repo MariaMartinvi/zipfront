@@ -33,6 +33,8 @@ import Juegos from './Juegos'; // NUEVO: Componente independiente para juegos
 import { userSession } from './utils/userSession';
 import DebugLogger from './DebugLogger'; // Añadir import del DebugLogger
 import HeroSection from './components/HeroSection';
+// SEGURIDAD: Importar componentes de seguridad
+import { SecurityCaptchaProvider } from './components/SecurityCaptcha';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -2282,6 +2284,8 @@ const tryDeleteFiles = async (operationId) => {
 }
 
 function App() {
+  const { i18n } = useTranslation();
+  
   // Registrar beforeunload en el componente principal que nunca se desmonta
   useEffect(() => {
     console.log('Registrando beforeunload en app principal');
@@ -2303,11 +2307,28 @@ function App() {
     };
   }, []); // Sin dependencias - se ejecuta una sola vez
 
+  // Obtener idioma actual para reCAPTCHA
+  const getCurrentLanguage = () => {
+    const language = i18n.language;
+    // Mapear códigos de idioma de i18n a nombres esperados
+    const languageMapping = {
+      'es': 'español',
+      'en': 'ingles',
+      'fr': 'frances',
+      'it': 'italiano',
+      'de': 'aleman',
+      'pt': 'portugues'
+    };
+    return languageMapping[language] || 'español';
+  };
+
   return (
     <div className="app-container">
-      <Router>
-        <AppContent />
-      </Router>
+      <SecurityCaptchaProvider userLanguage={getCurrentLanguage()}>
+        <Router>
+          <AppContent />
+        </Router>
+      </SecurityCaptchaProvider>
     </div>
   );
 }

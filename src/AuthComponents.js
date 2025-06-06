@@ -5,6 +5,10 @@ import './AuthComponents.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
+// SEGURIDAD: Importar hooks de seguridad
+import { useSecurityCaptcha } from './components/SecurityCaptcha';
+import { setFirebaseLanguage } from './utils/securityUtils';
+import { confirmEmailVerification, resendEmailVerification } from './firebase_auth';
  
 
 // Login Component
@@ -16,6 +20,11 @@ export const Login = ({ onLoginSuccess }) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [showResendEmail, setShowResendEmail] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
   const { setUser } = useAuth();
@@ -24,11 +33,44 @@ export const Login = ({ onLoginSuccess }) => {
   const queryParams = new URLSearchParams(location.search);
   const returnTo = queryParams.get('returnTo');
   const sessionId = queryParams.get('session_id');
+  
+  // Extraer parámetros de verificación de email
+  const mode = queryParams.get('mode');
+  const oobCode = queryParams.get('oobCode');
 
   // Log for debugging
   useEffect(() => {
-    console.log('Login component mounted with params:', { returnTo, sessionId });
-  }, [returnTo, sessionId]);
+    console.log('Login component mounted with params:', { returnTo, sessionId, mode, oobCode });
+  }, [returnTo, sessionId, mode, oobCode]);
+
+  // Procesar verificación de email automáticamente
+  useEffect(() => {
+    const processEmailVerification = async () => {
+      if (mode === 'verifyEmail' && oobCode) {
+        console.log('🔐 Detectada verificación de email automática...');
+        setIsLoading(true);
+        
+        try {
+          await confirmEmailVerification(oobCode);
+          setEmailVerified(true);
+          setError('');
+          console.log('✅ Email verificado exitosamente');
+          
+          // Limpiar URL sin recargar página
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+          
+        } catch (error) {
+          console.error('❌ Error verificando email:', error);
+          setError(error.message || t('auth.verification.error', 'Error al verificar el email.'));
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    processEmailVerification();
+  }, [mode, oobCode, t]);
 
   // Manejar resultado del redirect de Google Auth (fallback cuando popup falla)
   useEffect(() => {
@@ -37,6 +79,8 @@ export const Login = ({ onLoginSuccess }) => {
         const user = await handleGoogleRedirectResult();
         if (user) {
           console.log('Google login successful after redirect:', user.uid);
+          
+
           
           // Set user in the global context
           setUser(user);
@@ -101,9 +145,45 @@ export const Login = ({ onLoginSuccess }) => {
       }
     } catch (error) {
       console.error('Login error:', error);
+      
+      // Detectar error específico de email no verificado
+      if (error.code === 'auth/email-not-verified') {
+        setShowResendEmail(true);
+      } else {
+        setShowResendEmail(false);
+      }
+      
       setError(error.message || t('auth.login.error'));
       setIsLoading(false);
       setIsRedirecting(false);
+    }
+  };
+
+  const handleResendEmail = async () => {
+    setIsResending(true);
+    setResendSuccess(false);
+    
+    try {
+      console.log('Reenviando email de verificación...');
+      
+      // Necesitamos hacer login temporal para obtener el usuario y poder reenviar el email
+      const { auth, signInWithEmailAndPassword, signOut } = await import('firebase/auth');
+      const { auth: firebaseAuth } = await import('./firebase_auth');
+      
+      const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      await resendEmailVerification();
+      setResendSuccess(true);
+      setError('');
+      
+      // Cerrar sesión inmediatamente después de reenviar
+      await signOut(firebaseAuth);
+      
+      console.log('✅ Email de verificación reenviado exitosamente');
+    } catch (error) {
+      console.error('❌ Error reenviando email:', error);
+      setError(error.message || t('auth.resend.error', 'Error al reenviar el email. Inténtalo de nuevo.'));
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -125,6 +205,8 @@ export const Login = ({ onLoginSuccess }) => {
       }
       
       console.log('Google login successful:', user.uid);
+      
+
       
       // Set user in the global context
       setUser(user);
@@ -154,6 +236,8 @@ export const Login = ({ onLoginSuccess }) => {
     }
   };
 
+
+
   return (
     <div className="auth-form-container">
       <h2>{t('auth.login.title')}</h2>
@@ -163,11 +247,43 @@ export const Login = ({ onLoginSuccess }) => {
             <span className="auth-error-icon">⚠️</span>
             <span className="auth-error-text">{error}</span>
           </div>
+          {showResendEmail && (
+            <div className="resend-email-container">
+              {resendSuccess ? (
+                <div className="resend-success">
+                  <span className="resend-success-icon">✅</span>
+                  <span className="resend-success-text">
+                    {t('auth.resend.success', 'Email de verificación reenviado. Revisa tu bandeja de entrada.')}
+                  </span>
+                </div>
+              ) : (
+                                 <button 
+                   type="button"
+                   className="resend-email-button"
+                   onClick={handleResendEmail}
+                   disabled={isResending}
+                 >
+                   {isResending ? 
+                     t('auth.resend.sending', 'Enviando...') : 
+                     t('auth.resend.button', 'Volver a mandar email de verificación')
+                   }
+                 </button>
+              )}
+            </div>
+          )}
         </div>
       )}
       {returnTo && (
         <div className="auth-message">
           {t('auth.login.please_login')}
+        </div>
+      )}
+      {emailVerified && (
+        <div className="auth-success-container">
+          <div className="auth-success">
+            <span className="auth-success-icon">✅</span>
+            <span className="auth-success-text">{t('auth.verification.success', 'Email verificado exitosamente. Ya puedes iniciar sesión.')}</span>
+          </div>
         </div>
       )}
       {isRedirecting ? (
@@ -276,14 +392,19 @@ export const Login = ({ onLoginSuccess }) => {
 
 // Registration Component
 export const Register = ({ onRegisterSuccess }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
   const navigate = useNavigate();
+  
+  // Hook de seguridad para reCAPTCHA
+  const { verifyCaptcha } = useSecurityCaptcha();
 
   // Manejar resultado del redirect de Google Auth (fallback cuando popup falla)
   useEffect(() => {
@@ -319,10 +440,59 @@ export const Register = ({ onRegisterSuccess }) => {
     setIsLoading(true);
     
     try {
+      // PASO 1: Verificar reCAPTCHA
+      console.log('🔒 Verificando reCAPTCHA...');
+      const captchaResult = await verifyCaptcha('register').catch(error => {
+        console.warn('Error en captcha, continuando:', error);
+        return { success: true }; // No bloquear si falla captcha
+      });
+      
+      if (!captchaResult.success) {
+        setError(t('auth.register.captcha_failed', 'Verificación de seguridad falló. Inténtalo de nuevo.'));
+        setIsLoading(false);
+        return;
+      }
+      
+      console.log('✅ reCAPTCHA verificado exitosamente');
+      setCaptchaVerified(true);
+      
+      // PASO 2: Configurar idioma de Firebase para emails
+      const currentLanguage = i18n.language;
+      const languageMapping = {
+        'es': 'español',
+        'en': 'ingles', 
+        'fr': 'frances',
+        'it': 'italiano',
+        'de': 'aleman',
+        'pt': 'portugues'
+      };
+      const userLanguage = languageMapping[currentLanguage] || 'español';
+      
+      // Configurar idioma antes del registro
+      console.log(`🌍 Configurando idioma: ${userLanguage}`);
+      try {
+        await setFirebaseLanguage(userLanguage);
+      } catch (langError) {
+        console.warn('Error configurando idioma, continuando:', langError);
+      }
+      
+      // PASO 3: Registrar usuario con verificación por email
+      console.log('📧 Creando usuario y enviando email de verificación...');
       const user = await registerUser(email, password, displayName);
-      if (onRegisterSuccess) onRegisterSuccess(user);
+      
+      // Mostrar mensaje de verificación por email
+      setShowEmailVerification(true);
+      setError(''); // Limpiar errores
+      
+      // No llamar onRegisterSuccess inmediatamente - esperar verificación
+      console.log('✅ Usuario creado. Email de verificación enviado.');
+      
     } catch (error) {
-      setError(error.message || t('auth.register.error'));
+      console.error('❌ Error en registro:', error);
+      // Asegurar que el error tiene un mensaje
+      const errorMessage = error?.message || error?.toString() || t('auth.register.error');
+      setError(errorMessage);
+      setCaptchaVerified(false);
     } finally {
       setIsLoading(false);
     }
@@ -356,6 +526,52 @@ export const Register = ({ onRegisterSuccess }) => {
       setIsLoading(false);
     }
   };
+
+  // Si se muestra verificación de email, ocultar formulario
+  if (showEmailVerification) {
+    return (
+      <div className="auth-form-container">
+        <div className="email-verification-success">
+          <div className="verification-icon">📧</div>
+          <h2>{t('auth.register.verification_sent', 'Email de verificación enviado')}</h2>
+          <p className="verification-message">
+            {t('auth.register.verification_instruction', 'Hemos enviado un email de verificación a:')}
+          </p>
+          <div className="email-display">
+            <strong>{email}</strong>
+          </div>
+          <p className="verification-details">
+            {t('auth.register.verification_details', 'Por favor, revisa tu bandeja de entrada y haz clic en el enlace para activar tu cuenta.')}
+          </p>
+          <div className="verification-note">
+            <p>
+              <strong>{t('auth.register.verification_note', 'Nota:')}</strong> {' '}
+              {t('auth.register.verification_spam', 'Si no ves el email, revisa tu carpeta de spam.')}
+            </p>
+          </div>
+          <div className="verification-actions">
+            <button 
+              className="auth-button"
+              onClick={() => navigate('/login')}
+              style={{
+                background: 'linear-gradient(135deg, #25D366, #7122AC)',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                fontSize: '16px',
+                marginTop: '20px'
+              }}
+            >
+              {t('auth.register.go_to_login', 'Ir al login')}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-form-container">
@@ -443,7 +659,23 @@ export const Register = ({ onRegisterSuccess }) => {
           >
             {isLoading ? t('auth.register.loading') : t('auth.register.button')}
           </button>
+          
+          {/* Estado de seguridad */}
+          <div className="security-status">
+            {captchaVerified && (
+              <div className="security-item verified">
+                <span>✅ {t('auth.register.captcha_verified', 'Verificación de seguridad completada')}</span>
+              </div>
+            )}
+            {isLoading && !captchaVerified && (
+              <div className="security-item loading">
+                <span>🔄 {t('auth.register.captcha_verifying', 'Verificando que eres humano...')}</span>
+              </div>
+            )}
+          </div>
         </form>
+        
+
       </div>
       
       <div className="auth-links">

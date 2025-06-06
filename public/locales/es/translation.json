@@ -247,7 +247,8 @@
     "login": "Iniciar Sesión",
     "register": "Registrarse",
     "logout": "Cerrar Sesión",
-    "free_trial": "Prueba gratis"
+    "free_trial": "Prueba gratis",
+    "verify_email": "Verificar Email"
   },
   "actions": {
     "upload": "Subir archivo",

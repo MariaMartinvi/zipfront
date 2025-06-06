@@ -8,6 +8,8 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8f9fa;
   min-height: 100vh;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Estilos para el encabezado */
@@ -436,6 +438,8 @@
   padding: 15px 0;
   border-bottom: 1px solid #e5e7eb;
   transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .game-data-item:last-child {
@@ -466,6 +470,10 @@
   line-height: 1.5;
   flex: 1;
   font-size: 16px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: normal;
 }
 
 /* Estilos para pantalla de carga y error */
@@ -571,6 +579,10 @@
 }
 
 @media (max-width: 480px) {
+  .headlines-game-container {
+    padding: 15px 10px;
+  }
+
   .headlines-game-header h2 {
     font-size: 2rem;
   }
@@ -603,6 +615,262 @@
   .submit-button {
     padding: 16px 40px;
     font-size: 16px;
+  }
+
+  .game-data-section {
+    padding: 20px 15px;
+    margin-bottom: 30px;
+  }
+
+  .game-data-title {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+
+  .game-data-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 0;
+    gap: 8px;
+  }
+
+  .game-data-name {
+    font-size: 15px;
+    margin-right: 0;
+    margin-bottom: 5px;
+    min-width: auto;
+  }
+
+  .game-data-description {
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .answer-review {
+    padding: 15px 10px;
+  }
+
+  .name-headline-format {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .name-headline-format .name-part {
+    font-size: 15px;
+  }
+
+  .name-headline-format .headline-part {
+    font-size: 14px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* NUEVA: Media query para móviles muy pequeños (360px) */
+@media (max-width: 360px) {
+  .headlines-game-container {
+    padding: 12px 8px;
+  }
+
+  .headlines-game-header {
+    padding: 30px 15px;
+    margin-bottom: 30px;
+  }
+
+  .headlines-game-header h2 {
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+  
+  .headlines-game-header p {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+  
+  .question-block {
+    padding: 16px 12px;
+  }
+  
+  .question-number {
+    font-size: 15px;
+  }
+  
+  .question-description {
+    font-size: 14px;
+    padding: 10px;
+    line-height: 1.4;
+  }
+  
+  .score-display {
+    padding: 20px 12px;
+  }
+  
+  .score-big {
+    font-size: 2.5rem;
+  }
+  
+  .submit-button {
+    padding: 14px 30px;
+    font-size: 15px;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .game-data-section {
+    padding: 16px 12px;
+    margin-bottom: 25px;
+  }
+
+  .game-data-title {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+  }
+
+  .game-data-item {
+    padding: 10px 0;
+    gap: 6px;
+  }
+
+  .game-data-name {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .game-data-description {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  .answer-review {
+    padding: 12px 8px;
+  }
+
+  .answers-review h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+
+  .name-headline-format .name-part {
+    font-size: 14px;
+  }
+
+  .name-headline-format .headline-part {
+    font-size: 13px;
+  }
+
+  .reset-button {
+    padding: 12px 24px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* NUEVA: Media query para móviles ultrapequeños (320px) */
+@media (max-width: 320px) {
+  .headlines-game-container {
+    padding: 10px 6px;
+  }
+
+  .headlines-game-header {
+    padding: 25px 12px;
+    margin-bottom: 25px;
+  }
+
+  .headlines-game-header h2 {
+    font-size: 1.6rem;
+    line-height: 1.1;
+  }
+  
+  .headlines-game-header p {
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+  
+  .question-block {
+    padding: 14px 10px;
+  }
+  
+  .question-number {
+    font-size: 14px;
+  }
+  
+  .question-description {
+    font-size: 13px;
+    padding: 8px;
+    line-height: 1.3;
+  }
+  
+  .score-display {
+    padding: 18px 10px;
+  }
+  
+  .score-big {
+    font-size: 2.2rem;
+  }
+  
+  .submit-button {
+    padding: 12px 24px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .game-data-section {
+    padding: 14px 10px;
+    margin-bottom: 20px;
+  }
+
+  .game-data-title {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .game-data-item {
+    padding: 8px 0;
+    gap: 5px;
+  }
+
+  .game-data-name {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .game-data-description {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .answer-review {
+    padding: 10px 6px;
+  }
+
+  .answers-review h4 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+
+  .name-headline-format .name-part {
+    font-size: 13px;
+  }
+
+  .name-headline-format .headline-part {
+    font-size: 12px;
+  }
+
+  .reset-button {
+    padding: 10px 20px;
+    font-size: 13px;
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .user-select {
+    padding: 14px 16px;
+    font-size: 14px;
   }
 }
 

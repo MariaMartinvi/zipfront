@@ -256,6 +256,160 @@
   transform: translateY(-2px);
 }
 
+/* Estilos específicos para Terms of Service grid */
+.terms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 30px;
+}
+
+/* Media queries para terms-grid responsive */
+@media (max-width: 768px) {
+  .terms-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .terms-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 320px) {
+  .terms-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Estilos específicos para Contact features grid */
+.contact-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+/* Media queries para contact-features-grid responsive */
+@media (max-width: 768px) {
+  .contact-features-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .contact-features-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 320px) {
+  .contact-features-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Estilos adicionales para mejorar responsive en páginas extra */
+.modern-preview-container .demo-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* Media queries para demo-content en páginas extra */
+@media (max-width: 768px) {
+  .modern-preview-container .demo-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modern-preview-container .demo-content {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+}
+
+@media (max-width: 360px) {
+  .modern-preview-container .demo-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 320px) {
+  .modern-preview-container .demo-content {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+/* Mejoras para formularios en móviles */
+@media (max-width: 768px) {
+  .modern-preview-container .feature-card {
+    padding: 25px 20px;
+  }
+  
+  .modern-preview-container .feature-card input,
+  .modern-preview-container .feature-card textarea {
+    font-size: 16px !important; /* Evitar zoom en iOS */
+  }
+}
+
+@media (max-width: 480px) {
+  .modern-preview-container .feature-card {
+    padding: 20px 15px;
+  }
+  
+  .modern-preview-container .feature-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .modern-preview-container .feature-card {
+    padding: 18px 12px;
+  }
+  
+  .modern-preview-container .feature-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+  }
+}
+
+@media (max-width: 320px) {
+  .modern-preview-container .feature-card {
+    padding: 16px 10px;
+  }
+  
+  .modern-preview-container .feature-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .page-header,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import '../AppPreview.css';
+import './Pages.css';
 
 const TermsOfService = () => {
   const { t } = useTranslation();
@@ -32,7 +33,7 @@ const TermsOfService = () => {
             {t('pages.terms.section_description')}
           </p>
           
-          <div className="features-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))', gap: '30px' }}>
+          <div className="features-grid terms-grid">
             {sections.map((section, index) => (
               <div key={index} className="feature-card">
                 <div className={`feature-icon-new gradient-bg ${index % 2 === 0 ? 'rotate-left' : 'rotate-right'}`}>

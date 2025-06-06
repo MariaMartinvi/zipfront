@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../AppPreview.css';
+import './Pages.css';
 
 const Contact = () => {
   const { t } = useTranslation();
@@ -285,7 +286,7 @@ const Contact = () => {
       {/* Additional Info Section */}
       <section className="process-section">
         <div className="process-container">
-          <div className="process-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+          <div className="process-grid contact-features-grid">
             <div className="process-card">
               <div className="process-number">1</div>
               <div className="process-icon">

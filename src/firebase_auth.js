@@ -7,12 +7,14 @@ import {
   signOut,
   onAuthStateChanged as firebaseAuthStateChanged,
   sendPasswordResetEmail,
+  sendEmailVerification,
   updateProfile,
   setPersistence,
   browserSessionPersistence,
   browserLocalPersistence,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  applyActionCode
 } from 'firebase/auth';
 import { 
   getFirestore, 
@@ -70,7 +72,23 @@ if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.proj
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
+
+// Configurar Action URL personalizada para emails
+const configureActionCodeSettings = () => {
+  // SIEMPRE usar chatsalsa.com para mantener consistencia en verificación
+  const baseUrl = 'https://www.chatsalsa.com';
+  
+  return {
+    // URL donde el usuario será redirigido después de hacer clic en el enlace del email
+    url: `${baseUrl}/login`,
+    // Esto debe ser true para URLs personalizadas
+    handleCodeInApp: true,
+  };
+};
+
+// Hacer auth disponible globalmente para setFirebaseLanguage
+window.firebaseAuth = auth;
 
 // Set persistence to LOCAL - this will keep the user logged in between browser sessions
 setPersistence(auth, browserLocalPersistence)
@@ -102,6 +120,7 @@ const errorMessagesByLanguage = {
     'auth/popup-blocked': 'El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio o inténtalo de nuevo.',
     'auth/unauthorized-domain': 'Este dominio no está autorizado para operaciones de OAuth.',
     'auth/too-many-requests': 'Demasiados intentos fallidos. Por favor, inténtalo más tarde.',
+    'auth/email-not-verified': 'Debes verificar tu email antes de poder iniciar sesión. Revisa tu bandeja de entrada.',
     // Errores específicos de Firestore
     'permission-denied': 'No tienes permiso para acceder a estos datos.',
     'unavailable': 'El servicio no está disponible en este momento.',
@@ -259,6 +278,11 @@ export const registerUser = async (email, password, displayName) => {
       
       // Actualizar perfil del usuario
       await updateProfile(user, { displayName });
+      
+      // Enviar email de verificación con configuración personalizada
+      const actionCodeSettings = configureActionCodeSettings();
+      await sendEmailVerification(user, actionCodeSettings);
+      console.log("📧 Email de verificación enviado a:", email, "con URL personalizada");
     } catch (firebaseError) {
       if (firebaseError.code === 'auth/email-already-in-use') {
         console.log("Usuario ya existe en Firebase, intentando iniciar sesión...");
@@ -300,6 +324,18 @@ export const registerUser = async (email, password, displayName) => {
         throw new Error("No se recibieron tokens del backend");
     }
     
+    // ⚡ VERIFICACIÓN OBLIGATORIA: Registro exitoso pero desloguar inmediatamente
+    console.log('✅ Registro completado exitosamente');
+    console.log('📧 Email de verificación enviado a:', email);
+    console.log('🔒 Cerrando sesión hasta verificar email...');
+    
+    // Desloguar inmediatamente - no mantener autenticación sin verificar
+    await auth.signOut();
+    
+    // Limpiar tokens también
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    
     return user;
   } catch (error) {
     console.error('Error registering user:', error);
@@ -314,6 +350,37 @@ export const loginUser = async (email, password) => {
     // Autenticar con Firebase
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
+
+    // ⚡ VERIFICACIÓN OBLIGATORIA: Login falla completamente si email no verificado
+    console.log('🔍 DEBUG: Usuario logueado (ANTES del reload) -', {
+      email: user.email,
+      uid: user.uid,
+      emailVerified: user.emailVerified
+    });
+    
+    // FORZAR REFRESH del usuario para obtener estado actualizado
+    await user.reload();
+    console.log('🔍 DEBUG: Usuario logueado (DESPUÉS del reload) -', {
+      email: user.email,
+      uid: user.uid,
+      emailVerified: user.emailVerified
+    });
+    
+    if (!user.emailVerified) {
+      console.log('❌ LOGIN RECHAZADO: Email no verificado:', user.email);
+      
+      // Cerrar sesión inmediatamente - no mantener autenticación parcial
+      await auth.signOut();
+      
+      // Crear error específico
+      const error = new Error('Debes verificar tu email antes de poder iniciar sesión. Revisa tu bandeja de entrada.');
+      error.code = 'auth/email-not-verified';
+      error.userEmail = user.email;
+      error.userId = user.uid;
+      throw error;
+    }
+
+    console.log('✅ Email verificado, login exitoso!');
 
     // CRÍTICO: Obtener token de Firebase y tokens JWT ANTES de continuar
     const idToken = await user.getIdToken();
@@ -417,6 +484,60 @@ export const resetPassword = async (email) => {
     throw error;
   }
 };
+
+// Reenviar email de verificación
+export const resendEmailVerification = async () => {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error('No hay usuario autenticado');
+    }
+    
+    if (user.emailVerified) {
+      throw new Error('El email ya está verificado');
+    }
+    
+    const actionCodeSettings = configureActionCodeSettings();
+    await sendEmailVerification(user, actionCodeSettings);
+    console.log('📧 Email de verificación reenviado a:', user.email, 'con URL personalizada');
+    return true;
+  } catch (error) {
+    console.error('Error reenviando email de verificación:', error);
+    error.message = getErrorMessage(error.code) || error.message;
+    throw error;
+  }
+};
+
+// Confirmar verificación de email con código
+export const confirmEmailVerification = async (actionCode) => {
+  try {
+    console.log('🔐 Procesando verificación de email...');
+    await applyActionCode(auth, actionCode);
+    
+    // CRÍTICO: Forzar refresh del usuario después de verificación
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      console.log('🔄 Refrescando datos del usuario después de verificación...');
+      await currentUser.reload();
+      
+      // Verificar que efectivamente se verificó
+      if (currentUser.emailVerified) {
+        console.log('✅ Email verificado y usuario refrescado exitosamente');
+      } else {
+        console.warn('⚠️ Email marcado como verificado pero reload no muestra cambio');
+      }
+    }
+    
+    console.log('✅ Email verificado exitosamente con Firebase');
+    return true;
+  } catch (error) {
+    console.error('❌ Error confirmando verificación de email:', error);
+    error.message = getErrorMessage(error.code) || error.message;
+    throw error;
+  }
+};
+
+
 
 // Get the current authenticated user
 export const getCurrentUser = () => {
@@ -837,6 +958,27 @@ export const loginWithGoogle = async () => {
       throw new Error("No se recibieron tokens del backend para usuario de Google");
     }
     
+    // ⚡ VERIFICACIÓN OBLIGATORIA: Verificar email también en Google login
+    if (!user.emailVerified) {
+      console.log('❌ GOOGLE LOGIN RECHAZADO: Email no verificado:', user.email);
+      
+      // Cerrar sesión inmediatamente - no mantener autenticación parcial
+      await auth.signOut();
+      
+      // Limpiar tokens también
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      
+      // Crear error específico
+      const error = new Error('Debes verificar tu email antes de poder iniciar sesión. Revisa tu bandeja de entrada.');
+      error.code = 'auth/email-not-verified';
+      error.userEmail = user.email;
+      error.userId = user.uid;
+      throw error;
+    }
+
+    console.log('✅ Email verificado en Google login, login exitoso!');
+    
     return user;
     
   } catch (error) {
@@ -900,6 +1042,27 @@ export const handleGoogleRedirectResult = async () => {
       } else {
         throw new Error("No se recibieron tokens del backend para usuario de Google (redirect)");
       }
+      
+      // ⚡ VERIFICACIÓN OBLIGATORIA: Verificar email también en Google redirect
+      if (!result.user.emailVerified) {
+        console.log('❌ GOOGLE REDIRECT RECHAZADO: Email no verificado:', result.user.email);
+        
+        // Cerrar sesión inmediatamente - no mantener autenticación parcial
+        await auth.signOut();
+        
+        // Limpiar tokens también
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        
+        // Crear error específico
+        const error = new Error('Debes verificar tu email antes de poder iniciar sesión. Revisa tu bandeja de entrada.');
+        error.code = 'auth/email-not-verified';
+        error.userEmail = result.user.email;
+        error.userId = result.user.uid;
+        throw error;
+      }
+
+      console.log('✅ Email verificado en Google redirect, login exitoso!');
       
       return result.user;
     }
@@ -1009,4 +1172,4 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
   console.log('- setMariaAsAdmin(userId)');
 }
 
-export { auth, db };
+export { db };
