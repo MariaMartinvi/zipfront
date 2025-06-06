@@ -225,14 +225,36 @@ export const Login = ({ onLoginSuccess }) => {
       setError('');
       console.log('✅ Contraseña cambiada exitosamente');
       
-      // Redirigir al login después de 3 segundos
+      // Esperar 3 segundos y luego mostrar el formulario de login normal
       setTimeout(() => {
-        navigate('/login');
+        // Limpiar todos los estados del reseteo de contraseña
+        setShowPasswordReset(false);
+        setPasswordResetSuccess(false);
+        setNewPassword('');
+        setConfirmNewPassword('');
+        // Limpiar URL completamente
+        window.history.replaceState({}, document.title, '/login');
+        console.log('🔄 Mostrando formulario de login normal');
       }, 3000);
       
     } catch (error) {
       console.error('❌ Error reseteando contraseña:', error);
-      setError(error.message || t('auth.password_reset.error', 'Error al cambiar la contraseña. Inténtalo de nuevo.'));
+      
+      // Detectar si el código ya fue usado o es inválido
+      if (error.code === 'auth/invalid-action-code' || error.code === 'auth/expired-action-code') {
+        setError(
+          t('auth.password_reset.invalid_link', 
+            '❌ Este enlace ya fue usado o ha expirado. Por favor, solicita un nuevo enlace de reseteo de contraseña.')
+        );
+        
+        // Ocultar formulario y mostrar opción para ir a solicitar nuevo
+        setTimeout(() => {
+          setShowPasswordReset(false);
+        }, 5000);
+        
+      } else {
+        setError(error.message || t('auth.password_reset.error', 'Error al cambiar la contraseña. Inténtalo de nuevo.'));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -298,6 +320,25 @@ export const Login = ({ onLoginSuccess }) => {
             <span className="auth-error-icon">⚠️</span>
             <span className="auth-error-text">{error}</span>
           </div>
+          {error.includes('ya fue usado o ha expirado') && (
+            <div className="reset-link-container">
+              <button 
+                type="button"
+                className="auth-link-button"
+                onClick={() => navigate('/reset-password')}
+                style={{ 
+                  marginTop: '10px', 
+                  textDecoration: 'underline',
+                  background: 'none',
+                  border: 'none',
+                  color: '#007bff',
+                  cursor: 'pointer'
+                }}
+              >
+                🔄 {t('auth.password_reset.request_new', 'Solicitar nuevo enlace de reseteo')}
+              </button>
+            </div>
+          )}
           {showResendEmail && (
             <div className="resend-email-container">
               {resendSuccess ? (
@@ -341,13 +382,33 @@ export const Login = ({ onLoginSuccess }) => {
         <div className="auth-success-container">
           <div className="auth-success">
             <span className="auth-success-icon">✅</span>
-            <span className="auth-success-text">{t('auth.password_reset.success_message', 'Contraseña cambiada exitosamente. Redirigiendo al login...')}</span>
+            <span className="auth-success-text">{t('auth.password_reset.success_message', 'Contraseña cambiada exitosamente. Mostrando formulario de login...')}</span>
           </div>
+          <button 
+            className="auth-button"
+            onClick={() => {
+              setShowPasswordReset(false);
+              setPasswordResetSuccess(false);
+              setNewPassword('');
+              setConfirmNewPassword('');
+              window.history.replaceState({}, document.title, '/login');
+            }}
+            style={{ marginTop: '15px' }}
+          >
+            {t('auth.password_reset.continue_login', 'Continuar al login')}
+          </button>
         </div>
       )}
       {showPasswordReset && !passwordResetSuccess && (
         <div className="password-reset-container">
           <h3>{t('auth.password_reset.new_title', 'Establece tu nueva contraseña')}</h3>
+          <div className="password-reset-info">
+            <p className="info-text">
+              <span style={{ fontSize: '14px', color: '#666' }}>
+                ℹ️ {t('auth.password_reset.one_time_use', 'Este enlace es de un solo uso y expirará pronto.')}
+              </span>
+            </p>
+          </div>
           <form onSubmit={handlePasswordReset} className="auth-form">
             <div className="form-group">
               <label htmlFor="newPassword">{t('auth.password_reset.new_password', 'Nueva contraseña')}</label>
