@@ -13,14 +13,14 @@ import { TEXT_LENGTH_LIMITS } from './constants';
  * @returns {Object} - Objeto con el modelo y configuración de temperatura
  */
 export const selectOptimalModel = (textLength) => {
-  // Por ahora, usamos exclusivamente gpt-4o-mini que tiene la mejor cuota disponible (100K TPM)
-  // y buen rendimiento para todos los tipos de contenido.
+  // Ahora usamos gpt-4o como modelo principal que tiene mejor rendimiento
+  // que gpt-4o-mini para análisis psicológicos complejos.
   
   console.log(`Seleccionando modelo óptimo para texto de ${textLength} caracteres`);
   
   // Exactamente igual que en backend (chatgpt_integration.py)
   return {
-    model: "gpt-4o-mini",
+    model: "gpt-4o",
     temperature: 0.5  // Temperatura reducida para mayor consistencia
   };
 };

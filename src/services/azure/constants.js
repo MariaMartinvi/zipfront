@@ -9,17 +9,29 @@
 export const ALTERNATIVE_APIS = [
   {
     "name": "Deepseek R1",
-    "endpoint": "https://deepseek-r1-api-swedencentral.openai.azure.com/",
-    "model": "deepseek-r1",
-    "apiVersion": "2023-05-15"
+    "endpoint": "https://maria-mamb5wlq-swedencentral.services.ai.azure.com/models",
+    "model": "DeepSeek-R1",
+    "apiVersion": "2024-05-01-preview",
+    "keyVariable": "REACT_APP_AZURE_API_KEY_DEEPSEEK",
+    "useMaxCompletionTokens": false,
+    "useTemperature": true
+  },
+  {
+    "name": "Principal (gpt-4o-mini)",
+    "endpoint": null, // Se tomará de la configuración
+    "model": "gpt-4o-mini",
+    "apiVersion": "2025-01-01-preview",
+    "useMaxCompletionTokens": false,
+    "useTemperature": true
   },
   {
     "name": "o3-mini",
-    "endpoint": "https://maria-mamb5wlq-swedencentral.cognitiveservices.azure.com/",
+    "endpoint": null, // Se tomará de la configuración
     "model": "o3-mini",
-    "apiVersion": "2025-01-01-preview"
+    "apiVersion": "2025-01-01-preview",
+    "useMaxCompletionTokens": true,
+    "useTemperature": false
   }
-  // Se pueden añadir más APIs según sea necesario
 ];
 
 // Mensajes de error en diferentes idiomas
@@ -50,6 +62,18 @@ export const ERROR_MESSAGES = {
 // Prompts multiidioma para diferentes idiomas
 export const PROMPTS = {
  'es': ` ⚠️ **INSTRUCCIONES CRÍTICAS – DE CUMPLIMIENTO OBLIGATORIO**
+
+  🚫 **PROHIBIDO ABSOLUTO**: 
+  - "Bueno, primero debo identificar..."
+  - "Veo que los mensajes son de..."
+  - "Ahora debo analizar..."
+  - Cualquier explicación de tu proceso
+  - Cualquier texto antes de "## Análisis de personalidades"
+
+  ✅ **FORMATO OBLIGATORIO**: Tu respuesta DEBE empezar INMEDIATAMENTE con estas palabras exactas:
+  "## Análisis de personalidades"
+
+  🚫 **SI ESCRIBES AUNQUE SEA UNA PALABRA antes de "## Análisis de personalidades" HABRÁS FALLADO**
 
   Debes cumplir estas **REGLAS ESTRICTAS** al 100%:
   
@@ -137,7 +161,15 @@ export const PROMPTS = {
   ⚠️ REGRA CRÍTICA: Ambas listas (nombres y frases) deben tener EXACTAMENTE los mismos participantes. Ni más, ni menos.
 
   🧘‍♂️ Sé riguroso, objetivo y empático en el análisis psicológico.
-  🎭 Pero en las Frases descriptivas-literales, suéltate con humor negro, audacia y creatividad controlada.`,
+  🎭 Pero en las Frases descriptivas-literales, suéltate con humor negro, audacia y creatividad controlada.
+  
+  🎯 **RECUERDA: EMPIEZA TU RESPUESTA CON EXACTAMENTE ESTAS PALABRAS:**
+  "## Análisis de personalidades"
+  
+  🚫 **NO ESCRIBAS NADA ANTES DE ESA LÍNEA - NI UNA SOLA PALABRA**
+  
+  ❌ INCORRECTO: "Bueno, primero debo identificar... ## Análisis de personalidades"
+  ✅ CORRECTO: "## Análisis de personalidades"`,
 
   'en': ` ⚠️ **CRITICAL INSTRUCTIONS – MANDATORY COMPLIANCE**
 

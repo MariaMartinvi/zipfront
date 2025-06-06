@@ -108,7 +108,7 @@ export class AzureService {
       const apisToTry = ALTERNATIVE_APIS.map(api => ({
         ...api,
         endpoint: api.endpoint || defaultEndpoint,
-        key: apiKey
+        key: api.keyVariable ? getEnvVariable(api.keyVariable) : apiKey
       }));
       
       // Añadir la API principal al inicio
@@ -137,60 +137,76 @@ export class AzureService {
         console.log(`>>> INTENTANDO CON: ${api.name} (${i+1}/${apisToTry.length})`);
         
         try {
-          // Verificar si el endpoint termina en /
-          let endpoint = api.endpoint;
-          if (!endpoint.endsWith('/')) {
-            endpoint += '/';
+          // Construir URL según el tipo de endpoint
+          let baseURL;
+          let fullUrl;
+          
+          if (api.endpoint.includes('services.ai.azure.com')) {
+            // Azure AI Services (Deepseek R1) - usar endpoint tal como viene
+            baseURL = api.endpoint;
+            fullUrl = `${baseURL}?api-version=${api.apiVersion}`;
+          } else {
+            // Formato estándar de Azure OpenAI
+            let endpoint = api.endpoint;
+            if (!endpoint.endsWith('/')) {
+              endpoint += '/';
+            }
+            baseURL = `${endpoint}openai/deployments/${api.model}`;
+            fullUrl = `${baseURL}/chat/completions?api-version=${api.apiVersion}`;
           }
           
-          // Construir la URL base
-          const baseURL = `${endpoint}openai/deployments/${api.model}`;
-          
-          // Construir la URL completa para el log
-          const fullUrl = `${baseURL}/chat/completions?api-version=${api.apiVersion}`;
           console.log(`>>> URL completa para ${api.name}: ${fullUrl} (API version: ${api.apiVersion})`);
           
-          // Inicializar cliente OpenAI
-          const client = new OpenAI({
+          // Calcular timeout para este modelo
+          const timeoutMs = api.model === 'DeepSeek-R1' ? 300000 : // 5 minutos para Deepseek R1
+                           api.model === 'o3-mini' ? REQUEST_TIMEOUT * 3 : REQUEST_TIMEOUT;
+          console.log(`>>> TIMEOUT configurado para ${api.name}: ${timeoutMs/1000} segundos`);
+          
+          // Configurar cliente según el tipo de servicio
+          let clientConfig = {
             apiKey: api.key,
             baseURL: baseURL,
             defaultQuery: { "api-version": api.apiVersion || "2025-01-01-preview" },
-            defaultHeaders: { "api-key": api.key },
             dangerouslyAllowBrowser: true,
-            // Usar un timeout mayor para o3-mini
-            timeout: api.model === 'o3-mini' ? REQUEST_TIMEOUT * 2 : REQUEST_TIMEOUT
-          });
+            // Usar el timeout calculado
+            timeout: timeoutMs
+          };
+          
+          if (api.endpoint.includes('services.ai.azure.com')) {
+            // Azure AI Services (Deepseek) - usar Authorization Bearer
+            clientConfig.defaultHeaders = { 
+              "Authorization": `Bearer ${api.key}`,
+              "Content-Type": "application/json"
+            };
+          } else {
+            // Azure OpenAI Service - usar api-key
+            clientConfig.defaultHeaders = { "api-key": api.key };
+          }
+          
+          const client = new OpenAI(clientConfig);
           
           // Hacer la solicitud a la API
-          console.error('🚀 ENVIANDO A AZURE');
-          console.error('API:', api.name);
-          console.error('Modelo:', api.model);
-          console.error('URL:', baseURL);
+          console.log(`🚀 ENVIANDO A: ${api.name} (${api.model})`);
+          console.log(`📊 Longitud contenido: ${userContent.length} caracteres`);
           
-          // Añadir logs detallados del contenido que se envía
-          console.error('='.repeat(80));
-          console.error('📝 SYSTEM PROMPT:');
-          console.error(systemPrompt);
-          console.error('='.repeat(80));
-          console.error('👤 USER PREFIX:');
-          console.error(userPrefix);
-          console.error('='.repeat(80));
-          console.error('💬 USER CONTENT:');
-          console.error(userContent);
-          console.error('='.repeat(80));
-          console.error(`📊 Longitud total del texto: ${userContent.length} caracteres`);
-          console.error('='.repeat(80));
+          // Calcular max_tokens para este modelo
+          const maxTokens = api.model === 'DeepSeek-R1' ? 8000 : 4000; // Más tokens para Deepseek R1
+          console.log(`>>> MAX_TOKENS configurado para ${api.name}: ${maxTokens}`);
           
-          const response = await client.chat.completions.create({
+          // Preparar el cuerpo de la petición
+          const requestBody = {
             model: api.model,
             messages: messages,
             temperature: temperature,
-            max_tokens: 4000
-          });
+            max_tokens: maxTokens
+          };
+          
+          console.log('⏱️ ENVIANDO REQUEST...');
+          
+          const response = await client.chat.completions.create(requestBody);
           
           // Log de respuesta exitosa
-          console.error(`✅ RESPUESTA RECIBIDA de ${api.name}`);
-          console.error('Respuesta:', response.choices[0].message.content);
+          console.log(`✅ RESPUESTA RECIBIDA de ${api.name}`);
           
           // Extraer respuesta
           responseText = response.choices[0].message.content;
@@ -227,6 +243,20 @@ export class AzureService {
             console.log(`>>> LÍMITE DE TOKENS EXCEDIDO con ${api.name} - Probando siguiente API...`);
             if (i < apisToTry.length - 1) {
               console.log(`>>> SALTANDO A: ${apisToTry[i+1].name} (${apisToTry[i+1].model})`);
+            }
+            continue;
+          } else if (error.name === 'APIConnectionError' || 
+                    error.name === 'APIConnectionTimeoutError' ||
+                    (error.message && error.message.includes("Failed to fetch")) ||
+                    (error.message && error.message.includes("Connection error")) ||
+                    (error.message && error.message.includes("Request timed out")) ||
+                    error.code === 'ECONNREFUSED' || 
+                    error.code === 'ENOTFOUND' || 
+                    error.code === 'ECONNRESET') {
+            // Errores de conexión/red/timeout, continuar con la siguiente API
+            console.error(`>>> ERROR DE CONEXIÓN/TIMEOUT con ${api.name}: ${error.message || error.name}`);
+            if (i < apisToTry.length - 1) {
+              console.log(`>>> PROBLEMA DE CONECTIVIDAD/TIMEOUT - SALTANDO A: ${apisToTry[i+1].name} (${apisToTry[i+1].model})`);
             }
             continue;
           } else {

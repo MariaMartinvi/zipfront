@@ -5,6 +5,7 @@
 import { PROMPTS, USER_PREFIXES, ERROR_MESSAGES } from './services/azure/constants';
 import { userSession } from './utils/userSession';
 import { anonymizationService } from './services/anonymizationService';
+import azureService from './services/azure/AzureService';
 
 // Nota: Esta API_URL ya no se usa para las solicitudes a Azure (que se hacen directamente desde el cliente)
 // pero se mantiene por compatibilidad con posibles usos futuros o para otras funciones
@@ -80,33 +81,7 @@ const processContentForAzure = (content) => {
   }
 };
 
-// Configuración de APIs alternativas
-const ALTERNATIVE_APIS = [
-  {
-    "name": "Principal (gpt-4o-mini)",
-    "endpoint": null, // Se tomará de la configuración
-    "model": "gpt-4o-mini",
-    "apiVersion": "2025-01-01-preview",
-    "useMaxCompletionTokens": false,
-    "useTemperature": true
-  },
-  {
-    "name": "o3-mini",
-    "endpoint": null, // Se tomará de la configuración
-    "model": "o3-mini",
-    "apiVersion": "2025-01-01-preview",
-    "useMaxCompletionTokens": true,
-    "useTemperature": false
-  },
-  {
-    "name": "Deepseek R1",
-    "endpoint": null, // Usando el endpoint principal para evitar problemas DNS
-    "model": "deepseek-r1",
-    "apiVersion": "2025-01-01-preview",
-    "useMaxCompletionTokens": false,
-    "useTemperature": true
-  }
-];
+
 
 // Función auxiliar para obtener variables de entorno con un valor fallback
 export const getEnvVariable = (name, fallback = null) => {
@@ -231,8 +206,44 @@ export const saveChatLocally = async (chatData) => {
  * @param {Object} nameMapping - Mapeo de nombres a iniciales
  * @returns {string} - Respuesta con nombres reconstruidos
  */
+/**
+ * Limpia la respuesta de Deepseek R1 eliminando el proceso de razonamiento inicial
+ * @param {string} response - Respuesta completa de Deepseek R1
+ * @returns {string} - Respuesta limpia sin proceso de razonamiento
+ */
+const cleanDeepseekResponse = (response) => {
+  try {
+    if (!response || typeof response !== 'string') {
+      return response || '';
+    }
+
+    // Buscar donde empieza el formato correcto (cualquier ## en Markdown)
+    const analysisStartIndex = response.search(/^##\s/m);
+    
+    if (analysisStartIndex !== -1) {
+      // Extraer solo la parte del formato correcto
+      const cleanedResponse = response.substring(analysisStartIndex);
+      console.log('🧹 Eliminado proceso de razonamiento de Deepseek R1');
+      return cleanedResponse;
+    }
+    
+    // Si no encuentra el marcador, devolver la respuesta original
+    console.log('⚠️ No se encontró marcador ## - manteniendo respuesta original');
+    return response;
+  } catch (error) {
+    console.error('❌ Error limpiando respuesta de Deepseek:', error);
+    return response;
+  }
+};
+
 const reconstructNames = (response, nameMapping) => {
   try {
+    // Verificar que response existe y es una cadena
+    if (!response || typeof response !== 'string') {
+      console.error('❌ Response es null, undefined o no es string:', response);
+      return response || '';
+    }
+    
     let reconstructedResponse = response;
     
     console.log('🔧 INICIO reconstructNames');
@@ -363,14 +374,7 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
       throw new Error(errorMsg);
     }
     
-    // Importar la librería de OpenAI dinámicamente para no cargarla si no se usa
-    const { OpenAI } = await import('openai');
-    
-    // Preparar la lista de APIs disponibles
-    const apisToTry = ALTERNATIVE_APIS.map(api => ({
-      ...api,
-      endpoint: api.endpoint || defaultEndpoint
-    }));
+    // AzureService se encarga del fallback automático
     
     // Procesar el contenido completo para anonimización
     console.log(`Longitud original del contenido: ${chatContent.length} caracteres`);
@@ -379,53 +383,21 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     const { processedContent, nameMapping } = processContentForAzure(chatContent);
     console.log(`Longitud después de anonimizar: ${processedContent.length} caracteres`);
     
-    // Obtener el prompt en el idioma correspondiente
-    const systemPrompt = PROMPTS[language] || PROMPTS['es'];
-    const userPrefix = USER_PREFIXES[language] || USER_PREFIXES['es'];
+    // 🔄 USAR NUEVO AZURESERVICE (con fallback automático incluido)
+    console.log('🔄 Usando nuevo AzureService con fallback automático...');
     
-    // Preparar los mensajes para la API
-    const messages = [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: `${userPrefix}\n\n${processedContent}` }
-    ];
-
-    // Intentar cada API en secuencia
-    console.log(`>>> APIs disponibles para fallback: ${apisToTry.length}`);
-    for (let i = 0; i < apisToTry.length; i++) {
-      const api = apisToTry[i];
+    try {
+      const result = await azureService.getResponse(processedContent, language);
       
-      console.log(`>>> INTENTANDO CON: ${api.name} (modelo: ${api.model}) [${i+1}/${apisToTry.length}]`);
-      console.log(`Enviando solicitud utilizando API: ${api.name}, modelo: ${api.model}`);
-      
-      // Definir baseURL fuera del bloque try para que esté disponible en el bloque catch
-      const baseURL = `${api.endpoint}openai/deployments/${api.model}`;
-      console.log(`>>> URL completa para ${api.name}: ${baseURL} (API version: ${api.apiVersion})`);
-      
-      try {
-        // Inicializar el cliente de Azure OpenAI para esta API
-        const client = new OpenAI({
-          apiKey: apiKey,
-          baseURL: baseURL,
-          defaultQuery: { "api-version": api.apiVersion },
-          defaultHeaders: { "api-key": apiKey },
-          dangerouslyAllowBrowser: true,
-          timeout: 60000 // 1 minuto es suficiente para el fallback
-        });
+      if (result.success) {
+        let analysisResult = result.response;
         
-        console.log(`>>> Intentando con ${api.name} (${api.model})...`);
+        // Limpiar respuesta de Deepseek R1 si es necesario
+        if (analysisResult.includes('API UTILIZADA: Deepseek R1')) {
+          analysisResult = cleanDeepseekResponse(analysisResult);
+        }
         
-        const response = await client.chat.completions.create({
-          model: api.model,
-          messages: messages,
-          temperature: api.useTemperature !== false ? 0.5 : undefined,
-          max_tokens: api.useMaxCompletionTokens ? undefined : 4000,
-          max_completion_tokens: api.useMaxCompletionTokens ? 4000 : undefined
-        });
-        
-        console.log(`>>> ÉXITO con ${api.name} (modelo: ${api.model})`);
-        let analysisResult = response.choices[0].message.content;
-        
-        // Reconstruir los nombres en la respuesta
+        // Reconstruir los nombres en la respuesta (MANTENER LÓGICA EXISTENTE)
         analysisResult = reconstructNames(analysisResult, nameMapping);
         
         // Guardar el nameMapping globalmente para uso en otros componentes (como el juego)
@@ -436,42 +408,22 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
         window.lastAzureResponse = analysisResult;
         console.log('Respuesta de Azure guardada globalmente para el juego');
         
-        const apiHeader = `*****************************************************\n* API UTILIZADA: ${api.name}\n*****************************************************\n\n`;
         return {
           success: true,
           ready: true,
-          response: apiHeader + analysisResult
+          response: analysisResult
         };
-        
-      } catch (error) {
-        console.error(`>>> ERROR con ${api.name} (${api.model}):`, error);
-        
-        // Si es error de rate limit y hay más modelos disponibles
-        if ((error.status === 429 || error.statusCode === 429 || 
-             error.message?.includes("rate limit")) && 
-            i < apisToTry.length - 1) {
-          console.log(`>>> LÍMITE ALCANZADO con ${api.name} - Pasando a ${apisToTry[i+1].name}...`);
-          continue; // Intentar inmediatamente con el siguiente modelo
-        }
-        
-        // Para otros errores, si hay más modelos, continuar
-        if (i < apisToTry.length - 1) {
-          console.log(`>>> ERROR GENERAL con ${api.name}, probando ${apisToTry[i+1].name}...`);
-          continue;
-        }
-        
-        // Si es el último modelo, propagar el error
-        throw error;
+      } else {
+        throw new Error(result.error || 'Error en AzureService');
       }
+    } catch (azureServiceError) {
+      console.error('❌ Error en AzureService:', azureServiceError);
+      
+      return {
+        success: false,
+        error: azureServiceError.message || 'Error al procesar la solicitud con todos los modelos disponibles.'
+      };
     }
-    
-    // Si llegamos aquí, todas las APIs fallaron
-    console.error("Todas las APIs disponibles fallaron al procesar la solicitud");
-    
-    return {
-      success: false,
-      error: "No pudimos procesar tu solicitud en este momento. Todos los modelos están ocupados o no disponibles. Por favor, intenta más tarde."
-    };
   } catch (error) {
     console.error("Error al analizar el chat con Azure OpenAI:", error);
     
