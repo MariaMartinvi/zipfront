@@ -32,6 +32,9 @@
   position: relative;
   overflow: hidden;
   min-height: 80vh;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
 /* IMPORTANTE: Sobrescribir CUALQUIER clase de Tailwind en botones del Hero Section */
@@ -123,6 +126,9 @@ button.cta-primary:hover {
   align-items: center;
   position: relative;
   z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 16px;
 }
 
 /* Badge superior */
@@ -435,6 +441,7 @@ button.cta-primary:hover {
 @media (max-width: 768px) {
   .hero-section {
     padding: 80px 20px 100px;
+    min-height: auto; /* Permitir altura dinámica */
   }
 
   .hero-content {
@@ -482,35 +489,170 @@ button.cta-primary:hover {
 
 @media (max-width: 480px) {
   .hero-section {
-    padding: 60px 16px 80px;
+    padding: 50px 16px 60px; /* Reducir padding superior e inferior */
+    min-height: auto; /* Altura dinámica */
+  }
+
+  .hero-content {
+    gap: 40px; /* Reducir gap entre elementos */
   }
 
   .hero-title {
-    font-size: 36px;
+    font-size: 32px; /* Reducir tamaño de fuente */
+    line-height: 1.2;
+    margin-bottom: 20px; /* Reducir margen inferior */
   }
 
   .hero-description {
     font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 30px; /* Reducir margen inferior */
   }
 
   .hero-actions {
     flex-direction: column;
     align-items: center;
+    gap: 12px; /* Reducir gap */
+    margin-bottom: 30px; /* Reducir margen inferior */
   }
 
   .cta-primary, .cta-secondary {
     width: 100%;
     max-width: 280px;
+    padding: 14px 24px; /* Reducir padding */
+    font-size: 15px;
   }
 
   .security-badge {
     flex-direction: column;
     text-align: center;
     gap: 12px;
+    padding: 16px 20px; /* Reducir padding */
   }
 
   .phone-mockup {
-    max-width: 250px;
+    max-width: 220px; /* Reducir tamaño */
+    height: auto;
+  }
+
+  .new-hero-badge {
+    margin-bottom: 16px !important; /* Reducir margen inferior */
+    padding: 6px 14px !important; /* Reducir padding */
+    font-size: 12px !important;
+  }
+}
+
+/* NUEVA: Media query para móviles muy pequeños */
+@media (max-width: 360px) {
+  .hero-section {
+    padding: 40px 12px 50px; /* Padding aún más pequeño */
+  }
+
+  .hero-content {
+    gap: 30px;
+  }
+
+  .hero-title {
+    font-size: 28px; /* Tamaño más pequeño */
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .hero-description {
+    font-size: 15px;
+    line-height: 1.4;
+    margin-bottom: 24px;
+  }
+
+  .hero-actions {
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .cta-primary, .cta-secondary {
+    padding: 12px 20px;
+    font-size: 14px;
+    max-width: 260px;
+  }
+
+  .security-badge {
+    padding: 14px 16px;
+    gap: 10px;
+  }
+
+  .security-text {
+    font-size: 13px;
+  }
+
+  .security-text strong {
+    font-size: 14px;
+  }
+
+  .phone-mockup {
+    max-width: 200px;
+  }
+
+  .new-hero-badge {
+    margin-bottom: 12px !important;
+    padding: 5px 12px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* NUEVA: Media query para móviles ultrapequeños */
+@media (max-width: 320px) {
+  .hero-section {
+    padding: 30px 8px 40px; /* Padding muy reducido */
+  }
+
+  .hero-content {
+    gap: 25px;
+  }
+
+  .hero-title {
+    font-size: 24px; /* Tamaño muy pequeño pero legible */
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .hero-description {
+    font-size: 14px;
+    line-height: 1.3;
+    margin-bottom: 20px;
+  }
+
+  .hero-actions {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .cta-primary, .cta-secondary {
+    padding: 10px 16px;
+    font-size: 13px;
+    max-width: 240px;
+  }
+
+  .security-badge {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+
+  .security-text {
+    font-size: 12px;
+  }
+
+  .security-text strong {
+    font-size: 13px;
+  }
+
+  .phone-mockup {
+    max-width: 180px;
+  }
+
+  .security-icon-circle {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
   }
 }
 
