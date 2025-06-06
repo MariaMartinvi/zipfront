@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 // SEGURIDAD: Importar hooks de seguridad
 import { useSecurityCaptcha } from './components/SecurityCaptcha';
 import { setFirebaseLanguage } from './utils/securityUtils';
-import { confirmEmailVerification, resendEmailVerification } from './firebase_auth';
+import { confirmEmailVerification, resendEmailVerification, confirmPasswordResetWithCode } from './firebase_auth';
  
 
 // Login Component
@@ -24,6 +24,12 @@ export const Login = ({ onLoginSuccess }) => {
   const [showResendEmail, setShowResendEmail] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  
+  // Estados para reseteo de contraseña
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -43,9 +49,9 @@ export const Login = ({ onLoginSuccess }) => {
     console.log('Login component mounted with params:', { returnTo, sessionId, mode, oobCode });
   }, [returnTo, sessionId, mode, oobCode]);
 
-  // Procesar verificación de email automáticamente
+  // Procesar verificación de email y reseteo de contraseña automáticamente
   useEffect(() => {
-    const processEmailVerification = async () => {
+    const processActions = async () => {
       if (mode === 'verifyEmail' && oobCode) {
         console.log('🔐 Detectada verificación de email automática...');
         setIsLoading(true);
@@ -66,10 +72,19 @@ export const Login = ({ onLoginSuccess }) => {
         } finally {
           setIsLoading(false);
         }
+      } else if (mode === 'resetPassword' && oobCode) {
+        console.log('🔑 Detectado reseteo de contraseña...');
+        // Mostrar formulario para nueva contraseña
+        setShowPasswordReset(true);
+        setError('');
+        
+        // Limpiar URL sin recargar página
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
       }
     };
 
-    processEmailVerification();
+    processActions();
   }, [mode, oobCode, t]);
 
   // Manejar resultado del redirect de Google Auth (fallback cuando popup falla)
@@ -187,6 +202,42 @@ export const Login = ({ onLoginSuccess }) => {
     }
   };
 
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
+    setError('');
+    
+    if (newPassword !== confirmNewPassword) {
+      setError(t('auth.password_reset.password_mismatch', 'Las contraseñas no coinciden.'));
+      return;
+    }
+    
+    if (newPassword.length < 6) {
+      setError(t('auth.password_reset.password_too_short', 'La contraseña debe tener al menos 6 caracteres.'));
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      console.log('🔑 Confirmando reseteo de contraseña...');
+      await confirmPasswordResetWithCode(oobCode, newPassword);
+      setPasswordResetSuccess(true);
+      setError('');
+      console.log('✅ Contraseña cambiada exitosamente');
+      
+      // Redirigir al login después de 3 segundos
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
+      
+    } catch (error) {
+      console.error('❌ Error reseteando contraseña:', error);
+      setError(error.message || t('auth.password_reset.error', 'Error al cambiar la contraseña. Inténtalo de nuevo.'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleLogin = async () => {
     setError('');
     setIsLoading(true);
@@ -286,6 +337,52 @@ export const Login = ({ onLoginSuccess }) => {
           </div>
         </div>
       )}
+      {passwordResetSuccess && (
+        <div className="auth-success-container">
+          <div className="auth-success">
+            <span className="auth-success-icon">✅</span>
+            <span className="auth-success-text">{t('auth.password_reset.success_message', 'Contraseña cambiada exitosamente. Redirigiendo al login...')}</span>
+          </div>
+        </div>
+      )}
+      {showPasswordReset && !passwordResetSuccess && (
+        <div className="password-reset-container">
+          <h3>{t('auth.password_reset.new_title', 'Establece tu nueva contraseña')}</h3>
+          <form onSubmit={handlePasswordReset} className="auth-form">
+            <div className="form-group">
+              <label htmlFor="newPassword">{t('auth.password_reset.new_password', 'Nueva contraseña')}</label>
+              <input
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                minLength={6}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="confirmNewPassword">{t('auth.password_reset.confirm_password', 'Confirmar nueva contraseña')}</label>
+              <input
+                type="password"
+                id="confirmNewPassword"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                minLength={6}
+              />
+            </div>
+            <button 
+              type="submit" 
+              className="auth-button" 
+              disabled={isLoading}
+            >
+              {isLoading ? t('auth.password_reset.changing', 'Cambiando...') : t('auth.password_reset.change_button', 'Cambiar contraseña')}
+            </button>
+          </form>
+        </div>
+      )}
       {isRedirecting ? (
         <div className="redirect-message">
           <div className="spinner" style={{ 
@@ -308,7 +405,7 @@ export const Login = ({ onLoginSuccess }) => {
             `}
           </style>
         </div>
-      ) : (
+      ) : showPasswordReset ? null : (
         <div className="auth-content">
           <button 
             type="button"

@@ -14,7 +14,8 @@ import {
   browserLocalPersistence,
   GoogleAuthProvider,
   signInWithPopup,
-  applyActionCode
+  applyActionCode,
+  confirmPasswordReset
 } from 'firebase/auth';
 import { 
   getFirestore, 
@@ -532,6 +533,20 @@ export const confirmEmailVerification = async (actionCode) => {
     return true;
   } catch (error) {
     console.error('❌ Error confirmando verificación de email:', error);
+    error.message = getErrorMessage(error.code) || error.message;
+    throw error;
+  }
+};
+
+// Confirmar reseteo de contraseña con código
+export const confirmPasswordResetWithCode = async (actionCode, newPassword) => {
+  try {
+    console.log('🔑 Procesando reseteo de contraseña...');
+    await confirmPasswordReset(auth, actionCode, newPassword);
+    console.log('✅ Contraseña cambiada exitosamente con Firebase');
+    return true;
+  } catch (error) {
+    console.error('❌ Error confirmando reseteo de contraseña:', error);
     error.message = getErrorMessage(error.code) || error.message;
     throw error;
   }

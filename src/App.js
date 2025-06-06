@@ -5,7 +5,8 @@ import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import Chatgptresultados from './Chatgptresultados';
 import WhatsappInstructions from './WhatsappInstructions';
-import AnalisisPrimerChat from './Analisis_primer_chat';
+import AnalisisResumenGeneral from './AnalisisResumenGeneral';
+import AnalisisEstadistico from './AnalisisEstadistico';
 import AnalisisTop from './Analisis_top';
 import { AuthContainer, Login, Register, PasswordReset } from './AuthComponents';
 import SubscriptionPlans from './SubscriptionPlans';
@@ -2052,30 +2053,44 @@ const tryDeleteFiles = async (operationId) => {
             path="/"
             element={
               <>
-                {/* Mostrar componentes de análisis estadístico */}
+                {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
                 {operationId && user && (
                   <div className="analysis-container" ref={analysisRef}>
-                    <h2 className="analysis-special-title">{t('app.analysis.statistical')}</h2>
+                    <h2 className="analysis-special-title">Análisis estadístico</h2>
                     
-                    {/* Mostrar los componentes de análisis estadístico inmediatamente cuando chatData esté disponible */}
+                    {/* RESUMEN GENERAL - Primera parte del análisis */}
+                    {/* Mostrar el resumen general inmediatamente cuando chatData esté disponible */}
                     {chatData ? (
-                      <>
-                        <div className="analysis-module">
-                          <AnalisisPrimerChat chatData={chatData} />
-                        </div>
-                        {/* Nuevos componentes de análisis */}
-                        <div className="additional-analysis">
-                          <div className="analysis-module">
-                            <AnalisisTop chatData={chatData} />
-                          </div>
-                        </div>
-                      </>
+                      <div className="analysis-module">
+                        <AnalisisResumenGeneral chatData={chatData} />
+                      </div>
                     ) : (
                       <div className="empty-placeholder-container">
                         <div className="spinner-small"></div>
                         <p>{progressMessage || (isLoading ? t('app.progress.processing') : t('app.progress.generating'))}</p>
                       </div>
                     )}
+                  </div>
+                )}
+
+                {/* ANÁLISIS TOP - Segunda parte */}
+                {operationId && user && chatData && (
+                  <div className="additional-analysis">
+                    <div className="analysis-module">
+                      <AnalisisTop chatData={chatData} />
+                    </div>
+                  </div>
+                )}
+
+                {/* JUEGOS - Tercera parte */}
+                {operationId && user && chatData && (
+                  <div className="games-section">
+                    <Juegos 
+                      headlinesGameData={headlinesGameData}
+                      topData={window.lastAnalysisTopData}
+                      showHeadlinesGame={!!headlinesGameData && !!chatGptResponse}
+                      showTopGame={!!window.lastAnalysisTopData}
+                    />
                   </div>
                 )}
 
@@ -2104,14 +2119,16 @@ const tryDeleteFiles = async (operationId) => {
                         usuarioId={user?.uid || "anonymous"} 
                       />
                     )}
-                    
-                    {/* NUEVO: Componente independiente para juegos */}
-                    <Juegos 
-                      headlinesGameData={headlinesGameData}
-                      topData={window.lastAnalysisTopData}
-                      showHeadlinesGame={!!headlinesGameData && !!chatGptResponse}
-                      showTopGame={!!window.lastAnalysisTopData}
-                    />
+                  </div>
+                )}
+
+                {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
+                {operationId && user && chatData && (
+                  <div className="statistical-analysis-section">
+                    <h2 className="analysis-special-title">Análisis estadístico 2</h2>
+                    <div className="analysis-module">
+                      <AnalisisEstadistico chatData={chatData} />
+                    </div>
                   </div>
                 )}
                 
