@@ -131,7 +131,7 @@
 }
 
 .profile-user {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 600;
   background: linear-gradient(135deg, #25D366, #8A2BE2);
   background-clip: text;
@@ -198,7 +198,7 @@
 }
 
 .usuario-destacado .nombre {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 700;
   background: linear-gradient(135deg, #25D366, #8A2BE2);
   background-clip: text;
@@ -208,7 +208,7 @@
 
 .usuario-destacado .mensajes-totales {
   color: #666;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 500;
 }
 
@@ -411,7 +411,7 @@
   }
   
   .profile-user {
-    font-size: 18px;
+    font-size: 22px;
   }
   
   .profile-detail-container {
@@ -435,7 +435,7 @@
   }
   
   .usuario-destacado .nombre {
-    font-size: 1.3rem;
+    font-size: 1.6rem;
   }
   
   .analysis-badge {

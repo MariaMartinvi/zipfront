@@ -126,14 +126,14 @@
   .form-group label {
   font-weight: 600;
   color: #1a1a1a;
-  font-size: 16px;
+  font-size: 15px;
   }
   
   .form-group input {
   padding: 16px 20px;
   border: 2px solid #E5E7EB;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 15px;
   transition: all 0.3s ease;
   height: 56px;
     box-sizing: border-box;
@@ -227,7 +227,7 @@
   color: #DC2626;
   border-radius: 12px;
   border: 1px solid #FCA5A5;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
 }
 
@@ -397,14 +397,14 @@
   }
   
   .form-group label {
-    font-size: 15px;
+    font-size: 14px;
   }
   
   .form-group input,
   .auth-button,
   .google-auth-button {
     height: 52px;
-    font-size: 15px;
+    font-size: 14px;
   }
 }
 
@@ -419,14 +419,14 @@
   }
   
   .form-group label {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .form-group input,
   .auth-button,
   .google-auth-button {
     height: 48px;
-    font-size: 14px;
+    font-size: 13px;
     padding: 14px 16px;
   }
   

@@ -218,7 +218,7 @@
   margin-bottom: 0.75rem;
   color: #1a1a1a;
   font-weight: 500;
-  font-size: 1.1rem;
+  font-size: 15px;
 }
 
 .form-group input,
@@ -228,7 +228,7 @@
   border: 2px solid #eaeaea;
   border-radius: 8px;
   transition: all 0.3s ease;
-  font-size: 1.1rem;
+  font-size: 15px;
 }
 
 .form-group input:focus,

@@ -889,7 +889,7 @@
   }
 
   .profile-user {
-    font-size: 16px;
+    font-size: 24px;
   }
 }
 
@@ -1085,7 +1085,7 @@
   }
 
   .profile-user {
-    font-size: 14px;
+    font-size: 20px;
   }
 }
 
@@ -1559,8 +1559,8 @@
 }
 
 .profile-user {
-  font-size: 17px;
-  font-weight: 500;
+  font-size: 24px;
+  font-weight: 600;
   background: linear-gradient(135deg, #25D366, #8A2BE2);
   background-clip: text;
   -webkit-background-clip: text;
@@ -1866,7 +1866,7 @@
   }
 
   .profile-user {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .demo-cta-button {
