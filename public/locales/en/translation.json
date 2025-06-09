@@ -399,7 +399,9 @@
     "badge": "CONVERSATION ANALYSIS",
     "title": {
       "discover": "Discover the secrets of",
-      "conversations": "your WhatsApp conversations"
+      "conversations": "your",
+      "whatsapp": "WhatsApp",
+      "conversations_suffix": "conversations"
     },
     "description": "We combine statistics and advanced Artificial Intelligence to reveal fascinating insights about participants' psychological profiles and group dynamics.",
     "buttons": {

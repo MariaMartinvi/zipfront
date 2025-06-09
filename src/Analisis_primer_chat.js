@@ -11,12 +11,7 @@ import {
   LineChart,
   Line,
   PieChart,
-  Pie,
-  Cell,
-  ComposedChart,
-  AreaChart,
-  Area,
-  LabelList
+  Pie,git
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import './styles/Analisis.css';

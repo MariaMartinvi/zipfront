@@ -13,7 +13,7 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick }) => {
           <h1 className="hero-title">
             {t('hero.title.discover', 'Descubre los secretos de')}
             <span className="gradient-text"> {t('hero.title.conversations', 'tus conversaciones de')}</span>
-            <span className="whatsapp-text"> WhatsApp</span>
+            <span className="whatsapp-text"> {t('hero.title.whatsapp', 'WhatsApp')}</span> {t('hero.title.conversations_suffix', '')}
           </h1>
           <p className="hero-description">
             {t('hero.description', 'Combinamos la estadística y la Inteligencia Artificial avanzada para revelarte datos fascinantes sobre los perfiles psicológicos de los participantes y las dinámicas de grupo.')}

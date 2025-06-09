@@ -497,10 +497,11 @@ button.cta-primary:hover {
     gap: 40px; /* Reducir gap entre elementos */
   }
 
-  .hero-title {
-    font-size: 32px; /* Reducir tamaño de fuente */
+  .hero-section .hero-title {
+    font-size: 38px !important; /* Tamaño aún más grande pero "conversaciones" quepa */
     line-height: 1.2;
     margin-bottom: 20px; /* Reducir margen inferior */
+    max-width: 85%; /* Forzar más saltos de línea */
   }
 
   .hero-description {
@@ -552,10 +553,11 @@ button.cta-primary:hover {
     gap: 30px;
   }
 
-  .hero-title {
-    font-size: 28px; /* Tamaño más pequeño */
+  .hero-section .hero-title {
+    font-size: 32px !important; /* Tamaño más grande pero "conversaciones" quepa */
     line-height: 1.1;
     margin-bottom: 16px;
+    max-width: 80%; /* Forzar más saltos de línea */
   }
 
   .hero-description {
@@ -609,10 +611,11 @@ button.cta-primary:hover {
     gap: 25px;
   }
 
-  .hero-title {
-    font-size: 24px; /* Tamaño muy pequeño pero legible */
+  .hero-section .hero-title {
+    font-size: 26px !important; /* Tamaño más grande pero "conversaciones" quepa */
     line-height: 1.1;
     margin-bottom: 12px;
+    max-width: 75%; /* Forzar más saltos de línea */
   }
 
   .hero-description {

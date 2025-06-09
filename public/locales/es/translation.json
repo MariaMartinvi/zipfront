@@ -438,7 +438,9 @@
     "badge": "ANÁLISIS DE CONVERSACIONES",
     "title": {
       "discover": "Descubre los secretos de",
-      "conversations": "tus conversaciones de"
+      "conversations": "tus conversaciones",
+      "whatsapp": "WhatsApp",
+      "conversations_suffix": ""
     },
     "description": "Combinamos la estadística y la Inteligencia Artificial avanzada para revelarte datos fascinantes sobre los perfiles psicológicos de los participantes y las dinámicas de grupo.",
     "buttons": {
@@ -457,7 +459,7 @@
     }
   },
   "preview": {
-    "title": "Descubre los secretos de tus conversaciones de WhatsApp",
+    "title": "Descubre los secretos de tus conversaciones WhatsApp",
     "description": "Combinamos la estadística y la Inteligencia Artificial avanzada para revelarte datos fascinantes sobre los perfiles psicológicos de los participantes y las dinámicas de grupo.",
     "security": {
       "badge": "100% privado y seguro - Los datos personales de los chats no salen de tu dispositivo"
