@@ -1045,6 +1045,7 @@
   "games": {
     "title": "🎮 Spiele",
     "badge": "INTERAKTIVES SPIEL",
+    "view_button": "Spiel ansehen",
     "share_button": "🚀 Spiel teilen",
     "headlines": {
       "title": "Wer ist wer?",

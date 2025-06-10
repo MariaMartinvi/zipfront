@@ -257,90 +257,25 @@ const reconstructNames = (response, nameMapping) => {
 
     console.log('🔄 Mapeo inverso creado:', inverseMapping);
 
-    // NUEVO: Crear mapeo de traducciones (manejar Participant -> Participante)
-    // En este caso, queremos mantener los nombres anonimizados, no mapearlos a nombres reales
-    const translationMapping = {};
-    
-    // Para cada participante anonimizado (ej: 'Participante 4')
-    Object.values(nameMapping).forEach(participantId => {
-      // Mapeo directo español (Participante X -> Participante X) - no cambiar
-      translationMapping[participantId] = participantId;
-      
-      // Mapeo de traducción inglés (Participant X -> Participante X)
-      const englishVersion = participantId.replace('Participante', 'Participant');
-      if (englishVersion !== participantId) {
-        translationMapping[englishVersion] = participantId; // Traducir al español
-        console.log(`🌐 Mapeo de traducción creado: "${englishVersion}" → "${participantId}"`);
-      }
-    });
-
-    console.log('🌐 Mapeo con traducciones creado:', translationMapping);
-
-    // Detectar participantes sin mapeo y eliminar objetos completos
-    const gameDataMatch = reconstructedResponse.match(/GAME_DATA:\[([\s\S]*?)\]/);
-    if (gameDataMatch) {
-      let gameDataContent = gameDataMatch[1];
-      console.log('🎯 Contenido GAME_DATA original:', gameDataContent);
-      
-      // Detectar participantes que no están en el mapeo (tanto en español como en inglés)
-      const allParticipantsInGameData = [
-        ...(gameDataContent.match(/"Participante \d+"/g) || []),
-        ...(gameDataContent.match(/"Participant \d+"/g) || [])
-      ];
-      
-      const unmappedParticipants = allParticipantsInGameData.filter(p => {
-        const cleanParticipant = p.replace(/"/g, '');
-        return !translationMapping.hasOwnProperty(cleanParticipant);
-      });
-      
-      if (unmappedParticipants.length > 0) {
-        console.warn('⚠️ ELIMINANDO participantes inventados por Azure:', [...new Set(unmappedParticipants)]);
-        
-        // Eliminar los objetos con participantes inventados
-        unmappedParticipants.forEach(unmappedParticipant => {
-          const cleanParticipant = unmappedParticipant.replace(/"/g, '');
-          console.log(`🧹 Eliminando objeto con: ${cleanParticipant}`);
-          
-          // Eliminar el objeto completo que contiene este participante inventado
-          const objectPattern = new RegExp(`\\s*{[^}]*"nombre":\\s*"${cleanParticipant.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^}]*},?`, 'g');
-          gameDataContent = gameDataContent.replace(objectPattern, '');
-        });
-        
-        // Limpiar comas extra que puedan haber quedado
-        gameDataContent = gameDataContent.replace(/,\s*]/g, ']');
-        gameDataContent = gameDataContent.replace(/,\s*,/g, ',');
-        
-        // Reemplazar la sección completa en la respuesta
-        reconstructedResponse = reconstructedResponse.replace(
-          /GAME_DATA:\[([\s\S]*?)\]/,
-          `GAME_DATA:[${gameDataContent}]`
-        );
-        
-        console.log('🧹 Participantes inventados eliminados');
-      }
-    }
-
-    // AHORA usar UN SOLO PROCESO para mapear TODA la respuesta (incluyendo traducciones)
+    // Mapear participantes en toda la respuesta
     let totalMappings = 0;
-    Object.entries(translationMapping).forEach(([participantKey, spanishName]) => {
-      // Usar regex que funcione tanto para texto general como para JSON
-      // Busca "Participante X" o "Participant X" con o sin comillas, seguido de delimitadores
+    Object.entries(inverseMapping).forEach(([participantId, fullName]) => {
       const beforeReplace = reconstructedResponse;
       
-      // Si tiene comillas, mantener las comillas
+      // Reemplazar con comillas (para JSON)
       reconstructedResponse = reconstructedResponse.replace(
-        new RegExp(`"${participantKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`, 'g'),
-        `"${spanishName}"`
+        new RegExp(`"${participantId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`, 'g'),
+        `"${fullName}"`
       );
       
-      // Si no tiene comillas, mapear sin comillas
+      // Reemplazar sin comillas (para texto)
       reconstructedResponse = reconstructedResponse.replace(
-        new RegExp(`\\b${participantKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b(?=:|\\s|,|\\.|\\n|$)`, 'g'),
-        spanishName
+        new RegExp(`\\b${participantId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b(?=:|\\s|,|\\.|\\n|$)`, 'g'),
+        fullName
       );
       
       if (beforeReplace !== reconstructedResponse) {
-        console.log(`✅ Mapeado: "${participantKey}" → "${spanishName}"`);
+        console.log(`✅ Mapeado: "${participantId}" → "${fullName}"`);
         totalMappings++;
       }
     });

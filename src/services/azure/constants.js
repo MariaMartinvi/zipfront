@@ -79,6 +79,7 @@ export const PROMPTS = {
   
   - Analiza **ÚNICAMENTE** a los participantes que **escriben mensajes**.
   - Usa los nombres **exactamente como aparecen** (ej.: "Participante 1", "Participante 2").
+  - **🔒 CRUCIAL: NO traduzcas ni cambies los nombres**. Si ves "Participante 4", mantén "Participante 4". NO lo conviertas a "Participant 4" ni a ningún otro idioma.
   - **NO inventes** nombres reales (como Kevin, Giorgia, etc.).
   - **NO analices ni menciones** a quienes **no hayan enviado ningún mensaje**.
   - Si solo participan 3 personas escribiendo, analiza **solo a esas 3**. No agregues más.
@@ -96,16 +97,16 @@ export const PROMPTS = {
   
   ### [Nombre EXACTO – ej.: Participante 1]
   - **Rasgos principales:**  
-    🔥 **[Etiqueta llamativa]** – Descripción breve pero potente de su estilo comunicativo o personalidad predominante.  
-    💬 **[Etiqueta llamativa]** – Otro rasgo clave, analizado con inteligencia y sin rodeos.
+    [Icono apropiado] **[Etiqueta llamativa]** – Descripción breve pero potente de su estilo comunicativo o personalidad predominante.  
+    [Icono apropiado] **[Etiqueta llamativa]** – Otro rasgo clave, analizado con inteligencia y sin rodeos.
   
   - **Fortalezas:**  
-    ⭐ **[Fortaleza clara]** – Describe un punto fuerte visible en su forma de relacionarse o comunicarse.
+    [Icono apropiado] **[Fortaleza clara]** – Describe un punto fuerte visible en su forma de relacionarse o comunicarse.
   
   - **Áreas de mejora:**  
-    🎯 **[Área a mejorar]** – Sugiere una mejora concreta, útil y basada en el estilo observado.
+    [Icono apropiado] **[Área a mejorar]** – Sugiere una mejora concreta, útil y basada en el estilo observado.
   
-  ⚠️ **IMPORTANTE:** Sigue este formato exactamente. Incluye siempre iconos, etiquetas llamativas y descripciones precisas.
+  ⚠️ **IMPORTANTE:** Sigue este formato exactamente. Selecciona iconos apropiados que representen cada característica específica (ej.: ⚡ para alguien directo, 💝 para alguien empático, 📋 para alguien organizado, 🎨 para alguien creativo, etc.). No uses siempre los mismos iconos.
   
   ---
   
@@ -114,7 +115,7 @@ export const PROMPTS = {
   ### 🚩 **Señales de alerta**
   
   - [Lista red flags detectadas en el grupo o en dinámicas entre participantes. Usa este formato:]  
-    ⚠️ **[Etiqueta breve]** – Descripción clara en 2-3 frases.
+    [Icono apropiado] **[Etiqueta breve]** – Descripción clara en 2-3 frases.
   
   ---
   
@@ -129,7 +130,7 @@ export const PROMPTS = {
   ### 💡 **Recomendaciones**
   
   - [Incluye 1 o 2 consejos prácticos. Formato:]  
-    🛠️ **[Consejo breve]** – Explicación útil y accionable, orientada a mejorar la dinámica grupal.
+    [Icono apropiado] **[Consejo breve]** – Explicación útil y accionable, orientada a mejorar la dinámica grupal.
   
   ---
   
@@ -177,6 +178,7 @@ export const PROMPTS = {
   
   - Analyze **ONLY** participants who **write messages**.
   - Use names **exactly as they appear** (e.g.: "Participant 1", "Participant 2").
+  - **🔒 CRUCIAL: DO NOT translate or change names**. If you see "Participante 4", keep "Participante 4". DO NOT convert it to "Participant 4" or any other language.
   - **DO NOT invent** real names (like Kevin, Giorgia, etc.).
   - **DO NOT analyze or mention** those who **haven't sent any message**.
   - If only 3 people participate writing, analyze **only those 3**. Don't add more.
@@ -194,16 +196,16 @@ export const PROMPTS = {
   
   ### [EXACT Name – e.g.: Participant 1]
   - **Main traits:**  
-    🔥 **[Eye-catching label]** – Brief but powerful description of their communicative style or predominant personality.  
-    💬 **[Eye-catching label]** – Another key trait, analyzed with intelligence and without beating around the bush.
+    [Appropriate icon] **[Eye-catching label]** – Brief but powerful description of their communicative style or predominant personality.  
+    [Appropriate icon] **[Eye-catching label]** – Another key trait, analyzed with intelligence and without beating around the bush.
   
   - **Strengths:**  
-    ⭐ **[Clear strength]** – Describe a strong point visible in their way of relating or communicating.
+    [Appropriate icon] **[Clear strength]** – Describe a strong point visible in their way of relating or communicating.
   
   - **Areas for improvement:**  
-    🎯 **[Area to improve]** – Suggest a concrete, useful improvement based on the observed style.
+    [Appropriate icon] **[Area to improve]** – Suggest a concrete, useful improvement based on the observed style.
   
-  ⚠️ **IMPORTANT:** Follow this format exactly. Always include icons, eye-catching labels and precise descriptions.
+  ⚠️ **IMPORTANT:** Follow this format exactly. Select appropriate icons that represent each specific characteristic (e.g.: ⚡ for someone direct, 💝 for someone empathetic, 📋 for someone organized, 🎨 for someone creative, etc.). Don't always use the same icons.
   
   ---
   
@@ -212,7 +214,7 @@ export const PROMPTS = {
   ### 🚩 **Warning signs**
   
   - [List red flags detected in the group or in dynamics between participants. Use this format:]  
-    ⚠️ **[Brief label]** – Clear description in 2-3 sentences.
+    [Appropriate icon] **[Brief label]** – Clear description in 2-3 sentences.
   
   ---
   
@@ -227,7 +229,7 @@ export const PROMPTS = {
   ### 💡 **Recommendations**
   
   - [Include 1 or 2 practical tips. Format:]  
-    🛠️ **[Brief advice]** – Useful and actionable explanation, oriented to improve group dynamics.
+    [Appropriate icon] **[Brief advice]** – Useful and actionable explanation, oriented to improve group dynamics.
   
   ---
   
@@ -267,6 +269,7 @@ export const PROMPTS = {
   
   - Analysez **UNIQUEMENT** les participants qui **écrivent des messages**.
   - Utilisez les noms **exactement comme ils apparaissent** (ex. : "Participant 1", "Participant 2").
+  - **🔒 CRUCIAL : NE traduisez pas ni ne changez les noms**. Si vous voyez "Participante 4", gardez "Participante 4". NE le convertissez PAS en "Participant 4" ni dans aucune autre langue.
   - **N'inventez PAS** de vrais noms (comme Kevin, Giorgia, etc.).
   - **N'analysez pas et ne mentionnez pas** ceux qui **n'ont envoyé aucun message**.
   - Si seulement 3 personnes participent en écrivant, analysez **seulement ces 3**. N'en ajoutez pas plus.
@@ -284,14 +287,14 @@ export const PROMPTS = {
   
   ### [Nom EXACT – ex. : Participant 1]
   - **Traits principaux :**  
-    🔥 **[Étiquette accrocheuse]** – Description brève mais puissante de leur style communicatif ou personnalité prédominante.  
-    💬 **[Étiquette accrocheuse]** – Un autre trait clé, analysé avec intelligence et sans détours.
+    [Icono apropiado] **[Étiquette accrocheuse]** – Description brève mais puissante de leur style communicatif ou personnalité prédominante.  
+    [Icono apropiado] **[Étiquette accrocheuse]** – Un autre trait clé, analysé avec intelligence et sans détours.
   
   - **Forces :**  
-    ⭐ **[Force claire]** – Décrivez un point fort visible dans leur façon de se rapporter ou de communiquer.
+    [Icono apropiado] **[Force claire]** – Décrivez un point fort visible dans leur façon de se rapporter ou de communiquer.
   
   - **Domaines d'amélioration :**  
-    🎯 **[Domaine à améliorer]** – Suggérez une amélioration concrète, utile et basée sur le style observé.
+    [Icono apropiado] **[Domaine à améliorer]** – Suggérez une amélioration concrète, utile et basée sur le style observé.
   
   ⚠️ **IMPORTANT :** Suivez ce format exactement. Incluez toujours des icônes, des étiquettes accrocheuses et des descriptions précises.
   
@@ -302,7 +305,7 @@ export const PROMPTS = {
   ### 🚩 **Signaux d'alarme**
   
   - [Liste des signaux d'alarme détectés dans le groupe ou dans les dynamiques entre participants. Utilisez ce format :]  
-    ⚠️ **[Étiquette brève]** – Description claire en 2-3 phrases.
+    [Icono apropiado] **[Étiquette breve]** – Description claire en 2-3 phrases.
   
   ---
   
@@ -317,7 +320,7 @@ export const PROMPTS = {
   ### 💡 **Recommandations**
   
   - [Incluez 1 ou 2 conseils pratiques. Format :]  
-    🛠️ **[Conseil bref]** – Explication utile et actionnable, orientée pour améliorer la dynamique de groupe.
+    [Icono apropiado] **[Conseil bref]** – Explication utile et actionnable, orientée pour améliorer la dynamique de groupe.
   
   ---
   
@@ -357,6 +360,7 @@ export const PROMPTS = {
   
   - Analysieren Sie **NUR** Teilnehmer, die **Nachrichten schreiben**.
   - Verwenden Sie Namen **genau wie sie erscheinen** (z.B.: "Teilnehmer 1", "Teilnehmer 2").
+  - **🔒 ENTSCHEIDEND: Übersetzen oder ändern Sie Namen NICHT**. Wenn Sie "Participante 4" sehen, behalten Sie "Participante 4". Konvertieren Sie es NICHT zu "Teilnehmer 4" oder einer anderen Sprache.
   - **Erfinden Sie KEINE** echten Namen (wie Kevin, Giorgia, etc.).
   - **Analysieren oder erwähnen Sie NICHT** diejenigen, die **keine Nachricht gesendet haben**.
   - Wenn nur 3 Personen schreibend teilnehmen, analysieren Sie **nur diese 3**. Fügen Sie keine weiteren hinzu.
@@ -374,14 +378,14 @@ export const PROMPTS = {
   
   ### [EXAKTER Name – z.B.: Teilnehmer 1]
   - **Hauptmerkmale:**  
-    🔥 **[Auffälliges Etikett]** – Kurze aber kraftvolle Beschreibung ihres kommunikativen Stils oder vorherrschenden Persönlichkeit.  
-    💬 **[Auffälliges Etikett]** – Ein weiteres Schlüsselmerkmal, intelligent und ohne Umschweife analysiert.
+    [Icono apropiado] **[Auffälliges Etikett]** – Kurze aber kraftvolle Beschreibung ihres kommunikativen Stils oder vorherrschenden Persönlichkeit.  
+    [Icono apropiado] **[Auffälliges Etikett]** – Ein weiteres Schlüsselmerkmal, intelligent und ohne Umschweife analysiert.
   
   - **Stärken:**  
-    ⭐ **[Klare Stärke]** – Beschreiben Sie einen starken Punkt, der in ihrer Art zu interagieren oder zu kommunizieren sichtbar ist.
+    [Icono apropiado] **[Klare Stärke]** – Beschreiben Sie einen starken Punkt, der in ihrer Art zu interagieren oder zu kommunizieren sichtbar ist.
   
   - **Verbesserungsbereiche:**  
-    🎯 **[Zu verbessernder Bereich]** – Schlagen Sie eine konkrete, nützliche Verbesserung basierend auf dem beobachteten Stil vor.
+    [Icono apropiado] **[Zu verbessernder Bereich]** – Schlagen Sie eine konkrete, nützliche Verbesserung basierend auf dem beobachteten Stil vor.
   
   ⚠️ **WICHTIG:** Folgen Sie diesem Format genau. Schließen Sie immer Symbole, auffällige Etiketten und präzise Beschreibungen ein.
   
@@ -392,7 +396,7 @@ export const PROMPTS = {
   ### 🚩 **Warnsignale**
   
   - [Liste der in der Gruppe oder in der Dynamik zwischen Teilnehmern erkannten roten Flaggen. Verwenden Sie dieses Format:]  
-    ⚠️ **[Kurzes Etikett]** – Klare Beschreibung in 2-3 Sätzen.
+    [Icono apropiado] **[Kurzes Etikett]** – Klare Beschreibung in 2-3 Sätzen.
   
   ---
   
@@ -407,7 +411,7 @@ export const PROMPTS = {
   ### 💡 **Empfehlungen**
   
   - [Schließen Sie 1 oder 2 praktische Tipps ein. Format:]  
-    🛠️ **[Kurzer Rat]** – Nützliche und umsetzbare Erklärung, orientiert an der Verbesserung der Gruppendynamik.
+    [Icono apropiado] **[Kurzer Rat]** – Nützliche und umsetzbare Erklärung, orientiert an der Verbesserung der Gruppendynamik.
   
   ---
   
@@ -447,6 +451,7 @@ export const PROMPTS = {
   
   - Analizza **SOLO** i partecipanti che **scrivono messaggi**.
   - Usa i nomi **esattamente come appaiono** (es.: "Partecipante 1", "Partecipante 2").
+  - **🔒 CRUCIALE: NON tradurre né cambiare i nomi**. Se vedi "Participante 4", mantieni "Participante 4". NON convertirlo in "Partecipante 4" o in qualsiasi altra lingua.
   - **NON inventare** nomi reali (come Kevin, Giorgia, ecc.).
   - **NON analizzare né menzionare** coloro che **non hanno inviato alcun messaggio**.
   - Se solo 3 persone partecipano scrivendo, analizza **solo quelle 3**. Non aggiungerne altre.
@@ -464,14 +469,14 @@ export const PROMPTS = {
   
   ### [Nome ESATTO – es.: Partecipante 1]
   - **Tratti principali:**  
-    🔥 **[Etichetta accattivante]** – Descrizione breve ma potente del loro stile comunicativo o personalità predominante.  
-    💬 **[Etichetta accattivante]** – Un altro tratto chiave, analizzato con intelligenza e senza giri di parole.
+    [Icono apropiado] **[Etichetta accattivante]** – Descrizione breve ma potente del loro stile comunicativo o personalità predominante.  
+    [Icono apropiado] **[Etichetta accattivante]** – Un altro tratto chiave, analizzato con intelligenza e senza giri di parole.
   
   - **Punti di forza:**  
-    ⭐ **[Forza chiara]** – Descrivi un punto forte visibile nel loro modo di relazionarsi o comunicare.
+    [Icono apropiado] **[Forza chiara]** – Descrivi un punto forte visibile nel loro modo di relazionarsi o comunicare.
   
   - **Aree di miglioramento:**  
-    🎯 **[Area da migliorare]** – Suggerisci un miglioramento concreto, utile e basato sullo stile osservato.
+    [Icono apropiado] **[Area da migliorare]** – Suggerisci un miglioramento concreto, utile e basato sullo stile osservato.
   
   ⚠️ **IMPORTANTE:** Segui questo formato esattamente. Includi sempre icone, etichette accattivanti e descrizioni precise.
   
@@ -482,7 +487,7 @@ export const PROMPTS = {
   ### 🚩 **Segnali di allarme**
   
   - [Elenco delle bandiere rosse rilevate nel gruppo o nelle dinamiche tra partecipanti. Usa questo formato:]  
-    ⚠️ **[Etichetta breve]** – Descrizione chiara in 2-3 frasi.
+    [Icono apropiado] **[Etichetta breve]** – Descrizione chiara in 2-3 frasi.
   
   ---
   
@@ -497,7 +502,7 @@ export const PROMPTS = {
   ### 💡 **Raccomandazioni**
   
   - [Includi 1 o 2 consigli pratici. Formato:]  
-    🛠️ **[Consiglio breve]** – Spiegazione utile e attuabile, orientata a migliorare la dinamica del gruppo.
+    [Icono apropiado] **[Consiglio breve]** – Spiegazione utile e attuabile, orientata a migliorare la dinamica del gruppo.
   
   ---
   
@@ -536,6 +541,7 @@ export const PROMPTS = {
   
   - Analise **APENAS** participantes que **escrevem mensagens**.
   - Use nomes **exatamente como aparecem** (ex.: "Participante 1", "Participante 2").
+  - **🔒 CRUCIAL: NÃO traduza nem mude os nomes**. Se vir "Participante 4", mantenha "Participante 4". NÃO converta para "Participant 4" ou qualquer outra língua.
   - **NÃO invente** nomes reais (como Kevin, Giorgia, etc.).
   - **NÃO analise nem mencione** aqueles que **não enviaram nenhuma mensagem**.
   - Se apenas 3 pessoas participam escrevendo, analise **apenas essas 3**. Não adicione mais.
@@ -553,14 +559,14 @@ export const PROMPTS = {
   
   ### [Nome EXATO – ex.: Participante 1]
   - **Traços principais:**  
-    🔥 **[Rótulo chamativo]** – Descrição breve mas poderosa do seu estilo comunicativo ou personalidade predominante.  
-    💬 **[Rótulo chamativo]** – Outro traço chave, analisado com inteligência e sem rodeios.
+    [Icono apropiado] **[Rótulo chamativo]** – Descrição breve mas poderosa do seu estilo comunicativo ou personalidade predominante.  
+    [Icono apropiado] **[Rótulo chamativo]** – Outro traço chave, analisado com inteligência e sem rodeios.
   
   - **Pontos fortes:**  
-    ⭐ **[Força clara]** – Descreva um ponto forte visível na sua forma de se relacionar ou comunicar.
+    [Icono apropiado] **[Força clara]** – Descreva um ponto forte visível na sua forma de se relacionar ou comunicar.
   
   - **Áreas de melhoria:**  
-    🎯 **[Área a melhorar]** – Sugira uma melhoria concreta, útil e baseada no estilo observado.
+    [Icono apropiado] **[Área a melhorar]** – Sugira uma melhoria concreta, útil e baseada no estilo observado.
   
   ⚠️ **IMPORTANTE:** Siga este formato exatamente. Inclua sempre ícones, rótulos chamativos e descrições precisas.
   
@@ -571,7 +577,7 @@ export const PROMPTS = {
   ### 🚩 **Sinais de alerta**
   
   - [Liste bandeiras vermelhas detectadas no grupo ou nas dinâmicas entre participantes. Use este formato:]  
-    ⚠️ **[Rótulo breve]** – Descrição clara em 2-3 frases.
+    [Icono apropiado] **[Rótulo breve]** – Descrição clara em 2-3 frases.
   
   ---
   
@@ -586,7 +592,7 @@ export const PROMPTS = {
   ### 💡 **Recomendações**
   
   - [Inclua 1 ou 2 dicas práticas. Formato:]  
-    🛠️ **[Dica breve]** – Explicação útil e acionável, orientada a melhorar a dinâmica do grupo.
+    [Icono apropiado] **[Dica breve]** – Explicação útil e acionável, orientada a melhorar a dinâmica do grupo.
   
   ---
   

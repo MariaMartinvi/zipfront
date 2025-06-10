@@ -579,8 +579,9 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       // REACTIVADO: Procesar análisis psicológico con descripciones completas
       let processedResponse = response;
       
-      // Patrones para identificar análisis de personalidades (multi-idioma)
+      // Patrones para identificar análisis de personalidades (multi-idioma completo)
       const personalityPatterns = [
+        // Español
         /## Análisis de personalidades([\s\S]*?)(?=\n## |$)/gi,
         /## 🧠 Análisis de personalidades([\s\S]*?)(?=\n## |$)/gi,
         /## 🔍 Análisis de personalidades([\s\S]*?)(?=\n## |$)/gi,
@@ -588,9 +589,38 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         /## 🧠 Perfiles Psicológicos([\s\S]*?)(?=\n## |$)/gi,
         /## 👥 Análisis de Personalidades([\s\S]*?)(?=\n## |$)/gi,
         /## 🎭 Personalidades del Grupo([\s\S]*?)(?=\n## |$)/gi,
+        
+        // Inglés
+        /## Personality Analysis([\s\S]*?)(?=\n## |$)/gi,
         /## 🧠 Personality Analysis([\s\S]*?)(?=\n## |$)/gi,
         /## 🧠 Psychological Analysis([\s\S]*?)(?=\n## |$)/gi,
-        /## 👥 Group Personalities([\s\S]*?)(?=\n## |$)/gi
+        /## 👥 Group Personalities([\s\S]*?)(?=\n## |$)/gi,
+        /## 🎭 Group Personality Analysis([\s\S]*?)(?=\n## |$)/gi,
+        
+        // Francés
+        /## Analyse des personnalités([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Analyse des personnalités([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Analyse psychologique([\s\S]*?)(?=\n## |$)/gi,
+        /## 👥 Personnalités du groupe([\s\S]*?)(?=\n## |$)/gi,
+        /## 🎭 Analyse des personnalités([\s\S]*?)(?=\n## |$)/gi,
+        
+        // Alemán
+        /## Persönlichkeitsanalyse([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Persönlichkeitsanalyse([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Psychologische Analyse([\s\S]*?)(?=\n## |$)/gi,
+        /## 👥 Gruppenpersönlichkeiten([\s\S]*?)(?=\n## |$)/gi,
+        
+        // Italiano
+        /## Analisi delle personalità([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Analisi delle personalità([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Analisi psicologica([\s\S]*?)(?=\n## |$)/gi,
+        /## 👥 Personalità del gruppo([\s\S]*?)(?=\n## |$)/gi,
+        
+        // Portugués
+        /## Análise de personalidades([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Análise de personalidades([\s\S]*?)(?=\n## |$)/gi,
+        /## 🧠 Análise psicológica([\s\S]*?)(?=\n## |$)/gi,
+        /## 👥 Personalidades do grupo([\s\S]*?)(?=\n## |$)/gi
       ];
 
       personalityPatterns.forEach(pattern => {
@@ -661,54 +691,68 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       console.log(`🔧 Parseando contenido para: ${name}`);
       let traits = [];
       
-      // MEJORADO: Buscar múltiples patrones para extraer traits
-      // 1. Buscar la sección "Rasgos principales"
-      const rasgosMatch = content.match(/\*\*Rasgos principales:\*\*\s*([\s\S]*?)(?=\*\*[^*]|\n\n|$)/i);
+      // MULTIIDIOMA UNIVERSAL: Buscar traits con CUALQUIER emoji + texto en negrita
+      // 1. Patrón universal: [cualquier emoji] **[texto]** 
+      const universalEmojiTraitMatches = content.match(/[\u{1F300}-\u{1F9FF}]\s*\*\*([^*]+)\*\*/gu);
       
-      if (rasgosMatch) {
-        console.log(`📋 Encontrada sección "Rasgos principales" para ${name}`);
-        const rasgosSection = rasgosMatch[1];
-        // Extraer títulos que están entre ** (sin incluir los ** en el resultado)
-        const titleMatches = rasgosSection.match(/\*\*([^*]+)\*\*/g);
+      if (universalEmojiTraitMatches && universalEmojiTraitMatches.length > 0) {
+        console.log(`📋 Encontrados traits con emojis universales para ${name}`);
         
-        if (titleMatches) {
-          traits = titleMatches.map(match => 
-            match.replace(/\*\*/g, '').trim()
-          );
-          console.log(`🎯 Traits extraídos de "Rasgos principales":`, traits);
-        }
+        universalEmojiTraitMatches.forEach(match => {
+          // Extraer solo el texto entre ** (eliminar emoji y **)
+          const trait = match.replace(/[\u{1F300}-\u{1F9FF}]\s*\*\*|\*\*/gu, '').trim();
+          if (trait && trait.length > 2 && trait.length < 50) {
+            traits.push(trait);
+          }
+        });
+        
+        console.log(`🎯 Traits extraídos por emojis universales:`, traits);
       } else {
-        console.log(`⚠️ No se encontró sección "Rasgos principales" para ${name}`);
+        console.log(`⚠️ No se encontraron traits con emojis universales para ${name}`);
       }
       
-      // 2. Si no encontramos en "Rasgos principales", buscar cualquier texto en negrita que parezca un trait
+      // 3. Si no encontramos traits con íconos, buscar cualquier texto en negrita que parezca un trait
       if (traits.length === 0) {
         console.log(`🔍 Buscando traits en cualquier texto en negrita para ${name}`);
         const allBoldMatches = content.match(/\*\*([^*]+)\*\*/g);
         if (allBoldMatches) {
           console.log(`📝 Textos en negrita encontrados:`, allBoldMatches);
-          // Filtrar para obtener solo traits (evitar palabras como "Fortalezas", "Debilidades", etc.)
-          const excludeWords = ['rasgos principales', 'fortalezas', 'debilidades', 'áreas de mejora', 'strengths', 'weaknesses'];
+          // Filtrar para obtener solo traits (evitar palabras comunes en múltiples idiomas)
+          const excludeWords = [
+            // Español
+            'rasgos principales', 'fortalezas', 'debilidades', 'áreas de mejora', 'traits principales',
+            // Inglés
+            'main traits', 'strengths', 'weaknesses', 'areas for improvement', 'areas of improvement',
+            // Francés
+            'traits principaux', 'forces', 'faiblesses', 'domaines d\'amélioration',
+            // Alemán
+            'hauptmerkmale', 'stärken', 'schwächen', 'verbesserungsbereiche',
+            // Italiano
+            'tratti principali', 'punti di forza', 'debolezze', 'aree di miglioramento',
+            // Portugués
+            'traços principais', 'pontos fortes', 'fraquezas', 'áreas de melhoria'
+          ];
+          
           traits = allBoldMatches
             .map(match => match.replace(/\*\*/g, '').trim())
             .filter(text => {
               const lowerText = text.toLowerCase();
               return !excludeWords.some(word => lowerText.includes(word)) && 
-                     text.length > 2 && text.length < 30; // Longitud razonable para un trait
+                     text.length > 2 && text.length < 50; // Longitud razonable para un trait
             })
             .slice(0, 4); // Máximo 4 traits
           console.log(`🎯 Traits filtrados de textos en negrita:`, traits);
         }
       }
       
-      // 3. Si aún no tenemos traits, buscar en todo el contenido palabras clave
+      // 4. Si aún no tenemos traits, buscar en todo el contenido palabras clave
       if (traits.length === 0) {
         console.log(`🔍 Usando extracción de keywords para ${name}`);
         traits = extractTraitsFromContent('', content, '');
         console.log(`🎯 Traits extraídos por keywords:`, traits);
       }
       
-      // 4. Fallback final si no se encuentran traits
+      // 5. Fallback final si no se encuentran traits
       if (traits.length === 0) {
         console.log(`🎯 Usando traits por defecto para ${name}`);
         traits = ['Comunicativo', 'Sociable', 'Activo'];
