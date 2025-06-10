@@ -2186,6 +2186,115 @@
   justify-content: center;
 }
 
+/* Install PWA Button Styles */
+.install-pwa-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  animation: slideInUp 0.5s ease-out;
+}
+
+.install-pwa-button {
+  background: linear-gradient(to right, #25D366, #8A2BE2);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 22px 32px;
+  font-size: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.install-pwa-button:hover {
+  background: linear-gradient(to right, #128C7E, #7B2CBF);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
+}
+
+.install-pwa-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+}
+
+.install-pwa-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.install-pwa-button:hover::before {
+  left: 100%;
+}
+
+.install-icon {
+  font-size: 2.2rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Responsive para el botón PWA */
+@media (max-width: 768px) {
+  .install-pwa-container {
+    bottom: 80px;
+    right: 15px;
+    left: 15px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .install-pwa-button {
+    width: 100%;
+    max-width: 400px;
+    justify-content: center;
+    padding: 24px 32px;
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .install-pwa-button {
+    padding: 20px 28px;
+    font-size: 1.6rem;
+  }
+  
+  .install-icon {
+    font-size: 1.8rem;
+  }
+}
+
 /* Estilos para Análisis Psicológico - Secciones mejoradas */
 .analysis-section {
   background: white;
