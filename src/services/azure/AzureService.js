@@ -211,9 +211,7 @@ export class AzureService {
           // Extraer respuesta
           responseText = response.choices[0].message.content;
           
-          // Añadir información sobre la API utilizada
-          const apiHeader = `*****************************************************\n* API UTILIZADA: ${api.name}\n*****************************************************\n\n`;
-          responseText = apiHeader + responseText;
+
           
           console.log(`>>> ÉXITO con ${api.name}`);
           

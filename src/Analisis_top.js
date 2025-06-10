@@ -1216,15 +1216,13 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       }
     }
     
-    // Añadir el análisis de mala influencia (vicios + palabrotas)
+    // Mala influencia (más menciones de vicios y palabrotas)
     const usuariosConMalaInfluencia = [];
     for (const [usuario, datos] of Object.entries(usuarios)) {
       if (datos.mensajes > 0) {
         const totalMencionesNegativas = datos.menciones_vicios + datos.menciones_palabrotas;
-        if (totalMencionesNegativas > 0) {
-          const porcentaje = (totalMencionesNegativas / datos.mensajes) * 100;
-          usuariosConMalaInfluencia.push([usuario, totalMencionesNegativas, porcentaje, datos.menciones_vicios, datos.menciones_palabrotas]);
-        }
+        const porcentaje = (totalMencionesNegativas / datos.mensajes) * 100;
+        usuariosConMalaInfluencia.push([usuario, totalMencionesNegativas, porcentaje, datos.menciones_vicios, datos.menciones_palabrotas]);
       }
     }
     
@@ -2058,15 +2056,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
               // Número de columnas del grid (2 por defecto, puedes hacerlo dinámico si quieres)
               const columnas = 2;
               const categoriasKeys = Object.keys(categoriaIconos).filter(categoria => {
-                // Para la categoría mala_influencia, verificar que tenga datos válidos
-                if (categoria === 'mala_influencia') {
-                  return datos && 
-                         datos.categorias && 
-                         datos.categorias[categoria] && 
-                         datos.categorias[categoria].nombre &&
-                         (datos.categorias[categoria].menciones_vicios > 0 || datos.categorias[categoria].menciones_palabrotas > 0);
-                }
-                // Para el resto de categorías, mantener la lógica original
+                // Todas las categorías funcionan igual: solo verificar que existan datos válidos
                 return datos && 
                        datos.categorias && 
                        datos.categorias[categoria] && 
