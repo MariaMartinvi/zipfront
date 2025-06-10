@@ -198,7 +198,7 @@
 }
 
 .usuario-destacado .nombre {
-  font-size: 1.8rem;
+  font-size: 2.8rem;
   font-weight: 700;
   background: linear-gradient(135deg, #25D366, #8A2BE2);
   background-clip: text;
@@ -208,7 +208,7 @@
 
 .usuario-destacado .mensajes-totales {
   color: #666;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   font-weight: 500;
 }
 
@@ -435,7 +435,11 @@
   }
   
   .usuario-destacado .nombre {
-    font-size: 1.6rem;
+    font-size: 2.2rem;
+  }
+
+  .usuario-destacado .mensajes-totales {
+    font-size: 1.4rem;
   }
   
   .analysis-badge {
