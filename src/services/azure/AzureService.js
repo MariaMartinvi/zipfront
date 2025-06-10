@@ -14,7 +14,9 @@ import {
   PROMPTS, 
   ERROR_MESSAGES, 
   USER_PREFIXES, 
-  TRUNCATION_MESSAGES 
+  TRUNCATION_MESSAGES,
+  detectResponseLanguage,
+  createReverseTranslationMapping
 } from './constants';
 
 // Timeout para peticiones (60 segundos) - IGUAL que en el backend
@@ -211,7 +213,13 @@ export class AzureService {
           // Extraer respuesta
           responseText = response.choices[0].message.content;
           
-
+          // NUEVO: Detectar el idioma de la respuesta de Azure
+          const detectedLanguage = detectResponseLanguage(responseText);
+          console.log(`🔍 IDIOMA DETECTADO en respuesta: ${detectedLanguage}`);
+          
+          // NUEVO: Guardar información del idioma detectado para el mapeo posterior
+          window.lastAzureResponse = responseText;
+          window.lastDetectedLanguage = detectedLanguage;
           
           console.log(`>>> ÉXITO con ${api.name}`);
           

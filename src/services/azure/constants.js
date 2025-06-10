@@ -79,7 +79,7 @@ export const PROMPTS = {
   
   - Analiza **ÚNICAMENTE** a los participantes que **escriben mensajes**.
   - Usa los nombres **exactamente como aparecen** (ej.: "Participante 1", "Participante 2").
-  - **🔒 CRUCIAL: NO traduzcas ni cambies los nombres**. Si ves "Participante 4", mantén "Participante 4". NO lo conviertas a "Participant 4" ni a ningún otro idioma.
+  - **🔒 CRUCIAL: Usa las designaciones de participantes como te llegan**. Mantén consistencia en la nomenclatura a lo largo de tu respuesta.
   - **NO inventes** nombres reales (como Kevin, Giorgia, etc.).
   - **NO analices ni menciones** a quienes **no hayan enviado ningún mensaje**.
   - Si solo participan 3 personas escribiendo, analiza **solo a esas 3**. No agregues más.
@@ -178,7 +178,7 @@ export const PROMPTS = {
   
   - Analyze **ONLY** participants who **write messages**.
   - Use names **exactly as they appear** (e.g.: "Participant 1", "Participant 2").
-  - **🔒 CRUCIAL: DO NOT translate or change names**. If you see "Participante 4", keep "Participante 4". DO NOT convert it to "Participant 4" or any other language.
+  - **🔒 CRUCIAL: Use the participant designations as they come to you**. Maintain consistency in naming throughout your response.
   - **DO NOT invent** real names (like Kevin, Giorgia, etc.).
   - **DO NOT analyze or mention** those who **haven't sent any message**.
   - If only 3 people participate writing, analyze **only those 3**. Don't add more.
@@ -269,7 +269,7 @@ export const PROMPTS = {
   
   - Analysez **UNIQUEMENT** les participants qui **écrivent des messages**.
   - Utilisez les noms **exactement comme ils apparaissent** (ex. : "Participant 1", "Participant 2").
-  - **🔒 CRUCIAL : NE traduisez pas ni ne changez les noms**. Si vous voyez "Participante 4", gardez "Participante 4". NE le convertissez PAS en "Participant 4" ni dans aucune autre langue.
+  - **🔒 CRUCIAL : Utilisez les désignations de participants comme elles vous arrivent**. Maintenez la cohérence dans la nomenclature tout au long de votre réponse.
   - **N'inventez PAS** de vrais noms (comme Kevin, Giorgia, etc.).
   - **N'analysez pas et ne mentionnez pas** ceux qui **n'ont envoyé aucun message**.
   - Si seulement 3 personnes participent en écrivant, analysez **seulement ces 3**. N'en ajoutez pas plus.
@@ -360,7 +360,7 @@ export const PROMPTS = {
   
   - Analysieren Sie **NUR** Teilnehmer, die **Nachrichten schreiben**.
   - Verwenden Sie Namen **genau wie sie erscheinen** (z.B.: "Teilnehmer 1", "Teilnehmer 2").
-  - **🔒 ENTSCHEIDEND: Übersetzen oder ändern Sie Namen NICHT**. Wenn Sie "Participante 4" sehen, behalten Sie "Participante 4". Konvertieren Sie es NICHT zu "Teilnehmer 4" oder einer anderen Sprache.
+  - **🔒 ENTSCHEIDEND: Verwenden Sie die Teilnehmer-Bezeichnungen wie sie Ihnen vorliegen**. Halten Sie die Benennung in Ihrer Antwort konsistent.
   - **Erfinden Sie KEINE** echten Namen (wie Kevin, Giorgia, etc.).
   - **Analysieren oder erwähnen Sie NICHT** diejenigen, die **keine Nachricht gesendet haben**.
   - Wenn nur 3 Personen schreibend teilnehmen, analysieren Sie **nur diese 3**. Fügen Sie keine weiteren hinzu.
@@ -451,7 +451,7 @@ export const PROMPTS = {
   
   - Analizza **SOLO** i partecipanti che **scrivono messaggi**.
   - Usa i nomi **esattamente come appaiono** (es.: "Partecipante 1", "Partecipante 2").
-  - **🔒 CRUCIALE: NON tradurre né cambiare i nomi**. Se vedi "Participante 4", mantieni "Participante 4". NON convertirlo in "Partecipante 4" o in qualsiasi altra lingua.
+  - **🔒 CRUCIALE: Usa le designazioni dei partecipanti come ti arrivano**. Mantieni coerenza nella nomenclatura durante la tua risposta.
   - **NON inventare** nomi reali (come Kevin, Giorgia, ecc.).
   - **NON analizzare né menzionare** coloro che **non hanno inviato alcun messaggio**.
   - Se solo 3 persone partecipano scrivendo, analizza **solo quelle 3**. Non aggiungerne altre.
@@ -541,7 +541,7 @@ export const PROMPTS = {
   
   - Analise **APENAS** participantes que **escrevem mensagens**.
   - Use nomes **exatamente como aparecem** (ex.: "Participante 1", "Participante 2").
-  - **🔒 CRUCIAL: NÃO traduza nem mude os nomes**. Se vir "Participante 4", mantenha "Participante 4". NÃO converta para "Participant 4" ou qualquer outra língua.
+  - **🔒 CRUCIAL: Use as designações de participantes como elas chegam até você**. Mantenha consistência na nomenclatura ao longo da sua resposta.
   - **NÃO invente** nomes reais (como Kevin, Giorgia, etc.).
   - **NÃO analise nem mencione** aqueles que **não enviaram nenhuma mensagem**.
   - Se apenas 3 pessoas participam escrevendo, analise **apenas essas 3**. Não adicione mais.
@@ -663,6 +663,209 @@ export const USER_PREFIXES = {
   'de': "Analysieren Sie den folgenden Inhalt aus einem Gespräch:",
   'it': "Analizza il seguente contenuto estratto da una conversazione:",
   'pt': "Analise o seguinte conteúdo extraído de uma conversa:"
+};
+
+// NUEVO: Mapeo de nombres de participantes por idioma
+// Para solucionar el problema de traducción automática de Azure
+export const PARTICIPANT_TRANSLATIONS = {
+  'es': {
+    // Base - no cambiar
+    'Participante 1': 'Participante 1',
+    'Participante 2': 'Participante 2', 
+    'Participante 3': 'Participante 3',
+    'Participante 4': 'Participante 4',
+    'Participante 5': 'Participante 5',
+    'Participante 6': 'Participante 6',
+    'Participante 7': 'Participante 7',
+    'Participante 8': 'Participante 8',
+    'Participante 9': 'Participante 9',
+    'Participante 10': 'Participante 10'
+  },
+  'en': {
+    'Participante 1': 'Participant 1',
+    'Participante 2': 'Participant 2',
+    'Participante 3': 'Participant 3', 
+    'Participante 4': 'Participant 4',
+    'Participante 5': 'Participant 5',
+    'Participante 6': 'Participant 6',
+    'Participante 7': 'Participant 7',
+    'Participante 8': 'Participant 8',
+    'Participante 9': 'Participant 9',
+    'Participante 10': 'Participant 10'
+  },
+  'fr': {
+    'Participante 1': 'Participant 1',
+    'Participante 2': 'Participant 2',
+    'Participante 3': 'Participant 3',
+    'Participante 4': 'Participant 4', 
+    'Participante 5': 'Participant 5',
+    'Participante 6': 'Participant 6',
+    'Participante 7': 'Participant 7',
+    'Participante 8': 'Participant 8',
+    'Participante 9': 'Participant 9',
+    'Participante 10': 'Participant 10'
+  },
+  'de': {
+    'Participante 1': 'Teilnehmer 1',
+    'Participante 2': 'Teilnehmer 2',
+    'Participante 3': 'Teilnehmer 3',
+    'Participante 4': 'Teilnehmer 4',
+    'Participante 5': 'Teilnehmer 5',
+    'Participante 6': 'Teilnehmer 6',
+    'Participante 7': 'Teilnehmer 7',
+    'Participante 8': 'Teilnehmer 8',
+    'Participante 9': 'Teilnehmer 9',
+    'Participante 10': 'Teilnehmer 10'
+  },
+  'it': {
+    'Participante 1': 'Partecipante 1',
+    'Participante 2': 'Partecipante 2',
+    'Participante 3': 'Partecipante 3',
+    'Participante 4': 'Partecipante 4',
+    'Participante 5': 'Partecipante 5',
+    'Participante 6': 'Partecipante 6',
+    'Participante 7': 'Partecipante 7',
+    'Participante 8': 'Partecipante 8',
+    'Participante 9': 'Partecipante 9',
+    'Participante 10': 'Partecipante 10'
+  },
+  'pt': {
+    'Participante 1': 'Participante 1', // En portugués se mantiene igual
+    'Participante 2': 'Participante 2',
+    'Participante 3': 'Participante 3',
+    'Participante 4': 'Participante 4',
+    'Participante 5': 'Participante 5',
+    'Participante 6': 'Participante 6',
+    'Participante 7': 'Participante 7',
+    'Participante 8': 'Participante 8',
+    'Participante 9': 'Participante 9',
+    'Participante 10': 'Participante 10'
+  }
+};
+
+// NUEVO: Función para detectar el idioma de respuesta de Azure
+// Basada en palabras clave comunes en cada idioma
+export const detectResponseLanguage = (responseText) => {
+  if (!responseText || typeof responseText !== 'string') {
+    return 'es'; // Fallback al español
+  }
+
+  const text = responseText.toLowerCase();
+  
+  // Palabras clave específicas de cada idioma en orden de prioridad
+  const languageKeywords = {
+    'de': [
+      'teilnehmer', 'persönlichkeitsanalyse', 'hauptmerkmale', 'stärken', 
+      'verbesserungsbereiche', 'beziehungsanalyse', 'warnsignale', 
+      'gesamtpunktzahl', 'empfehlungen', 'spieldaten'
+    ],
+    'en': [
+      'participant', 'personality analysis', 'main traits', 'strengths',
+      'areas for improvement', 'relationship analysis', 'warning signs',
+      'overall score', 'recommendations', 'game data'
+    ],
+    'fr': [
+      'participant', 'analyse des personnalités', 'traits principaux', 'forces',
+      'domaines d\'amélioration', 'analyse de la relation', 'signaux d\'alarme',
+      'score général', 'recommandations', 'données de jeu'
+    ],
+    'it': [
+      'partecipante', 'analisi delle personalità', 'tratti principali', 'punti di forza',
+      'aree di miglioramento', 'analisi della relazione', 'segnali di allarme',
+      'punteggio generale', 'raccomandazioni', 'dati del gioco'
+    ],
+    'pt': [
+      'participante', 'análise de personalidades', 'traços principais', 'pontos fortes',
+      'áreas de melhoria', 'análise do relacionamento', 'sinais de alerta',
+      'pontuação geral', 'recomendações', 'dados do jogo'
+    ]
+  };
+
+  // Contar coincidencias para cada idioma
+  const scores = {};
+  
+  Object.entries(languageKeywords).forEach(([lang, keywords]) => {
+    scores[lang] = keywords.reduce((count, keyword) => {
+      return count + (text.includes(keyword) ? 1 : 0);
+    }, 0);
+  });
+
+  // Encontrar el idioma con más coincidencias
+  const detectedLang = Object.entries(scores).reduce((a, b) => 
+    scores[a[0]] > scores[b[0]] ? a : b
+  )[0];
+  
+  // Si no hay coincidencias significativas, fallback a español
+  return scores[detectedLang] > 0 ? detectedLang : 'es';
+};
+
+// NUEVO: Función para traducir nombres de participantes en el contenido antes del envío
+export const translateParticipantNames = (content, targetLanguage) => {
+  if (!content || targetLanguage === 'es') {
+    return content; // No traducir si es español o contenido vacío
+  }
+
+  const translations = PARTICIPANT_TRANSLATIONS[targetLanguage];
+  if (!translations) {
+    console.warn(`❌ No hay traducciones disponibles para el idioma: ${targetLanguage}`);
+    return content;
+  }
+
+  let translatedContent = content;
+  console.log(`🌐 Traduciendo nombres de participantes al idioma: ${targetLanguage}`);
+
+  Object.entries(translations).forEach(([spanish, translated]) => {
+    if (spanish !== translated) {
+      // Reemplazar con y sin comillas
+      const beforeReplace = translatedContent;
+      
+      // Con comillas (JSON)
+      translatedContent = translatedContent.replace(
+        new RegExp(`"${spanish.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`, 'g'),
+        `"${translated}"`
+      );
+      
+      // Sin comillas (texto normal)
+      translatedContent = translatedContent.replace(
+        new RegExp(`\\b${spanish.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g'),
+        translated
+      );
+
+      if (beforeReplace !== translatedContent) {
+        console.log(`✅ Traducido: "${spanish}" → "${translated}"`);
+      }
+    }
+  });
+
+  return translatedContent;
+};
+
+// NUEVO: Función para crear mapeo de traducción inversa
+export const createReverseTranslationMapping = (originalNameMapping, detectedLanguage) => {
+  if (!originalNameMapping || detectedLanguage === 'es') {
+    return originalNameMapping; // No cambiar si es español
+  }
+
+  const translations = PARTICIPANT_TRANSLATIONS[detectedLanguage];
+  if (!translations) {
+    return originalNameMapping;
+  }
+
+  console.log(`🔄 Creando mapeo de traducción inversa para idioma: ${detectedLanguage}`);
+  
+  const newMapping = {};
+  
+  Object.entries(originalNameMapping).forEach(([realName, participantId]) => {
+    // Si el participantId está en español, traducirlo al idioma detectado
+    const translatedParticipant = translations[participantId] || participantId;
+    newMapping[realName] = translatedParticipant;
+    
+    if (participantId !== translatedParticipant) {
+      console.log(`🌐 Mapeo traducido: ${realName} → "${participantId}" se convierte en "${translatedParticipant}"`);
+    }
+  });
+
+  return newMapping;
 };
 
 // Configuración de límites para selección inteligente de modelos

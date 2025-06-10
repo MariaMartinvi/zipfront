@@ -95,14 +95,14 @@
 
 .chat-analysis-container ul {
   padding-left: 20px;
-  font-size: 16px !important;
+  font-size: 18px !important;
 }
 
 .chat-analysis-container li {
-  margin-bottom: 8px;
-  line-height: 1.4;
-  font-size: 16px !important;
-  line-height: 1.6 !important;
+  margin-bottom: 12px;
+  line-height: 1.7;
+  font-size: 18px !important;
+  line-height: 1.7 !important;
   color: #333 !important;
 }
 
@@ -214,6 +214,21 @@
     margin: 0 auto 15px;
     border-radius: 0;
   }
+  
+  .chat-analysis-container ul {
+    font-size: 17px !important;
+  }
+
+  .chat-analysis-container li {
+    font-size: 17px !important;
+    line-height: 1.7 !important;
+    margin-bottom: 12px !important;
+  }
+  
+  .chat-analysis-container p {
+    font-size: 17px !important;
+    line-height: 1.7 !important;
+  }
 }
 
 /* Estilos del análisis psicológico moderno - copiados de AppPreview */
@@ -311,10 +326,10 @@
 }
 
 .psychology-content p {
-  font-size: 16px !important;
-  line-height: 1.6 !important;
+  font-size: 18px !important;
+  line-height: 1.7 !important;
   color: #555 !important;
-  margin-bottom: 12px !important;
+  margin-bottom: 15px !important;
 }
 
 .psychology-tags {
@@ -392,7 +407,7 @@
   }
 
   .psychology-content p {
-    font-size: 15px !important;
+    font-size: 17px !important;
   }
 
   .psychology-tags {
@@ -458,27 +473,28 @@
 }
 
 .subsection-content p {
-  font-size: 16px !important;
-  line-height: 1.6 !important;
+  font-size: 18px !important;
+  line-height: 1.7 !important;
   color: #333 !important;
-  margin-bottom: 12px !important;
+  margin-bottom: 15px !important;
 }
 
 .subsection-content ul {
   padding-left: 20px !important;
-  margin: 12px 0 !important;
+  margin: 15px 0 !important;
 }
 
 .subsection-content li {
-  font-size: 16px !important;
-  line-height: 1.6 !important;
+  font-size: 18px !important;
+  line-height: 1.7 !important;
   color: #333 !important;
-  margin-bottom: 8px !important;
+  margin-bottom: 12px !important;
 }
 
 .subsection-content strong {
   font-weight: 600 !important;
   color: #222 !important;
+  font-size: 18px !important;
 }
 
 /* NUEVO: Regla específica para negritas rojas en señales de alerta */
@@ -509,7 +525,7 @@
 /* Responsive para subsecciones */
 @media (max-width: 768px) {
   .subsection-header {
-    padding: 1.2rem 1rem 0.8rem 1rem;
+    padding: 1.2rem 1.2rem 0.8rem 1.2rem;
   }
   
   .subsection-header h4 {
@@ -527,7 +543,7 @@
   
   .subsection-content p,
   .subsection-content li {
-    font-size: 15px !important;
+    font-size: 17px !important;
   }
 }
 
@@ -556,7 +572,7 @@
   
   .subsection-content p,
   .subsection-content li {
-    font-size: 14px !important;
+    font-size: 17px !important;
   }
 }
 

@@ -6,6 +6,7 @@ import './Chatgptresultados.css';
 import './styles/Analisis.css';
 import azureQueueService from './services/azureQueueService'; // Importamos el servicio de cola existente
 import { useAuth } from './AuthContext';
+import { createReverseTranslationMapping } from './services/azure/constants'; // NUEVO: importar función de mapeo
 
 function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-default" }) {
   // TODOS los hooks deben ir ANTES de cualquier return condicional
@@ -32,9 +33,9 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   });
   
   // TODOS los useEffect juntos
-  // Procesar respuesta cuando llegue
+  // Procesar respuesta cuando llegue - ÚNICO useEffect para evitar duplicación
   useEffect(() => {
-    if (chatGptResponse) {
+    if (chatGptResponse && !htmlContent) {
       console.log('Procesando respuesta para extraer datos del juego de titulares...');
       
       // Buscar respuesta de Azure en variable global
@@ -75,23 +76,48 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
               if (parsedData && Array.isArray(parsedData) && parsedData.length >= 2) {
                 let [usuarios, headlines] = parsedData;
                 
-                // Convertir iniciales a nombres completos si hay nameMapping disponible
+                // NUEVO: Convertir iniciales a nombres completos considerando el idioma detectado
                 if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
-                  // Crear mapeo inverso
+                  console.log('🔄 Aplicando mapeo de nombres con detección de idioma...');
+                  
+                  // Detectar el idioma de la respuesta si está disponible
+                  const detectedLanguage = window.lastDetectedLanguage || 'es';
+                  console.log(`🌐 Idioma detectado para mapeo: ${detectedLanguage}`);
+                  
+                  // Crear mapeo ajustado según el idioma detectado
+                  let adjustedMapping = window.lastNameMapping;
+                  if (detectedLanguage !== 'es') {
+                    console.log(`🔧 Ajustando mapeo para idioma: ${detectedLanguage}`);
+                    adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
+                    console.log('🔄 Mapeo ajustado:', adjustedMapping);
+                  }
+                  
+                  // Crear mapeo inverso con el mapeo ajustado
                   const inverseMapping = {};
-                  Object.entries(window.lastNameMapping).forEach(([fullName, initials]) => {
-                    inverseMapping[initials] = fullName;
+                  Object.entries(adjustedMapping).forEach(([fullName, participantId]) => {
+                    inverseMapping[participantId] = fullName;
                   });
                   
+                  console.log('🔄 Mapeo inverso final:', inverseMapping);
+                  
                   // Convertir usuarios
+                  const usuariosOriginales = [...usuarios];
                   usuarios = usuarios.map(user => inverseMapping[user] || user);
+                  console.log(`👥 Usuarios convertidos: ${usuariosOriginales.join(', ')} → ${usuarios.join(', ')}`);
                   
                   // Convertir nombres en headlines
                   if (Array.isArray(headlines)) {
-                    headlines = headlines.map(headline => ({
-                      ...headline,
-                      nombre: inverseMapping[headline.nombre] || headline.nombre
-                    }));
+                    headlines = headlines.map(headline => {
+                      const nombreOriginal = headline.nombre;
+                      const nombreConvertido = inverseMapping[headline.nombre] || headline.nombre;
+                      if (nombreOriginal !== nombreConvertido) {
+                        console.log(`📰 Headline convertido: "${nombreOriginal}" → "${nombreConvertido}"`);
+                      }
+                      return {
+                        ...headline,
+                        nombre: nombreConvertido
+                      };
+                    });
                   }
                 }
                 
@@ -106,18 +132,35 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         }
       }
 
-      // Procesar la respuesta para reemplazar la sección de Titulares (CON VALIDACIÓN)
+      // Procesar la respuesta una sola vez
       let processedResponse = chatGptResponse;
-      
-      // Si hay datos del juego, reemplazar la sección de Titulares (CON VALIDACIÓN)
-      if (azureResponse && headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) {
-        try {
-          processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
-        } catch (error) {
-          console.error('Error procesando headlinesGameData en useEffect principal:', error);
-          // Si hay error, usar la respuesta original sin procesar
-          processedResponse = chatGptResponse;
+
+      // NUEVO: Aplicar mapeo de nombres a toda la respuesta antes del procesamiento
+      if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+        const detectedLanguage = window.lastDetectedLanguage || 'es';
+        console.log(`🔄 Aplicando mapeo de nombres a toda la respuesta (idioma: ${detectedLanguage})...`);
+        
+        // Crear mapeo ajustado según el idioma detectado
+        let adjustedMapping = window.lastNameMapping;
+        if (detectedLanguage !== 'es') {
+          adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
+          console.log('🔄 Mapeo ajustado para respuesta completa:', adjustedMapping);
         }
+        
+        // Crear mapeo inverso con el mapeo ajustado
+        const inverseMapping = {};
+        Object.entries(adjustedMapping).forEach(([fullName, participantId]) => {
+          inverseMapping[participantId] = fullName;
+        });
+        
+        console.log('🔄 Mapeo inverso para respuesta completa:', inverseMapping);
+        
+        // Aplicar mapeo inverso a toda la respuesta
+        Object.entries(inverseMapping).forEach(([participantId, fullName]) => {
+          const regex = new RegExp(`\\b${participantId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+          processedResponse = processedResponse.replace(regex, fullName);
+          console.log(`🔄 Reemplazando "${participantId}" → "${fullName}" en respuesta completa`);
+        });
       }
 
       // NUEVO: Procesar análisis psicológico con estilo moderno
@@ -125,7 +168,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         processedResponse = processResponseWithModernPsychology(processedResponse);
       } catch (error) {
         console.error('Error procesando análisis psicológico:', error);
-        // Si hay error, continuar con la respuesta sin procesar la psicología
       }
 
       // NUEVO: Procesar subsecciones con cajas modernas
@@ -133,7 +175,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         processedResponse = processSubsectionsWithModernCards(processedResponse);
       } catch (error) {
         console.error('Error procesando subsecciones:', error);
-        // Si hay error, continuar con la respuesta sin procesar las subsecciones
       }
 
       // Convertir markdown a HTML
@@ -156,24 +197,48 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     }
   }, [chatGptResponse]);
 
-  // Efecto separado para procesar el contenido cuando headlinesGameData cambie
+  // Procesar solo cuando cambien los datos del juego
   useEffect(() => {
     if (chatGptResponse && headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) {
       try {
         let processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
         
+        // NUEVO: Aplicar mapeo de nombres a toda la respuesta antes del procesamiento (también aquí)
+        if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+          const detectedLanguage = window.lastDetectedLanguage || 'es';
+          console.log(`🔄 Aplicando mapeo de nombres a respuesta del juego (idioma: ${detectedLanguage})...`);
+          
+          // Crear mapeo ajustado según el idioma detectado
+          let adjustedMapping = window.lastNameMapping;
+          if (detectedLanguage !== 'es') {
+            adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
+          }
+          
+          // Crear mapeo inverso con el mapeo ajustado
+          const inverseMapping = {};
+          Object.entries(adjustedMapping).forEach(([fullName, participantId]) => {
+            inverseMapping[participantId] = fullName;
+          });
+          
+          // Aplicar mapeo inverso a toda la respuesta
+          Object.entries(inverseMapping).forEach(([participantId, fullName]) => {
+            const regex = new RegExp(`\\b${participantId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+            processedResponse = processedResponse.replace(regex, fullName);
+          });
+        }
+        
         // NUEVO: Procesar análisis psicológico con estilo moderno
         try {
           processedResponse = processResponseWithModernPsychology(processedResponse);
         } catch (error) {
-          console.error('Error procesando análisis psicológico en useEffect headlinesGameData:', error);
+          console.error('Error procesando análisis psicológico:', error);
         }
         
         // NUEVO: Procesar subsecciones con cajas modernas
         try {
           processedResponse = processSubsectionsWithModernCards(processedResponse);
         } catch (error) {
-          console.error('Error procesando subsecciones en useEffect headlinesGameData:', error);
+          console.error('Error procesando subsecciones:', error);
         }
         
         const htmlContent = marked.parse(processedResponse);
@@ -187,53 +252,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         console.error('Error en useEffect de headlinesGameData:', error);
       }
     }
-  }, [headlinesGameData, chatGptResponse]);
-
-  // useEffect para verificar el idioma del usuario y procesar el texto
-  useEffect(() => {
-    if (chatGptResponse) {
-      // Detectar idioma del usuario (predeterminado a español)
-      const userLanguage = i18n.language?.substring(0, 2) || 'es';
-      console.log(`Idioma detectado: ${userLanguage}`);
-      
-      // Solo procesar el HTML si no se ha procesado antes
-      if (!htmlContent) {
-        try {
-          // Solo procesar con headlinesGameData si es válido
-          const gameDataToUse = (headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) 
-            ? headlinesGameData 
-            : null;
-          
-          let processedResponse = processHeadlinesSection(chatGptResponse, gameDataToUse);
-          
-          // NUEVO: Procesar análisis psicológico con estilo moderno
-          try {
-            processedResponse = processResponseWithModernPsychology(processedResponse);
-          } catch (error) {
-            console.error('Error procesando análisis psicológico en useEffect idioma:', error);
-          }
-          
-          // NUEVO: Procesar subsecciones con cajas modernas
-          try {
-            processedResponse = processSubsectionsWithModernCards(processedResponse);
-          } catch (error) {
-            console.error('Error procesando subsecciones en useEffect idioma:', error);
-          }
-          
-          const htmlContent = marked.parse(processedResponse);
-          const sanitizedContent = DOMPurify.sanitize(htmlContent);
-          
-          // NUEVO: Post-procesar el HTML para aplicar el diseño moderno correctamente
-          const finalContent = postProcessPsychologyHTML(sanitizedContent);
-          
-          setHtmlContent(finalContent);
-        } catch (error) {
-          console.error('Error procesando respuesta:', error);
-          setError('Error al procesar la respuesta');
-        }
-      }
-    }
-  }, [chatGptResponse, i18n.language, htmlContent, headlinesGameData]);
+  }, [headlinesGameData]);
 
   // useEffect para restablecer contadores si es necesario
   useEffect(() => {
@@ -448,33 +467,35 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           // ESPECIAL: Si es la sección de datos del juego, procesar el JSON
           if (icon === '🎯') {
             processedContent = processGameDataContent(processedContent);
-          } else if (icon === '🚩') {
-            // ESPECIAL: Si es la sección de señales de alerta, poner negritas en rojo Y agregar bolitas
-            
-            // Extraer textos que están en negrita para las bolitas
-            const boldTexts = [];
-            const boldMatches = processedContent.matchAll(/\*\*(.*?)\*\*/g);
-            for (const match of boldMatches) {
-              const text = match[1].trim();
-              if (text && text.length > 0) {
-                boldTexts.push(text);
-              }
+                  } else if (icon === '🚩') {
+          // ESPECIAL: Si es la sección de señales de alerta, poner negritas en rojo Y agregar bolitas
+          
+          // Extraer textos que están en negrita para las bolitas
+          const boldTexts = [];
+          const boldMatches = processedContent.matchAll(/\*\*(.*?)\*\*/g);
+          for (const match of boldMatches) {
+            let text = match[1].trim();
+            // Eliminar emojis del texto para las etiquetas
+            text = text.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+            if (text && text.length > 0) {
+              boldTexts.push(text);
             }
-            
-            // Procesar contenido normal
-            processedContent = processedContent
-              .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #dc3545;">$1</strong>')
-              .replace(/\n\n/g, '</p><p>')
-              .replace(/^(.+)$/gm, '<p>$1</p>')
-              .replace(/<p><\/p>/g, '')
-              .replace(/- (.*?)(?=\n|$)/g, '<li>$1</li>')
-              .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-            
-            // Agregar bolitas rojas al final si hay textos en negrita
-            if (boldTexts.length > 0) {
-              const redTags = boldTexts.map(text => `<span class="tag red">${text}</span>`).join('');
-              processedContent += `<div class="psychology-tags" style="margin-top: 15px;">${redTags}</div>`;
-            }
+          }
+          
+          // Procesar contenido normal
+          processedContent = processedContent
+            .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #dc3545;">$1</strong>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/^(.+)$/gm, '<p>$1</p>')
+            .replace(/<p><\/p>/g, '')
+            .replace(/- (.*?)(?=\n|$)/g, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+          
+          // Agregar bolitas rojas al final si hay textos en negrita
+          if (boldTexts.length > 0) {
+            const redTags = boldTexts.map(text => `<span class="tag red">${text}</span>`).join('');
+            processedContent += `<div class="psychology-tags" style="margin-top: 15px;">${redTags}</div>`;
+          }
           } else {
             // Procesamiento normal para otras secciones
             processedContent = processedContent
@@ -652,10 +673,41 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       let match;
       
       while ((match = participantRegex.exec(content)) !== null) {
-        const name = match[1].trim();
+        let name = match[1].trim();
         const participantContent = match[2].trim();
         
         console.log(`👤 Encontrado participante: "${name}"`);
+        
+                 // NUEVO: Aplicar mapeo inverso para convertir "Participant X" a nombre real
+         if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+           const detectedLanguage = window.lastDetectedLanguage || 'es';
+           console.log(`🔄 Aplicando mapeo inverso para "${name}" (idioma: ${detectedLanguage})`);
+           console.log(`📋 Mapeo original disponible:`, window.lastNameMapping);
+           
+           // Crear mapeo ajustado según el idioma detectado
+           let adjustedMapping = window.lastNameMapping;
+           if (detectedLanguage !== 'es') {
+             adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
+             console.log(`🌐 Mapeo ajustado para ${detectedLanguage}:`, adjustedMapping);
+           }
+           
+           // Crear mapeo inverso
+           const inverseMapping = {};
+           Object.entries(adjustedMapping).forEach(([fullName, participantId]) => {
+             inverseMapping[participantId] = fullName;
+           });
+           console.log(`🔄 Mapeo inverso generado:`, inverseMapping);
+           
+           // Aplicar mapeo inverso
+           const mappedName = inverseMapping[name] || name;
+           if (mappedName !== name) {
+             console.log(`✅ Nombre convertido: "${name}" → "${mappedName}"`);
+             name = mappedName;
+           } else {
+             console.log(`⚠️ No se encontró mapeo para "${name}" en el mapeo inverso`);
+           }
+         }
+        
         console.log(`📝 Contenido del participante (primeros 100 chars): ${participantContent.substring(0, 100)}...`);
         
         if (name && participantContent) {
@@ -689,79 +741,160 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   const parseParticipantContent = (name, content) => {
     try {
       console.log(`🔧 Parseando contenido para: ${name}`);
+      console.log(`📄 Contenido completo:`, content);
       let traits = [];
       
-      // MULTIIDIOMA UNIVERSAL: Buscar traits con CUALQUIER emoji + texto en negrita
-      // 1. Patrón universal: [cualquier emoji] **[texto]** 
-      const universalEmojiTraitMatches = content.match(/[\u{1F300}-\u{1F9FF}]\s*\*\*([^*]+)\*\*/gu);
+      // ESTRATEGIA MEJORADA: Primero intentar con headers, luego sin header
+      let traitsSection = '';
       
-      if (universalEmojiTraitMatches && universalEmojiTraitMatches.length > 0) {
-        console.log(`📋 Encontrados traits con emojis universales para ${name}`);
-        
-        universalEmojiTraitMatches.forEach(match => {
-          // Extraer solo el texto entre ** (eliminar emoji y **)
-          const trait = match.replace(/[\u{1F300}-\u{1F9FF}]\s*\*\*|\*\*/gu, '').trim();
-          if (trait && trait.length > 2 && trait.length < 50) {
-            traits.push(trait);
-          }
-        });
-        
-        console.log(`🎯 Traits extraídos por emojis universales:`, traits);
-      } else {
-        console.log(`⚠️ No se encontraron traits con emojis universales para ${name}`);
-      }
+      // 1. Intentar con headers específicos primero
+      const headerPatterns = [
+        /(?:rasgos principales|traits principales):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:fortalezas|áreas de mejora|strengths?|areas? for improvement)|$)/gi,
+        /(?:main traits?):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:strengths?|areas? for improvement|fortalezas|áreas de mejora)|$)/gi,
+        /(?:traits principaux):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:forces|domaines d'amélioration)|$)/gi,
+        /(?:hauptmerkmale):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:stärken|verbesserungsbereiche)|$)/gi
+      ];
       
-      // 3. Si no encontramos traits con íconos, buscar cualquier texto en negrita que parezca un trait
-      if (traits.length === 0) {
-        console.log(`🔍 Buscando traits en cualquier texto en negrita para ${name}`);
-        const allBoldMatches = content.match(/\*\*([^*]+)\*\*/g);
-        if (allBoldMatches) {
-          console.log(`📝 Textos en negrita encontrados:`, allBoldMatches);
-          // Filtrar para obtener solo traits (evitar palabras comunes en múltiples idiomas)
-          const excludeWords = [
-            // Español
-            'rasgos principales', 'fortalezas', 'debilidades', 'áreas de mejora', 'traits principales',
-            // Inglés
-            'main traits', 'strengths', 'weaknesses', 'areas for improvement', 'areas of improvement',
-            // Francés
-            'traits principaux', 'forces', 'faiblesses', 'domaines d\'amélioration',
-            // Alemán
-            'hauptmerkmale', 'stärken', 'schwächen', 'verbesserungsbereiche',
-            // Italiano
-            'tratti principali', 'punti di forza', 'debolezze', 'aree di miglioramento',
-            // Portugués
-            'traços principais', 'pontos fortes', 'fraquezas', 'áreas de melhoria'
-          ];
-          
-          traits = allBoldMatches
-            .map(match => match.replace(/\*\*/g, '').trim())
-            .filter(text => {
-              const lowerText = text.toLowerCase();
-              return !excludeWords.some(word => lowerText.includes(word)) && 
-                     text.length > 2 && text.length < 50; // Longitud razonable para un trait
-            })
-            .slice(0, 4); // Máximo 4 traits
-          console.log(`🎯 Traits filtrados de textos en negrita:`, traits);
+      // Buscar con headers primero
+      for (const pattern of headerPatterns) {
+        const match = pattern.exec(content);
+        if (match && match[1]) {
+          traitsSection = match[1].trim();
+          console.log(`🎯 Sección de traits encontrada CON header:`, traitsSection);
+          break;
         }
       }
       
-      // 4. Si aún no tenemos traits, buscar en todo el contenido palabras clave
-      if (traits.length === 0) {
-        console.log(`🔍 Usando extracción de keywords para ${name}`);
-        traits = extractTraitsFromContent('', content, '');
-        console.log(`🎯 Traits extraídos por keywords:`, traits);
+      // 2. Si no encontramos con header, buscar formato sin header (solo hasta "Strengths:")
+      if (!traitsSection) {
+        const noHeaderMatch = content.match(/^((?:.*?[\u{1F300}-\u{1F9FF}]\s*\*\*[^*]+\*\*.*?\n?)*?)(?:\n\s*(?:strengths?|fortalezas|forces|stärken):\s*)/gius);
+        if (noHeaderMatch && noHeaderMatch[1]) {
+          traitsSection = noHeaderMatch[1].trim();
+          console.log(`🎯 Sección de traits encontrada SIN header:`, traitsSection);
+        }
       }
       
-      // 5. Fallback final si no se encuentran traits
-      if (traits.length === 0) {
-        console.log(`🎯 Usando traits por defecto para ${name}`);
-        traits = ['Comunicativo', 'Sociable', 'Activo'];
+      // Si encontramos la sección, extraer traits de ella
+      if (traitsSection) {
+        // Buscar traits con emoji + negrita en la sección
+        const emojiTraitMatches = traitsSection.match(/[\u{1F300}-\u{1F9FF}]\s*\*\*([^*]+)\*\*/gu);
+        
+        if (emojiTraitMatches && emojiTraitMatches.length > 0) {
+          console.log(`📋 Traits con emojis encontrados en sección para ${name}:`, emojiTraitMatches);
+          
+          emojiTraitMatches.forEach(match => {
+            // Extraer solo el texto entre ** (eliminar emoji y **)
+            let trait = match.replace(/[\u{1F300}-\u{1F9FF}]\s*\*\*|\*\*/gu, '').trim();
+            // Eliminar cualquier emoji restante del trait
+            trait = trait.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+            // MANTENER TODO EL TEXTO, no cortar en el guión
+            
+            if (trait && trait.length > 2 && trait.length < 100) {
+              traits.push(trait);
+            }
+          });
+          
+          console.log(`🎯 Traits extraídos de sección específica:`, traits);
+        }
       }
+      
+      // Fallback: Si no encontramos traits en sección específica, buscar en todo el contenido
+      if (traits.length === 0) {
+        console.log(`🔍 Fallback: buscando traits en todo el contenido para ${name}`);
+        
+        // Buscar cualquier emoji + texto en negrita
+        const universalEmojiTraitMatches = content.match(/[\u{1F300}-\u{1F9FF}]\s*\*\*([^*]+)\*\*/gu);
+        
+        if (universalEmojiTraitMatches && universalEmojiTraitMatches.length > 0) {
+          universalEmojiTraitMatches.forEach(match => {
+            let trait = match.replace(/[\u{1F300}-\u{1F9FF}]\s*\*\*|\*\*/gu, '').trim();
+            trait = trait.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+            // MANTENER TODO EL TEXTO, no cortar en el guión
+            
+            // Filtrar palabras de sección (headers)
+            const sectionWords = [
+              'rasgos principales', 'main traits', 'traits principaux', 'hauptmerkmale',
+              'fortalezas', 'strengths', 'forces', 'stärken',
+              'debilidades', 'weaknesses', 'faiblesses', 'schwächen',
+              'áreas de mejora', 'areas for improvement', 'domaines d\'amélioration', 'verbesserungsbereiche'
+            ];
+            
+            const isSection = sectionWords.some(word => trait.toLowerCase().includes(word.toLowerCase()));
+            
+            if (trait && trait.length > 2 && trait.length < 100 && !isSection) {
+              traits.push(trait);
+            }
+          });
+          
+          console.log(`🎯 Traits extraídos por emojis universales:`, traits);
+        }
+      }
+      
+      // Fallback final: buscar por keywords y texto específico en alemán
+      if (traits.length === 0) {
+        console.log(`🔍 Fallback final: usando extracción de keywords para ${name}`);
+        
+        // NUEVA ESTRATEGIA: Extracción específica para contenido alemán
+        if (content.includes('Analytischer') || content.includes('Humorvoll') || content.includes('Stärken:')) {
+          console.log(`🇩🇪 Detectado contenido alemán, usando extracción específica`);
+          
+          // Extraer traits específicos del texto alemán
+          const germanTraits = [];
+          
+          // Buscar "Analytischer Pragmatiker"
+          if (content.includes('Analytischer Pragmatiker')) {
+            germanTraits.push('Analytisch', 'Pragmatisch');
+          }
+          
+          // Buscar "Humorvolle Selbstkritik"
+          if (content.includes('Humorvolle Selbstkritik')) {
+            germanTraits.push('Humorvoll', 'Selbstkritisch');
+          }
+          
+          // Buscar "Lösungsorientiert"
+          if (content.includes('Lösungsorientiert')) {
+            germanTraits.push('Lösungsorientiert');
+          }
+          
+          // Buscar otros traits comunes alemanes
+          const germanKeywords = [
+            'kommunikativ', 'gesellig', 'aktiv', 'kreativ', 'empathisch',
+            'organisiert', 'direkt', 'geduldig', 'energisch', 'optimistisch',
+            'ironisch', 'reflektiert', 'entscheidungsfreudig', 'vorsichtig'
+          ];
+          
+          germanKeywords.forEach(keyword => {
+            if (content.toLowerCase().includes(keyword) && !germanTraits.includes(keyword.charAt(0).toUpperCase() + keyword.slice(1))) {
+              germanTraits.push(keyword.charAt(0).toUpperCase() + keyword.slice(1));
+            }
+          });
+          
+          if (germanTraits.length > 0) {
+            traits = germanTraits.slice(0, 4);
+            console.log(`🎯 Traits alemanes extraídos específicamente:`, traits);
+          }
+        }
+        
+        // Si aún no hay traits, usar función general
+        if (traits.length === 0) {
+          traits = extractTraitsFromContent('', content, '');
+        }
+      }
+      
+      // Si no se encontraron traits, dejar array vacío (no mostrar datos inventados)
+      if (traits.length === 0) {
+        console.log(`⚠️ No se encontraron traits para ${name} - no se mostrarán datos inventados`);
+      }
+
+      // Limpieza final de traits para asegurar que no haya emojis
+      const cleanedTraits = traits.slice(0, 4).map(trait => {
+        return trait.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+      }).filter(trait => trait.length > 0);
 
       const result = {
         name: cleanPersonalityName(name),
         description: content.trim(), // MANTENER TODO EL CONTENIDO ORIGINAL
-        traits: traits.slice(0, 4) // Máximo 4 traits
+        traits: cleanedTraits // Máximo 4 traits sin emojis
       };
       
       console.log(`✅ Resultado final para ${name}:`, result);
@@ -804,7 +937,18 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       'analytical': 'Analytical', 'creative': 'Creative', 'direct': 'Direct', 'practical': 'Practical',
       'positive': 'Positive', 'mediator': 'Mediator', 'observer': 'Observer', 'funny': 'Funny',
       'empathetic': 'Empathetic', 'optimistic': 'Optimistic', 'patient': 'Patient', 'energetic': 'Energetic',
-      'coordinator': 'Coordinator', 'proactive': 'Proactive', 'humorous': 'Humorous'
+      'coordinator': 'Coordinator', 'proactive': 'Proactive', 'humorous': 'Humorous',
+      
+      // Deutsch
+      'analytisch': 'Analytisch', 'analytischer': 'Analytisch', 'pragmatiker': 'Pragmatisch', 'pragmatisch': 'Pragmatisch',
+      'humorvoll': 'Humorvoll', 'humorvolle': 'Humorvoll', 'selbstkritik': 'Selbstkritisch', 'selbstkritisch': 'Selbstkritisch',
+      'kommunikativ': 'Kommunikativ', 'gesellig': 'Gesellig', 'aktiv': 'Aktiv', 'direkt': 'Direkt',
+      'organisiert': 'Organisiert', 'lösungsorientiert': 'Lösungsorientiert', 'reflektiert': 'Reflektiert',
+      'kreativ': 'Kreativ', 'empathisch': 'Empathisch', 'optimistisch': 'Optimistisch', 'geduldig': 'Geduldig',
+      'energisch': 'Energisch', 'koordinator': 'Koordinator', 'proaktiv': 'Proaktiv', 'ironisch': 'Ironisch',
+      'beobachter': 'Beobachter', 'mediator': 'Mediator', 'führung': 'Führungsqualitäten', 'leadership': 'Führungsqualitäten',
+      'entscheidend': 'Entscheidungsfreudig', 'entscheidungsfreudig': 'Entscheidungsfreudig', 'zögerlich': 'Besonnen',
+      'unsicher': 'Vorsichtig', 'unsicherheit': 'Vorsichtig', 'praktisch': 'Praktisch', 'realistisch': 'Realistisch'
     };
 
     // Buscar traits en el texto
@@ -817,16 +961,27 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     // Si no se encontraron traits específicos, usar traits por defecto basados en el rol
     if (extractedTraits.length === 0) {
       const roleToTraits = {
+        // Español
         'líder': ['Líder', 'Proactivo', 'Organizador'],
-        'leader': ['Leader', 'Proactive', 'Organizer'],
         'coordinador': ['Coordinador', 'Comunicativo', 'Sociable'],
-        'coordinator': ['Coordinator', 'Communicative', 'Social'],
         'mediador': ['Mediador', 'Empático', 'Paciente'],
-        'mediator': ['Mediator', 'Empathetic', 'Patient'],
         'observador': ['Observador', 'Analítico', 'Reflexivo'],
-        'observer': ['Observer', 'Analytical', 'Reflective'],
         'cómico': ['Cómico', 'Alegre', 'Sociable'],
-        'funny': ['Funny', 'Cheerful', 'Social']
+        
+        // English
+        'leader': ['Leader', 'Proactive', 'Organizer'],
+        'coordinator': ['Coordinator', 'Communicative', 'Social'],
+        'mediator': ['Mediator', 'Empathetic', 'Patient'],
+        'observer': ['Observer', 'Analytical', 'Reflective'],
+        'funny': ['Funny', 'Cheerful', 'Social'],
+        
+        // Deutsch
+        'analytisch': ['Analytisch', 'Pragmatisch', 'Lösungsorientiert'],
+        'pragmatiker': ['Pragmatisch', 'Analytisch', 'Realistisch'],
+        'humorvoll': ['Humorvoll', 'Ironisch', 'Selbstkritisch'],
+        'selbstkritisch': ['Selbstkritisch', 'Reflektiert', 'Humorvoll'],
+        'kommunikativ': ['Kommunikativ', 'Gesellig', 'Aktiv'],
+        'organisiert': ['Organisiert', 'Strukturiert', 'Zuverlässig']
       };
 
       const lowerRole = role.toLowerCase();
@@ -836,8 +991,8 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         }
       }
 
-      // Traits por defecto si no se encuentra nada
-      return ['Comunicativo', 'Sociable', 'Activo'];
+      // Si no se encuentran traits, devolver array vacío
+      return [];
     }
 
     return extractedTraits.slice(0, 4); // Máximo 4 traits
@@ -865,9 +1020,13 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       const avatarColor = getAvatarColor(index, personality.name);
       const firstLetter = personality.name.charAt(0).toUpperCase();
       
-      const tagsHTML = personality.traits.map(trait => 
-        `<span class="tag ${avatarColor}">${trait}</span>`
-      ).join('');
+      const tagsHTML = personality.traits && personality.traits.length > 0 
+        ? personality.traits.map(trait => {
+            // Eliminar emojis del trait antes de crear el tag
+            const cleanTrait = trait.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+            return `<span class="tag ${avatarColor}">${cleanTrait}</span>`;
+          }).join('')
+        : '';
 
       // NUEVO: Procesar markdown en la descripción para mantener iconos y negritas
       const processedDescription = personality.description
