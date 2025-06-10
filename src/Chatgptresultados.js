@@ -747,12 +747,20 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       // ESTRATEGIA MEJORADA: Primero intentar con headers, luego sin header
       let traitsSection = '';
       
-      // 1. Intentar con headers específicos primero
+      // 1. Intentar con headers específicos primero - MEJORADO para todos los idiomas
       const headerPatterns = [
+        // Español
         /(?:rasgos principales|traits principales):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:fortalezas|áreas de mejora|strengths?|areas? for improvement)|$)/gi,
+        // Inglés
         /(?:main traits?):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:strengths?|areas? for improvement|fortalezas|áreas de mejora)|$)/gi,
-        /(?:traits principaux):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:forces|domaines d'amélioration)|$)/gi,
-        /(?:hauptmerkmale):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:stärken|verbesserungsbereiche)|$)/gi
+        // Francés
+        /(?:traits principaux):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:forces|domaines d'amélioration|atouts|points forts)|$)/gi,
+        // Alemán
+        /(?:hauptmerkmale):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:stärken|verbesserungsbereiche)|$)/gi,
+        // Italiano
+        /(?:tratti principali):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:punti di forza|aree di miglioramento)|$)/gi,
+        // Portugués
+        /(?:traços principais):\s*([\s\S]*?)(?:\n\s*-?\s*\*\*?(?:pontos fortes|áreas de melhoria)|$)/gi
       ];
       
       // Buscar con headers primero
@@ -767,7 +775,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       
       // 2. Si no encontramos con header, buscar formato sin header (solo hasta "Strengths:")
       if (!traitsSection) {
-        const noHeaderMatch = content.match(/^((?:.*?[\u{1F300}-\u{1F9FF}]\s*\*\*[^*]+\*\*.*?\n?)*?)(?:\n\s*(?:strengths?|fortalezas|forces|stärken):\s*)/gius);
+        const noHeaderMatch = content.match(/^((?:.*?[\u{1F300}-\u{1F9FF}]\s*\*\*[^*]+\*\*.*?\n?)*?)(?:\n\s*(?:strengths?|fortalezas|forces|stärken|punti di forza|pontos fortes|atouts):\s*)/gius);
         if (noHeaderMatch && noHeaderMatch[1]) {
           traitsSection = noHeaderMatch[1].trim();
           console.log(`🎯 Sección de traits encontrada SIN header:`, traitsSection);
@@ -830,56 +838,8 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         }
       }
       
-      // Fallback final: buscar por keywords y texto específico en alemán
-      if (traits.length === 0) {
-        console.log(`🔍 Fallback final: usando extracción de keywords para ${name}`);
-        
-        // NUEVA ESTRATEGIA: Extracción específica para contenido alemán
-        if (content.includes('Analytischer') || content.includes('Humorvoll') || content.includes('Stärken:')) {
-          console.log(`🇩🇪 Detectado contenido alemán, usando extracción específica`);
-          
-          // Extraer traits específicos del texto alemán
-          const germanTraits = [];
-          
-          // Buscar "Analytischer Pragmatiker"
-          if (content.includes('Analytischer Pragmatiker')) {
-            germanTraits.push('Analytisch', 'Pragmatisch');
-          }
-          
-          // Buscar "Humorvolle Selbstkritik"
-          if (content.includes('Humorvolle Selbstkritik')) {
-            germanTraits.push('Humorvoll', 'Selbstkritisch');
-          }
-          
-          // Buscar "Lösungsorientiert"
-          if (content.includes('Lösungsorientiert')) {
-            germanTraits.push('Lösungsorientiert');
-          }
-          
-          // Buscar otros traits comunes alemanes
-          const germanKeywords = [
-            'kommunikativ', 'gesellig', 'aktiv', 'kreativ', 'empathisch',
-            'organisiert', 'direkt', 'geduldig', 'energisch', 'optimistisch',
-            'ironisch', 'reflektiert', 'entscheidungsfreudig', 'vorsichtig'
-          ];
-          
-          germanKeywords.forEach(keyword => {
-            if (content.toLowerCase().includes(keyword) && !germanTraits.includes(keyword.charAt(0).toUpperCase() + keyword.slice(1))) {
-              germanTraits.push(keyword.charAt(0).toUpperCase() + keyword.slice(1));
-            }
-          });
-          
-          if (germanTraits.length > 0) {
-            traits = germanTraits.slice(0, 4);
-            console.log(`🎯 Traits alemanes extraídos específicamente:`, traits);
-          }
-        }
-        
-        // Si aún no hay traits, usar función general
-        if (traits.length === 0) {
-          traits = extractTraitsFromContent('', content, '');
-        }
-      }
+      // NO MÁS FALLBACKS - Solo usar patrón universal de emoji + texto en negrita
+      // Si no se encuentran traits reales, dejar array vacío (no inventar datos)
       
       // Si no se encontraron traits, dejar array vacío (no mostrar datos inventados)
       if (traits.length === 0) {
@@ -913,89 +873,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       .replace(/\n\s*\n/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
-  };
-
-  // FUNCIÓN actualizada para extraer traits del contenido estructurado
-  const extractTraitsFromContent = (role, traits, strengths) => {
-    const allText = `${role} ${traits} ${strengths}`.toLowerCase();
-    const extractedTraits = [];
-    
-    // Traits comunes en múltiples idiomas
-    const commonTraits = {
-      // Español
-      'líder': 'Líder', 'lider': 'Líder', 'comunicativo': 'Comunicativo', 'comunicativa': 'Comunicativa',
-      'organizador': 'Organizador', 'organizadora': 'Organizadora', 'sociable': 'Sociable',
-      'reflexivo': 'Reflexivo', 'reflexiva': 'Reflexiva', 'directo': 'Directo', 'directa': 'Directa',
-      'práctico': 'Práctico', 'práctica': 'Práctica', 'alegre': 'Alegre', 'expresivo': 'Expresivo',
-      'expresiva': 'Expresiva', 'positivo': 'Positivo', 'positiva': 'Positiva', 'mediador': 'Mediador',
-      'observador': 'Observador', 'cómico': 'Cómico', 'analítico': 'Analítico', 'creativo': 'Creativo',
-      'empático': 'Empático', 'optimista': 'Optimista', 'paciente': 'Paciente', 'enérgico': 'Enérgico',
-      'coordinador': 'Coordinador', 'proactivo': 'Proactivo', 'humorístico': 'Humorístico',
-      
-      // English
-      'leader': 'Leader', 'communicative': 'Communicative', 'organizer': 'Organizer', 'social': 'Social',
-      'analytical': 'Analytical', 'creative': 'Creative', 'direct': 'Direct', 'practical': 'Practical',
-      'positive': 'Positive', 'mediator': 'Mediator', 'observer': 'Observer', 'funny': 'Funny',
-      'empathetic': 'Empathetic', 'optimistic': 'Optimistic', 'patient': 'Patient', 'energetic': 'Energetic',
-      'coordinator': 'Coordinator', 'proactive': 'Proactive', 'humorous': 'Humorous',
-      
-      // Deutsch
-      'analytisch': 'Analytisch', 'analytischer': 'Analytisch', 'pragmatiker': 'Pragmatisch', 'pragmatisch': 'Pragmatisch',
-      'humorvoll': 'Humorvoll', 'humorvolle': 'Humorvoll', 'selbstkritik': 'Selbstkritisch', 'selbstkritisch': 'Selbstkritisch',
-      'kommunikativ': 'Kommunikativ', 'gesellig': 'Gesellig', 'aktiv': 'Aktiv', 'direkt': 'Direkt',
-      'organisiert': 'Organisiert', 'lösungsorientiert': 'Lösungsorientiert', 'reflektiert': 'Reflektiert',
-      'kreativ': 'Kreativ', 'empathisch': 'Empathisch', 'optimistisch': 'Optimistisch', 'geduldig': 'Geduldig',
-      'energisch': 'Energisch', 'koordinator': 'Koordinator', 'proaktiv': 'Proaktiv', 'ironisch': 'Ironisch',
-      'beobachter': 'Beobachter', 'mediator': 'Mediator', 'führung': 'Führungsqualitäten', 'leadership': 'Führungsqualitäten',
-      'entscheidend': 'Entscheidungsfreudig', 'entscheidungsfreudig': 'Entscheidungsfreudig', 'zögerlich': 'Besonnen',
-      'unsicher': 'Vorsichtig', 'unsicherheit': 'Vorsichtig', 'praktisch': 'Praktisch', 'realistisch': 'Realistisch'
-    };
-
-    // Buscar traits en el texto
-    Object.entries(commonTraits).forEach(([key, value]) => {
-      if (allText.includes(key) && !extractedTraits.includes(value)) {
-        extractedTraits.push(value);
-      }
-    });
-
-    // Si no se encontraron traits específicos, usar traits por defecto basados en el rol
-    if (extractedTraits.length === 0) {
-      const roleToTraits = {
-        // Español
-        'líder': ['Líder', 'Proactivo', 'Organizador'],
-        'coordinador': ['Coordinador', 'Comunicativo', 'Sociable'],
-        'mediador': ['Mediador', 'Empático', 'Paciente'],
-        'observador': ['Observador', 'Analítico', 'Reflexivo'],
-        'cómico': ['Cómico', 'Alegre', 'Sociable'],
-        
-        // English
-        'leader': ['Leader', 'Proactive', 'Organizer'],
-        'coordinator': ['Coordinator', 'Communicative', 'Social'],
-        'mediator': ['Mediator', 'Empathetic', 'Patient'],
-        'observer': ['Observer', 'Analytical', 'Reflective'],
-        'funny': ['Funny', 'Cheerful', 'Social'],
-        
-        // Deutsch
-        'analytisch': ['Analytisch', 'Pragmatisch', 'Lösungsorientiert'],
-        'pragmatiker': ['Pragmatisch', 'Analytisch', 'Realistisch'],
-        'humorvoll': ['Humorvoll', 'Ironisch', 'Selbstkritisch'],
-        'selbstkritisch': ['Selbstkritisch', 'Reflektiert', 'Humorvoll'],
-        'kommunikativ': ['Kommunikativ', 'Gesellig', 'Aktiv'],
-        'organisiert': ['Organisiert', 'Strukturiert', 'Zuverlässig']
-      };
-
-      const lowerRole = role.toLowerCase();
-      for (const [key, traits] of Object.entries(roleToTraits)) {
-        if (lowerRole.includes(key)) {
-          return traits.slice(0, 3);
-        }
-      }
-
-      // Si no se encuentran traits, devolver array vacío
-      return [];
-    }
-
-    return extractedTraits.slice(0, 4); // Máximo 4 traits
   };
 
   // FUNCIÓN para limpiar nombres de personalidades
