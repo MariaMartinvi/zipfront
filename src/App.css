@@ -1274,9 +1274,10 @@ li {
 
 .empty-placeholder-container p {
   color: #333;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   text-align: center;
   margin: 0;
+  font-weight: 500;
 }
 
 @keyframes spin {
@@ -1364,10 +1365,11 @@ li {
 
 .analysis-progress-detail {
   color: #666;
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
   margin-top: 10px;
   font-style: italic;
+  font-weight: 500;
   animation: fadeInOut 1s ease-in-out;
 }
 

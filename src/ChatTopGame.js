@@ -356,11 +356,9 @@ const ChatTopGame = () => {
   const categories = allCategories.filter(category => SELECTED_CATEGORIES.includes(category));
   const usuarios = Array.isArray(gameData?.usuarios) ? gameData.usuarios : [];
   
-  // Debug: Ver qué categorías tenemos
-  console.log("Todas las categorías en gameData:", allCategories);
-  console.log("Categorías seleccionadas para el juego:", SELECTED_CATEGORIES);
-  console.log("Categorías filtradas que aparecerán en el juego:", categories);
-  console.log("Datos de mala_influencia:", gameData?.categorias?.mala_influencia);
+
+  
+
   
   return (
     <div className="chat-top-game">

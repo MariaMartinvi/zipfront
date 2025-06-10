@@ -706,8 +706,8 @@
   transition: all 0.3s ease !important;
   box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3) !important;
   flex: 0 1 auto !important;
-  min-width: 120px !important;
-  max-width: 150px !important;
+  min-width: 160px !important;
+  max-width: 200px !important;
   white-space: nowrap !important;
   text-align: center !important;
 }
@@ -715,8 +715,8 @@
 /* Para pantallas grandes, mantener un tamaño máximo */
 @media (min-width: 769px) {
   .game-button {
-    max-width: 150px !important;
-    min-width: 120px !important;
+    max-width: 200px !important;
+    min-width: 160px !important;
   }
 }
 

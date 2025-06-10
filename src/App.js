@@ -1855,7 +1855,8 @@ const tryDeleteFiles = async (operationId) => {
         'cafeconleche': 'c', 'dejaenvisto': 'd', 'narcicista': 'n', 
         'puntofinal': 'f', 'fosforo': 'o', 'menosesmas': 'm',
         'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'sicopata': 'x',
-        'comico': 'co', 'agradecido': 'ag', 'disculpon': 'di', 'curioso': 'cu'
+        'comico': 'co', 'agradecido': 'ag', 'disculpon': 'di', 'curioso': 'cu',
+        'mala_influencia': 'mi'
       };
       
       // Obtener usuarios
