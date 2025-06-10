@@ -11,6 +11,7 @@
     },
     "analysis": {
       "statistical": "Analyse Statistique",
+      "statistical_continuation": "Suite de l'Analyse Statistique",
       "psychological": "Analyse Psychologique",
       "preparing_statistical": "Préparation de l'analyse statistique de la conversation...",
       "preparing_psychological": "Préparation de l'analyse psychologique de la conversation..."
@@ -50,6 +51,7 @@
     },
     "top_profiles": {
       "title": "Profils Marquants du Chat",
+      "badge": "PROFILS EN VEDETTE",
       "group_average": "Les autres",
       "professor": {
         "title": "Le Professeur",

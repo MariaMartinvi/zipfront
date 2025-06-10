@@ -1047,7 +1047,7 @@ const AnalisisEstadistico = ({ operationId, chatData }) => {
       <section className="charts-section">
         <div className="charts-container">
           <span className="charts-badge">{t('analysis_summary.visual_analysis.badge')}</span>
-          <h2 className="charts-title">Análisis Estadístico</h2>
+          <h2 className="charts-title">{t('app.analysis.statistical')}</h2>
           <p className="charts-description">{t('analysis_summary.visual_analysis.description')}</p>
           
           <div className="charts-grid">

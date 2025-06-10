@@ -135,6 +135,15 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       // Procesar la respuesta una sola vez
       let processedResponse = chatGptResponse;
 
+      // NUEVO: Ocultar contenido GAME_DATA crudo para que no se muestre al usuario
+      if (processedResponse.includes('GAME_DATA:')) {
+        console.log('🔧 Ocultando contenido GAME_DATA crudo...');
+        // Eliminar todo el bloque GAME_DATA: hasta el final del array
+        processedResponse = processedResponse.replace(/GAME_DATA:\s*\[[\s\S]*?\]\s*\]/gi, '');
+        // Limpiar líneas vacías extras que puedan quedar
+        processedResponse = processedResponse.replace(/\n\s*\n\s*\n/g, '\n\n');
+      }
+
       // NUEVO: Aplicar mapeo de nombres a toda la respuesta antes del procesamiento
       if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
         const detectedLanguage = window.lastDetectedLanguage || 'es';
@@ -466,8 +475,25 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           
           // ESPECIAL: Si es la sección de datos del juego, procesar el JSON
           if (icon === '🎯') {
-            processedContent = processGameDataContent(processedContent);
-                  } else if (icon === '🚩') {
+            // Primero intentar procesar con processGameDataContent
+            const gameDataResult = processGameDataContent(processedContent);
+            
+            // Si processGameDataContent devolvió contenido formateado (markdown), usarlo
+            if (gameDataResult && gameDataResult !== processedContent && !gameDataResult.includes('GAME_DATA:')) {
+              processedContent = gameDataResult;
+            } else {
+              // Si no se pudo procesar, ocultar el contenido GAME_DATA crudo
+              console.log('🎯 Ocultando contenido GAME_DATA crudo');
+              processedContent = '**Sin datos de juego disponibles**';
+            }
+            
+            // Procesar markdown básico
+            processedContent = processedContent
+              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+              .replace(/\n\n/g, '</p><p>')
+              .replace(/^(.+)$/gm, '<p>$1</p>')
+              .replace(/<p><\/p>/g, '');
+          } else if (icon === '🚩') {
           // ESPECIAL: Si es la sección de señales de alerta, poner negritas en rojo Y agregar bolitas
           
           // Extraer textos que están en negrita para las bolitas
@@ -574,7 +600,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         });
       }
       
-      let newTitularesSection = "## 💡 Titulares\n\n**Datos de juego:**\n\n";
+      let newTitularesSection = "## 💡 Titulares\n\n";
       
       headlines.forEach(headline => {
         // VALIDACIÓN: Verificar que headline tenga las propiedades necesarias
@@ -969,26 +995,64 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // NUEVA FUNCIÓN para procesar el contenido de datos del juego de forma amigable
   const processGameDataContent = (content) => {
     try {
+      console.log('🎯 processGameDataContent - Contenido recibido:', content.substring(0, 200));
+      
       // Si hay GAME_DATA disponible desde headlinesGameData
       if (headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) {
         const [usuarios, headlines] = headlinesGameData;
         
         if (headlines && Array.isArray(headlines)) {
-          let formattedData = '<div class="game-data-display">';
+          console.log('🎯 Usando headlinesGameData disponible');
+          let formattedData = '';
           
-          headlines.forEach(headline => {
+          headlines.forEach((headline, index) => {
             if (headline && headline.nombre && headline.frase) {
               const fraseClean = headline.frase.replace(/'/g, '').trim();
-              formattedData += `<p><strong>${headline.nombre}:</strong> ${fraseClean}</p>`;
+              formattedData += `**${headline.nombre}**: ${fraseClean}\n\n`;
             }
           });
           
-          formattedData += '</div>';
           return formattedData;
         }
       }
       
-      // Si no hay headlinesGameData, buscar en el contenido texto JSON
+      // Si el contenido contiene GAME_DATA: crudo, intentar parsearlo
+      if (content.includes('GAME_DATA:')) {
+        console.log('🎯 Detectado GAME_DATA: crudo en el contenido');
+        
+        // Extraer solo la parte del JSON
+        const jsonMatch = content.match(/GAME_DATA:\s*(\[[\s\S]*?\])/);
+        if (jsonMatch) {
+          try {
+            const jsonStr = jsonMatch[1];
+            console.log('🎯 JSON extraído:', jsonStr.substring(0, 100) + '...');
+            
+            const parsedData = JSON.parse(jsonStr);
+            
+            if (Array.isArray(parsedData) && parsedData.length >= 2) {
+              const [usuarios, headlines] = parsedData;
+              
+              if (headlines && Array.isArray(headlines)) {
+                console.log('🎯 Procesando datos parseados del JSON');
+                let formattedData = '';
+                
+                headlines.forEach((headline, index) => {
+                  if (headline && headline.nombre && headline.frase) {
+                    const fraseClean = headline.frase.replace(/'/g, '').trim();
+                    formattedData += `**${headline.nombre}**: ${fraseClean}\n\n`;
+                  }
+                });
+                
+                return formattedData;
+              }
+            }
+          } catch (error) {
+            console.log('🎯 Error parseando JSON en GAME_DATA:', error);
+          }
+        }
+      }
+      
+      // Si no hay headlinesGameData, buscar en el contenido texto JSON (fallback anterior)
       const jsonMatch = content.match(/\[([\s\S]*?)\]/);
       if (jsonMatch) {
         try {
@@ -1000,33 +1064,41 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
             const [usuarios, headlines] = parsedData;
             
             if (headlines && Array.isArray(headlines)) {
-              let formattedData = '<div class="game-data-display">';
+              console.log('🎯 Usando fallback de JSON directo');
+              let formattedData = '';
               
-              headlines.forEach(headline => {
+              headlines.forEach((headline, index) => {
                 if (headline && headline.nombre && headline.frase) {
                   const fraseClean = headline.frase.replace(/'/g, '').trim();
-                  formattedData += `<p><strong>${headline.nombre}:</strong> ${fraseClean}</p>`;
+                  formattedData += `**${headline.nombre}**: ${fraseClean}\n\n`;
                 }
               });
               
-              formattedData += '</div>';
               return formattedData;
             }
           }
         } catch (error) {
-          console.log('Error parseando JSON en datos del juego:', error);
+          console.log('🎯 Error parseando JSON en fallback:', error);
         }
       }
       
-      // Fallback: mostrar contenido original procesado
-      return content
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/^(.+)$/gm, '<p>$1</p>')
-        .replace(/<p><\/p>/g, '');
+      console.log('🎯 No se pudo procesar el contenido, devolviendo original');
+      
+      // Fallback: mostrar contenido original procesado solo si no contiene GAME_DATA: crudo
+      if (!content.includes('GAME_DATA:')) {
+        return content
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n\n/g, '</p><p>')
+          .replace(/^(.+)$/gm, '<p>$1</p>')
+          .replace(/<p><\/p>/g, '');
+      }
+      
+      // Si contiene GAME_DATA: crudo y no se pudo procesar, devolver contenido original sin cambios
+      // para que la lógica superior pueda manejarlo
+      return content;
         
     } catch (error) {
-      console.error('Error procesando datos del juego:', error);
+      console.error('🎯 Error procesando datos del juego:', error);
       return content;
     }
   };

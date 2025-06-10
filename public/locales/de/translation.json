@@ -11,6 +11,7 @@
     },
     "analysis": {
       "statistical": "Statistische Analyse",
+      "statistical_continuation": "Statistische Analyse Fortsetzung",
       "psychological": "Psychologische Analyse",
       "preparing_statistical": "Vorbereitung der statistischen Analyse der Konversation...",
       "preparing_psychological": "Vorbereitung der psychologischen Analyse der Konversation..."
@@ -50,6 +51,8 @@
     },
     "top_profiles": {
       "title": "Hervorgehobene Chat-Profile",
+      "badge": "HERVORGEHOBENE PROFILE",
+      "badge": "HERVORGEHOBENE PROFILE",
       "group_average": "Die anderen",
       "professor": {
         "title": "Der Professor",

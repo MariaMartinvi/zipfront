@@ -323,6 +323,7 @@
     },
     "analysis": {
       "statistical": "Analisi Statistica",
+      "statistical_continuation": "Analisi Statistica Continuazione",
       "psychological": "Analisi Psicologica",
       "preparing_statistical": "Preparazione dell'analisi statistica della conversazione...",
       "preparing_psychological": "Preparazione dell'analisi psicologica della conversazione..."
@@ -337,6 +338,7 @@
     },
     "top_profiles": {
       "title": "Profili Top",
+      "badge": "PROFILI IN EVIDENZA",
       "no_data": "Nessun dato disponibile",
       "total_messages": "messaggi totali",
       "professor": {

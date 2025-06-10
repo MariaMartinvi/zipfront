@@ -2046,7 +2046,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
       {/* Analysis Section */}
       <section className="analysis-top-section">
         <div className="analysis-top-container">
-          <span className="analysis-badge">PERFILES DESTACADOS</span>
+          <span className="analysis-badge">{t('app.top_profiles.badge')}</span>
           <h2 className="analysis-title">{t('app.top_profiles.title')}</h2>
           <p className="analysis-description">{t('analysis_summary.profiles.description')}</p>
           

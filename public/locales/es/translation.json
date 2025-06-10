@@ -11,6 +11,7 @@
     },
     "analysis": {
       "statistical": "Análisis Estadístico",
+      "statistical_continuation": "Análisis Estadístico Continuación",
       "psychological": "Análisis Psicológico",
       "preparing_statistical": "Preparando análisis estadístico de la conversación...",
       "preparing_psychological": "Preparando análisis psicológico de la conversación..."
@@ -58,6 +59,7 @@
     },
     "top_profiles": {
       "title": "Perfiles Destacados del Chat",
+      "badge": "PERFILES DESTACADOS",
       "group_average": "Los otros",
       "professor": {
         "title": "El Profesor",
