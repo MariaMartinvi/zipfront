@@ -2,7 +2,7 @@ import React from 'react';
 import './HeroSection.css';
 import { useTranslation } from 'react-i18next';
 
-const HeroSection = ({ onAnalyzeClick, onLearnMoreClick }) => {
+const HeroSection = ({ onAnalyzeClick, onLearnMoreClick, onViewAnalysisClick }) => {
   const { t } = useTranslation();
 
   return (
@@ -62,7 +62,7 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick }) => {
                 <div className="chart-bar" style={{'--height': '40%', '--color': 'var(--accent-pink)'}}></div>
                 <div className="chart-bar" style={{'--height': '25%', '--color': 'var(--accent-orange)'}}></div>
               </div>
-              <button className="view-analysis-btn">
+              <button className="view-analysis-btn" onClick={onViewAnalysisClick}>
                 {t('hero.mockup.view_analysis', 'Ver análisis completo')} →
               </button>
             </div>

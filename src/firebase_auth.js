@@ -783,17 +783,17 @@ export const canUploadChat = async (userId) => {
     }
     // For paid plans, check their quota
     else if (plan === 'basic') {
+      quota = 5;
+      canUpload = currentUsage < 5;
+      console.log(`[canUploadChat] Plan BASIC - Comparando: ${currentUsage} < 5 = ${canUpload}`);
+    } else if (plan === 'standard') {
+      quota = 10;
+      canUpload = currentUsage < 10;
+      console.log(`[canUploadChat] Plan STANDARD - Comparando: ${currentUsage} < 10 = ${canUpload}`);
+    } else if (plan === 'premium') {
       quota = 20;
       canUpload = currentUsage < 20;
-      console.log(`[canUploadChat] Plan BASIC - Comparando: ${currentUsage} < 20 = ${canUpload}`);
-    } else if (plan === 'standard') {
-      quota = 50;
-      canUpload = currentUsage < 50;
-      console.log(`[canUploadChat] Plan STANDARD - Comparando: ${currentUsage} < 50 = ${canUpload}`);
-    } else if (plan === 'premium') {
-      quota = 120;
-      canUpload = currentUsage < 120;
-      console.log(`[canUploadChat] Plan PREMIUM - Comparando: ${currentUsage} < 120 = ${canUpload}`);
+      console.log(`[canUploadChat] Plan PREMIUM - Comparando: ${currentUsage} < 20 = ${canUpload}`);
     }
     
     console.log(`[canUploadChat] RESULTADO FINAL - Puede subir: ${canUpload} (${currentUsage}/${quota})`);

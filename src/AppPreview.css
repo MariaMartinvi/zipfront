@@ -365,14 +365,39 @@
   max-width: 90%;
   max-height: 90%;
   border-radius: 20px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  background: white;
+  /* Estilos para scroll personalizado */
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.imagen-modal-contenido::-webkit-scrollbar {
+  width: 8px;
+}
+
+.imagen-modal-contenido::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.imagen-modal-contenido::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.imagen-modal-contenido::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .imagen-modal-contenido img {
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 20px;
 }
 
 .cerrar-modal {

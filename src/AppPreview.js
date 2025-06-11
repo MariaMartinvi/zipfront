@@ -49,6 +49,7 @@ const AppPreview = () => {
       <HeroSection 
         onAnalyzeClick={scrollToUpload}
         onLearnMoreClick={scrollToProcess}
+        onViewAnalysisClick={toggleModal}
       />
 
       {/* Features Section */}
