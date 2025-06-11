@@ -110,6 +110,12 @@
         "love_emojis": "Verwendete Liebes-Emojis",
         "percentage": "Seiner Emojis sind liebesbezogen"
       },
+      "bombardero": {
+        "title": "Der Bombardier",
+        "description": "Sendet mehr aufeinanderfolgende Nachrichten ohne Antwort",
+        "consecutive_messages": "Aufeinanderfolgende Nachrichten (Maximum)",
+        "record": "Sein Rekord an Nachrichten ohne Antwort"
+      },
       "sicopata": {
         "title": "Der Psychopath",
         "description": "Sendet mehr aufeinanderfolgende Nachrichten ohne Antwort",

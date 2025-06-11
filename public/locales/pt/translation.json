@@ -109,6 +109,12 @@
         "love_emojis": "Emojis de amor utilizados",
         "percentage": "Dos seus emojis são de amor"
       },
+      "bombardero": {
+        "title": "O Bombardeiro",
+        "description": "Envia mais mensagens consecutivas sem ninguém responder",
+        "consecutive_messages": "Mensagens consecutivas (máximo)",
+        "record": "Seu recorde de mensagens sem resposta"
+      },
       "sicopata": {
         "title": "O Psicopata",
         "description": "Envia mais mensagens consecutivas sem ninguém responder",

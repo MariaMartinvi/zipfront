@@ -16,7 +16,6 @@
       "preparing_statistical": "Preparando análisis estadístico de la conversación...",
       "preparing_psychological": "Preparando análisis psicológico de la conversación..."
     },
-    "generating_analysis": "Generando análisis: Analizando patrones de comunicación...",
     "progress_phases": {
       "initializing": "Inicializando análisis psicológico...",
       "analyzing_patterns": "Analizando patrones de comunicación...",
@@ -116,6 +115,12 @@
         "description": "Usa más emojis relacionados con el amor",
         "love_emojis": "Emojis de amor utilizados",
         "percentage": "De sus emojis son de amor"
+      },
+      "bombardero": {
+        "title": "El Bombardero",
+        "description": "Envía más mensajes seguidos sin que nadie responda",
+        "consecutive_messages": "Mensajes consecutivos (máximo)",
+        "record": "Su récord de mensajes sin respuesta"
       },
       "sicopata": {
         "title": "El Sicópata",
