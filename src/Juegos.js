@@ -31,6 +31,9 @@ function Juegos({
         return;
       }
       
+      // NUEVO: Marcar que se está abriendo un juego para evitar falso deslogueo
+      window.isOpeningGamePopup = true;
+      
       console.log('[Juegos] Abriendo juego directamente - Datos originales:', headlinesGameData);
       console.log('[Juegos] lastNameMapping disponible:', window.lastNameMapping);
       
@@ -91,9 +94,17 @@ function Juegos({
       
       window.open(url, '_blank', popupFeatures);
       
+      // NUEVO: Limpiar la flag después de un delay para permitir que la ventana se abra
+      setTimeout(() => {
+        window.isOpeningGamePopup = false;
+        console.log('[Juegos] Flag de apertura de juego limpiada');
+      }, 5000);
+      
     } catch (error) {
       console.error('Error abriendo el juego:', error);
       alert(t('games.alerts.generate_error'));
+      // NUEVO: Limpiar flag en caso de error
+      window.isOpeningGamePopup = false;
     }
   };
 
@@ -208,12 +219,15 @@ function Juegos({
         return;
       }
 
+      // NUEVO: Marcar que se está abriendo un juego para evitar falso deslogueo
+      window.isOpeningGamePopup = true;
+
       // Mapeo de categorías completas a códigos de una letra
       const catCodes = {
         'profesor': 'p', 'rollero': 'r', 'pistolero': 's', 'vampiro': 'v',
         'cafeconleche': 'c', 'dejaenvisto': 'd', 'narcicista': 'n', 
         'puntofinal': 'f', 'fosforo': 'o', 'menosesmas': 'm',
-        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'sicopata': 'x',
+        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'bombardero': 'x',
         'comico': 'co', 'agradecido': 'ag', 'disculpon': 'di', 'curioso': 'cu',
         'mala_influencia': 'mi'
       };
@@ -271,9 +285,17 @@ function Juegos({
       
       window.open(url, '_blank', popupFeatures);
       
+      // NUEVO: Limpiar la flag después de un delay para permitir que la ventana se abra
+      setTimeout(() => {
+        window.isOpeningGamePopup = false;
+        console.log('[Juegos] Flag de apertura de juego de personalidades limpiada');
+      }, 5000);
+      
     } catch (error) {
       console.error("Error abriendo el juego de personalidades:", error);
       alert(t('games.alerts.personality_error'));
+      // NUEVO: Limpiar flag en caso de error
+      window.isOpeningGamePopup = false;
     }
   };
   
@@ -293,7 +315,7 @@ function Juegos({
         'profesor': 'p', 'rollero': 'r', 'pistolero': 's', 'vampiro': 'v',
         'cafeconleche': 'c', 'dejaenvisto': 'd', 'narcicista': 'n', 
         'puntofinal': 'f', 'fosforo': 'o', 'menosesmas': 'm',
-        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'sicopata': 'x',
+        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'bombardero': 'x',
         'comico': 'co', 'agradecido': 'ag', 'disculpon': 'di', 'curioso': 'cu',
         'mala_influencia': 'mi'
       };

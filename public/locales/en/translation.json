@@ -213,7 +213,7 @@
       "generic": "Error"
     },
     "privacy": {
-      "no_ai_analysis": "Do not share my data with AI for psychological analysis (data will not be sent to Azure)"
+      "no_ai_analysis": "Skip psychological analysis. All analysis should be performed on my device."
     },
     "stats_labels": {
       "vice_mentions": "Vice mentions",

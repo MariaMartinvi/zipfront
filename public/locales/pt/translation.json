@@ -214,7 +214,7 @@
       "generic": "Erro"
     },
     "privacy": {
-      "no_ai_analysis": "Não compartilhar meus dados com IA para análise psicológica (dados não serão enviados para Azure)"
+      "no_ai_analysis": "Omitir análise psicológica. Todas as análises devem ser realizadas no meu dispositivo."
     },
     "stats_labels": {
       "vice_mentions": "Menções de vícios",
@@ -573,7 +573,7 @@
     }
   },
   "date": {
-    "format": "d 'de' MMMM 'de' yy",
+    "format": "MMMM d, yy",
     "months": {
       "january": "janeiro",
       "february": "fevereiro",

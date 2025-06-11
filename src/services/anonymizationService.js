@@ -51,23 +51,23 @@ class AnonymizationService {
     this.mentionedPersonMapping = new Map(); // Para personas mencionadas en el chat
     this.locationMapping = new Map(); // Para direcciones y números
     
-    // Configuración multiidioma
+    // Configuración multiidioma con códigos estándar de 2 letras
     this.supportedLanguages = {
-      'spa': { name: 'Español', aiSupport: true, patternSupport: true },
-      'eng': { name: 'English', aiSupport: true, patternSupport: true },
-      'deu': { name: 'Deutsch', aiSupport: true, patternSupport: true },
-      'ita': { name: 'Italiano', aiSupport: true, patternSupport: true },
-      'fra': { name: 'Français', aiSupport: true, patternSupport: true },
-      'cat': { name: 'Català', aiSupport: true, patternSupport: true },
-      'eus': { name: 'Euskera', aiSupport: true, patternSupport: true },
-      'por': { name: 'Português', aiSupport: true, patternSupport: false },
-      'rus': { name: 'Русский', aiSupport: true, patternSupport: false },
-      'ara': { name: 'العربية', aiSupport: true, patternSupport: false },
-      'zho': { name: '中文', aiSupport: true, patternSupport: false },
-      'jpn': { name: '日本語', aiSupport: true, patternSupport: false }
+      'es': { name: 'Español', aiSupport: true, patternSupport: true },
+      'en': { name: 'English', aiSupport: true, patternSupport: true },
+      'de': { name: 'Deutsch', aiSupport: true, patternSupport: true },
+      'it': { name: 'Italiano', aiSupport: true, patternSupport: true },
+      'fr': { name: 'Français', aiSupport: true, patternSupport: true },
+      'ca': { name: 'Català', aiSupport: true, patternSupport: true },
+      'eu': { name: 'Euskera', aiSupport: true, patternSupport: true },
+      'pt': { name: 'Português', aiSupport: true, patternSupport: false },
+      'ru': { name: 'Русский', aiSupport: true, patternSupport: false },
+      'ar': { name: 'العربية', aiSupport: true, patternSupport: false },
+      'zh': { name: '中文', aiSupport: true, patternSupport: false },
+      'ja': { name: '日本語', aiSupport: true, patternSupport: false }
     };
     
-    this.currentLanguage = 'spa'; // idioma por defecto
+    this.currentLanguage = 'es'; // idioma por defecto
     this.nerModel = null; // Modelo de reconocimiento de entidades
     this.modelLoaded = false;
     this.useAI = true; // Por defecto usar IA
@@ -309,22 +309,22 @@ class AnonymizationService {
 
       // Detección básica por patrones de palabras comunes
       const patterns = {
-        'spa': ['hola', 'cómo', 'estás', 'llamo', 'me', 'te', 'veo', 'mañana', 'traigo', 'hermano', 'padre', 'puedes', 'traer', 'sí', 'también', 'en', 'la'],
-        'eng': ['hello', 'the', 'and', 'you', 'are', 'with', 'this', 'that', 'have', 'from', 'will', 'great', 'should', 'bring', 'yes', 'also', 'your', 'meet', 'at'],
-        'deu': ['ich', 'und', 'der', 'die', 'das', 'mit', 'sie', 'ist', 'ein', 'auf', 'hallo', 'sehe', 'morgen', 'in', 'soll', 'meinen', 'ja', 'auch', 'ihre'],
-        'fra': ['je', 'de', 'le', 'et', 'à', 'un', 'être', 'avoir', 'que', 'pour', 'bonjour', 'vous', 'comment', 'mon', 'mes', 'avec', 'ça', 'va'],
-        'ita': ['io', 'di', 'il', 'la', 'e', 'che', 'un', 'essere', 'avere', 'da', 'ciao', 'come', 'mio', 'nome', 'con', 'stai', 'chiamo', 'mi'],
-        'cat': ['el', 'la', 'de', 'que', 'i', 'a', 'en', 'un', 'ser', 'amb', 'com', 'estàs', 'em', 'dic', 'també', 'porto', 'meu', 'demà'],
-        'eus': ['eta', 'da', 'bat', 'izan', 'du', 'dut', 'gara', 'dira', 'hau', 'hori', 'kaixo', 'ikusiko', 'bihar', 'ekarri', 'zer', 'moduz', 'naiz'],
-        'por': ['eu', 'você', 'como', 'está', 'olá', 'bem', 'muito', 'para', 'com', 'não'],
-        'rus': ['я', 'ты', 'как', 'дела', 'привет', 'хорошо', 'что', 'это', 'не'],
-        'ara': ['مرحبا', 'كيف', 'أنت', 'الحال', 'بخير', 'ما', 'هذا', 'لا'],
-        'zho': ['你好', '怎么样', '很好', '什么', '这个', '那个', '不是', '我'],
-        'jpn': ['こんにちは', 'どう', 'です', 'ます', 'これ', 'それ', 'ない', 'です']
+        'es': ['hola', 'cómo', 'estás', 'llamo', 'me', 'te', 'veo', 'mañana', 'traigo', 'hermano', 'padre', 'puedes', 'traer', 'sí', 'también', 'en', 'la'],
+        'en': ['hello', 'the', 'and', 'you', 'are', 'with', 'this', 'that', 'have', 'from', 'will', 'great', 'should', 'bring', 'yes', 'also', 'your', 'meet', 'at'],
+        'de': ['ich', 'und', 'der', 'die', 'das', 'mit', 'sie', 'ist', 'ein', 'auf', 'hallo', 'sehe', 'morgen', 'in', 'soll', 'meinen', 'ja', 'auch', 'ihre'],
+        'fr': ['je', 'de', 'le', 'et', 'à', 'un', 'être', 'avoir', 'que', 'pour', 'bonjour', 'vous', 'comment', 'mon', 'mes', 'avec', 'ça', 'va'],
+        'it': ['io', 'di', 'il', 'la', 'e', 'che', 'un', 'essere', 'avere', 'da', 'ciao', 'come', 'mio', 'nome', 'con', 'stai', 'chiamo', 'mi'],
+        'ca': ['el', 'la', 'de', 'que', 'i', 'a', 'en', 'un', 'ser', 'amb', 'com', 'estàs', 'em', 'dic', 'també', 'porto', 'meu', 'demà'],
+        'eu': ['eta', 'da', 'bat', 'izan', 'du', 'dut', 'gara', 'dira', 'hau', 'hori', 'kaixo', 'ikusiko', 'bihar', 'ekarri', 'zer', 'moduz', 'naiz'],
+        'pt': ['eu', 'você', 'como', 'está', 'olá', 'bem', 'muito', 'para', 'com', 'não'],
+        'ru': ['я', 'ты', 'как', 'дела', 'привет', 'хорошо', 'что', 'это', 'не'],
+        'ar': ['مرحبا', 'كيف', 'أنت', 'الحال', 'بخير', 'ما', 'هذا', 'لا'],
+        'zh': ['你好', '怎么样', '很好', '什么', '这个', '那个', '不是', '我'],
+        'ja': ['こんにちは', 'どう', 'です', 'ます', 'これ', 'それ', 'ない', 'です']
       };
 
       let maxScore = 0;
-      let detectedLang = 'spa';
+      let detectedLang = 'es';
 
       for (const [lang, words] of Object.entries(patterns)) {
         const score = words.reduce((count, word) => {
@@ -340,28 +340,28 @@ class AnonymizationService {
       // Si ningún patrón coincide suficientemente, usar detección por caracteres especiales
       if (maxScore < 2) {
         if (cleanContent.includes('ñ') || cleanContent.includes('¿') || cleanContent.includes('¡')) {
-          detectedLang = 'spa';
+          detectedLang = 'es';
         } else if (cleanContent.includes('ü') || cleanContent.includes('ß')) {
-          detectedLang = 'deu';
+          detectedLang = 'de';
         } else if (cleanContent.includes('ç') && cleanContent.includes('à')) {
-          detectedLang = 'fra';
+          detectedLang = 'fr';
         } else if (cleanContent.includes('ç') && cleanContent.includes('è')) {
-          detectedLang = 'cat';
+          detectedLang = 'ca';
         } else if (cleanContent.includes('tx') || cleanContent.includes('kx')) {
-          detectedLang = 'eus';
+          detectedLang = 'eu';
         } else if (cleanContent.match(/[\u4e00-\u9fff]/)) {
-          detectedLang = 'zho';
+          detectedLang = 'zh';
         } else if (cleanContent.match(/[\u3040-\u309f\u30a0-\u30ff]/)) {
-          detectedLang = 'jpn';
+          detectedLang = 'ja';
         } else if (cleanContent.match(/[\u0600-\u06ff]/)) {
-          detectedLang = 'ara';
+          detectedLang = 'ar';
         } else if (cleanContent.match(/[\u0400-\u04ff]/)) {
-          detectedLang = 'rus';
+          detectedLang = 'ru';
         }
       }
 
       // Lógica especial para distinguir español de catalán
-      if (detectedLang === 'cat') {
+      if (detectedLang === 'ca') {
         const spanishWords = ['hola', 'cómo', 'me', 'te', 'hermano', 'padre', 'sí', 'también'];
         const catWords = ['com', 'em', 'germà', 'pare', 'també', 'porto'];
         
@@ -369,7 +369,7 @@ class AnonymizationService {
         const catScore = catWords.filter(word => cleanContent.includes(word)).length;
         
         if (spanishScore > catScore) {
-          detectedLang = 'spa';
+          detectedLang = 'es';
         }
       }
 
@@ -378,16 +378,48 @@ class AnonymizationService {
       return detectedLang;
     } catch (error) {
       console.warn('Error en detección de idioma:', error.message);
-      return 'spa'; // Fallback a español
+      return 'es'; // Fallback a español
     }
   }
 
   /**
-   * Identifica y anonimiza los participantes del chat
+   * Obtiene la palabra "participante" en el idioma especificado
+   * @param {string} language - Código de idioma
+   * @returns {string} - Palabra "participante" en el idioma correspondiente
+   */
+  getParticipantWord(language) {
+    const participantWords = {
+      'es': 'Participante',
+      'en': 'Participant', 
+      'de': 'Teilnehmer',
+      'it': 'Partecipante',
+      'fr': 'Participant',
+      'ca': 'Participant',
+      'eu': 'Partaide',
+      'pt': 'Participante',
+      'ru': 'Участник',
+      'ar': 'مشارك',
+      'zh': '参与者',
+      'ja': '参加者'
+    };
+    
+    return participantWords[language] || participantWords['es']; // fallback a español
+  }
+
+  /**
+   * Anonimiza los nombres de los participantes del chat
    * @param {string} content - Contenido del chat
    * @returns {string} - Contenido con participantes anonimizados
    */
   anonymizeParticipants(content) {
+    // Detectar el idioma del contenido antes de procesar participantes
+    const detectedLanguage = this.detectLanguage(content);
+    console.log(`🌐 Idioma detectado para participantes: ${detectedLanguage}`);
+    
+    // Obtener la palabra "participante" en el idioma detectado
+    const participantWord = this.getParticipantWord(detectedLanguage);
+    console.log(`📝 Usando palabra "${participantWord}" para participantes`);
+    
     const lines = content.split('\n');
     const processedLines = lines.map(line => {
       // Patrón para iOS: [DD/MM/YY, HH:mm:ss] Nombre: Mensaje
@@ -411,9 +443,10 @@ class AnonymizationService {
           }
         }
         
-        // Crear nuevo ID para el participante
-        const participantId = `Participante ${this.participantCounter++}`;
+        // Crear nuevo ID para el participante usando la palabra correcta según el idioma
+        const participantId = `${participantWord} ${this.participantCounter++}`;
         this.participantMapping.set(participant, participantId);
+        console.log(`👤 Nuevo participante: "${participant}" → "${participantId}"`);
         
         if (iosMatch) {
           return line.replace(iosMatch[0], `[${iosMatch[1]}] ${participantId}:`);

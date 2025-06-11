@@ -10,7 +10,7 @@ const SELECTED_CATEGORIES = [
   'narcicista', 
   'fosforo',
   'amoroso',
-  'sicopata',
+  'bombardero',
   'comico',
   'mala_influencia'
 ];
@@ -30,7 +30,7 @@ const CATEGORY_ICONS = {
   chismoso: '👂',
   happyflower: '😊',
   amoroso: '❤️',
-  sicopata: '🔪',
+  bombardero: '💥',
   comico: '🤡',
   agradecido: '🙏',
   disculpon: '🤝',
@@ -93,9 +93,9 @@ const CATEGORY_TRANSLATIONS = {
     title: 'app.top_profiles.amoroso.title',
     description: 'app.top_profiles.amoroso.description'
   },
-  sicopata: {
-    title: 'app.top_profiles.sicopata.title',
-    description: 'app.top_profiles.sicopata.description'
+  bombardero: {
+    title: 'app.top_profiles.bombardero.title',
+    description: 'app.top_profiles.bombardero.description'
   },
   comico: {
     title: 'app.top_profiles.comico.title',
@@ -196,7 +196,7 @@ const ChatTopGame = () => {
             'p': 'profesor', 'r': 'rollero', 's': 'pistolero', 'v': 'vampiro',
             'c': 'cafeconleche', 'd': 'dejaenvisto', 'n': 'narcicista',
             'f': 'puntofinal', 'o': 'fosforo', 'm': 'menosesmas',
-            'h': 'chismoso', 'y': 'happyflower', 'a': 'amoroso', 'x': 'sicopata',
+            'h': 'chismoso', 'y': 'happyflower', 'a': 'amoroso', 'x': 'bombardero',
             'co': 'comico', 'ag': 'agradecido', 'cu': 'curioso',
             'ne': 'negativo', 'mi': 'mala_influencia'
           };

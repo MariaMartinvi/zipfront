@@ -520,7 +520,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       chismoso: { nombre: '--', menciones_otros: 0, porcentaje: 0, mensajes: 0 },
       happyflower: { nombre: '--', emojis_totales: 0, emojis_por_mensaje: 0, mensajes: 0 },
       amoroso: { nombre: '--', emojis_amor: 0, porcentaje_amor: 0, mensajes: 0 },
-      sicopata: { nombre: '--', max_mensajes_seguidos: 0, mensajes: 0 },
+      bombardero: { nombre: '--', max_mensajes_seguidos: 0, mensajes: 0 },
       comico: { nombre: '--', mensajes_risa: 0, porcentaje: 0, mensajes: 0 },
       agradecido: { nombre: '--', mensajes_agradece: 0, porcentaje: 0, mensajes: 0 },
       disculpon: { nombre: '--', mensajes_disculpa: 0, porcentaje: 0, mensajes: 0 },
@@ -1015,7 +1015,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       };
     }
     
-    // Sicopata (más mensajes consecutivos)
+    // Bombardero (más mensajes consecutivos)
     const usuariosConMensajesConsecutivos = [];
     for (const [usuario, datos] of Object.entries(usuarios)) {
       if (datos.mensajes > 0 && datos.max_mensajes_seguidos > 1) {
@@ -1024,15 +1024,15 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     }
     
     if (usuariosConMensajesConsecutivos.length > 0) {
-      const [usuarioSicopata] = usuariosConMensajesConsecutivos.sort((a, b) => b[1] - a[1])[0];
-      const maxMensajesSeguidos = usuarios[usuarioSicopata].max_mensajes_seguidos;
+      const [usuarioBombardero] = usuariosConMensajesConsecutivos.sort((a, b) => b[1] - a[1])[0];
+      const maxMensajesSeguidos = usuarios[usuarioBombardero].max_mensajes_seguidos;
       
-      // Calcular la media del resto del grupo sin sicopata
+      // Calcular la media del resto del grupo sin bombardero
       let totalMensajesSeguidosResto = 0;
       let cantidadUsuariosResto = 0;
       
       for (const [usuario, mensajesSeguidos] of usuariosConMensajesConsecutivos) {
-        if (usuario !== usuarioSicopata) {
+        if (usuario !== usuarioBombardero) {
           totalMensajesSeguidosResto += mensajesSeguidos;
           cantidadUsuariosResto++;
         }
@@ -1041,10 +1041,10 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       const mediaMensajesSeguidosResto = cantidadUsuariosResto > 0 ? 
         totalMensajesSeguidosResto / cantidadUsuariosResto : 0;
       
-      categorias.sicopata = {
-        nombre: usuarioSicopata,
+      categorias.bombardero = {
+        nombre: usuarioBombardero,
         max_mensajes_seguidos: maxMensajesSeguidos,
-        mensajes: usuarios[usuarioSicopata].mensajes,
+        mensajes: usuarios[usuarioBombardero].mensajes,
         media_mensajes_seguidos_resto: mediaMensajesSeguidosResto
       };
     }
@@ -1219,7 +1219,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     // Mala influencia (más menciones de vicios y palabrotas)
     const usuariosConMalaInfluencia = [];
     for (const [usuario, datos] of Object.entries(usuarios)) {
-      if (datos.mensajes > 0) {
+      if (datos.mensajes > 0 && (datos.menciones_vicios > 0 || datos.menciones_palabrotas > 0)) {
         const totalMencionesNegativas = datos.menciones_vicios + datos.menciones_palabrotas;
         const porcentaje = (totalMencionesNegativas / datos.mensajes) * 100;
         usuariosConMalaInfluencia.push([usuario, totalMencionesNegativas, porcentaje, datos.menciones_vicios, datos.menciones_palabrotas]);
@@ -1525,10 +1525,10 @@ const AnalisisTop = ({ operationId, chatData }) => {
       titulo: () => t('app.top_profiles.amoroso.title'), 
       descripcion: () => t('app.top_profiles.amoroso.description') 
     },
-    'sicopata': { 
-      icono: '🔪', 
-      titulo: () => t('app.top_profiles.sicopata.title'), 
-      descripcion: () => t('app.top_profiles.sicopata.description') 
+    'bombardero': { 
+      icono: '💥', 
+      titulo: () => t('app.top_profiles.bombardero.title'), 
+      descripcion: () => t('app.top_profiles.bombardero.description') 
     },
     'comico': { 
       icono: '🤡', 
@@ -1932,18 +1932,18 @@ const AnalisisTop = ({ operationId, chatData }) => {
           </div>
         );
         break;
-      case 'sicopata':
+      case 'bombardero':
         detalleEspecifico = (
           <>
             <div className="estadistica">
               <span className="valor">{catData.max_mensajes_seguidos || 0}</span>
               <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_seguidos_resto)}</span></span>
-              <span className="label">{t('app.top_profiles.sicopata.consecutive_messages')}</span>
+              <span className="label">{t('app.top_profiles.bombardero.consecutive_messages')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{catData.max_mensajes_seguidos || 0}</span>
               <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_seguidos_resto)}</span></span>
-              <span className="label">{t('app.top_profiles.sicopata.record')}</span>
+              <span className="label">{t('app.top_profiles.bombardero.record')}</span>
             </div>
           </>
         );

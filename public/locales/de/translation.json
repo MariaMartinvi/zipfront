@@ -208,7 +208,7 @@
       "generic": "Fehler"
     },
     "privacy": {
-      "no_ai_analysis": "Meine Daten nicht mit KI für psychologische Analyse teilen (Daten werden nicht an Azure gesendet)"
+      "no_ai_analysis": "Psychologische Analyse überspringen. Alle Analysen sollten auf meinem Gerät durchgeführt werden."
     },
     "stats_labels": {
       "vice_mentions": "Laster-Erwähnungen",
@@ -558,6 +558,23 @@
         "update": "Fehler bei der Aktualisierung Ihres Plans. Bitte kontaktieren Sie den Support.",
         "session": "Sitzung abgelaufen. Bitte melden Sie sich erneut an."
       }
+    }
+  },
+  "date": {
+    "format": "d. MMMM yy",
+    "months": {
+      "january": "Januar",
+      "february": "Februar",
+      "march": "März",
+      "april": "April",
+      "may": "Mai",
+      "june": "Juni",
+      "july": "Juli",
+      "august": "August",
+      "september": "September",
+      "october": "Oktober",
+      "november": "November",
+      "december": "Dezember"
     }
   },
   "weekdays": {

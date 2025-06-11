@@ -733,7 +733,7 @@
     }
   },
   "date": {
-    "format": "d MMMM yyyy",
+    "format": "MMMM d, yy",
     "months": {
       "january": "janvier",
       "february": "février",
@@ -782,7 +782,7 @@
     "finalizing_analysis": "Finalisation de l'analyse psychologique..."
   },
   "privacy": {
-    "no_ai_analysis": "Ne pas partager mes données avec l'IA pour l'analyse psychologique (les données ne seront pas envoyées à Azure)"
+    "no_ai_analysis": "Omettre l'analyse psychologique. Toutes les analyses doivent être effectuées sur mon appareil."
   },
   "cookiePolicy": {
     "title": "Politique de Cookies",

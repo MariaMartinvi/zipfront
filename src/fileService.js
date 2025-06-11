@@ -251,13 +251,23 @@ const reconstructNames = (response, nameMapping) => {
     
     // Crear un mapeo inverso (de participante ID a nombres completos)
     const inverseMapping = {};
+    const participantNumberMapping = {}; // Mapeo por número de participante
+    
     Object.entries(nameMapping).forEach(([fullName, participantId]) => {
       inverseMapping[participantId] = fullName;
+      
+      // Extraer el número del participante (ej: "Participante 1" → 1, "Teilnehmer 2" → 2)
+      const numberMatch = participantId.match(/(\d+)/);
+      if (numberMatch) {
+        const participantNumber = numberMatch[1];
+        participantNumberMapping[participantNumber] = fullName;
+      }
     });
 
     console.log('🔄 Mapeo inverso creado:', inverseMapping);
+    console.log('🔢 Mapeo por número creado:', participantNumberMapping);
 
-    // Mapear participantes en toda la respuesta
+    // 1. Mapear participantes exactos (método original)
     let totalMappings = 0;
     Object.entries(inverseMapping).forEach(([participantId, fullName]) => {
       const beforeReplace = reconstructedResponse;
@@ -275,9 +285,38 @@ const reconstructNames = (response, nameMapping) => {
       );
       
       if (beforeReplace !== reconstructedResponse) {
-        console.log(`✅ Mapeado: "${participantId}" → "${fullName}"`);
+        console.log(`✅ Mapeado exacto: "${participantId}" → "${fullName}"`);
         totalMappings++;
       }
+    });
+
+    // 2. Mapear participantes en otros idiomas por número (nuevo método)
+    const participantWords = [
+      'Teilnehmer',     // Alemán
+      'Participant',    // Inglés/Francés
+      'Partecipante',   // Italiano
+      'Partaide',       // Euskera
+      'Участник',       // Ruso
+      'مشارك',          // Árabe
+      '参与者',          // Chino
+      '参加者'           // Japonés
+    ];
+    
+    participantWords.forEach(word => {
+      Object.entries(participantNumberMapping).forEach(([number, fullName]) => {
+        const beforeReplace = reconstructedResponse;
+        
+        // Patrón para encontrar "Teilnehmer 1", "Participant 2", etc.
+        const pattern = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+${number}\\b`, 'g');
+        
+        // Reemplazar por el nombre completo
+        reconstructedResponse = reconstructedResponse.replace(pattern, fullName);
+        
+        if (beforeReplace !== reconstructedResponse) {
+          console.log(`✅ Mapeado por número: "${word} ${number}" → "${fullName}"`);
+          totalMappings++;
+        }
+      });
     });
 
     console.log(`📊 Total de mappings aplicados: ${totalMappings}`);

@@ -224,7 +224,7 @@
     },
     "loading_status": "Procesando datos...",
     "privacy": {
-      "no_ai_analysis": "No compartir mis datos con la IA para análisis psicológico (no se enviarán datos a Azure)"
+      "no_ai_analysis": "Omitir análisis psicológico. Todos los análisis se deben realizar en mi dispositivo."
     },
     "stats_labels": {
       "vice_mentions": "Menciones de vicios",
@@ -604,7 +604,7 @@
     }
   },
   "date": {
-    "format": "d 'de' MMMM 'de' yy",
+    "format": "MMMM d, yy",
     "months": {
       "january": "enero",
       "february": "febrero",

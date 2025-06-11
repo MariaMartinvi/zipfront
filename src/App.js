@@ -1373,9 +1373,14 @@ const tryDeleteFiles = async (operationId) => {
   useEffect(() => {
     // CRÍTICO: Verificación de seguridad antes de mostrar análisis automáticamente
     if (!user) {
-      console.error('[SEGURIDAD] Intento de mostrar análisis automáticamente sin usuario autenticado - BLOQUEADO');
-      // No mostrar error aquí para evitar interferir con el flujo normal de autenticación
-      return;
+      // Solo mostrar error si han pasado suficientes segundos sin usuario para evitar errores durante cambios temporales
+      const timeoutId = setTimeout(() => {
+        if (!user) {
+          console.error('[SEGURIDAD] Intento de mostrar análisis automáticamente sin usuario autenticado - BLOQUEADO');
+        }
+      }, 1000);
+      
+      return () => clearTimeout(timeoutId);
     }
 
     // Solo iniciar el análisis si chatData está disponible pero no hay respuesta aún
@@ -1385,7 +1390,7 @@ const tryDeleteFiles = async (operationId) => {
       setShowAnalysis(true);
       
       // Iniciar análisis psicológico solo si fue solicitado por otra vía (no desde processZipFile)
-      // Pasar chatData como parámetro para asegurar que usa el contenido correcto
+      // Pasar chatData como parámetro para asegurar que use el contenido correcto
       fetchMistralResponse(chatData);
     }
   }, [chatData, chatGptResponse, isFetchingMistral, user]); // Agregar user como dependencia
@@ -1854,7 +1859,7 @@ const tryDeleteFiles = async (operationId) => {
         'profesor': 'p', 'rollero': 'r', 'pistolero': 's', 'vampiro': 'v',
         'cafeconleche': 'c', 'dejaenvisto': 'd', 'narcicista': 'n', 
         'puntofinal': 'f', 'fosforo': 'o', 'menosesmas': 'm',
-        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'sicopata': 'x',
+        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'bombardero': 'x',
         'comico': 'co', 'agradecido': 'ag', 'disculpon': 'di', 'curioso': 'cu',
         'mala_influencia': 'mi'
       };
@@ -1993,39 +1998,68 @@ const tryDeleteFiles = async (operationId) => {
   // CRÍTICO: Efecto para limpiar análisis si el usuario se desconecta
   useEffect(() => {
     if (!user) {
-      // Si no hay usuario, limpiar completamente cualquier estado de análisis
-      console.log('[SEGURIDAD] Usuario desconectado - limpiando todo estado de análisis');
+      // NUEVO: Verificar si se está abriendo un juego antes de limpiar
+      const isOpeningGame = window.isOpeningGamePopup === true;
       
-      // Limpiar estados de análisis
-      setShowAnalysis(false);
-      setChatData(null);
-      setChatGptResponse("");
-      setShowChatGptResponse(false);
-      setIsFetchingMistral(false);
-      setOperationId(null);
-      setZipFile(null);
+      if (isOpeningGame) {
+        console.log('[SEGURIDAD] Apertura de juego detectada - NO limpiando estado de análisis');
+        return;
+      }
       
-      // Limpiar localStorage
-      const keysToRemove = [
-        'whatsapp_analyzer_operation_id',
-        'whatsapp_analyzer_loading',
-        'whatsapp_analyzer_fetching_mistral',
-        'whatsapp_analyzer_show_analysis',
-        'whatsapp_analyzer_chatgpt_response',
-        'whatsapp_analyzer_analysis_complete',
-        'whatsapp_analyzer_mistral_error',
-        'whatsapp_analyzer_chat_data',
-        'whatsapp_analyzer_has_chat_data',
-        'whatsapp_analyzer_force_fetch'
-      ];
-      
-      keysToRemove.forEach(key => {
-        localStorage.removeItem(key);
-      });
-      
-      // Limpiar variables globales de Azure
-      window.lastAzureResponse = null;
-      window.lastNameMapping = null;
+      // Si no hay usuario, usar un timeout para verificar si es un cambio temporal
+      // Esto evita limpiar el análisis durante cambios de pestaña o aperturas de nuevas ventanas
+      const timeoutId = setTimeout(async () => {
+        // NUEVO: Verificar nuevamente el estado de autenticación antes de limpiar
+        try {
+          const currentUser = await getCurrentUser();
+          if (currentUser) {
+            console.log('[SEGURIDAD] Usuario confirmado durante verificación - NO limpiando estado');
+            return;
+          }
+        } catch (error) {
+          console.warn('[SEGURIDAD] Error verificando usuario:', error);
+        }
+        
+        // Verificar nuevamente después de un delay si realmente no hay usuario
+        if (!user) {
+          console.log('[SEGURIDAD] Usuario desconectado confirmado - limpiando todo estado de análisis');
+          
+          // Limpiar estados de análisis
+          setShowAnalysis(false);
+          setChatData(null);
+          setChatGptResponse("");
+          setShowChatGptResponse(false);
+          setIsFetchingMistral(false);
+          setOperationId(null);
+          setZipFile(null);
+          
+          // Limpiar localStorage
+          const keysToRemove = [
+            'whatsapp_analyzer_operation_id',
+            'whatsapp_analyzer_loading',
+            'whatsapp_analyzer_fetching_mistral',
+            'whatsapp_analyzer_show_analysis',
+            'whatsapp_analyzer_chatgpt_response',
+            'whatsapp_analyzer_analysis_complete',
+            'whatsapp_analyzer_mistral_error',
+            'whatsapp_analyzer_chat_data',
+            'whatsapp_analyzer_has_chat_data',
+            'whatsapp_analyzer_force_fetch'
+          ];
+          
+          keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+          });
+          
+          // Limpiar variables globales de Azure
+          window.lastAzureResponse = null;
+          window.lastNameMapping = null;
+        }
+      }, 3000); // NUEVO: Aumentado a 3 segundos para dar más tiempo a la verificación
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
   }, [user]);
 
@@ -2057,7 +2091,7 @@ const tryDeleteFiles = async (operationId) => {
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
                 {operationId && user && (
                   <div className="analysis-container" ref={analysisRef}>
-                    <h2 className="analysis-special-title">Análisis estadístico</h2>
+                    <h2 className="analysis-special-title">{t('app.analysis.statistical')}</h2>
                     
                     {/* RESUMEN GENERAL - Primera parte del análisis */}
                     {/* Mostrar el resumen general inmediatamente cuando chatData esté disponible */}
@@ -2126,7 +2160,7 @@ const tryDeleteFiles = async (operationId) => {
                 {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
                 {operationId && user && chatData && (
                   <div className="statistical-analysis-section">
-                    <h2 className="analysis-special-title">Análisis estadístico 2</h2>
+                    <h2 className="analysis-special-title">{t('app.analysis.statistical_continuation')}</h2>
                     <div className="analysis-module">
                       <AnalisisEstadistico chatData={chatData} />
                     </div>

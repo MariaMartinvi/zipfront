@@ -507,7 +507,7 @@
       "register": "Crea Account"
     },
     "privacy": {
-      "no_ai_analysis": "Non condividere i miei dati con l'IA per l'analisi psicologica (i dati non verranno inviati ad Azure)"
+      "no_ai_analysis": "Ometti l'analisi psicologica. Tutte le analisi dovrebbero essere eseguite sul mio dispositivo."
     },
     "stats_labels": {
       "vice_mentions": "Menzioni di vizi",

@@ -1082,16 +1082,46 @@ export const translateParticipantNames = (content, targetLanguage) => {
 
 // NUEVO: Función para crear mapeo de traducción inversa
 export const createReverseTranslationMapping = (originalNameMapping, detectedLanguage) => {
-  if (!originalNameMapping || detectedLanguage === 'es') {
-    return originalNameMapping; // No cambiar si es español
-  }
-
-  const translations = PARTICIPANT_TRANSLATIONS[detectedLanguage];
-  if (!translations) {
+  if (!originalNameMapping) {
     return originalNameMapping;
   }
 
-  console.log(`🔄 Creando mapeo de traducción inversa para idioma: ${detectedLanguage}`);
+  console.log(`🔄 Iniciando mapeo de traducción inversa para idioma: ${detectedLanguage}`);
+  console.log(`📋 Mapeo original recibido:`, originalNameMapping);
+
+  // NUEVO: Si es español, no hay cambios necesarios
+  if (detectedLanguage === 'es' || detectedLanguage === 'spa') {
+    console.log(`✅ Idioma español detectado, no se requiere mapeo adicional`);
+    return originalNameMapping;
+  }
+
+  // NUEVO: Verificar si los participantes ya están en el idioma detectado
+  const firstParticipantId = Object.values(originalNameMapping)[0];
+  if (firstParticipantId) {
+    console.log(`🔍 Primer participante en el mapeo: "${firstParticipantId}"`);
+    
+    // Detectar si ya está en el idioma correcto
+    const isAlreadyInTargetLanguage = 
+      (detectedLanguage === 'de' && firstParticipantId.includes('Teilnehmer')) ||
+      (detectedLanguage === 'en' && firstParticipantId.includes('Participant') && !firstParticipantId.includes('Participante')) ||
+      (detectedLanguage === 'it' && firstParticipantId.includes('Partecipante')) ||
+      (detectedLanguage === 'fr' && firstParticipantId.includes('Participant') && !firstParticipantId.includes('Participante')) ||
+      (detectedLanguage === 'pt' && firstParticipantId.includes('Participante'));
+    
+    if (isAlreadyInTargetLanguage) {
+      console.log(`✅ Los participantes ya están en el idioma correcto (${detectedLanguage}), no se requiere mapeo adicional`);
+      return originalNameMapping;
+    }
+  }
+
+  // Si llegamos aquí, necesitamos traducir desde español al idioma detectado
+  const translations = PARTICIPANT_TRANSLATIONS[detectedLanguage];
+  if (!translations) {
+    console.warn(`❌ No hay traducciones disponibles para el idioma: ${detectedLanguage}`);
+    return originalNameMapping;
+  }
+
+  console.log(`🔄 Aplicando traducciones desde español a ${detectedLanguage}`);
   
   const newMapping = {};
   
@@ -1105,6 +1135,7 @@ export const createReverseTranslationMapping = (originalNameMapping, detectedLan
     }
   });
 
+  console.log(`✅ Mapeo de traducción inversa completado:`, newMapping);
   return newMapping;
 };
 
