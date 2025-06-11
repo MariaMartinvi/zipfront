@@ -1682,18 +1682,62 @@ const AnalisisTop = ({ operationId, chatData }) => {
         
         usuariosArray = Array.from(nombresUnicos);
       }
+
+      // NUEVO: Aplicar mapeo de nombres si está disponible
+      let categoriasMapeadas = datos.categorias || {};
+      let usuariosMapeados = usuariosArray;
+
+      if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+        console.log('🔄 Aplicando mapeo de nombres a los datos del juego...');
+        console.log('📋 Mapeo disponible:', window.lastNameMapping);
+        
+        // Crear mapeo inverso (de Participante X a nombre real)
+        const inverseMapping = {};
+        Object.entries(window.lastNameMapping).forEach(([fullName, participantId]) => {
+          inverseMapping[participantId] = fullName;
+        });
+        
+        console.log('🔄 Mapeo inverso creado:', inverseMapping);
+        
+        // Mapear nombres en categorías
+        categoriasMapeadas = {};
+        Object.entries(datos.categorias || {}).forEach(([categoria, datosCategoria]) => {
+          if (datosCategoria && datosCategoria.nombre) {
+            const nombreMapeado = inverseMapping[datosCategoria.nombre] || datosCategoria.nombre;
+            categoriasMapeadas[categoria] = {
+              ...datosCategoria,
+              nombre: nombreMapeado
+            };
+            
+            if (nombreMapeado !== datosCategoria.nombre) {
+              console.log(`✅ Categoría ${categoria}: "${datosCategoria.nombre}" → "${nombreMapeado}"`);
+            }
+          } else {
+            categoriasMapeadas[categoria] = datosCategoria;
+          }
+        });
+        
+        // Mapear usuarios
+        usuariosMapeados = usuariosArray.map(usuario => {
+          const nombreMapeado = inverseMapping[usuario] || usuario;
+          if (nombreMapeado !== usuario) {
+            console.log(`✅ Usuario: "${usuario}" → "${nombreMapeado}"`);
+          }
+          return nombreMapeado;
+        });
+      }
       
       // Exponer los datos para que App.js pueda usarlos en el juego SOLO SI HAY USUARIO
       window.lastAnalysisTopData = {
-        categorias: datos.categorias || {},
-        usuarios: usuariosArray,
+        categorias: categoriasMapeadas,
+        usuarios: usuariosMapeados,
         totales: datos.totales || {}
       };
       
       console.log('Datos de análisis disponibles para el juego:', {
-        categorias: datos.categorias ? Object.keys(datos.categorias).length : 0,
-        usuarios: usuariosArray.length,
-        nombresUsuarios: usuariosArray
+        categorias: categoriasMapeadas ? Object.keys(categoriasMapeadas).length : 0,
+        usuarios: usuariosMapeados.length,
+        nombresUsuarios: usuariosMapeados
       });
     }
   }, [datos, user]); // Añadimos user como dependencia

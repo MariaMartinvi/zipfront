@@ -18,18 +18,21 @@ const ChatHeadlinesGame = () => {
     const extractGameData = () => {
       try {
         setLoading(true);
+        console.log('[HeadlinesGame] Iniciando extracción de datos del juego');
+        console.log('[HeadlinesGame] URL actual:', location.search);
         
         // Buscar respuesta de Azure en variable global
         const azureResponse = window.lastAzureResponse;
+        console.log('[HeadlinesGame] Azure response disponible:', !!azureResponse);
         
         if (azureResponse) {
-          console.log('Procesando respuesta de Azure para el juego...');
+          console.log('[HeadlinesGame] Procesando respuesta de Azure para el juego...');
           
           // Buscar GAME_DATA en la respuesta
           const gameDataMatch = azureResponse.match(/GAME_DATA:(\[[\s\S]*?\])/);
           
           if (gameDataMatch) {
-            console.log('Datos del juego encontrados en Azure');
+            console.log('[HeadlinesGame] Datos del juego encontrados en Azure');
             
             try {
               // Buscar la posición inicial del array
@@ -58,17 +61,17 @@ const ChatHeadlinesGame = () => {
               // Extraer el JSON completo
               let jsonStr = azureResponse.substring(arrayStart, endIndex + 1);
               
-              console.log('JSON extraído mejorado:', jsonStr);
-              console.log('Respuesta completa de Azure:', azureResponse);
+              console.log('[HeadlinesGame] JSON extraído mejorado:', jsonStr);
+              console.log('[HeadlinesGame] Respuesta completa de Azure:', azureResponse);
               
               // Intentar parsear el JSON completo
               let parsedData;
               try {
                 parsedData = JSON.parse(jsonStr);
-                console.log('JSON parseado exitosamente:', parsedData);
+                console.log('[HeadlinesGame] JSON parseado exitosamente:', parsedData);
               } catch (parseError) {
-                console.log('Error parseando JSON completo:', parseError.message);
-                console.log('Intentando extraer arrays por separado');
+                console.log('[HeadlinesGame] Error parseando JSON completo:', parseError.message);
+                console.log('[HeadlinesGame] Intentando extraer arrays por separado');
                 
                 // Si falla el parse completo, intentar extraer arrays individualmente
                 const firstArrayMatch = jsonStr.match(/\[(.*?)\]/);
@@ -78,7 +81,7 @@ const ChatHeadlinesGame = () => {
                     .map(name => name.trim().replace(/"/g, '').replace(/[\[\]]/g, ''))
                     .filter(name => name.length > 0);
                   
-                  console.log('Solo se pudo extraer primer array:', namesStr);
+                  console.log('[HeadlinesGame] Solo se pudo extraer primer array:', namesStr);
                   
                   // Crear datos básicos si no hay segundo array
                   const headlines = namesStr.map((name, index) => ({
@@ -93,12 +96,12 @@ const ChatHeadlinesGame = () => {
               if (parsedData && Array.isArray(parsedData) && parsedData.length >= 2) {
                 let [usuarios, headlines] = parsedData;
                 
-                console.log('Usuarios extraídos:', usuarios);
-                console.log('Headlines extraídos:', headlines);
+                console.log('[HeadlinesGame] Usuarios extraídos:', usuarios);
+                console.log('[HeadlinesGame] Headlines extraídos:', headlines);
                 
                 // Convertir iniciales a nombres completos si hay nameMapping disponible
                 if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
-                  console.log('Convirtiendo iniciales usando nameMapping:', window.lastNameMapping);
+                  console.log('[HeadlinesGame] Convirtiendo iniciales usando nameMapping:', window.lastNameMapping);
                   
                   // Crear mapeo inverso
                   const inverseMapping = {};
@@ -117,8 +120,8 @@ const ChatHeadlinesGame = () => {
                     }));
                   }
                   
-                  console.log('Usuarios convertidos:', usuarios);
-                  console.log('Headlines convertidos:', headlines);
+                  console.log('[HeadlinesGame] Usuarios convertidos:', usuarios);
+                  console.log('[HeadlinesGame] Headlines convertidos:', headlines);
                 }
                 
                 // Validar estructura de datos
@@ -132,40 +135,76 @@ const ChatHeadlinesGame = () => {
                 setError('No se pudieron procesar los datos del juego');
               }
             } catch (error) {
-              console.error('Error procesando datos del juego:', error);
+              console.error('[HeadlinesGame] Error procesando datos del juego:', error);
               setError('Error al procesar los datos del juego');
             }
           } else {
-            console.log('No se encontraron datos de juego en la respuesta de Azure');
+            console.log('[HeadlinesGame] No se encontraron datos de juego en la respuesta de Azure');
             setGameData(null);
           }
         } else {
           // Intentar obtener datos de la URL como fallback
+          console.log('[HeadlinesGame] No hay Azure response, intentando datos de URL');
           const searchParams = new URLSearchParams(location.search);
           const urlData = searchParams.get('h');
           
+          console.log('[HeadlinesGame] Parámetro h encontrado:', !!urlData);
+          console.log('[HeadlinesGame] Longitud del parámetro h:', urlData ? urlData.length : 0);
+          console.log('[HeadlinesGame] Primeros 100 caracteres del parámetro h:', urlData ? urlData.substring(0, 100) : 'N/A');
+          
           if (urlData) {
             try {
-              const decompressed = lzString.decompressFromEncodedURIComponent(urlData);
-              const data = JSON.parse(decompressed);
+              console.log('[HeadlinesGame] Intentando descomprimir datos de URL...');
               
-              if (data && data.length >= 2) {
+              // Verificar que lzString esté disponible
+              if (!lzString) {
+                throw new Error('lz-string no está disponible');
+              }
+              
+              const decompressed = lzString.decompressFromEncodedURIComponent(urlData);
+              console.log('[HeadlinesGame] Datos descomprimidos:', decompressed);
+              console.log('[HeadlinesGame] Tipo de datos descomprimidos:', typeof decompressed);
+              console.log('[HeadlinesGame] Longitud de datos descomprimidos:', decompressed ? decompressed.length : 0);
+              
+              if (!decompressed) {
+                throw new Error('Datos descomprimidos están vacíos');
+              }
+              
+              console.log('[HeadlinesGame] Intentando parsear JSON...');
+              const data = JSON.parse(decompressed);
+              console.log('[HeadlinesGame] Datos parseados de URL:', data);
+              console.log('[HeadlinesGame] Tipo de datos parseados:', typeof data);
+              console.log('[HeadlinesGame] Es array:', Array.isArray(data));
+              console.log('[HeadlinesGame] Longitud del array:', Array.isArray(data) ? data.length : 'N/A');
+              
+              if (data && Array.isArray(data) && data.length >= 2) {
+                console.log('[HeadlinesGame] Estableciendo gameData con datos de URL');
+                console.log('[HeadlinesGame] Usuarios de URL:', data[0]);
+                console.log('[HeadlinesGame] Headlines de URL:', data[1]);
+                console.log('[HeadlinesGame] Tipo de usuarios:', typeof data[0]);
+                console.log('[HeadlinesGame] Tipo de headlines:', typeof data[1]);
+                
                 setGameData({ usuarios: data[0], headlines: data[1] });
+                setError(null);
               } else {
-                setError('Datos de URL inválidos');
+                console.error('[HeadlinesGame] Datos de URL inválidos - estructura incorrecta');
+                console.error('[HeadlinesGame] Datos recibidos:', data);
+                setError('Datos de URL inválidos - estructura incorrecta');
               }
             } catch (error) {
-              console.error('Error al descomprimir datos de URL:', error);
-              setError('Error al cargar datos del juego desde URL');
+              console.error('[HeadlinesGame] Error al descomprimir datos de URL:', error);
+              console.error('[HeadlinesGame] Error completo:', error.stack);
+              console.error('[HeadlinesGame] Parámetro h problemático:', urlData);
+              setError('Error al cargar datos del juego desde URL: ' + error.message);
             }
           } else {
-            console.log('No hay respuesta de Azure disponible');
+            console.log('[HeadlinesGame] No hay respuesta de Azure ni parámetro h disponible');
             setGameData(null);
           }
         }
       } catch (error) {
-        console.error('Error general en extractGameData:', error);
-        setError('Error al procesar los datos del juego');
+        console.error('[HeadlinesGame] Error general en extractGameData:', error);
+        setError('Error al procesar los datos del juego: ' + error.message);
       } finally {
         setLoading(false);
       }
@@ -205,22 +244,32 @@ const ChatHeadlinesGame = () => {
 
   // No mostrar nada si está cargando
   if (loading) {
+    console.log('[HeadlinesGame] Renderizando: CARGANDO...');
     return null;
   }
 
   // No mostrar nada si no hay datos del juego
   if (!gameData) {
+    console.log('[HeadlinesGame] Renderizando: NO HAY DATOS DEL JUEGO');
+    console.log('[HeadlinesGame] gameData actual:', gameData);
     return null;
   }
 
   // Mostrar error si existe
   if (error) {
+    console.log('[HeadlinesGame] Renderizando: ERROR');
+    console.log('[HeadlinesGame] Error actual:', error);
     return (
       <div className="headlines-game-error">
         <p>Error: {error}</p>
       </div>
     );
   }
+
+  console.log('[HeadlinesGame] Renderizando: JUEGO NORMAL');
+  console.log('[HeadlinesGame] gameData en render:', gameData);
+  console.log('[HeadlinesGame] gameData.usuarios:', gameData?.usuarios);
+  console.log('[HeadlinesGame] gameData.headlines:', gameData?.headlines);
 
   return (
     <div className="headlines-game-container">

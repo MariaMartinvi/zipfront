@@ -2057,7 +2057,7 @@ const tryDeleteFiles = async (operationId) => {
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
                 {operationId && user && (
                   <div className="analysis-container" ref={analysisRef}>
-                    <h2 className="analysis-special-title">{t('app.analysis.statistical')}</h2>
+                    <h2 className="analysis-special-title">Análisis estadístico</h2>
                     
                     {/* RESUMEN GENERAL - Primera parte del análisis */}
                     {/* Mostrar el resumen general inmediatamente cuando chatData esté disponible */}
@@ -2109,6 +2109,9 @@ const tryDeleteFiles = async (operationId) => {
                           </div>
                         </div>
                         <p>{t('app.analysis.preparing_psychological')}</p>
+                        {aiAnalysisProgress && (
+                          <p className="analysis-progress-detail">{aiAnalysisProgress}</p>
+                        )}
                       </div>
                     ) : (
                       chatGptResponse && <Chatgptresultados 
@@ -2123,7 +2126,7 @@ const tryDeleteFiles = async (operationId) => {
                 {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
                 {operationId && user && chatData && (
                   <div className="statistical-analysis-section">
-                    <h2 className="analysis-special-title">{t('app.analysis.statistical_continuation')}</h2>
+                    <h2 className="analysis-special-title">Análisis estadístico 2</h2>
                     <div className="analysis-module">
                       <AnalisisEstadistico chatData={chatData} />
                     </div>

@@ -31,8 +31,44 @@ function Juegos({
         return;
       }
       
-      // Comprimir datos con LZ-String
-      const compressedData = lzString.compressToEncodedURIComponent(JSON.stringify(headlinesGameData));
+      console.log('[Juegos] Abriendo juego directamente - Datos originales:', headlinesGameData);
+      console.log('[Juegos] lastNameMapping disponible:', window.lastNameMapping);
+      
+      // Crear una copia de los datos para procesar
+      let processedData = JSON.parse(JSON.stringify(headlinesGameData));
+      
+      // Aplicar el mapeo de nombres si está disponible
+      if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+        console.log('[Juegos] Aplicando mapeo de nombres para vista directa...');
+        
+        // Crear mapeo inverso (de iniciales a nombres completos)
+        const inverseMapping = {};
+        Object.entries(window.lastNameMapping).forEach(([fullName, initials]) => {
+          inverseMapping[initials] = fullName;
+        });
+        
+        // Aplicar mapeo a usuarios y headlines
+        if (Array.isArray(processedData) && processedData.length >= 2) {
+          let [usuarios, headlines] = processedData;
+          
+          // Convertir usuarios de iniciales a nombres completos
+          usuarios = usuarios.map(user => inverseMapping[user] || user);
+          
+          // Convertir nombres en headlines
+          if (Array.isArray(headlines)) {
+            headlines = headlines.map(headline => ({
+              ...headline,
+              nombre: inverseMapping[headline.nombre] || headline.nombre
+            }));
+          }
+          
+          processedData = [usuarios, headlines];
+          console.log('[Juegos] Datos procesados para vista directa:', processedData);
+        }
+      }
+      
+      // Comprimir datos procesados con LZ-String
+      const compressedData = lzString.compressToEncodedURIComponent(JSON.stringify(processedData));
       
       // Crear URL del juego y abrirla en popup a pantalla completa
       const url = `${window.location.origin}/headlines-game?h=${compressedData}`;
@@ -69,12 +105,61 @@ function Juegos({
         return;
       }
       
-      // Comprimir datos con LZ-String
-      const compressedData = lzString.compressToEncodedURIComponent(JSON.stringify(headlinesGameData));
+      console.log('[Juegos] Datos originales del juego de titulares:', headlinesGameData);
+      console.log('[Juegos] lastNameMapping disponible:', window.lastNameMapping);
+      
+      // Crear una copia de los datos para procesar
+      let processedData = JSON.parse(JSON.stringify(headlinesGameData));
+      
+      // Aplicar el mapeo de nombres si está disponible
+      if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+        console.log('[Juegos] Aplicando mapeo de nombres...');
+        
+        // Crear mapeo inverso (de iniciales a nombres completos)
+        const inverseMapping = {};
+        Object.entries(window.lastNameMapping).forEach(([fullName, initials]) => {
+          inverseMapping[initials] = fullName;
+        });
+        
+        console.log('[Juegos] Mapeo inverso:', inverseMapping);
+        
+        // Aplicar mapeo a usuarios (primera posición del array)
+        if (Array.isArray(processedData) && processedData.length >= 2) {
+          let [usuarios, headlines] = processedData;
+          
+          // Convertir usuarios de iniciales a nombres completos
+          usuarios = usuarios.map(user => {
+            const mappedName = inverseMapping[user] || user;
+            console.log(`[Juegos] Usuario: ${user} -> ${mappedName}`);
+            return mappedName;
+          });
+          
+          // Convertir nombres en headlines
+          if (Array.isArray(headlines)) {
+            headlines = headlines.map(headline => {
+              const mappedName = inverseMapping[headline.nombre] || headline.nombre;
+              console.log(`[Juegos] Headline nombre: ${headline.nombre} -> ${mappedName}`);
+              return {
+                ...headline,
+                nombre: mappedName
+              };
+            });
+          }
+          
+          processedData = [usuarios, headlines];
+          console.log('[Juegos] Datos procesados con nombres reales:', processedData);
+        }
+      } else {
+        console.log('[Juegos] No hay mapeo de nombres disponible, usando datos originales');
+      }
+      
+      // Comprimir datos procesados con LZ-String
+      const compressedData = lzString.compressToEncodedURIComponent(JSON.stringify(processedData));
       
       // Crear URL del juego
       const url = `${window.location.origin}/headlines-game?h=${compressedData}`;
       
+      console.log('[Juegos] URL generada:', url);
       setGameUrl(url);
       setShowShareGameModal(true);
       
