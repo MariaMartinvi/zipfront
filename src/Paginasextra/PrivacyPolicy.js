@@ -141,7 +141,8 @@ const PrivacyPolicy = () => {
         description: "Si tienes dudas sobre esta política, contáctanos en:",
         email: "📧 info@tiendeo.com"
       }
-    }
+    },
+    securityBadge: "100% Privado y Seguro"
   };
 
   const englishContent = {
@@ -279,7 +280,8 @@ const PrivacyPolicy = () => {
         description: "If you have questions about this policy, contact us at:",
         email: "📧 info@tiendeo.com"
       }
-    }
+    },
+    securityBadge: "100% Private and Secure"
   };
 
   const content = isSpanish ? spanishContent : englishContent;
@@ -455,7 +457,7 @@ const PrivacyPolicy = () => {
       <section className="security-section">
         <div className="security-badge-modern">
           <span className="security-icon">🔒</span>
-          <span className="security-text">100% Privado y Seguro</span>
+          <span className="security-text">{content.securityBadge}</span>
           <span className="security-icon">✓</span>
         </div>
       </section>
