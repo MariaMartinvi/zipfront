@@ -1964,9 +1964,9 @@ const tryDeleteFiles = async (operationId) => {
   return (
     <div className="App">
       <Header user={user} />
-      {user && userProfile && location.pathname === '/plans' && (
+      {/* {user && userProfile && location.pathname === '/plans' && (
         <UserPlanBanner userProfile={userProfile} />
-      )}
+      )} */}
       
       <main className="App-main">
         {showPaymentSuccess && (
