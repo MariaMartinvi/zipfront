@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
+import './fix-font-sizes.css';
 import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import Chatgptresultados from './Chatgptresultados';
@@ -14,7 +15,6 @@ import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat } fro
 import Header from './Header';
 import Footer from './Footer';
 import UserPlanBanner from './UserPlanBanner';
-import GameBanner from './GameBanner';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
 import PaymentSuccessBanner from './PaymentSuccessBanner';
 import CookieBanner from './CookieBanner';
@@ -26,16 +26,14 @@ import TermsOfService from './Paginasextra/TermsOfService';
 import PrivacyPolicy from './Paginasextra/PrivacyPolicy';
 import PoliticaCookies from './Paginasextra/PoliticaCookies';
 import AppPreview from './AppPreview';
-import { useTranslation } from 'react-i18next'; // Importar useTranslation
-// NUEVO: Importar el componente del juego
+import { useTranslation } from 'react-i18next';
 import ChatTopGame from './ChatTopGame';
 import ChatHeadlinesGame from './ChatHeadlinesGame';
-import Juegos from './Juegos'; // NUEVO: Componente independiente para juegos
+import Juegos from './Juegos';
 import { userSession } from './utils/userSession';
-import DebugLogger from './DebugLogger'; // Añadir import del DebugLogger
 import HeroSection from './components/HeroSection';
-// SEGURIDAD: Importar componentes de seguridad
 import { SecurityCaptchaProvider } from './components/SecurityCaptcha';
+import DebugLogger from './DebugLogger';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -70,16 +68,11 @@ function PlansWithLocationCheck({ user }) {
   );
 }
 
-// Función para extraer contenido del chat desde un archivo ZIP
 const extractChatContent = async (zipContent) => {
   try {
-    console.log("Extrayendo contenido del chat del archivo ZIP...");
-    
-    // Buscar archivos de chat en el ZIP (archivos de texto o con _chat en el nombre)
     let chatContent = null;
     let chatFileName = null;
     
-    // Buscar archivos candidatos (_chat.txt o archivos .txt)
     for (const zipEntry in zipContent.files) {
       if (zipEntry.toLowerCase().includes('_chat.txt') || 
           zipEntry.toLowerCase().endsWith('.txt')) {
@@ -90,13 +83,9 @@ const extractChatContent = async (zipContent) => {
     }
     
     if (!chatContent) {
-      console.error("No se encontró archivo de chat en el ZIP");
       return { error: "No se encontró ningún archivo de chat" };
     }
     
-    console.log(`Archivo de chat encontrado: ${chatFileName}`);
-    
-    // Anonimizar el contenido del chat antes de devolverlo
     const chatAnonimizado = anonimizarChat(chatContent);
     
     return { 
@@ -105,7 +94,6 @@ const extractChatContent = async (zipContent) => {
       success: true
     };
   } catch (error) {
-    console.error("Error extrayendo contenido del chat:", error);
     return { 
       error: `Error extrayendo contenido: ${error.message}`,
       success: false
@@ -113,48 +101,34 @@ const extractChatContent = async (zipContent) => {
   }
 };
 
-// Función para anonimizar el contenido del chat
 const anonimizarChat = (contenido) => {
   if (!contenido) return contenido;
   
-  console.log("Anonimizando contenido del chat...");
-  
   try {
-    // Diccionarios para mantener consistencia en reemplazos
     const reemplazosEmails = {};
     const reemplazosNumeros = {};
     let totalUrlsAnonimizadas = 0;
     
-    // Función para anonimizar números manteniendo consistencia
     const anonimizarNumero = (numeroStr) => {
-      // Limpiar el número para mantener consistencia en reemplazos
       const numeroLimpio = numeroStr.replace(/[\s.-]/g, '');
       
-      // Si ya anonimizamos este número antes, usamos el mismo reemplazo
       if (reemplazosNumeros[numeroLimpio]) {
         return reemplazosNumeros[numeroLimpio];
       }
       
-      // Determinar cuántos dígitos mantener (aproximadamente la mitad)
       const numDigitos = numeroLimpio.length;
-      const digitosAMantener = Math.max(2, Math.floor(numDigitos / 2)); // Al menos 2 dígitos
-      
-      // Construir el resultado: primeros dígitos + X's
+      const digitosAMantener = Math.max(2, Math.floor(numDigitos / 2));
       const resultado = numeroLimpio.substring(0, digitosAMantener) + 'X'.repeat(numDigitos - digitosAMantener);
       
-      // Guardar el reemplazo para futuras ocurrencias
       reemplazosNumeros[numeroLimpio] = resultado;
       return resultado;
     };
     
-    // Función para anonimizar emails manteniendo consistencia
     const anonimizarEmail = (email) => {
-      // Si ya anonimizamos este email antes, usamos el mismo reemplazo
       if (reemplazosEmails[email]) {
         return reemplazosEmails[email];
       }
       
-      // Extraer dominio (mantener el dominio)
       const dominioMatch = email.match(/@([\w.-]+)/);
       let anonimizado;
       
@@ -165,7 +139,6 @@ const anonimizarChat = (contenido) => {
         anonimizado = "email_anon@domain.com";
       }
       
-      // Guardar el reemplazo para futuras ocurrencias
       reemplazosEmails[email] = anonimizado;
       return anonimizado;
     };
@@ -1149,7 +1122,7 @@ function AppContent() {
     if (skipAIPsychologicalAnalysis) {
       addDebugMessage('El usuario ha elegido no compartir datos con la IA para análisis psicológico');
       setIsFetchingMistral(false);
-      setChatGptResponse("El usuario ha elegido no compartir datos con la IA para el análisis psicológico. Para obtener el perfil psicológico, vuelve a subir el archivo y desmarca la opción correspondiente.");
+      setChatGptResponse(t('app.privacy.no_data_sharing_message'));
       setShowChatGptResponse(true);
       
       // NUEVO: Limpiar datos del análisis anterior cuando el usuario no quiere compartir con IA
@@ -1837,82 +1810,7 @@ const tryDeleteFiles = async (operationId) => {
     };
   }, [operationId]);
 
-  // NUEVO: Función para generar URL del juego ultra compacta
-  const generateGameUrl = () => {
-    try {
-      // Verificar que tengamos datos de análisis
-      if (!chatData) {
-        setError("No hay datos de análisis para compartir");
-        return;
-      }
-      
-      // Obtener datos del análisis
-      const data = window.lastAnalysisTopData;
-      
-      if (!data || !data.categorias || !data.usuarios) {
-        setError("No se pudieron obtener los datos del análisis");
-        return;
-      }
 
-      // Mapeo de categorías completas a códigos de una letra
-      const catCodes = {
-        'profesor': 'p', 'rollero': 'r', 'pistolero': 's', 'vampiro': 'v',
-        'cafeconleche': 'c', 'dejaenvisto': 'd', 'narcicista': 'n', 
-        'puntofinal': 'f', 'fosforo': 'o', 'menosesmas': 'm',
-        'chismoso': 'h', 'happyflower': 'y', 'amoroso': 'a', 'bombardero': 'x',
-        'comico': 'co', 'agradecido': 'ag', 'disculpon': 'di', 'curioso': 'cu',
-        'mala_influencia': 'mi'
-      };
-      
-      // Obtener usuarios
-      let users = [];
-      if (Array.isArray(data.usuarios)) {
-        users = data.usuarios;
-      } else if (typeof data.usuarios === 'object') {
-        users = Object.keys(data.usuarios);
-      }
-      
-      // Crear array de nombres únicos para eliminar redundancia
-      const names = [...new Set(
-        Object.values(data.categorias)
-          .filter(c => c && c.nombre)
-          .map(c => c.nombre)
-      )];
-      
-      // Crear pares [código, índice] para cada categoría
-      const cats = [];
-      Object.entries(catCodes).forEach(([cat, code]) => {
-        if (data.categorias[cat]?.nombre) {
-          const idx = names.indexOf(data.categorias[cat].nombre);
-          if (idx >= 0) {
-            cats.push([code, idx]);
-          }
-        }
-      });
-      
-      // Estructura final: [usuarios, nombres, categorías]
-      const result = [users, names, cats];
-      
-      // Comprimir con LZ-String
-      const lzs = require('lz-string');
-      const compressed = lzs.compressToEncodedURIComponent(JSON.stringify(result));
-      
-      // URL con parámetro z (más corto)
-      const url = `${window.location.origin}/chat-game?z=${compressed}`;
-      
-      console.log("Datos ultra compactos:", result);
-      
-      // Actualizar estado y mostrar modal
-      setGameUrl(url);
-      setShowShareGameModal(true);
-      
-      return url;
-    } catch (error) {
-      console.error("Error generando URL:", error);
-      setError("Error generando URL del juego");
-      return null;
-    }
-  };
   
   // NUEVO: Función para copiar URL al portapapeles
   const copyToClipboard = () => {
@@ -2069,9 +1967,6 @@ const tryDeleteFiles = async (operationId) => {
       {user && userProfile && location.pathname === '/plans' && (
         <UserPlanBanner userProfile={userProfile} />
       )}
-      {!user && location.pathname !== '/plans' && window.lastAnalysisTopData && (
-        <GameBanner onShareClick={generateGameUrl} />
-      )}
       
       <main className="App-main">
         {showPaymentSuccess && (
@@ -2143,9 +2038,6 @@ const tryDeleteFiles = async (operationId) => {
                           </div>
                         </div>
                         <p>{t('app.analysis.preparing_psychological')}</p>
-                        {aiAnalysisProgress && (
-                          <p className="analysis-progress-detail">{aiAnalysisProgress}</p>
-                        )}
                       </div>
                     ) : (
                       chatGptResponse && <Chatgptresultados 
@@ -2330,7 +2222,7 @@ const tryDeleteFiles = async (operationId) => {
       <CookieBanner />
       
       {/* Debug Logger para desarrollo - solo se muestra si viene de WhatsApp */}
-      <DebugLogger />
+      {/* <DebugLogger /> */}
     </div>
   );
 }

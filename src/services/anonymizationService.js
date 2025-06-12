@@ -388,19 +388,14 @@ class AnonymizationService {
    * @returns {string} - Palabra "participante" en el idioma correspondiente
    */
   getParticipantWord(language) {
+    // Solo idiomas soportados oficialmente en la aplicación
     const participantWords = {
       'es': 'Participante',
       'en': 'Participant', 
       'de': 'Teilnehmer',
       'it': 'Partecipante',
       'fr': 'Participant',
-      'ca': 'Participant',
-      'eu': 'Partaide',
-      'pt': 'Participante',
-      'ru': 'Участник',
-      'ar': 'مشارك',
-      'zh': '参与者',
-      'ja': '参加者'
+      'pt': 'Participante'
     };
     
     return participantWords[language] || participantWords['es']; // fallback a español
@@ -409,15 +404,15 @@ class AnonymizationService {
   /**
    * Anonimiza los nombres de los participantes del chat
    * @param {string} content - Contenido del chat
+   * @param {string} userLanguage - Idioma seleccionado por el usuario (es, en, de, it, fr, pt)
    * @returns {string} - Contenido con participantes anonimizados
    */
-  anonymizeParticipants(content) {
-    // Detectar el idioma del contenido antes de procesar participantes
-    const detectedLanguage = this.detectLanguage(content);
-    console.log(`🌐 Idioma detectado para participantes: ${detectedLanguage}`);
+  anonymizeParticipants(content, userLanguage = 'es') {
+    // USAR IDIOMA DEL USUARIO en lugar de detección automática para mantener consistencia con el prompt
+    console.log(`🌐 Idioma del usuario para participantes: ${userLanguage}`);
     
-    // Obtener la palabra "participante" en el idioma detectado
-    const participantWord = this.getParticipantWord(detectedLanguage);
+    // Obtener la palabra "participante" en el idioma del usuario
+    const participantWord = this.getParticipantWord(userLanguage);
     console.log(`📝 Usando palabra "${participantWord}" para participantes`);
     
     const lines = content.split('\n');

@@ -211,10 +211,17 @@
       "no_operation_id": "Keine Vorgangs-ID angegeben",
       "no_category_data": "Keine Daten für diese Kategorie verfügbar",
       "no_specific_details": "Keine spezifischen Details verfügbar",
-      "generic": "Fehler"
+      "generic": "Fehler",
+      "empty_file": "Leere Datei",
+      "format_not_recognized": "Chat-Format nicht erkannt. Überprüfen Sie, dass der Dateiname keine Sonderzeichen enthält.",
+      "no_valid_messages": "Keine gültigen Nachrichten gefunden",
+      "analysis_error": "Fehler während der Analyse",
+      "analysis_failed": "Analyse der Daten fehlgeschlagen",
+      "no_data": "Keine Daten verfügbar"
     },
     "privacy": {
-      "no_ai_analysis": "Psychologische Analyse überspringen. Alle Analysen sollten auf meinem Gerät durchgeführt werden."
+      "no_ai_analysis": "Psychologische Analyse überspringen. Alle Analysen sollten auf meinem Gerät durchgeführt werden.",
+      "no_data_sharing_message": "Der Benutzer hat gewählt, keine Chat-Daten mit der KI für psychologische Analysen zu teilen. Um das psychologische Profil zu erhalten, laden Sie die Datei erneut hoch und deaktivieren Sie die entsprechende Option. Bei Fragen konsultieren Sie unsere Datenschutzrichtlinie."
     },
     "stats_labels": {
       "vice_mentions": "Laster-Erwähnungen",

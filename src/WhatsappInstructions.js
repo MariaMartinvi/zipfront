@@ -130,7 +130,7 @@ function WhatsappInstructions() {
     ? '/recortadov1.mp4' 
     : platform === 'ios' 
       ? '/recortadoios.mp4' 
-      : '/recortadoios.mp4'; // Usando el mismo video de iOS para desktop
+      : '/desktop.mp4'; // nuevo video para desktop
 
   // Cambiar de plataforma
   const togglePlatform = (newPlatform) => {

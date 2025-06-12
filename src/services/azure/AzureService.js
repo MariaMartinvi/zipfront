@@ -188,8 +188,7 @@ export class AzureService {
           const client = new OpenAI(clientConfig);
           
           // Hacer la solicitud a la API
-          console.log(`🚀 ENVIANDO A: ${api.name} (${api.model})`);
-          console.log(`📊 Longitud contenido: ${userContent.length} caracteres`);
+
           
           // Calcular max_tokens para este modelo
           const maxTokens = api.model === 'DeepSeek-R1' ? 8000 : 4000; // Más tokens para Deepseek R1
@@ -203,12 +202,7 @@ export class AzureService {
             max_tokens: maxTokens
           };
           
-          console.log('⏱️ ENVIANDO REQUEST...');
-          
           const response = await client.chat.completions.create(requestBody);
-          
-          // Log de respuesta exitosa
-          console.log(`✅ RESPUESTA RECIBIDA de ${api.name}`);
           
           // Extraer respuesta
           responseText = response.choices[0].message.content;

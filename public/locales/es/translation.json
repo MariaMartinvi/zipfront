@@ -225,11 +225,18 @@
       "no_operation_id": "No se ha proporcionado un ID de operación",
       "no_category_data": "No hay datos disponibles para esta categoría",
       "no_specific_details": "No hay detalles específicos disponibles",
-      "generic": "Error"
+      "generic": "Error",
+      "empty_file": "Archivo vacío",
+      "format_not_recognized": "Formato de chat no reconocido. Revisa que el nombre del archivo no tenga caracteres especiales.",
+      "no_valid_messages": "No se encontraron mensajes válidos",
+      "analysis_error": "Error durante el análisis",
+      "analysis_failed": "Error al analizar los datos",
+      "no_data": "No hay datos disponibles"
     },
     "loading_status": "Procesando datos...",
     "privacy": {
-      "no_ai_analysis": "Omitir análisis psicológico. Todos los análisis se deben realizar en mi dispositivo."
+      "no_ai_analysis": "Omitir análisis psicológico. Todos los análisis se deben realizar en mi dispositivo.",
+      "no_data_sharing_message": "El usuario ha elegido no compartir datos del chat con la IA para el análisis psicológico. Para obtener el perfil psicológico, vuelve a subir el archivo y desmarca la opción correspondiente. Si tienes dudas consulta nuestra política de privacidad."
     },
     "stats_labels": {
       "vice_mentions": "Menciones de vicios",

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import './styles/Analisis.css';
 import './Analisis_top.css';
+import './fix-font-sizes.css';
 // Importar el detector de formato directamente
 import { detectarFormatoArchivo } from './formatDetector.js';
 // Importar utilidades de fecha
@@ -184,7 +185,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     console.log(`\\nFormato final a utilizar: ${formato}`);
     
     if (formato === "desconocido") {
-      return { error: "Formato de chat no reconocido", success: false };
+      return { error: "format_not_recognized", success: false };
     }
     
     // Obtener el nombre del grupo de la primera línea solo para chats grupales de iOS
@@ -237,7 +238,7 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
       : mensajes;
     
     if (mensajesFiltrados.length === 0) {
-      return { error: "No se encontraron mensajes válidos", success: false };
+      return { error: "no_valid_messages", success: false };
     }
     
     // Patrones para emoji y emojis de amor
@@ -1281,7 +1282,8 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
   } catch (error) {
     console.error("Error en analizarPerfilesCompleto:", error);
     return {
-      error: `Error en el análisis de perfiles: ${error.message}`,
+      error: "analysis_error",
+      errorDetails: error.message,
       success: false
     };
   }
@@ -1454,7 +1456,11 @@ const AnalisisTop = ({ operationId, chatData }) => {
       return resultadoAnalisis;
     } catch (err) {
       console.error("Error analizando los perfiles del chat:", err);
-      return { error: `${t('app.errors.analysis_error')}: ${err.message}`, success: false };
+      return { 
+        error: "analysis_error",
+        errorDetails: err.message,
+        success: false 
+      };
     }
   }, [chatData, t]);
   
@@ -1578,7 +1584,14 @@ const AnalisisTop = ({ operationId, chatData }) => {
           setCategoriaSeleccionada(Object.keys(datosAnalizados.categorias)[0]);
         }
       } else {
-        setError(datosAnalizados.error || t('app.errors.analysis_failed'));
+        // Si el error es una clave de traducción, usarla con t(); si no, usar el texto tal como está
+        const errorMessage = datosAnalizados.error && typeof datosAnalizados.error === 'string' && 
+                             !datosAnalizados.error.includes(' ') && 
+                             !datosAnalizados.error.includes(':')
+          ? t(`app.errors.${datosAnalizados.error}`) 
+          : datosAnalizados.error || t('app.errors.analysis_failed');
+        
+        setError(errorMessage);
       }
       // Marcar como no cargando inmediatamente después de procesar los datos
       setCargando(false);

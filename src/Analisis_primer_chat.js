@@ -33,7 +33,7 @@ const analizarChat = (contenido, formatoForzado = null) => {
     
     if (!lineas || lineas.length === 0) {
       console.log("Archivo vacío");
-      return { error: "Archivo vacío", success: false };
+      return { error: "empty_file", success: false };
     }
     
     console.log(`Archivo leído correctamente. Total de líneas: ${lineas.length}`);
@@ -44,14 +44,14 @@ const analizarChat = (contenido, formatoForzado = null) => {
     
     // Si el formato es desconocido, devolver error
     if (formato === "desconocido") {
-      return { error: "Formato de chat no reconocido", success: false };
+      return { error: "format_not_recognized", success: false };
     }
     
     // Analizar mensajes (versión simplificada para evitar dependencias)
     const mensajes = analizarMensajesSimplificado(lineas, formato);
     
     if (mensajes.length === 0) {
-      return { error: "No se encontraron mensajes válidos", success: false };
+      return { error: "no_valid_messages", success: false };
     }
     
     // Estructura para estadísticas
@@ -243,7 +243,8 @@ const analizarChat = (contenido, formatoForzado = null) => {
   } catch (error) {
     console.error("Error durante el análisis:", error);
     return {
-      error: `Error durante el análisis: ${error.message}`,
+      error: "analysis_error",
+      errorDetails: error.message,
       success: false
     };
   }
@@ -964,7 +965,14 @@ const AnalisisEstadistico = ({ operationId, chatData }) => {
         setDatos(datosAnalizados);
         setError(null);
       } else {
-        setError(datosAnalizados.error || t('app.errors.analysis_failed'));
+        // Si el error es una clave de traducción, usarla con t(); si no, usar el texto tal como está
+        const errorMessage = datosAnalizados.error && typeof datosAnalizados.error === 'string' && 
+                             !datosAnalizados.error.includes(' ') && 
+                             !datosAnalizados.error.includes(':')
+          ? t(`app.errors.${datosAnalizados.error}`) 
+          : datosAnalizados.error || t('app.errors.analysis_failed');
+        
+        setError(errorMessage);
       }
       // Marcar como no cargando inmediatamente después de procesar los datos
       setCargando(false);

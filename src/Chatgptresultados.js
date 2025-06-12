@@ -36,7 +36,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // Procesar respuesta cuando llegue - ÚNICO useEffect para evitar duplicación
   useEffect(() => {
     if (chatGptResponse && !htmlContent) {
-      console.log('Procesando respuesta para extraer datos del juego de titulares...');
+
       
       // Buscar respuesta de Azure en variable global
       const azureResponse = window.lastAzureResponse;
@@ -76,54 +76,41 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
               if (parsedData && Array.isArray(parsedData) && parsedData.length >= 2) {
                 let [usuarios, headlines] = parsedData;
                 
-                // NUEVO: Convertir iniciales a nombres completos considerando el idioma detectado
-                if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
-                  console.log('🔄 Aplicando mapeo de nombres con detección de idioma...');
-                  
-                  // Detectar el idioma de la respuesta si está disponible
-                  const detectedLanguage = window.lastDetectedLanguage || 'es';
-                  console.log(`🌐 Idioma detectado para mapeo: ${detectedLanguage}`);
-                  
-                  // Crear mapeo ajustado según el idioma detectado
-                  let adjustedMapping = window.lastNameMapping;
-                  if (detectedLanguage !== 'es') {
-                    console.log(`🔧 Ajustando mapeo para idioma: ${detectedLanguage}`);
-                    adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
-                    console.log('🔄 Mapeo ajustado:', adjustedMapping);
-                  }
-                  
-                  // Crear mapeo inverso con el mapeo ajustado
-                  const inverseMapping = {};
-                  Object.entries(adjustedMapping).forEach(([fullName, participantId]) => {
-                    inverseMapping[participantId] = fullName;
-                  });
-                  
-                  console.log('🔄 Mapeo inverso final:', inverseMapping);
-                  
-                  // Convertir usuarios
-                  const usuariosOriginales = [...usuarios];
-                  usuarios = usuarios.map(user => inverseMapping[user] || user);
-                  console.log(`👥 Usuarios convertidos: ${usuariosOriginales.join(', ')} → ${usuarios.join(', ')}`);
-                  
-                  // Convertir nombres en headlines
-                  if (Array.isArray(headlines)) {
-                    headlines = headlines.map(headline => {
-                      const nombreOriginal = headline.nombre;
-                      const nombreConvertido = inverseMapping[headline.nombre] || headline.nombre;
-                      if (nombreOriginal !== nombreConvertido) {
-                        console.log(`📰 Headline convertido: "${nombreOriginal}" → "${nombreConvertido}"`);
-                      }
-                      return {
-                        ...headline,
-                        nombre: nombreConvertido
-                      };
-                    });
-                  }
-                }
+                        // NUEVO: Convertir iniciales a nombres completos considerando el idioma detectado
+        if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+          // Detectar el idioma de la respuesta si está disponible
+          const detectedLanguage = window.lastDetectedLanguage || 'es';
+          
+          // Crear mapeo ajustado según el idioma detectado
+          let adjustedMapping = window.lastNameMapping;
+          if (detectedLanguage !== 'es') {
+            adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
+          }
+          
+          // Crear mapeo inverso con el mapeo ajustado
+          const inverseMapping = {};
+          Object.entries(adjustedMapping).forEach(([fullName, participantId]) => {
+            inverseMapping[participantId] = fullName;
+          });
+          
+          // Convertir usuarios
+          usuarios = usuarios.map(user => inverseMapping[user] || user);
+          
+          // Convertir nombres en headlines
+          if (Array.isArray(headlines)) {
+            headlines = headlines.map(headline => {
+              const nombreConvertido = inverseMapping[headline.nombre] || headline.nombre;
+              return {
+                ...headline,
+                nombre: nombreConvertido
+              };
+            });
+          }
+        }
                 
                 // Guardar datos del juego
                 setHeadlinesGameData([usuarios, headlines]);
-                console.log('Datos del juego de titulares procesados:', [usuarios, headlines]);
+
               }
             }
           } catch (error) {
@@ -138,13 +125,11 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       // NUEVO: Aplicar mapeo de nombres a toda la respuesta antes del procesamiento
       if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
         const detectedLanguage = window.lastDetectedLanguage || 'es';
-        console.log(`🔄 Aplicando mapeo de nombres a toda la respuesta (idioma: ${detectedLanguage})...`);
         
         // Crear mapeo ajustado según el idioma detectado
         let adjustedMapping = window.lastNameMapping;
         if (detectedLanguage !== 'es') {
           adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
-          console.log('🔄 Mapeo ajustado para respuesta completa:', adjustedMapping);
         }
         
         // Crear mapeo inverso con el mapeo ajustado
@@ -153,13 +138,10 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           inverseMapping[participantId] = fullName;
         });
         
-        console.log('🔄 Mapeo inverso para respuesta completa:', inverseMapping);
-        
         // Aplicar mapeo inverso a toda la respuesta
         Object.entries(inverseMapping).forEach(([participantId, fullName]) => {
           const regex = new RegExp(`\\b${participantId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
           processedResponse = processedResponse.replace(regex, fullName);
-          console.log(`🔄 Reemplazando "${participantId}" → "${fullName}" en respuesta completa`);
         });
       }
 
@@ -206,7 +188,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         // NUEVO: Aplicar mapeo de nombres a toda la respuesta antes del procesamiento (también aquí)
         if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
           const detectedLanguage = window.lastDetectedLanguage || 'es';
-          console.log(`🔄 Aplicando mapeo de nombres a respuesta del juego (idioma: ${detectedLanguage})...`);
           
           // Crear mapeo ajustado según el idioma detectado
           let adjustedMapping = window.lastNameMapping;
@@ -334,7 +315,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   useEffect(() => {
     const container = document.getElementById('analysisResults');
     if (container) {
-      console.log(`Idioma actualizado a: ${i18n.language}`);
+      
     }
   }, [i18n.language]);
 
@@ -392,12 +373,8 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // NUEVA FUNCIÓN para procesar subsecciones con cajas modernas
   const processSubsectionsWithModernCards = (response) => {
     try {
-      console.log('🔧 Procesando subsecciones con cajas modernas...');
-      console.log('📄 Contenido a analizar (primeros 500 chars):', response.substring(0, 500));
-      
       // DEBUGGING: Buscar todas las líneas que empiecen con ###
       const allSubsections = response.match(/### [^\n]*/g);
-      console.log('🔍 Todas las subsecciones encontradas:', allSubsections);
       
       // Patrones para las 4 subsecciones específicas - SOLO ICONO + CONTENIDO
       const subsectionPatterns = [
@@ -428,30 +405,9 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
 
       subsectionPatterns.forEach(({ pattern, className, icon }) => {
         const matches = [...response.matchAll(pattern)];
-        console.log(`🔍 Buscando patrón ${icon}: ${matches.length} coincidencias encontradas`);
-        
-        // DEBUG ESPECIAL para 🎯
-        if (icon === '🎯') {
-          console.log(`🎯 DEBUG: Patrón usado:`, pattern);
-          console.log(`🎯 DEBUG: Buscando en texto que contiene "### 🎯":`, response.includes('### 🎯'));
-          
-          // Buscar manualmente la sección
-          const manualMatch = response.match(/### 🎯[^#]*?([\s\S]*?)(?=---|\n##|$)/gi);
-          console.log(`🎯 DEBUG: Búsqueda manual encontró:`, manualMatch ? manualMatch.length : 0, 'coincidencias');
-          if (manualMatch) {
-            console.log(`🎯 DEBUG: Primera coincidencia manual:`, manualMatch[0].substring(0, 200) + '...');
-          }
-        }
-        
-        matches.forEach((match, index) => {
-          const firstLine = match[0].split('\n')[0];
-          const title = firstLine.replace(`### ${icon}`, '').replace(/<\/?strong>/g, '').replace(/\*\*/g, '').trim();
-          console.log(`📦 Match ${index + 1} - Título: "${title}", Contenido: ${match[1]?.substring(0, 100)}...`);
-        });
         
         processedResponse = processedResponse.replace(pattern, (match, content) => {
           sectionsFound++;
-          console.log(`✅ Procesando subsección ${sectionsFound} con icono ${icon}`);
           
           // Extraer el título de la primera línea del match
           const firstLine = match.split('\n')[0];
@@ -519,12 +475,8 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         });
       });
 
-      console.log(`📊 Total de subsecciones procesadas: ${sectionsFound}`);
-
       // Remover las líneas --- que quedan
       processedResponse = processedResponse.replace(/^---\s*$/gm, '');
-
-      console.log('✅ Subsecciones procesadas correctamente');
       return processedResponse;
       
     } catch (error) {
@@ -664,9 +616,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       const titleMatch = fullMatch.match(/## ([^#\n]+)/);
       const sectionTitle = titleMatch ? titleMatch[1] : '🧠 Análisis Psicológico';
       
-      console.log('🔍 Procesando sección psicológica:', sectionTitle);
-      console.log('📄 Contenido a procesar:', content.substring(0, 200) + '...');
-      
       // NUEVO: Buscar participantes con el formato ### [Nombre]
       const participantRegex = /### ([^\n]+)([\s\S]*?)(?=### |$)/g;
       let personalities = [];
@@ -676,19 +625,14 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         let name = match[1].trim();
         const participantContent = match[2].trim();
         
-        console.log(`👤 Encontrado participante: "${name}"`);
-        
                  // NUEVO: Aplicar mapeo inverso para convertir "Participant X" a nombre real
          if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
            const detectedLanguage = window.lastDetectedLanguage || 'es';
-           console.log(`🔄 Aplicando mapeo inverso para "${name}" (idioma: ${detectedLanguage})`);
-           console.log(`📋 Mapeo original disponible:`, window.lastNameMapping);
            
            // Crear mapeo ajustado según el idioma detectado
            let adjustedMapping = window.lastNameMapping;
            if (detectedLanguage !== 'es') {
              adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
-             console.log(`🌐 Mapeo ajustado para ${detectedLanguage}:`, adjustedMapping);
            }
            
            // Crear mapeo inverso
@@ -696,40 +640,26 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
            Object.entries(adjustedMapping).forEach(([fullName, participantId]) => {
              inverseMapping[participantId] = fullName;
            });
-           console.log(`🔄 Mapeo inverso generado:`, inverseMapping);
            
            // Aplicar mapeo inverso
            const mappedName = inverseMapping[name] || name;
            if (mappedName !== name) {
-             console.log(`✅ Nombre convertido: "${name}" → "${mappedName}"`);
              name = mappedName;
-           } else {
-             console.log(`⚠️ No se encontró mapeo para "${name}" en el mapeo inverso`);
            }
          }
-        
-        console.log(`📝 Contenido del participante (primeros 100 chars): ${participantContent.substring(0, 100)}...`);
         
         if (name && participantContent) {
           const personality = parseParticipantContent(name, participantContent);
           if (personality) {
-            console.log(`✅ Personalidad procesada exitosamente:`, personality);
             personalities.push(personality);
-          } else {
-            console.warn(`⚠️ No se pudo procesar la personalidad para: ${name}`);
           }
         }
       }
 
-      console.log(`📊 Total personalidades encontradas: ${personalities.length}`);
-
       // Generar HTML moderno si se encontraron personalidades
       if (personalities.length > 0) {
-        console.log('🎨 Generando HTML moderno para', personalities.length, 'personalidades');
         return generateModernPsychologyHTML(sectionTitle, personalities);
       }
-      
-      console.log('⚠️ No se encontraron personalidades, devolviendo formato original');
       return fullMatch; // Devolver original si no se pudo procesar
     } catch (error) {
       console.error('❌ Error transformando sección psicológica:', error);
@@ -740,8 +670,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   // NUEVA FUNCIÓN para parsear el contenido de cada participante
   const parseParticipantContent = (name, content) => {
     try {
-      console.log(`🔧 Parseando contenido para: ${name}`);
-      console.log(`📄 Contenido completo:`, content);
       let traits = [];
       
       // ESTRATEGIA MEJORADA: Primero intentar con headers, luego sin header
@@ -768,7 +696,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         const match = pattern.exec(content);
         if (match && match[1]) {
           traitsSection = match[1].trim();
-          console.log(`🎯 Sección de traits encontrada CON header:`, traitsSection);
           break;
         }
       }
@@ -778,7 +705,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         const noHeaderMatch = content.match(/^((?:.*?[\u{1F300}-\u{1F9FF}]\s*\*\*[^*]+\*\*.*?\n?)*?)(?:\n\s*(?:strengths?|fortalezas|forces|stärken|punti di forza|pontos fortes|atouts):\s*)/gius);
         if (noHeaderMatch && noHeaderMatch[1]) {
           traitsSection = noHeaderMatch[1].trim();
-          console.log(`🎯 Sección de traits encontrada SIN header:`, traitsSection);
         }
       }
       
@@ -788,8 +714,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         const emojiTraitMatches = traitsSection.match(/[\u{1F300}-\u{1F9FF}]\s*\*\*([^*]+)\*\*/gu);
         
         if (emojiTraitMatches && emojiTraitMatches.length > 0) {
-          console.log(`📋 Traits con emojis encontrados en sección para ${name}:`, emojiTraitMatches);
-          
           emojiTraitMatches.forEach(match => {
             // Extraer solo el texto entre ** (eliminar emoji y **)
             let trait = match.replace(/[\u{1F300}-\u{1F9FF}]\s*\*\*|\*\*/gu, '').trim();
@@ -801,15 +725,11 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
               traits.push(trait);
             }
           });
-          
-          console.log(`🎯 Traits extraídos de sección específica:`, traits);
         }
       }
       
       // Fallback: Si no encontramos traits en sección específica, buscar en todo el contenido
       if (traits.length === 0) {
-        console.log(`🔍 Fallback: buscando traits en todo el contenido para ${name}`);
-        
         // Buscar cualquier emoji + texto en negrita
         const universalEmojiTraitMatches = content.match(/[\u{1F300}-\u{1F9FF}]\s*\*\*([^*]+)\*\*/gu);
         
@@ -833,17 +753,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
               traits.push(trait);
             }
           });
-          
-          console.log(`🎯 Traits extraídos por emojis universales:`, traits);
         }
-      }
-      
-      // NO MÁS FALLBACKS - Solo usar patrón universal de emoji + texto en negrita
-      // Si no se encuentran traits reales, dejar array vacío (no inventar datos)
-      
-      // Si no se encontraron traits, dejar array vacío (no mostrar datos inventados)
-      if (traits.length === 0) {
-        console.log(`⚠️ No se encontraron traits para ${name} - no se mostrarán datos inventados`);
       }
 
       // Limpieza final de traits para asegurar que no haya emojis
@@ -857,7 +767,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         traits: cleanedTraits // Máximo 4 traits sin emojis
       };
       
-      console.log(`✅ Resultado final para ${name}:`, result);
       return result;
     } catch (error) {
       console.error(`❌ Error parseando contenido del participante ${name}:`, error);

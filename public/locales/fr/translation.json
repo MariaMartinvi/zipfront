@@ -212,7 +212,13 @@
       "no_operation_id": "Aucun identifiant d'opération fourni",
       "no_category_data": "Aucune donnée disponible pour cette catégorie",
       "no_specific_details": "Aucun détail spécifique disponible",
-      "generic": "Erreur"
+      "generic": "Erreur",
+      "empty_file": "Fichier vide",
+      "format_not_recognized": "Format de chat non reconnu. Vérifiez que le nom du fichier ne contient pas de caractères spéciaux.",
+      "no_valid_messages": "Aucun message valide trouvé",
+      "analysis_error": "Erreur lors de l'analyse",
+      "analysis_failed": "Échec de l'analyse des données",
+      "no_data": "Aucune donnée disponible"
     },
     "loading_status": "Traitement des données..."
   },
@@ -788,7 +794,8 @@
     "finalizing_analysis": "Finalisation de l'analyse psychologique..."
   },
   "privacy": {
-    "no_ai_analysis": "Omettre l'analyse psychologique. Toutes les analyses doivent être effectuées sur mon appareil."
+    "no_ai_analysis": "Omettre l'analyse psychologique. Toutes les analyses doivent être effectuées sur mon appareil.",
+    "no_data_sharing_message": "L'utilisateur a choisi de ne pas partager les données du chat avec l'IA pour l'analyse psychologique. Pour obtenir le profil psychologique, rechargez le fichier et décochez l'option correspondante. Si vous avez des questions, consultez notre politique de confidentialité."
   },
   "cookiePolicy": {
     "title": "Politique de Cookies",

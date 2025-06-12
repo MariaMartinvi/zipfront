@@ -257,12 +257,14 @@
 .error-message {
   background-color: #ffebee;
   color: #c62828;
-  padding: 15px;
-  border-radius: 8px;
+  padding: 20px;
+  border-radius: 12px;
   text-align: center;
   border-left: 4px solid #ef5350;
-  margin: 10px 0;
-  font-size: 0.95rem;
+  margin: 15px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 /* Secciones de análisis */

@@ -216,10 +216,17 @@
       "no_operation_id": "No operation ID provided",
       "no_category_data": "No data available for this category",
       "no_specific_details": "No specific details available",
-      "generic": "Error"
+      "generic": "Error",
+      "empty_file": "Empty file",
+      "format_not_recognized": "Chat format not recognized. Check that the file name doesn't contain special characters.",
+      "no_valid_messages": "No valid messages found",
+      "analysis_error": "Error during analysis",
+      "analysis_failed": "Failed to analyze data",
+      "no_data": "No data available"
     },
     "privacy": {
-      "no_ai_analysis": "Skip psychological analysis. All analysis should be performed on my device."
+      "no_ai_analysis": "Skip psychological analysis. All analysis should be performed on my device.",
+      "no_data_sharing_message": "The user has chosen not to share chat data with AI for psychological analysis. To get the psychological profile, re-upload the file and uncheck the corresponding option. If you have questions, check our privacy policy."
     },
     "stats_labels": {
       "vice_mentions": "Vice mentions",

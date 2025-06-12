@@ -1,0 +1,170 @@
+/* Fix Font Sizes - Archivo para corregir problemas de texto muy pequeño */
+
+/* Restablecer tamaños de fuente mínimos para todo el sitio */
+* {
+  min-height: 0;
+  min-width: 0;
+}
+
+body {
+  font-size: 16px !important;
+  line-height: 1.5;
+}
+
+/* Asegurar que los párrafos tengan un tamaño mínimo legible */
+p {
+  font-size: max(14px, 0.875rem) !important;
+  line-height: 1.6;
+}
+
+/* Títulos con tamaños apropiados */
+h1 {
+  font-size: max(28px, 1.75rem) !important;
+}
+
+h2 {
+  font-size: max(24px, 1.5rem) !important;
+}
+
+h3 {
+  font-size: max(20px, 1.25rem) !important;
+}
+
+h4, h5, h6 {
+  font-size: max(16px, 1rem) !important;
+}
+
+/* Mensajes de error legibles */
+.error-message {
+  font-size: max(16px, 1.1rem) !important;
+  line-height: 1.4;
+  padding: 20px;
+}
+
+/* Componentes de carga legibles */
+.loading-indicator,
+.loading-indicator p,
+.loading-text {
+  font-size: max(14px, 0.875rem) !important;
+}
+
+/* Botones legibles */
+button {
+  font-size: max(14px, 0.875rem) !important;
+}
+
+/* Links legibles */
+a {
+  font-size: max(14px, 0.875rem) !important;
+}
+
+/* Inputs legibles */
+input,
+textarea,
+select {
+  font-size: max(14px, 0.875rem) !important;
+}
+
+/* Análisis top específico */
+.analysis-title {
+  font-size: max(32px, 2rem) !important;
+}
+
+.analysis-description {
+  font-size: max(18px, 1.125rem) !important;
+}
+
+.profile-title {
+  font-size: max(20px, 1.25rem) !important;
+}
+
+.profile-description {
+  font-size: max(14px, 0.875rem) !important;
+}
+
+.profile-user {
+  font-size: max(20px, 1.25rem) !important;
+}
+
+/* Estadísticas legibles */
+.estadistica .valor {
+  font-size: max(24px, 1.5rem) !important;
+}
+
+.estadistica .label {
+  font-size: max(12px, 0.75rem) !important;
+}
+
+.estadistica .media-resto {
+  font-size: max(12px, 0.75rem) !important;
+}
+
+/* Usuario destacado */
+.usuario-destacado .nombre {
+  font-size: max(20px, 1.25rem) !important;
+}
+
+.usuario-destacado .mensajes-totales {
+  font-size: max(14px, 0.875rem) !important;
+}
+
+/* Badge de análisis */
+.analysis-badge {
+  font-size: max(16px, 1rem) !important;
+}
+
+/* Detalles de perfil */
+.profile-detail-title {
+  font-size: max(24px, 1.5rem) !important;
+}
+
+.profile-detail-description {
+  font-size: max(16px, 1rem) !important;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px !important;
+  }
+  
+  .analysis-title {
+    font-size: max(24px, 1.5rem) !important;
+  }
+  
+  .analysis-description {
+    font-size: max(16px, 1rem) !important;
+  }
+  
+  .profile-title {
+    font-size: max(18px, 1.125rem) !important;
+  }
+  
+  .profile-detail-title {
+    font-size: max(20px, 1.25rem) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .estadistica .valor {
+    font-size: max(20px, 1.25rem) !important;
+  }
+  
+  .usuario-destacado .nombre {
+    font-size: max(16px, 1rem) !important;
+  }
+}
+
+/* Prevenir que cualquier elemento tenga un font-size extremadamente pequeño */
+* {
+  font-size: max(inherit, 10px) !important;
+}
+
+/* Excepción para iconos que pueden ser pequeños intencionalmente */
+.icon,
+.emoji,
+[class*="icon-"],
+[class*="fa-"],
+.profile-icon {
+  font-size: inherit !important;
+} 

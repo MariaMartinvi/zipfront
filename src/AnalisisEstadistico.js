@@ -49,7 +49,7 @@ const analizarChat = (contenido, formatoForzado = null) => {
     
     // Si el formato es desconocido, devolver error
     if (formato === "desconocido") {
-      return { error: "Formato de chat no reconocido", success: false };
+      return { error: "Formato de chat no reconocido. Revisa que el nombre del archivo no tenga carácteres especiales. ", success: false };
     }
     
     // Analizar mensajes (versión simplificada para evitar dependencias)

@@ -504,7 +504,13 @@
       "no_operation_id": "Nessun ID operazione fornito",
       "no_category_data": "Nessun dato disponibile per questa categoria",
       "no_specific_details": "Nessun dettaglio specifico disponibile",
-      "generic": "Errore"
+      "generic": "Errore",
+      "empty_file": "File vuoto",
+      "format_not_recognized": "Formato chat non riconosciuto. Verifica che il nome del file non contenga caratteri speciali.",
+      "no_valid_messages": "Nessun messaggio valido trovato",
+      "analysis_error": "Errore durante l'analisi",
+      "analysis_failed": "Analisi dei dati fallita",
+      "no_data": "Nessun dato disponibile"
     },
     "login_required": {
       "title": "Accedi per iniziare",
@@ -513,7 +519,8 @@
       "register": "Crea Account"
     },
     "privacy": {
-      "no_ai_analysis": "Ometti l'analisi psicologica. Tutte le analisi dovrebbero essere eseguite sul mio dispositivo."
+      "no_ai_analysis": "Ometti l'analisi psicologica. Tutte le analisi dovrebbero essere eseguite sul mio dispositivo.",
+      "no_data_sharing_message": "L'utente ha scelto di non condividere i dati della chat con l'IA per l'analisi psicologica. Per ottenere il profilo psicologico, ricarica il file e deseleziona l'opzione corrispondente. Se hai dubbi consulta la nostra politica sulla privacy."
     },
     "stats_labels": {
       "vice_mentions": "Menzioni di vizi",

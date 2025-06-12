@@ -17,12 +17,13 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
  * @param {string} content - Contenido del chat
  * @returns {Object} - Objeto con el contenido procesado y el mapeo de nombres
  */
-const processContentForAzure = (content) => {
+const processContentForAzure = (content, userLanguage = 'es') => {
   try {
     let processedContent = content;
 
     // 1. Primero anonimizar los participantes del chat (necesita el formato original con fechas)
-    processedContent = anonymizationService.anonymizeParticipants(processedContent);
+    // USAR IDIOMA DEL USUARIO para mantener consistencia con el prompt
+    processedContent = anonymizationService.anonymizeParticipants(processedContent, userLanguage);
 
     // 2. Limpiar el texto (eliminar fechas, timestamps, etc.) DESPUÉS de identificar participantes
     processedContent = processedContent
@@ -375,8 +376,8 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     // Procesar el contenido completo para anonimización
     console.log(`Longitud original del contenido: ${chatContent.length} caracteres`);
     
-    // Procesar los nombres en el contenido completo
-    const { processedContent, nameMapping } = processContentForAzure(chatContent);
+    // Procesar los nombres en el contenido completo - PASAR IDIOMA DEL USUARIO
+    const { processedContent, nameMapping } = processContentForAzure(chatContent, language);
     console.log(`Longitud después de anonimizar: ${processedContent.length} caracteres`);
     
     // 🔄 USAR NUEVO AZURESERVICE (con fallback automático incluido)

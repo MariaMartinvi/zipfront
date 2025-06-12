@@ -6,7 +6,7 @@
   color-scheme: var(--theme);
   
   /* Tamaños de fuente base */
-  font-size: 62.5%;
+  font-size: 100%;
   
   /* Variables de escalado responsive */
   ----lgQg: 0.1rem;
@@ -15,6 +15,8 @@
   --color-primary: #25D366; /* Verde WhatsApp mantenido */
   --color-primary-dark: #128C7E;
   --color-primary-light: #DCF8C6;
+  --color-secondary: #8b3dff; /* Púrpura Canva como secundario */
+  --color-secondary-dark: #7731d8;
   
   /* Colores Canva principales */
   --Zpa-KA: #00c4cc; /* Cyan Canva */
@@ -60,6 +62,7 @@
   --color-background: #ffffff;
   --color-background-light: #f6f7f8;
   --color-background-soft: #f1ebff;
+  --color-background-dark: #f3f4f6;
   --qwofNA: #fff;
   --EanfEg: #fff;
   --BhAIAw: #fff;
@@ -96,6 +99,27 @@
   
   /* ========== TIPOGRAFÍA RESPONSIVE CANVA ========== */
   --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  
+  /* ========== TAMAÑOS DE FUENTE ESTÁNDAR ========== */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+  --font-size-5xl: 3rem;      /* 48px */
+  --font-size-6xl: 3.75rem;   /* 60px */
+  
+  /* ========== ESPACIADO ========== */
+  --spacing-xs: 0.25rem;      /* 4px */
+  --spacing-sm: 0.5rem;       /* 8px */
+  --spacing-md: 1rem;         /* 16px */
+  --spacing-lg: 1.5rem;       /* 24px */
+  --spacing-xl: 2rem;         /* 32px */
+  --spacing-2xl: 2.5rem;      /* 40px */
+  --spacing-3xl: 3rem;        /* 48px */
   
   /* Tamaños móvil por defecto */
   --aJwtZg: calc(var(----lgQg, 0.1rem) * 48); /* 4.8rem */
