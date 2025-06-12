@@ -429,7 +429,7 @@ section.hero-section p.hero-description {
   border: none;
   padding: 14px 20px;
   border-radius: var(--radius-lg);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;

@@ -39,7 +39,7 @@ const TermsOfService = () => {
                 <div className={`feature-icon-new gradient-bg ${index % 2 === 0 ? 'rotate-left' : 'rotate-right'}`}>
                   <span className="feature-icon-large">{section.icon}</span>
                 </div>
-                <h3>{section.title}</h3>
+                <h3 style={{ fontSize: '20px' }}>{section.title}</h3>
                 {section.content && (
                   <p style={{ textAlign: 'left', fontSize: '18px', lineHeight: '1.6' }}>
                     {section.content}
@@ -65,7 +65,7 @@ const TermsOfService = () => {
             <div className="feature-icon-new gradient-bg rotate-left">
               <span className="feature-icon-large">📋</span>
             </div>
-            <h3 style={{ color: '#8A2BE2', marginBottom: '20px' }}>{t('pages.terms.important_notice.title')}</h3>
+            <h3 style={{ color: '#8A2BE2', marginBottom: '20px', fontSize: '20px' }}>{t('pages.terms.important_notice.title')}</h3>
             <p style={{ textAlign: 'center', fontSize: '18px', lineHeight: '1.6' }}>
               {t('pages.terms.important_notice.description')} <a href="/contact" className="privacy-link">{t('pages.terms.important_notice.contact_link')}</a>.
             </p>

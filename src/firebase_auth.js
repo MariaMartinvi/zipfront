@@ -56,8 +56,8 @@ apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
 // Verificar authDomain en producción
 if (process.env.NODE_ENV === 'production') {
   console.log('Producción detectada - authDomain:', firebaseConfig.authDomain);
-  if (firebaseConfig.authDomain !== 'wasapeo-c2b6e.firebaseapp.com') {
-    console.warn('⚠️ ADVERTENCIA: authDomain debería ser wasapeo-c2b6e.firebaseapp.com en producción');
+  if (firebaseConfig.authDomain !== 'chatsalsa.com') {
+    console.warn('⚠️ ADVERTENCIA: authDomain debería ser chatsalsa.com en producción');
   }
 }
 

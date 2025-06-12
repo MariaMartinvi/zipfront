@@ -12,25 +12,25 @@ body {
 }
 
 /* Asegurar que los párrafos tengan un tamaño mínimo legible */
-p {
-  font-size: max(14px, 0.875rem) !important;
-  line-height: 1.6;
-}
+/* Excluimos las clases con -description y -cta porque tienen tamaños específicos definidos */
+/* También excluimos todo AppPreview para que use sus propios estilos */
 
-/* Títulos con tamaños apropiados */
-h1 {
+/* Títulos con tamaños apropiados - Excluir AppPreview */
+h1:not(.modern-preview-container h1) {
   font-size: max(28px, 1.75rem) !important;
 }
 
-h2 {
+h2:not(.modern-preview-container h2) {
   font-size: max(24px, 1.5rem) !important;
 }
 
-h3 {
+h3:not(.modern-preview-container h3) {
   font-size: max(20px, 1.25rem) !important;
 }
 
-h4, h5, h6 {
+h4:not(.modern-preview-container h4), 
+h5:not(.modern-preview-container h5), 
+h6:not(.modern-preview-container h6) {
   font-size: max(16px, 1rem) !important;
 }
 
@@ -48,20 +48,20 @@ h4, h5, h6 {
   font-size: max(14px, 0.875rem) !important;
 }
 
-/* Botones legibles */
-button {
+/* Botones legibles - excluyendo los botones CTA que tienen tamaños específicos y AppPreview */
+button:not(.modern-preview-container button):not([class*="-cta"]) {
   font-size: max(14px, 0.875rem) !important;
 }
 
-/* Links legibles */
-a {
+/* Links legibles - Excluir AppPreview */
+a:not(.modern-preview-container a) {
   font-size: max(14px, 0.875rem) !important;
 }
 
-/* Inputs legibles */
-input,
-textarea,
-select {
+/* Inputs legibles - Excluir AppPreview */
+input:not(.modern-preview-container input),
+textarea:not(.modern-preview-container textarea),
+select:not(.modern-preview-container select) {
   font-size: max(14px, 0.875rem) !important;
 }
 
@@ -92,21 +92,15 @@ select {
 }
 
 .estadistica .label {
-  font-size: max(12px, 0.75rem) !important;
+  font-size: max(16px, 1rem) !important;
 }
 
 .estadistica .media-resto {
-  font-size: max(12px, 0.75rem) !important;
+  font-size: max(16px, 1rem) !important;
 }
 
 /* Usuario destacado */
-.usuario-destacado .nombre {
-  font-size: max(20px, 1.25rem) !important;
-}
 
-.usuario-destacado .mensajes-totales {
-  font-size: max(14px, 0.875rem) !important;
-}
 
 /* Badge de análisis */
 .analysis-badge {
@@ -150,21 +144,29 @@ select {
     font-size: max(20px, 1.25rem) !important;
   }
   
-  .usuario-destacado .nombre {
-    font-size: max(16px, 1rem) !important;
-  }
 }
 
 /* Prevenir que cualquier elemento tenga un font-size extremadamente pequeño */
-* {
+/* Excluimos las clases de tarjetas, con -description y -cta, y todo AppPreview */
+*:not(.modern-preview-container *):not(.feature-card p):not(.process-card p):not([class*="-description"]):not([class*="-cta"]) {
   font-size: max(inherit, 10px) !important;
 }
 
 /* Excepción para iconos que pueden ser pequeños intencionalmente */
-.icon,
-.emoji,
-[class*="icon-"],
-[class*="fa-"],
-.profile-icon {
-  font-size: inherit !important;
+
+
+/* Asegurar que las tarjetas mantengan sus tamaños de fuente específicos */
+.feature-card p {
+  font-size: 18px !important;
+  line-height: 1.6 !important;
+  color: #666 !important;
+  margin: 0 !important;
+}
+
+.process-card p {
+  font-size: 18px !important;
+  line-height: 1.6 !important;
+  color: #666 !important;
+  text-align: center !important;
+  margin: 0 !important;
 } 

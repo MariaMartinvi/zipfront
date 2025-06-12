@@ -525,7 +525,7 @@
 }
 
 .login-required h2 {
-  font-size: 40px;
+  font-size: 42px;
   font-weight: 700;
   margin: 0 0 20px 0;
   color: #1a1a1a;
@@ -536,13 +536,10 @@
 }
 
 .login-required p {
-  font-size: 19px;
-  line-height: 1.6;
+  font-size: 24px !important;
+  line-height: 1.5;
   color: #666;
-  margin-bottom: 40px;
-  max-width: 450px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0;
 }
 
 .auth-buttons {
@@ -556,7 +553,7 @@
   padding: 16px 32px;
   border: none;
   border-radius: 50px;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -598,11 +595,11 @@
   }
   
   .login-required h2 {
-    font-size: 32px;
+    font-size: 34px;
   }
   
   .login-required p {
-    font-size: 18px;
+    font-size: 20px;
   }
   
   .auth-buttons {
@@ -1981,4 +1978,65 @@ html, body {
     font-size: 1.4rem;
     margin-bottom: 15px;
   }
+}
+
+/* Reset completo del select de idiomas */
+select.language-select {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+    min-width: 80px !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+/* Estilos específicos para el contenedor */
+.language-switcher {
+    border: 1px solid var(--border-light) !important;
+    border-radius: 8px !important;
+    background: white !important;
+    color: var(--text-primary) !important;
+    padding: 8px 12px !important;
+    min-width: 120px !important;
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+}
+
+.language-switcher select,
+.language-switcher .language-select,
+.language-switcher select.language-select {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.language-switcher select:focus,
+.language-switcher select:active,
+.language-switcher .language-select:focus,
+.language-switcher .language-select:active,
+.language-switcher select.language-select:focus,
+.language-switcher select.language-select:active {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.stat-card .stat-value {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #25D366, #8A2BE2);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.highlight-value {
+    font-size: 1.5rem !important;
 }

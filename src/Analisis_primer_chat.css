@@ -107,7 +107,7 @@
 }
 
 .stat-value {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #1a1a1a;
   margin-bottom: 8px;
@@ -140,7 +140,7 @@
 }
 
 .stat-card .stat-value {
-  font-size: 2rem;
+  font-size: 1.5rem;
   margin-bottom: 8px;
   background: linear-gradient(135deg, #25D366, #8A2BE2);
   background-clip: text;
@@ -178,7 +178,7 @@
 }
 
 .highlight-value {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #1a1a1a;
   margin-bottom: 4px;
