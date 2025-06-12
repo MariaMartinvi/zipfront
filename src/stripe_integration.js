@@ -18,24 +18,24 @@ export const PLANS = {
     id: 'basic',
     name: 'Basic Plan',
     price: 4,
-    quota: 20,
-    description: '20 chat analyses',
+    quota: 5,
+    description: '5 chat analyses',
     priceId: process.env.REACT_APP_STRIPE_BASIC_PRICE_ID
   },
   STANDARD: {
     id: 'standard',
     name: 'Standard Plan',
     price: 8,
-    quota: 50,
-    description: '50 chat analyses',
+    quota: 10,
+    description: '10 chat analyses',
     priceId: process.env.REACT_APP_STRIPE_STANDARD_PRICE_ID
   },
   PREMIUM: {
     id: 'premium',
     name: 'Premium Plan',
-    price: 20,
-    quota: 120,
-    description: '120 chat analyses',
+    price: 10,
+    quota: 20,
+    description: '20 chat analyses',
     priceId: process.env.REACT_APP_STRIPE_PREMIUM_PRICE_ID
   }
 };
