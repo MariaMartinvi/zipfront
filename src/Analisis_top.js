@@ -9,6 +9,7 @@ import { detectarFormatoArchivo } from './formatDetector.js';
 import { parseDateTime, esDateValido } from './dateUtils.js';
 import { formatMinutesToHoursAndMinutes } from './utils/timeUtils';
 import { useAuth } from './AuthContext';
+import { ShareButton } from './shareTopProfiles';
 
 // Diccionario de palabras relacionadas con vicios por idioma
 const palabrasVicios = {
@@ -1436,7 +1437,7 @@ let isAlreadyRendered = false;
 
 const AnalisisTop = ({ operationId, chatData }) => {
   const { user, isAuthLoading } = useAuth(); // Añadir isAuthLoading para verificar el estado de carga
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -2163,6 +2164,11 @@ const AnalisisTop = ({ operationId, chatData }) => {
                 return elementosFila;
               });
             })()}
+          </div>
+          
+          {/* Botón de compartir */}
+          <div style={{ textAlign: 'center', marginTop: '40px', paddingTop: '30px', borderTop: '2px solid #f0f0f0' }}>
+            <ShareButton datos={datos} t={t} currentLanguage={i18n.language} className="center" />
           </div>
         </div>
       </section>

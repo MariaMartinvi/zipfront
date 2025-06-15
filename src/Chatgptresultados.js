@@ -7,6 +7,7 @@ import './styles/Analisis.css';
 import azureQueueService from './services/azureQueueService'; // Importamos el servicio de cola existente
 import { useAuth } from './AuthContext';
 import { createReverseTranslationMapping } from './services/azure/constants'; // NUEVO: importar función de mapeo
+import { ShareAnalysisButton } from './shareAnalysisResults'; // NUEVO: importar botón de compartir
 
 function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-default" }) {
   // TODOS los hooks deben ir ANTES de cualquier return condicional
@@ -984,6 +985,13 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
               className={`chat-analysis-container language-${i18n.language}`}
               dangerouslySetInnerHTML={{ __html: htmlContent }}
             />
+            {/* NUEVO: Botón para compartir análisis completo también durante carga */}
+            <ShareAnalysisButton 
+              htmlContent={htmlContent}
+              titleText={t('app.analysis_title', 'Análisis de Chat de WhatsApp')}
+              t={t}
+              currentLanguage={i18n.language}
+            />
           </div>
         )}
       </div>
@@ -1028,6 +1036,15 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         className={`chat-analysis-container language-${i18n.language}`}
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
+      {/* NUEVO: Botón para compartir análisis completo */}
+      {htmlContent && (
+        <ShareAnalysisButton 
+          htmlContent={htmlContent}
+          titleText={t('app.analysis_title', 'Análisis de Chat de WhatsApp')}
+          t={t}
+          currentLanguage={i18n.language}
+        />
+      )}
     </div>
   );
 }

@@ -461,6 +461,50 @@
       "analyze": "Analizar mi chat",
       "how_it_works": "Cómo funciona"
     },
+    "analysis_title": "Análisis de Chat de WhatsApp",
+    "share_button": {
+      "title": "Compartir Top Perfiles"
+    },
+    "share_analysis": {
+      "title": "Compartir Análisis Psicológico",
+      "description": "Comparte tu análisis psicológico completo",
+      "html_title": "Análisis psicológico completo de conversaciones",
+      "generated_with": "Generado con ChatSalsa",
+      "footer_title": "¿Te gustó este análisis?",
+      "footer_description": "Descubre más insights de tus conversaciones de WhatsApp",
+      "footer_cta": "🚀 Analizar Nuevo Chat Gratis",
+      "share_message": "Esto es top! Comparto los resultados del análisis de nuestro chat! 😊 . Chatsalsa.com lo ha clavado !",
+      "modal_title": "🧠 ¡Comparte tu Análisis Psicológico!",
+      "copy_button": "📋 Copiar",
+      "copy_success": "✅ Copiado",
+      "download_image": "📷 Imagen",
+      "download_html": "💻 HTML",
+      "analyze_another": "🚀 Analizar Otro",
+      "close": "Cerrar",
+      "image_cta": "🚀 Analiza tus chats con",
+      "brand_name": "CHATSALSA"
+    },
+    "share_top_profiles": {
+      "title": "Compartir Top Perfiles",
+      "html_title": "Top Perfiles del Chat",
+      "description": "Descubre quién destaca en cada categoría",
+      "generated_with": "Analizado con ChatSalsa",
+      "footer_title": "¿Quieres analizar tu propio chat?",
+      "footer_description": "Descubre estadísticas fascinantes de tus conversaciones",
+      "footer_cta": "🚀 Analizar Nuevo Chat Gratis",
+      "share_message": "🏆 ¡Descubre quién domina nuestro chat de WhatsApp!\n\n🔥 Análisis completo de personalidades\n\n👆 Resultados interactivos:",
+      "share_message_end": "\n\n🚀 Analiza tu chat GRATIS en: https://chatsalsa.com\n\n#WhatsAppStats #ChatSalsa",
+      "modal_title": "🚀 ¡Comparte tus Top Perfiles!",
+      "copy_button": "📋 Copiar",
+      "copy_success": "✅ Copiado",
+      "download_image": "📷 Imagen",
+      "download_html": "💻 HTML",
+      "analyze_another": "🚀 Analizar Otro",
+      "close": "Cerrar",
+      "image_cta": "🚀 Analiza tus chats GRATIS con",
+      "brand_name": "CHATSALSA.COM"
+    },
+    "share_description": "Comparte una imagen promocional y un HTML interactivo con los resultados",
     "security": {
       "title": "100% Privado y Seguro",
       "subtitle": "Los datos personales de los chats no salen de tu dispositivo"

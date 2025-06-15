@@ -220,8 +220,9 @@
       "analysis_failed": "Échec de l'analyse des données",
       "no_data": "Aucune donnée disponible"
     },
-    "loading_status": "Traitement des données..."
-  },
+    "loading_status": "Traitement des données...",
+          "analysis_title": "Analyse de Chat WhatsApp"
+    },
   "header": {
     "home": "Accueil",
     "about": "À propos",
@@ -781,6 +782,45 @@
       "profile": "Extravertie, leader naturel du groupe.",
       "description": "Initie généralement la plupart des conversations.",
       "view_analysis": "Voir l'analyse complète"
+    },
+    "share_analysis": {
+      "title": "Partager l'Analyse Psychologique",
+      "description": "Partagez votre analyse psychologique complète",
+      "html_title": "Analyse psychologique complète des conversations",
+      "generated_with": "Généré avec ChatSalsa",
+      "footer_title": "Avez-vous aimé cette analyse ?",
+      "footer_description": "Découvrez plus d'insights de vos conversations WhatsApp",
+      "footer_cta": "🚀 Analyser un Nouveau Chat Gratuitement",
+      "share_message": "C'est fantastique ! Je partage les résultats de l'analyse de notre chat ! 😊 . Chatsalsa.com a fait mouche !",
+      "modal_title": "🧠 Partagez votre Analyse Psychologique !",
+      "copy_button": "📋 Copier",
+      "copy_success": "✅ Copié",
+      "download_image": "📷 Image",
+      "download_html": "💻 HTML",
+      "analyze_another": "🚀 Analyser un Autre",
+      "close": "Fermer",
+      "image_cta": "🚀 Analysez vos chats avec",
+      "brand_name": "CHATSALSA"
+    },
+    "share_top_profiles": {
+      "title": "Partager Top Profils",
+      "html_title": "Top Profils du Chat",
+      "description": "Découvrez qui se démarque dans chaque catégorie",
+      "generated_with": "Analysé avec ChatSalsa",
+      "footer_title": "Voulez-vous analyser votre propre chat?",
+      "footer_description": "Découvrez des statistiques fascinantes de vos conversations",
+      "footer_cta": "🚀 Analyser un Nouveau Chat Gratuitement",
+      "share_message": "🏆 Découvrez qui domine notre chat WhatsApp!\n\n🔥 Analyse complète de personnalités\n\n👆 Résultats interactifs:",
+      "share_message_end": "\n\n🚀 Analysez votre chat GRATUITEMENT sur: https://chatsalsa.com\n\n#WhatsAppStats #ChatSalsa",
+      "modal_title": "🚀 Partagez vos Top Profils!",
+      "copy_button": "📋 Copier",
+      "copy_success": "✅ Copié",
+      "download_image": "📷 Image",
+      "download_html": "💻 HTML",
+      "analyze_another": "🚀 Analyser un Autre",
+      "close": "Fermer",
+      "image_cta": "🚀 Analysez vos chats GRATUITEMENT avec",
+      "brand_name": "CHATSALSA.COM"
     }
   },
   "pwa": {

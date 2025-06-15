@@ -63,8 +63,6 @@ export class AzureService {
    */
   async getResponse(textContent, language = 'es') {
     try {
-      console.error('🚨 INICIO getResponse');
-      console.error('Texto recibido:', textContent);
       
       // Validar y normalizar el idioma
       if (!PROMPTS[language]) {
@@ -89,9 +87,6 @@ export class AzureService {
       // Preparar el contenido del usuario
       let userContent = textContent;
       const contentLength = userContent.length;
-      
-      console.error('🔍 PREPARANDO CONTENIDO');
-      console.error('Longitud del texto:', contentLength);
       
       // Obtener el prompt en el idioma correspondiente
       const systemPrompt = PROMPTS[language] || PROMPTS['es'];
@@ -194,13 +189,21 @@ export class AzureService {
           const maxTokens = api.model === 'DeepSeek-R1' ? 8000 : 4000; // Más tokens para Deepseek R1
           console.log(`>>> MAX_TOKENS configurado para ${api.name}: ${maxTokens}`);
           
-          // Preparar el cuerpo de la petición
+          // Preparar el cuerpo de la petición - usar el parámetro correcto según el modelo
           const requestBody = {
             model: api.model,
             messages: messages,
-            temperature: temperature,
-            max_tokens: maxTokens
+            ...(api.useTemperature !== false && { temperature: temperature })
           };
+          
+          // Usar el parámetro de tokens correcto según la configuración del modelo
+          if (api.useMaxCompletionTokens === true) {
+            requestBody.max_completion_tokens = maxTokens;
+            console.log(`>>> Usando max_completion_tokens para ${api.name}`);
+          } else {
+            requestBody.max_tokens = maxTokens;
+            console.log(`>>> Usando max_tokens para ${api.name}`);
+          }
           
           const response = await client.chat.completions.create(requestBody);
           
