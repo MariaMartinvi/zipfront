@@ -292,6 +292,8 @@ const compressTopProfilesData = (datos, currentLanguage) => {
 };
 
 export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
+  console.log('🚀 INICIANDO shareTopProfiles - navigator.share disponible:', !!navigator.share);
+  
   try {
     const htmlContent = generateStandaloneHTML(datos, t, currentLanguage);
     const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
@@ -299,6 +301,7 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
     
     const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
     const imageUrl = URL.createObjectURL(imageBlob);
+    console.log('📷 Imagen generada:', imageBlob.size, 'bytes');
     
     // Generar URL con parámetros comprimidos
     const compressedData = compressTopProfilesData(datos, currentLanguage);
