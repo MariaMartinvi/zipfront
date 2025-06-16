@@ -265,12 +265,6 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
   
   try {
     if (navigator.share) {
-      // NUEVA ESTRATEGIA: Imagen personalizada + mensaje entusiasta + URL genérica
-      console.log('🎨 Generando imagen personalizada...');
-      
-      // Generar imagen personalizada
-      const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
-      
       // Crear mensaje entusiasta (como Wrapped) - VERSIÓN CORTA
       const mensajeEntusiasta = t ? 
         t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira mis resultados de chat:') :
@@ -278,20 +272,17 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       
       const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
       
-      // DETECCIÓN ADAPTATIVA - Como hace Wrapped
-      const userAgent = navigator.userAgent;
-      const isIOS = /iPad|iPhone|iPod/.test(userAgent);
-      const isAndroidOld = /Android [1-9]\./.test(userAgent);
-      
-      console.log('📱 Dispositivo detectado:', { userAgent, isIOS, isAndroidOld });
-      
       // Crear archivo con nombre simple
+      const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
       const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
       
-      // ESTRATEGIA WRAPPED: Solo TEXT con URL incluida
-      console.log('🔥 ESTRATEGIA WRAPPED: Solo text + files');
+      // PROBAR DE NUEVO: Texto + URL concatenados (mensaje corto)
+      console.log('🔥 PROBANDO DE NUEVO: Texto + URL en campo url');
+      console.log('📱 Texto:', mensajeEntusiasta);
+      console.log('🔗 URL:', urlGenerica);
+      
       await navigator.share({
-        text: `${mensajeEntusiasta} ${urlGenerica}`,
+        url: `${mensajeEntusiasta} ${urlGenerica}`,
         files: [file]
       });
       
