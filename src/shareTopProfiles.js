@@ -265,25 +265,23 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
   
   try {
     if (navigator.share) {
-      // Crear mensaje entusiasta (como Wrapped) - VERSIÓN CORTA
+      // ESTRATEGIA ADAPTATIVA: Imagen + URL + texto (email lo usará, WhatsApp lo ignorará)
+      console.log('🔥 Compartiendo imagen + URL + texto');
+      
       const mensajeEntusiasta = t ? 
-        t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira mis resultados de chat:') :
-        '¡Esto es increíble! Mira mis resultados de chat:';
+        t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!') :
+        '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!';
       
       const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
       
-      // Crear archivo con nombre simple
+      console.log('📧 Texto (para email):', mensajeEntusiasta);
+      console.log('🔗 URL:', urlGenerica);
+      
       const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
       const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
       
-      // TEST COMPLETO: Todos los campos para ver qué aparece
-      console.log('🧪 TEST COMPLETO: Todos los campos');
-      console.log('📱 Mensaje:', mensajeEntusiasta);
-      console.log('🔗 URL:', urlGenerica);
-      
       await navigator.share({
-        title: `TÍTULO: ${mensajeEntusiasta}`,
-        text: `TEXTO: ${mensajeEntusiasta}`,
+        text: mensajeEntusiasta,
         url: urlGenerica,
         files: [file]
       });
