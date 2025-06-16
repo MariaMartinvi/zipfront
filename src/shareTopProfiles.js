@@ -288,10 +288,10 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       // Crear archivo con nombre simple
       const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
       
-      // FORZAR ESTRATEGIA A - PRUEBA TEMPORAL
-      console.log('🔥 FORZANDO ESTRATEGIA A: Texto en URL concatenada');
+      // ESTRATEGIA WRAPPED: Solo TEXT con URL incluida
+      console.log('🔥 ESTRATEGIA WRAPPED: Solo text + files');
       await navigator.share({
-        url: `${mensajeEntusiasta} ${urlGenerica}`,
+        text: `${mensajeEntusiasta} ${urlGenerica}`,
         files: [file]
       });
       
