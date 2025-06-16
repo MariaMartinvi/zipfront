@@ -276,13 +276,15 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
       const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
       
-      // PROBAR PROTOCOLO MAILTO
-      console.log('🔥 PROBANDO PROTOCOLO MAILTO');
-      console.log('📱 Texto:', mensajeEntusiasta);
-      console.log('🔗 URL original:', urlGenerica);
+      // TEST COMPLETO: Todos los campos para ver qué aparece
+      console.log('🧪 TEST COMPLETO: Todos los campos');
+      console.log('📱 Mensaje:', mensajeEntusiasta);
+      console.log('🔗 URL:', urlGenerica);
       
       await navigator.share({
-        url: `mailto:?subject=${encodeURIComponent(mensajeEntusiasta)}&body=${encodeURIComponent(urlGenerica)}`,
+        title: `TÍTULO: ${mensajeEntusiasta}`,
+        text: `TEXTO: ${mensajeEntusiasta}`,
+        url: urlGenerica,
         files: [file]
       });
       
