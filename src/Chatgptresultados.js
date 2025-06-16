@@ -986,9 +986,10 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
               dangerouslySetInnerHTML={{ __html: htmlContent }}
             />
             {/* NUEVO: Botón para compartir análisis completo también durante carga */}
+            {/* DEBUG: Verificar función t antes de pasarla */}
+            {console.log('🔍 DEBUG Chatgptresultados - Función t disponible:', !!t, 'Tipo:', typeof t, 'Idioma:', i18n.language)}
             <ShareAnalysisButton 
               htmlContent={htmlContent}
-              titleText={t('app.analysis_title', 'Análisis de Chat de WhatsApp')}
               t={t}
               currentLanguage={i18n.language}
             />
@@ -1038,12 +1039,15 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       />
       {/* NUEVO: Botón para compartir análisis completo */}
       {htmlContent && (
-        <ShareAnalysisButton 
-          htmlContent={htmlContent}
-          titleText={t('app.analysis_title', 'Análisis de Chat de WhatsApp')}
-          t={t}
-          currentLanguage={i18n.language}
-        />
+        <>
+          {/* DEBUG: Verificar función t antes de pasarla */}
+          {console.log('🔍 DEBUG Chatgptresultados FINAL - Función t disponible:', !!t, 'Tipo:', typeof t, 'Idioma:', i18n.language)}
+          <ShareAnalysisButton 
+            htmlContent={htmlContent}
+            t={t}
+            currentLanguage={i18n.language}
+          />
+        </>
       )}
     </div>
   );

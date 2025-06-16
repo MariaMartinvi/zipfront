@@ -169,8 +169,17 @@ export const generatePromotionalImage = async (datos, t, currentLanguage = 'es')
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
-    canvas.width = 1080;
-    canvas.height = 1080;
+    const categoriasValidas = obtenerCategoriasOrdenadas(datos);
+    const totalCategorias = categoriasValidas.length;
+    
+    // IMAGEN MÁS GRANDE: Calcular dimensiones dinámicamente
+    const columnas = Math.min(3, totalCategorias); // Máximo 3 columnas
+    const filas = Math.ceil(totalCategorias / columnas);
+    
+    canvas.width = 1200; // Más ancho
+    canvas.height = Math.max(1200, 300 + filas * 280 + 200); // Altura dinámica
+    
+    console.log(`🎨 Generando imagen: ${canvas.width}x${canvas.height} para ${totalCategorias} perfiles`);
     
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, '#667eea');
@@ -178,16 +187,15 @@ export const generatePromotionalImage = async (datos, t, currentLanguage = 'es')
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Agregar bolitas decorativas de fondo
+    // Agregar bolitas decorativas de fondo (adaptadas al nuevo tamaño)
     const bolitas = [
-      { x: 150, y: 200, radius: 80, opacity: 0.1 },
-      { x: 900, y: 150, radius: 60, opacity: 0.08 },
-      { x: 80, y: 500, radius: 100, opacity: 0.12 },
-      { x: 950, y: 450, radius: 70, opacity: 0.09 },
-      { x: 200, y: 800, radius: 90, opacity: 0.1 },
-      { x: 850, y: 750, radius: 65, opacity: 0.08 },
-      { x: 450, y: 950, radius: 75, opacity: 0.09 },
-      { x: 650, y: 50, radius: 55, opacity: 0.07 }
+      { x: 180, y: 150, radius: 70, opacity: 0.1 },
+      { x: 1000, y: 100, radius: 60, opacity: 0.08 },
+      { x: 100, y: canvas.height * 0.3, radius: 80, opacity: 0.12 },
+      { x: 1050, y: canvas.height * 0.4, radius: 65, opacity: 0.09 },
+      { x: 150, y: canvas.height * 0.7, radius: 75, opacity: 0.1 },
+      { x: 950, y: canvas.height * 0.8, radius: 70, opacity: 0.08 },
+      { x: 600, y: canvas.height - 100, radius: 65, opacity: 0.09 }
     ];
     
     bolitas.forEach(bolita => {
@@ -197,36 +205,43 @@ export const generatePromotionalImage = async (datos, t, currentLanguage = 'es')
       ctx.fill();
     });
     
+    // Título
     ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px Arial';
+    ctx.font = 'bold 52px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText(`🏆 ${t('hero.share_top_profiles.html_title', 'TOP CHAT PROFILES').toUpperCase()}`, canvas.width / 2, 80);
+    ctx.fillText(`🏆 ${t('hero.share_top_profiles.html_title', 'TODOS MIS PERFILES DE CHAT').toUpperCase()}`, canvas.width / 2, 80);
     
-    const categoriasValidas = obtenerCategoriasOrdenadas(datos);
-    
-    const topCategorias = categoriasValidas.slice(0, 4);
-    
-    topCategorias.forEach((categoria, index) => {
+    // MOSTRAR TODOS LOS PERFILES
+    categoriasValidas.forEach((categoria, index) => {
       const catData = datos.categorias[categoria];
       const iconData = CATEGORIA_ICONOS[categoria];
       
-      const col = index % 2;
-      const row = Math.floor(index / 2);
-      const x = 90 + col * 450;
-      const y = 200 + row * 320;
+      const col = index % columnas;
+      const row = Math.floor(index / columnas);
       
+      // Espaciado dinámico
+      const cardWidth = 350;
+      const cardHeight = 240;
+      const paddingX = (canvas.width - columnas * cardWidth) / (columnas + 1);
+      const paddingY = 50;
+      
+      const x = paddingX + col * (cardWidth + paddingX);
+      const y = 150 + row * (cardHeight + paddingY);
+      
+      // Tarjeta
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
       ctx.beginPath();
-      ctx.roundRect(x, y, 400, 300, 25);
+      ctx.roundRect(x, y, cardWidth, cardHeight, 20);
       ctx.fill();
       
-      ctx.font = '100px Arial';
+      // Icono
+      ctx.font = '80px Arial';
       ctx.fillStyle = '#333';
       ctx.textAlign = 'center';
-      ctx.fillText(iconData.icono, x + 200, y + 100);
+      ctx.fillText(iconData.icono, x + cardWidth/2, y + 80);
       
-      ctx.font = 'bold 40px Arial';
-      // Mapeo de categorías a claves de traducción
+      // Título
+      ctx.font = 'bold 28px Arial';
       const categoryTranslationMap = {
         'profesor': 'professor', 'rollero': 'verbose', 'pistolero': 'gunslinger', 'vampiro': 'vampire',
         'cafeconleche': 'morning', 'dejaenvisto': 'ghost', 'narcicista': 'narcissist', 'puntofinal': 'ending',
@@ -236,25 +251,27 @@ export const generatePromotionalImage = async (datos, t, currentLanguage = 'es')
       };
       const translationKey = categoryTranslationMap[categoria] || categoria;
       const tituloTraducido = t(`app.top_profiles.${translationKey}.title`, iconData.titulo);
-      ctx.fillText(tituloTraducido, x + 200, y + 170);
+      ctx.fillText(tituloTraducido, x + cardWidth/2, y + 130);
       
-      ctx.font = 'bold 52px Arial';
+      // Nombre ganador
+      ctx.font = 'bold 36px Arial';
       ctx.fillStyle = '#667eea';
       let nombre = catData.nombre;
-      if (nombre.length > 12) {
-        nombre = nombre.substring(0, 12) + '...';
+      if (nombre.length > 10) {
+        nombre = nombre.substring(0, 10) + '...';
       }
-      ctx.fillText(nombre, x + 200, y + 230);
+      ctx.fillText(nombre, x + cardWidth/2, y + 180);
     });
     
-    ctx.font = 'bold 32px Arial';
+    // Footer - TODA LA FRASE MÁS GRANDE Y SEPARADA
+    ctx.font = 'bold 48px Arial';  // Era 40px, ahora más grande
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
-    ctx.fillText(t('hero.share_top_profiles.image_cta', '🚀 Analyze your chats FREE with'), canvas.width / 2, 1000);
+    ctx.fillText(t('hero.share_top_profiles.image_cta', '🚀 Analiza tus chats GRATIS en'), canvas.width / 2, canvas.height - 100); // Más arriba
     
-    ctx.font = 'bold 36px Arial';
+    ctx.font = 'bold 64px Arial';  // Era 56px, ahora más grande
     ctx.fillStyle = '#FFE000';
-    ctx.fillText(t('hero.share_top_profiles.brand_name', 'CHATSALSA.COM'), canvas.width / 2, 1050);
+    ctx.fillText(t('hero.share_top_profiles.brand_name', 'CHATSALSA.COM'), canvas.width / 2, canvas.height - 30); // Más abajo
     
     canvas.toBlob(resolve, 'image/png', 0.9);
   });

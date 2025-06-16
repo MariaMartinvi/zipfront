@@ -615,28 +615,141 @@ const compressAnalysisData = (htmlContent, currentLanguage) => {
   }
 };
 
+// NUEVA FUNCIÓN: Extraer texto plano del análisis HTML
+const extractPlainTextFromAnalysis = (htmlContent) => {
+  try {
+    // Crear div temporal para procesar el HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    
+    // Remover elementos innecesarios (scripts, styles, etc.)
+    const unwantedElements = tempDiv.querySelectorAll('script, style, .game-data-section, .game-data-display');
+    unwantedElements.forEach(el => el.remove());
+    
+    // Extraer texto limpio
+    let cleanText = tempDiv.innerText || tempDiv.textContent || '';
+    
+    // Limpiar espacios extra y líneas vacías
+    cleanText = cleanText
+      .replace(/\n\s*\n\s*\n/g, '\n\n') // Máximo 2 líneas vacías consecutivas
+      .replace(/[ \t]+/g, ' ') // Espacios múltiples en uno
+      .trim();
+    
+    return cleanText;
+  } catch (error) {
+    console.error('Error extrayendo texto plano:', error);
+    return '';
+  }
+};
+
 // Función principal para compartir análisis
-export const shareAnalysisResults = async (stats, participants, dailyActivity, chatName, t, currentLanguage = 'es') => {
+export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es') => {
   console.log('🚀 INICIANDO shareAnalysisResults - navigator.share disponible:', !!navigator.share);
   
   try {
-    // Generar URL con datos comprimidos
-    const compressedData = compressAnalysisData(stats, currentLanguage);
-    const reportUrl = compressedData 
-      ? `https://chatsalsa.com/analysis?data=${compressedData}`
-      : `https://chatsalsa.com?lang=${currentLanguage}`;
-    
     if (navigator.share) {
-      // ESTRATEGIA AIRBNB: Solo URL - WhatsApp hace scraping automático
-      console.log('🔥 Compartiendo SOLO URL (WhatsApp scraping automático)');
-      console.log('🔗 URL:', reportUrl);
+      // DETECCIÓN ADAPTATIVA: Desktop vs Móvil (como en shareTopProfiles.js)
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
-      await navigator.share({
-        url: reportUrl
-      });
+      console.log('🔥 Compartiendo con detección adaptativa');
+      console.log('📱 Es móvil:', isMobile);
       
-      console.log('✅ Compartido exitosamente');
-      return true;
+      // ESTRATEGIA 1: TEXTO COMPLETO + URL (SIN IMAGEN)
+      const textoAnalisis = extractPlainTextFromAnalysis(htmlContent);
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      
+       // DEBUG: Verificar función t y idioma actual
+       console.log('🔍 DEBUG - Función t disponible:', !!t);
+       console.log('🔍 DEBUG - Idioma actual:', currentLanguage);
+       
+                    const mensajeIntro = t ? 
+         t('hero.share_analysis.enthusiastic_message') :
+         '';
+       
+       const mensajeCierre = t ?
+         t('hero.share_analysis.closing_cta') :
+         '';
+         
+       // DEBUG: Verificar qué traducciones se obtuvieron
+       console.log('🔍 DEBUG - Mensaje intro obtenido:', mensajeIntro);
+       console.log('🔍 DEBUG - Mensaje cierre obtenido:', mensajeCierre);
+       
+       console.log('📝 Intentando compartir TEXTO COMPLETO (sin imagen)');
+       console.log('📊 Longitud del texto:', textoAnalisis.length);
+       console.log('🔍 DEBUG - Función t disponible:', !!t);
+       console.log('🔍 DEBUG - Idioma actual:', currentLanguage);
+       console.log('🔍 DEBUG - Tipo de función t:', typeof t);
+       
+       // Probar directamente las claves de traducción
+       if (t) {
+         console.log('🔍 DEBUG - Probando clave hero.share_analysis.title:', t('hero.share_analysis.title'));
+         console.log('🔍 DEBUG - Probando clave hero.share_analysis.enthusiastic_message:', t('hero.share_analysis.enthusiastic_message'));
+         console.log('🔍 DEBUG - Probando clave hero.share_analysis.closing_cta:', t('hero.share_analysis.closing_cta'));
+       }
+       
+       console.log('🔍 DEBUG - Mensaje intro obtenido:', mensajeIntro);
+       console.log('🔍 DEBUG - Mensaje cierre obtenido:', mensajeCierre);
+       
+       try {
+         if (isMobile) {
+           // MÓVIL: text + url separados (URL visible)
+           console.log('📱 Estrategia móvil: text + url');
+           
+           const textoFinal = `${mensajeIntro}\n\n${textoAnalisis}\n\n${mensajeCierre}`;
+           console.log('🔍 DEBUG - Texto final a compartir:', textoFinal);
+           console.log('🔍 DEBUG - Longitud texto final:', textoFinal.length);
+           console.log('🔍 DEBUG - URL a compartir:', urlGenerica);
+           
+           await navigator.share({
+             text: textoFinal,
+             url: urlGenerica
+           });
+         } else {
+           // DESKTOP: text con URL incluida
+           console.log('🖥️ Estrategia desktop: text con URL incluida');
+           
+           const textoFinalDesktop = `${mensajeIntro}\n\n${textoAnalisis}\n\n${mensajeCierre} ${urlGenerica}`;
+           console.log('🔍 DEBUG - Texto final desktop:', textoFinalDesktop);
+           console.log('🔍 DEBUG - Longitud texto final desktop:', textoFinalDesktop.length);
+           
+           await navigator.share({
+             text: textoFinalDesktop
+           });
+         }
+        
+        console.log('✅ Compartido exitosamente con TEXTO');
+        return true;
+        
+      } catch (textError) {
+        console.warn('⚠️ Error compartiendo texto, intentando FALLBACK con imagen:', textError);
+        
+        // FALLBACK: IMAGEN + URL (como antes)
+        console.log('🖼️ Activando FALLBACK: imagen + URL');
+        
+        const imageBlob = await generateAnalysisImage(htmlContent, t, currentLanguage);
+        const file = new File([imageBlob], 'chatsalsa-analysis.png', { type: 'image/png' });
+        
+        if (isMobile) {
+          // MÓVIL: text + url + files
+          console.log('📱 Fallback móvil: text + url + files');
+          await navigator.share({
+            text: mensajeIntro,
+            url: urlGenerica,
+            files: [file]
+          });
+        } else {
+          // DESKTOP: text con URL incluida + files
+          console.log('🖥️ Fallback desktop: text con URL incluida + files');
+          await navigator.share({
+            text: `${mensajeIntro} ${urlGenerica}`,
+            files: [file]
+          });
+        }
+        
+        console.log('✅ Compartido exitosamente con IMAGEN (fallback)');
+        return true;
+      }
+      
     } else {
       console.log('❌ navigator.share no disponible');
       alert('Tu navegador no soporta compartir');
@@ -693,7 +806,7 @@ export const ShareAnalysisButton = ({ htmlContent, t, currentLanguage = 'es', cl
           e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.3)';
         }}
       >
-        🧠 {t ? t('hero.share_analysis.title', 'Compartir Análisis Psicológico') : 'Compartir Análisis Psicológico'}
+        🧠 {t ? t('hero.share_analysis.title') : ''}
       </button>
     </div>
   );
