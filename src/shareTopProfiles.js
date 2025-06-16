@@ -271,10 +271,10 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       // Generar imagen personalizada
       const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
       
-      // Crear mensaje entusiasta (como Wrapped)
+      // Crear mensaje entusiasta (como Wrapped) - VERSIÓN CORTA
       const mensajeEntusiasta = t ? 
-        t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!') :
-        '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!';
+        t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira mis resultados de chat:') :
+        '¡Esto es increíble! Mira mis resultados de chat:';
       
       const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
       
@@ -288,23 +288,12 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       // Crear archivo con nombre simple
       const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
       
-      // ESTRATEGIA ADAPTATIVA
-      if (isIOS || isAndroidOld) {
-        // ESTRATEGIA A: Texto concatenado en URL (para dispositivos que no muestran text)
-        console.log('🔥 Usando ESTRATEGIA A: Texto en URL concatenada');
-        await navigator.share({
-          url: `${mensajeEntusiasta} ${urlGenerica}`,
-          files: [file]
-        });
-      } else {
-        // ESTRATEGIA B: Text + URL separados (para dispositivos modernos)
-        console.log('🔥 Usando ESTRATEGIA B: Text + URL separados');
-        await navigator.share({
-          text: mensajeEntusiasta,
-          url: urlGenerica,
-          files: [file]
-        });
-      }
+      // FORZAR ESTRATEGIA A - PRUEBA TEMPORAL
+      console.log('🔥 FORZANDO ESTRATEGIA A: Texto en URL concatenada');
+      await navigator.share({
+        url: `${mensajeEntusiasta} ${urlGenerica}`,
+        files: [file]
+      });
       
       console.log('✅ Compartido exitosamente');
       return true;
