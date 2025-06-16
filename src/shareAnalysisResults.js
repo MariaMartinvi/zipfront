@@ -620,46 +620,26 @@ export const shareAnalysisResults = async (stats, participants, dailyActivity, c
   console.log('🚀 INICIANDO shareAnalysisResults - navigator.share disponible:', !!navigator.share);
   
   try {
-    const imageBlob = await generateAnalysisImage(stats, t, currentLanguage);
-    console.log('📷 Imagen generada:', imageBlob.size, 'bytes');
-    
     // Generar URL con datos comprimidos
     const compressedData = compressAnalysisData(stats, currentLanguage);
     const reportUrl = compressedData 
       ? `https://chatsalsa.com/analysis?data=${compressedData}`
       : `https://chatsalsa.com?lang=${currentLanguage}`;
     
-    const mensaje = `${t('hero.whatsapp_share.share_message', '🚀 ¡Mira el análisis completo de nuestro chat de WhatsApp!')}\n\n${t('hero.whatsapp_share.stats_text', '📊 Estadísticas increíbles y análisis detallado')}\n\n👆 ${t('hero.whatsapp_share.view_results', 'Ver resultados completos:')} ${reportUrl}\n\n🚀 ${t('hero.whatsapp_share.cta', 'Analiza tu chat GRATIS en:')} https://chatsalsa.com?lang=${currentLanguage}\n\n#WhatsAppStats #ChatSalsa`;
-    
     if (navigator.share) {
-      // ESTRATEGIA OFICIAL MDN: Validar archivos con canShare ANTES de compartir
-      const files = [new File([imageBlob], 'analisis-chat.png', { type: 'image/png' })];
+      // ESTRATEGIA AIRBNB: Solo URL - WhatsApp hace scraping automático
+      console.log('🔥 Compartiendo SOLO URL (WhatsApp scraping automático)');
+      console.log('🔗 URL:', reportUrl);
       
-      // VALIDAR con canShare - Si no funciona, NO compartir nada
-      if (navigator.canShare && navigator.canShare({ files })) {
-        console.log('🔥 Compartiendo IMAGEN + TEXTO (validado)');
-        console.log('📷 Archivo:', files[0].name, files[0].size, 'bytes');
-        console.log('📝 Mensaje:', mensaje.substring(0, 100) + '...');
-        
-        await navigator.share({
-          title: t('hero.whatsapp_share.title', 'Análisis de Chat'),
-          text: mensaje,
-          files: files
-        });
-        
-        console.log('✅ Compartido exitosamente');
-        return true;
-      } else {
-        console.log('❌ canShare falló - NO se puede compartir imagen + texto');
-        alert('Este dispositivo no soporta compartir imágenes con texto');
-        return false;
-      }
+      await navigator.share({
+        url: reportUrl
+      });
       
       console.log('✅ Compartido exitosamente');
       return true;
     } else {
       console.log('❌ navigator.share no disponible');
-      alert('Tu navegador no soporta compartir archivos');
+      alert('Tu navegador no soporta compartir');
       return false;
     }
     
@@ -669,7 +649,7 @@ export const shareAnalysisResults = async (stats, participants, dailyActivity, c
       console.log('👤 Usuario canceló el compartir');
       return false;
     }
-    alert(t('messages.error', 'Error al generar el contenido para compartir'));
+    alert(t('messages.error', 'Error al compartir'));
     return false;
   }
 };

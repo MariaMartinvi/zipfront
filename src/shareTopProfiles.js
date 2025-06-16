@@ -260,78 +260,40 @@ export const generatePromotionalImage = async (datos, t, currentLanguage = 'es')
   });
 };
 
-// Función para comprimir datos de top profiles
-const compressTopProfilesData = (datos, currentLanguage) => {
-  try {
-    const categoriasValidas = obtenerCategoriasOrdenadas(datos);
-    
-    // Crear objeto con solo los datos necesarios
-    const dataToCompress = {
-      categorias: {},
-      lang: currentLanguage
-    };
-    
-    // Solo incluir categorías válidas
-    categoriasValidas.forEach(categoria => {
-      if (datos.categorias[categoria]) {
-        dataToCompress.categorias[categoria] = {
-          nombre: datos.categorias[categoria].nombre
-        };
-      }
-    });
-    
-    // Comprimir datos usando btoa (base64)
-    const jsonString = JSON.stringify(dataToCompress);
-    const compressed = btoa(encodeURIComponent(jsonString));
-    
-    return compressed;
-  } catch (error) {
-    console.error('Error comprimiendo datos:', error);
-    return null;
-  }
-};
-
 export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
   console.log('🚀 INICIANDO shareTopProfiles - navigator.share disponible:', !!navigator.share);
   
   try {
-    const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
-    console.log('📷 Imagen generada:', imageBlob.size, 'bytes');
-    
-    // Generar URL con parámetros comprimidos
-    const compressedData = compressTopProfilesData(datos, currentLanguage);
-    const reportUrl = compressedData 
-      ? `https://chatsalsa.com/top-profiles?data=${compressedData}`
-      : `https://chatsalsa.com?lang=${currentLanguage}`;
-    
-    const mensaje = t('hero.share_top_profiles.share_message', '🏆 ¡Descubre quién domina nuestro chat de WhatsApp!\n\n🔥 Análisis completo de personalidades\n\n👆 Resultados interactivos:') + ' ' + reportUrl + t('hero.share_top_profiles.share_message_end', `\n\n🚀 Analiza tu chat GRATIS en: https://chatsalsa.com?lang=${currentLanguage}\n\n#WhatsAppStats #ChatSalsa`);
-    
     if (navigator.share) {
-      // SOLO IMAGEN + TEXTO - Sin fallback
-      const files = [new File([imageBlob], 'top-perfiles-chat.png', { type: 'image/png' })];
+      // NUEVA ESTRATEGIA: Imagen personalizada + mensaje entusiasta + URL genérica
+      console.log('🎨 Generando imagen personalizada...');
       
-      // VALIDAR con canShare - Si no funciona, NO compartir nada
-      if (navigator.canShare && navigator.canShare({ files })) {
-        console.log('🔥 Compartiendo IMAGEN + TEXTO (validado)');
-        console.log('📷 Archivo:', files[0].name, files[0].size, 'bytes');
-        console.log('📝 Mensaje:', mensaje.substring(0, 100) + '...');
-        
-        await navigator.share({
-          title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
-          text: mensaje,
-          files: files
-        });
-        
-        console.log('✅ Compartido exitosamente');
-        return true;
-      } else {
-        console.log('❌ canShare falló - NO se puede compartir imagen + texto');
-        alert('Este dispositivo no soporta compartir imágenes con texto');
-        return false;
-      }
+      // Generar imagen personalizada
+      const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
+      
+      // Crear mensaje entusiasta
+      const mensajeEntusiasta = t ? 
+        t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con') :
+        '¡Esto es increíble! Mira los resultados del análisis de mi chat con';
+      
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      
+      console.log('🔥 Compartiendo imagen + mensaje + URL genérica');
+      console.log('📱 Mensaje:', `${mensajeEntusiasta} ${urlGenerica}`);
+      
+      // Crear archivo con nombre descriptivo
+      const file = new File([imageBlob], 'mis-top-perfiles-chatsalsa.png', { type: 'image/png' });
+      
+      await navigator.share({
+        text: `${mensajeEntusiasta} ${urlGenerica}`,
+        files: [file]
+      });
+      
+      console.log('✅ Compartido exitosamente');
+      return true;
     } else {
       console.log('❌ navigator.share no disponible');
-      alert('Tu navegador no soporta compartir archivos');
+      alert('Tu navegador no soporta compartir');
       return false;
     }
     
@@ -341,7 +303,7 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       console.log('👤 Usuario canceló el compartir');
       return false;
     }
-    alert(t('messages.error', 'Error al generar el contenido para compartir'));
+    alert(t('messages.error', 'Error al compartir'));
     return false;
   }
 };
