@@ -287,8 +287,7 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
       
       await navigator.share({
-        title: mensajeEntusiasta,
-        url: urlGenerica,
+        url: `${mensajeEntusiasta} ${urlGenerica}`,
         files: [file]
       });
       
