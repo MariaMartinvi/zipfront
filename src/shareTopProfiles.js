@@ -332,19 +332,28 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
         }
       }
       
-      // Fallback: compartir solo texto (con URL comprimida para compatibilidad con WhatsApp)
+      // Fallback: compartir solo imagen (para WhatsApp)
       try {
-        // Abrir imagen primero para que el usuario la vea
-        window.open(imageUrl, '_blank');
+        const imageFile = new File([imageBlob], 'top-perfiles-chat.png', { type: 'image/png' });
         
-        // Luego compartir el texto
-        await navigator.share({
-          title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
-          text: mensajeParaApps // Usar URL comprimida
-        });
+        if (navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+          await navigator.share({
+            title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
+            text: mensajeParaApps,
+            files: [imageFile] // Solo imagen + texto
+          });
+        } else {
+          // Si no puede compartir archivos, solo texto
+          await navigator.share({
+            title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
+            text: mensajeParaApps
+          });
+          // Abrir imagen para que usuario la guarde manualmente
+          window.open(imageUrl, '_blank');
+        }
         return true;
       } catch (error) {
-        console.log('Error compartiendo texto, mostrando modal:', error);
+        console.log('Error compartiendo, mostrando modal:', error);
       }
     }
     
