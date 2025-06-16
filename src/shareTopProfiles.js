@@ -321,39 +321,48 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       // Intentar compartir archivos primero
       if (navigator.canShare && navigator.canShare({ files })) {
         try {
+          console.log('🔥 Intentando compartir con archivos:', files.length, 'archivos');
           await navigator.share({
             title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
             text: mensajeParaApps, // Usar URL comprimida
             files: files
           });
+          console.log('✅ Compartido con archivos exitosamente');
           return true;
         } catch (error) {
-          console.log('Error compartiendo archivos, intentando solo texto:', error);
+          console.log('❌ Error compartiendo archivos:', error);
         }
+      } else {
+        console.log('⚠️ No puede compartir archivos, canShare:', navigator.canShare ? navigator.canShare({ files }) : 'navigator.canShare no disponible');
       }
       
       // Fallback: compartir solo imagen (para WhatsApp)
       try {
         const imageFile = new File([imageBlob], 'top-perfiles-chat.png', { type: 'image/png' });
+        console.log('🖼️ Intentando compartir solo imagen:', imageFile.name, imageFile.size, 'bytes');
         
         if (navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+          console.log('✅ Puede compartir solo imagen');
           await navigator.share({
             title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
             text: mensajeParaApps,
             files: [imageFile] // Solo imagen + texto
           });
+          console.log('✅ Compartido solo imagen exitosamente');
         } else {
+          console.log('⚠️ No puede compartir imagen, fallback a solo texto');
           // Si no puede compartir archivos, solo texto
           await navigator.share({
             title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
             text: mensajeParaApps
           });
+          console.log('✅ Compartido solo texto');
           // Abrir imagen para que usuario la guarde manualmente
           window.open(imageUrl, '_blank');
         }
         return true;
       } catch (error) {
-        console.log('Error compartiendo, mostrando modal:', error);
+        console.log('❌ Error en fallback:', error);
       }
     }
     
