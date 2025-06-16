@@ -295,12 +295,7 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
   console.log('🚀 INICIANDO shareTopProfiles - navigator.share disponible:', !!navigator.share);
   
   try {
-    const htmlContent = generateStandaloneHTML(datos, t, currentLanguage);
-    const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
-    const htmlUrl = URL.createObjectURL(htmlBlob);
-    
     const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
-    const imageUrl = URL.createObjectURL(imageBlob);
     console.log('📷 Imagen generada:', imageBlob.size, 'bytes');
     
     // Generar URL con parámetros comprimidos
@@ -309,96 +304,43 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       ? `https://chatsalsa.com/top-profiles?data=${compressedData}`
       : `https://chatsalsa.com?lang=${currentLanguage}`;
     
-    // Mensaje con URL comprimida para WhatsApp y apps externas
-    const mensajeParaApps = t('hero.share_top_profiles.share_message', '🏆 ¡Descubre quién domina nuestro chat de WhatsApp!\n\n🔥 Análisis completo de personalidades\n\n👆 Resultados interactivos:') + ' ' + reportUrl + t('hero.share_top_profiles.share_message_end', `\n\n🚀 Analiza tu chat GRATIS en: https://chatsalsa.com?lang=${currentLanguage}\n\n#WhatsAppStats #ChatSalsa`);
-    
-    // Mensaje con blob URL solo para navegador/modal
-    const mensajeConBlob = t('hero.share_top_profiles.share_message', '🏆 ¡Descubre quién domina nuestro chat de WhatsApp!\n\n🔥 Análisis completo de personalidades\n\n👆 Resultados interactivos:') + ' ' + htmlUrl + t('hero.share_top_profiles.share_message_end', `\n\n🚀 Analiza tu chat GRATIS en: https://chatsalsa.com?lang=${currentLanguage}\n\n#WhatsAppStats #ChatSalsa`);
+    const mensaje = t('hero.share_top_profiles.share_message', '🏆 ¡Descubre quién domina nuestro chat de WhatsApp!\n\n🔥 Análisis completo de personalidades\n\n👆 Resultados interactivos:') + ' ' + reportUrl + t('hero.share_top_profiles.share_message_end', `\n\n🚀 Analiza tu chat GRATIS en: https://chatsalsa.com?lang=${currentLanguage}\n\n#WhatsAppStats #ChatSalsa`);
     
     if (navigator.share) {
-      const files = [
-        new File([imageBlob], 'top-perfiles-chat.png', { type: 'image/png' }),
-        new File([htmlBlob], 'top-profiles.html', { type: 'text/html' })
-      ];
+      // SOLO IMAGEN + TEXTO - Sin fallback
+      const files = [new File([imageBlob], 'top-perfiles-chat.png', { type: 'image/png' })];
       
-      // Intentar compartir archivos primero
+      // VALIDAR con canShare - Si no funciona, NO compartir nada
       if (navigator.canShare && navigator.canShare({ files })) {
-        try {
-          console.log('🔥 Intentando compartir con archivos:', files.length, 'archivos');
-          await navigator.share({
-            title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
-            text: mensajeParaApps, // Usar URL comprimida
-            files: files
-          });
-          console.log('✅ Compartido con archivos exitosamente');
-          return true;
-        } catch (error) {
-          console.log('❌ Error compartiendo archivos:', error);
-        }
-      } else {
-        console.log('⚠️ No puede compartir archivos, canShare:', navigator.canShare ? navigator.canShare({ files }) : 'navigator.canShare no disponible');
-      }
-      
-      // Fallback: compartir solo imagen (para WhatsApp)
-      try {
-        const imageFile = new File([imageBlob], 'top-perfiles-chat.png', { type: 'image/png' });
-        console.log('🖼️ Intentando compartir solo imagen:', imageFile.name, imageFile.size, 'bytes');
+        console.log('🔥 Compartiendo IMAGEN + TEXTO (validado)');
+        console.log('📷 Archivo:', files[0].name, files[0].size, 'bytes');
+        console.log('📝 Mensaje:', mensaje.substring(0, 100) + '...');
         
-        if (navigator.canShare && navigator.canShare({ files: [imageFile] })) {
-          console.log('✅ Puede compartir solo imagen');
-          await navigator.share({
-            title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
-            text: mensajeParaApps,
-            files: [imageFile] // Solo imagen + texto
-          });
-          console.log('✅ Compartido solo imagen exitosamente');
-        } else {
-          console.log('⚠️ No puede compartir imagen, fallback a solo texto');
-          // Si no puede compartir archivos, solo texto
-          await navigator.share({
-            title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
-            text: mensajeParaApps
-          });
-          console.log('✅ Compartido solo texto');
-          // Abrir imagen para que usuario la guarde manualmente
-          window.open(imageUrl, '_blank');
-        }
+        await navigator.share({
+          title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
+          text: mensaje,
+          files: files
+        });
+        
+        console.log('✅ Compartido exitosamente');
         return true;
-      } catch (error) {
-        console.log('❌ Error en fallback:', error);
+      } else {
+        console.log('❌ canShare falló - NO se puede compartir imagen + texto');
+        alert('Este dispositivo no soporta compartir imágenes con texto');
+        return false;
       }
+    } else {
+      console.log('❌ navigator.share no disponible');
+      alert('Tu navegador no soporta compartir archivos');
+      return false;
     }
     
-    // Mostrar modal si no se puede usar navigator.share
-    window.open(htmlUrl, '_blank');
-    
-    const modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:10000;';
-    
-    modal.innerHTML = `
-      <div style="background:white;padding:30px;border-radius:15px;max-width:500px;text-align:center;">
-        <h3>${t('hero.share_top_profiles.modal_title', '🚀 ¡Comparte tus Top Perfiles!')}</h3>
-        <img src="${imageUrl}" style="max-width:300px;border-radius:10px;margin:20px 0;">
-        <textarea readonly style="width:100%;height:120px;margin:15px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">${mensajeConBlob}</textarea>
-        <div style="display:flex;gap:10px;justify-content:center;margin:20px 0;">
-          <button onclick="navigator.clipboard.writeText('${mensajeParaApps}');this.textContent='${t('hero.share_top_profiles.copy_success', '✅ Copiado')}'" style="background:#25D366;color:white;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;">${t('hero.share_top_profiles.copy_button', '📋 Copiar')}</button>
-          <a href="${imageUrl}" download="top-perfiles.png" style="background:#667eea;color:white;text-decoration:none;padding:10px 20px;border-radius:25px;">${t('hero.share_top_profiles.download_image', '📷 Imagen')}</a>
-          <a href="${htmlUrl}" download="top-profiles.html" style="background:#764ba2;color:white;text-decoration:none;padding:10px 20px;border-radius:25px;">${t('hero.share_top_profiles.download_html', '💻 HTML')}</a>
-          <a href="https://chatsalsa.com?lang=${currentLanguage}" style="background:#25D366;color:white;text-decoration:none;padding:10px 20px;border-radius:25px;">${t('hero.share_top_profiles.analyze_another', '🚀 Analizar Otro')}</a>
-        </div>
-        <button onclick="document.body.removeChild(this.closest('div').parentElement)" style="background:#ccc;color:#333;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;">${t('hero.share_top_profiles.close', 'Cerrar')}</button>
-      </div>
-    `;
-    
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) document.body.removeChild(modal);
-    });
-    
-    document.body.appendChild(modal);
-    
-    return true;
   } catch (error) {
-    console.error('Error al compartir:', error);
+    console.error('❌ Error al compartir:', error);
+    if (error.name === 'AbortError') {
+      console.log('👤 Usuario canceló el compartir');
+      return false;
+    }
     alert(t('messages.error', 'Error al generar el contenido para compartir'));
     return false;
   }
