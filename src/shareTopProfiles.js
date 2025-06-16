@@ -265,8 +265,11 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
   
   try {
     if (navigator.share) {
-      // ESTRATEGIA ADAPTATIVA: Imagen + URL + texto (email lo usará, WhatsApp lo ignorará)
-      console.log('🔥 Compartiendo imagen + URL + texto');
+      // DETECCIÓN ADAPTATIVA: Desktop vs Móvil
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      console.log('🔥 Compartiendo con detección adaptativa');
+      console.log('📱 Es móvil:', isMobile);
       
       const mensajeEntusiasta = t ? 
         t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!') :
@@ -274,17 +277,25 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       
       const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
       
-      console.log('📧 Texto (para email):', mensajeEntusiasta);
-      console.log('🔗 URL:', urlGenerica);
-      
       const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
       const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
       
-      await navigator.share({
-        text: mensajeEntusiasta,
-        url: urlGenerica,
-        files: [file]
-      });
+      if (isMobile) {
+        // MÓVIL: URL visible, texto ignorado
+        console.log('📱 Estrategia móvil: text + url + files');
+        await navigator.share({
+          text: mensajeEntusiasta,
+          url: urlGenerica,
+          files: [file]
+        });
+      } else {
+        // DESKTOP: URL no visible, texto incluir URL
+        console.log('🖥️ Estrategia desktop: text con URL incluida + files');
+        await navigator.share({
+          text: `${mensajeEntusiasta} ${urlGenerica}`,
+          files: [file]
+        });
+      }
       
       console.log('✅ Compartido exitosamente');
       return true;
