@@ -271,21 +271,24 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       // Generar imagen personalizada
       const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
       
-      // Crear mensaje entusiasta
+      // Crear mensaje entusiasta (como Wrapped)
       const mensajeEntusiasta = t ? 
-        t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con') :
-        '¡Esto es increíble! Mira los resultados del análisis de mi chat con';
+        t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!') :
+        '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!';
       
       const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
       
-      console.log('🔥 Compartiendo imagen + mensaje + URL genérica');
-      console.log('📱 Mensaje:', `${mensajeEntusiasta} ${urlGenerica}`);
+      // PROBAR FORMATO 1: Como hace Wrapped - texto + URL separados
+      console.log('🔥 Compartiendo FORMATO WRAPPED - texto como title');
+      console.log('📱 Mensaje:', mensajeEntusiasta);
+      console.log('🔗 URL:', urlGenerica);
       
-      // Crear archivo con nombre descriptivo
-      const file = new File([imageBlob], 'mis-top-perfiles-chatsalsa.png', { type: 'image/png' });
+      // Crear archivo con nombre simple
+      const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
       
       await navigator.share({
-        text: `${mensajeEntusiasta} ${urlGenerica}`,
+        title: mensajeEntusiasta,
+        url: urlGenerica,
         files: [file]
       });
       
