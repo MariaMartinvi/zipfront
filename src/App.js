@@ -34,6 +34,8 @@ import { userSession } from './utils/userSession';
 import HeroSection from './components/HeroSection';
 import { SecurityCaptchaProvider } from './components/SecurityCaptcha';
 import DebugLogger from './DebugLogger';
+import TopProfilesViewer from './components/TopProfilesViewer';
+import AnalysisViewer from './components/AnalysisViewer';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -2167,6 +2169,9 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/chat-game" element={<ChatTopGame />} />
         {/* NUEVA RUTA: Juego de titulares */}
         <Route path="/headlines-game" element={<ChatHeadlinesGame />} />
+        {/* NUEVAS RUTAS: Visualizadores de datos compartidos */}
+        <Route path="/top-profiles" element={<TopProfilesViewer />} />
+        <Route path="/analysis" element={<AnalysisViewer />} />
         </Routes>
         
         {/* Componente de instalación de PWA */}

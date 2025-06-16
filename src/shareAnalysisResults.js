@@ -590,6 +590,31 @@ export const generateAnalysisImage = async (htmlContent, t, currentLanguage = 'e
   });
 };
 
+// Función para comprimir datos de análisis psicológico
+const compressAnalysisData = (htmlContent, currentLanguage) => {
+  try {
+    // Extraer datos reales del análisis para comprimir
+    const { profiles, alertTags } = extractAnalysisDataForImage(htmlContent);
+    
+    // Crear objeto con solo los datos necesarios
+    const dataToCompress = {
+      profiles: profiles.slice(0, 3), // Solo primeros 3 perfiles
+      alertTags: alertTags.slice(0, 3), // Solo primeras 3 alertas
+      lang: currentLanguage,
+      timestamp: Date.now()
+    };
+    
+    // Comprimir datos usando btoa (base64)
+    const jsonString = JSON.stringify(dataToCompress);
+    const compressed = btoa(encodeURIComponent(jsonString));
+    
+    return compressed;
+  } catch (error) {
+    console.error('Error comprimiendo datos de análisis:', error);
+    return null;
+  }
+};
+
 // Función principal para compartir análisis
 export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es') => {
   try {
@@ -600,7 +625,18 @@ export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es
     const imageBlob = await generateAnalysisImage(htmlContent, t, currentLanguage);
     const imageUrl = URL.createObjectURL(imageBlob);
     
-    const mensaje = `${t('hero.share_analysis.share_message', 'Esto es top! Comparto los resultados del análisis de nuestro chat! 😊 . Chatsalsa.com lo ha clavado !')} ${htmlUrl}`;
+    // Generar URL con parámetros comprimidos
+    const compressedData = compressAnalysisData(htmlContent, currentLanguage);
+    const reportUrl = compressedData 
+      ? `https://chatsalsa.com/analysis?data=${compressedData}`
+      : `https://chatsalsa.com?lang=${currentLanguage}`;
+    
+    // Mensaje con URL comprimida para WhatsApp y apps externas
+    const mensajeParaApps = `${t('hero.share_analysis.share_message', 'Esto es top! Comparto los resultados del análisis de nuestro chat! 😊')} ${reportUrl}`;
+    
+    // Mensaje con blob URL solo para navegador/modal
+    const mensajeConBlob = `${t('hero.share_analysis.share_message', 'Esto es top! Comparto los resultados del análisis de nuestro chat! 😊 . Chatsalsa.com lo ha clavado !')} ${htmlUrl}`;
+    
     const modalTitle = t('hero.share_analysis.modal_title', '🧠 ¡Comparte tu Análisis Psicológico!');
     const analysisTitle = t('hero.share_analysis.html_title', 'Análisis Psicológico del Chat');
     
@@ -611,46 +647,60 @@ export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es
       ];
       
       if (navigator.canShare && navigator.canShare({ files })) {
-        await navigator.share({
-          title: analysisTitle,
-          text: mensaje,
-          files: files
-        });
-      } else {
-        await navigator.share({
-          title: analysisTitle,
-          text: mensaje,
-          url: htmlUrl
-        });
-        window.open(imageUrl, '_blank');
+        try {
+          await navigator.share({
+            title: analysisTitle,
+            text: mensajeParaApps, // Usar URL comprimida
+            files: files
+          });
+          return true;
+        } catch (error) {
+          console.log('Error compartiendo archivos, intentando solo texto:', error);
+        }
       }
-    } else {
-      window.open(htmlUrl, '_blank');
       
-      const modal = document.createElement('div');
-      modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:10000;';
-      
-      modal.innerHTML = `
-        <div style="background:white;padding:30px;border-radius:15px;max-width:500px;text-align:center;">
-          <h3>${modalTitle}</h3>
-          <img src="${imageUrl}" style="max-width:300px;border-radius:10px;margin:20px 0;">
-          <textarea readonly style="width:100%;height:120px;margin:15px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">${mensaje}</textarea>
-          <div style="display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;">
-            <button onclick="navigator.clipboard.writeText('${mensaje}');this.textContent='${t('hero.share_analysis.copy_success', '✅ Copiado')}'" style="background:#25D366;color:white;border:none;padding:10px 15px;border-radius:25px;cursor:pointer;font-size:14px;">${t('hero.share_analysis.copy_button', '📋 Copiar')}</button>
-            <a href="${imageUrl}" download="analisis-psicologico.png" style="background:#667eea;color:white;text-decoration:none;padding:10px 15px;border-radius:25px;font-size:14px;">${t('hero.share_analysis.download_image', '📷 Imagen')}</a>
-            <a href="${htmlUrl}" download="analysis-psy.html" style="background:#764ba2;color:white;text-decoration:none;padding:10px 15px;border-radius:25px;font-size:14px;">${t('hero.share_analysis.download_html', '💻 HTML')}</a>
-            <a href="https://chatsalsa.com" style="background:#25D366;color:white;text-decoration:none;padding:10px 15px;border-radius:25px;font-size:14px;">${t('hero.share_analysis.analyze_another', '🚀 Analizar Otro')}</a>
-          </div>
-          <button onclick="document.body.removeChild(this.closest('div').parentElement)" style="background:#ccc;color:#333;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;">${t('hero.share_analysis.close', 'Cerrar')}</button>
-        </div>
-      `;
-      
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) document.body.removeChild(modal);
-      });
-      
-      document.body.appendChild(modal);
+      // Fallback: compartir solo texto (con URL comprimida para compatibilidad con WhatsApp)
+      try {
+        // Abrir imagen primero para que el usuario la vea
+        window.open(imageUrl, '_blank');
+        
+        // Luego compartir el texto
+        await navigator.share({
+          title: analysisTitle,
+          text: mensajeParaApps // Usar URL comprimida
+        });
+        return true;
+      } catch (error) {
+        console.log('Error compartiendo texto, mostrando modal:', error);
+      }
     }
+    
+    // Mostrar modal si no se puede usar navigator.share
+    window.open(htmlUrl, '_blank');
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:10000;';
+    
+    modal.innerHTML = `
+      <div style="background:white;padding:30px;border-radius:15px;max-width:500px;text-align:center;">
+        <h3>${modalTitle}</h3>
+        <img src="${imageUrl}" style="max-width:300px;border-radius:10px;margin:20px 0;">
+        <textarea readonly style="width:100%;height:120px;margin:15px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">${mensajeConBlob}</textarea>
+        <div style="display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;">
+          <button onclick="navigator.clipboard.writeText('${mensajeParaApps}');this.textContent='${t('hero.share_analysis.copy_success', '✅ Copiado')}'" style="background:#25D366;color:white;border:none;padding:10px 15px;border-radius:25px;cursor:pointer;font-size:14px;">${t('hero.share_analysis.copy_button', '📋 Copiar')}</button>
+          <a href="${imageUrl}" download="analisis-psicologico.png" style="background:#667eea;color:white;text-decoration:none;padding:10px 15px;border-radius:25px;font-size:14px;">${t('hero.share_analysis.download_image', '📷 Imagen')}</a>
+          <a href="${htmlUrl}" download="analysis-psy.html" style="background:#764ba2;color:white;text-decoration:none;padding:10px 15px;border-radius:25px;font-size:14px;">${t('hero.share_analysis.download_html', '💻 HTML')}</a>
+          <a href="https://chatsalsa.com" style="background:#25D366;color:white;text-decoration:none;padding:10px 15px;border-radius:25px;font-size:14px;">${t('hero.share_analysis.analyze_another', '🚀 Analizar Otro')}</a>
+        </div>
+        <button onclick="document.body.removeChild(this.closest('div').parentElement)" style="background:#ccc;color:#333;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;">${t('hero.share_analysis.close', 'Cerrar')}</button>
+      </div>
+    `;
+    
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) document.body.removeChild(modal);
+    });
+    
+    document.body.appendChild(modal);
     
     return true;
   } catch (error) {

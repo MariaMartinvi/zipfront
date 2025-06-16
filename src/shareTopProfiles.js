@@ -260,6 +260,37 @@ export const generatePromotionalImage = async (datos, t, currentLanguage = 'es')
   });
 };
 
+// Función para comprimir datos de top profiles
+const compressTopProfilesData = (datos, currentLanguage) => {
+  try {
+    const categoriasValidas = obtenerCategoriasOrdenadas(datos);
+    
+    // Crear objeto con solo los datos necesarios
+    const dataToCompress = {
+      categorias: {},
+      lang: currentLanguage
+    };
+    
+    // Solo incluir categorías válidas
+    categoriasValidas.forEach(categoria => {
+      if (datos.categorias[categoria]) {
+        dataToCompress.categorias[categoria] = {
+          nombre: datos.categorias[categoria].nombre
+        };
+      }
+    });
+    
+    // Comprimir datos usando btoa (base64)
+    const jsonString = JSON.stringify(dataToCompress);
+    const compressed = btoa(encodeURIComponent(jsonString));
+    
+    return compressed;
+  } catch (error) {
+    console.error('Error comprimiendo datos:', error);
+    return null;
+  }
+};
+
 export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
   try {
     const htmlContent = generateStandaloneHTML(datos, t, currentLanguage);
@@ -269,7 +300,17 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
     const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
     const imageUrl = URL.createObjectURL(imageBlob);
     
-    const mensaje = t('hero.share_top_profiles.share_message', '🏆 ¡Descubre quién domina nuestro chat de WhatsApp!\n\n🔥 Análisis completo de personalidades\n\n👆 Resultados interactivos:') + ' ' + htmlUrl + t('hero.share_top_profiles.share_message_end', `\n\n🚀 Analiza tu chat GRATIS en: https://chatsalsa.com?lang=${currentLanguage}\n\n#WhatsAppStats #ChatSalsa`);
+    // Generar URL con parámetros comprimidos
+    const compressedData = compressTopProfilesData(datos, currentLanguage);
+    const reportUrl = compressedData 
+      ? `https://chatsalsa.com/top-profiles?data=${compressedData}`
+      : `https://chatsalsa.com?lang=${currentLanguage}`;
+    
+    // Mensaje con URL comprimida para WhatsApp y apps externas
+    const mensajeParaApps = t('hero.share_top_profiles.share_message', '🏆 ¡Descubre quién domina nuestro chat de WhatsApp!\n\n🔥 Análisis completo de personalidades\n\n👆 Resultados interactivos:') + ' ' + reportUrl + t('hero.share_top_profiles.share_message_end', `\n\n🚀 Analiza tu chat GRATIS en: https://chatsalsa.com?lang=${currentLanguage}\n\n#WhatsAppStats #ChatSalsa`);
+    
+    // Mensaje con blob URL solo para navegador/modal
+    const mensajeConBlob = t('hero.share_top_profiles.share_message', '🏆 ¡Descubre quién domina nuestro chat de WhatsApp!\n\n🔥 Análisis completo de personalidades\n\n👆 Resultados interactivos:') + ' ' + htmlUrl + t('hero.share_top_profiles.share_message_end', `\n\n🚀 Analiza tu chat GRATIS en: https://chatsalsa.com?lang=${currentLanguage}\n\n#WhatsAppStats #ChatSalsa`);
     
     if (navigator.share) {
       const files = [
@@ -277,47 +318,62 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
         new File([htmlBlob], 'top-profiles.html', { type: 'text/html' })
       ];
       
+      // Intentar compartir archivos primero
       if (navigator.canShare && navigator.canShare({ files })) {
-        await navigator.share({
-          title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
-          text: mensaje,
-          files: files
-        });
-      } else {
-        await navigator.share({
-          title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
-          text: mensaje,
-          url: htmlUrl
-        });
-        window.open(imageUrl, '_blank');
+        try {
+          await navigator.share({
+            title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
+            text: mensajeParaApps, // Usar URL comprimida
+            files: files
+          });
+          return true;
+        } catch (error) {
+          console.log('Error compartiendo archivos, intentando solo texto:', error);
+        }
       }
-    } else {
-      window.open(htmlUrl, '_blank');
       
-      const modal = document.createElement('div');
-      modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:10000;';
-      
-      modal.innerHTML = `
-        <div style="background:white;padding:30px;border-radius:15px;max-width:500px;text-align:center;">
-          <h3>${t('hero.share_top_profiles.modal_title', '🚀 ¡Comparte tus Top Perfiles!')}</h3>
-          <img src="${imageUrl}" style="max-width:300px;border-radius:10px;margin:20px 0;">
-          <textarea readonly style="width:100%;height:120px;margin:15px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">${mensaje}</textarea>
-          <div style="display:flex;gap:10px;justify-content:center;margin:20px 0;">
-            <button onclick="navigator.clipboard.writeText('${mensaje}');this.textContent='${t('hero.share_top_profiles.copy_success', '✅ Copiado')}'" style="background:#25D366;color:white;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;">${t('hero.share_top_profiles.copy_button', '📋 Copiar')}</button>
-            <a href="${imageUrl}" download="top-perfiles.png" style="background:#667eea;color:white;text-decoration:none;padding:10px 20px;border-radius:25px;">${t('hero.share_top_profiles.download_image', '📷 Imagen')}</a>
-            <a href="${htmlUrl}" download="top-profiles.html" style="background:#764ba2;color:white;text-decoration:none;padding:10px 20px;border-radius:25px;">${t('hero.share_top_profiles.download_html', '💻 HTML')}</a>
-            <a href="https://chatsalsa.com?lang=${currentLanguage}" style="background:#25D366;color:white;text-decoration:none;padding:10px 20px;border-radius:25px;">${t('hero.share_top_profiles.analyze_another', '🚀 Analizar Otro')}</a>
-          </div>
-          <button onclick="document.body.removeChild(this.closest('div').parentElement)" style="background:#ccc;color:#333;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;">${t('hero.share_top_profiles.close', 'Cerrar')}</button>
-        </div>
-      `;
-      
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) document.body.removeChild(modal);
-      });
-      
-      document.body.appendChild(modal);
+      // Fallback: compartir solo texto (con URL comprimida para compatibilidad con WhatsApp)
+      try {
+        // Abrir imagen primero para que el usuario la vea
+        window.open(imageUrl, '_blank');
+        
+        // Luego compartir el texto
+        await navigator.share({
+          title: t('hero.share_top_profiles.html_title', 'Top Perfiles del Chat'),
+          text: mensajeParaApps // Usar URL comprimida
+        });
+        return true;
+      } catch (error) {
+        console.log('Error compartiendo texto, mostrando modal:', error);
+      }
     }
+    
+    // Mostrar modal si no se puede usar navigator.share
+    window.open(htmlUrl, '_blank');
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:10000;';
+    
+    modal.innerHTML = `
+      <div style="background:white;padding:30px;border-radius:15px;max-width:500px;text-align:center;">
+        <h3>${t('hero.share_top_profiles.modal_title', '🚀 ¡Comparte tus Top Perfiles!')}</h3>
+        <img src="${imageUrl}" style="max-width:300px;border-radius:10px;margin:20px 0;">
+        <textarea readonly style="width:100%;height:120px;margin:15px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">${mensajeConBlob}</textarea>
+        <div style="display:flex;gap:10px;justify-content:center;margin:20px 0;">
+          <button onclick="navigator.clipboard.writeText('${mensajeParaApps}');this.textContent='${t('hero.share_top_profiles.copy_success', '✅ Copiado')}'" style="background:#25D366;color:white;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;">${t('hero.share_top_profiles.copy_button', '📋 Copiar')}</button>
+          <a href="${imageUrl}" download="top-perfiles.png" style="background:#667eea;color:white;text-decoration:none;padding:10px 20px;border-radius:25px;">${t('hero.share_top_profiles.download_image', '📷 Imagen')}</a>
+          <a href="${htmlUrl}" download="top-profiles.html" style="background:#764ba2;color:white;text-decoration:none;padding:10px 20px;border-radius:25px;">${t('hero.share_top_profiles.download_html', '💻 HTML')}</a>
+          <a href="https://chatsalsa.com?lang=${currentLanguage}" style="background:#25D366;color:white;text-decoration:none;padding:10px 20px;border-radius:25px;">${t('hero.share_top_profiles.analyze_another', '🚀 Analizar Otro')}</a>
+        </div>
+        <button onclick="document.body.removeChild(this.closest('div').parentElement)" style="background:#ccc;color:#333;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;">${t('hero.share_top_profiles.close', 'Cerrar')}</button>
+      </div>
+    `;
+    
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) document.body.removeChild(modal);
+    });
+    
+    document.body.appendChild(modal);
     
     return true;
   } catch (error) {
