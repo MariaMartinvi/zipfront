@@ -278,19 +278,33 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       
       const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
       
-      // PROBAR FORMATO 1: Como hace Wrapped - texto + URL separados
-      console.log('🔥 Compartiendo FORMATO WRAPPED - texto como title');
-      console.log('📱 Mensaje:', mensajeEntusiasta);
-      console.log('🔗 URL:', urlGenerica);
+      // DETECCIÓN ADAPTATIVA - Como hace Wrapped
+      const userAgent = navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+      const isAndroidOld = /Android [1-9]\./.test(userAgent);
+      
+      console.log('📱 Dispositivo detectado:', { userAgent, isIOS, isAndroidOld });
       
       // Crear archivo con nombre simple
       const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
       
-      await navigator.share({
-        text: mensajeEntusiasta,
-        url: urlGenerica,
-        files: [file]
-      });
+      // ESTRATEGIA ADAPTATIVA
+      if (isIOS || isAndroidOld) {
+        // ESTRATEGIA A: Texto concatenado en URL (para dispositivos que no muestran text)
+        console.log('🔥 Usando ESTRATEGIA A: Texto en URL concatenada');
+        await navigator.share({
+          url: `${mensajeEntusiasta} ${urlGenerica}`,
+          files: [file]
+        });
+      } else {
+        // ESTRATEGIA B: Text + URL separados (para dispositivos modernos)
+        console.log('🔥 Usando ESTRATEGIA B: Text + URL separados');
+        await navigator.share({
+          text: mensajeEntusiasta,
+          url: urlGenerica,
+          files: [file]
+        });
+      }
       
       console.log('✅ Compartido exitosamente');
       return true;
