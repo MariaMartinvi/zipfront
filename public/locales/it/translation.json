@@ -1420,5 +1420,22 @@
       "description": "Continuando a utilizzare il nostro sito web, accetti l'uso dei cookie come descritto in questa politica."
     },
     "security_badge": "Cookie Trasparenti"
+  },
+  "simplified_steps": {
+    "android": {
+      "install": {
+        "title": "Facilissimo! Installa ChatSalsa",
+        "description": "Installa la nostra app per condividere file da WhatsApp",
+        "button": "🚀 Installa App"
+      },
+      "0": {
+        "title": "Esporta la tua chat",
+        "description": "Nella tua chat WhatsApp: Tocca i 3 punti → Altro → Esporta chat → Senza file multimediali"
+      },
+      "1": {
+        "title": "Fatto! Condividi con ChatSalsa",
+        "description": "Tocca ChatSalsa per caricare il tuo file. Se non appare, installa l'app da chatsalsa.com"
+      }
+    }
   }
 } 

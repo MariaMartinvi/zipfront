@@ -418,7 +418,24 @@
         "description": "Clique em 'Fazer upload do arquivo' e selecione o arquivo de chat .zip baixado",
         "icon": "📁"
       }
-    ]
+    ],
+    "simplified_steps": {
+      "android": {
+        "install": {
+          "title": "Super fácil! Instale ChatSalsa",
+          "description": "Instale nosso app para compartilhar arquivos do WhatsApp",
+          "button": "🚀 Instalar App"
+        },
+        "0": {
+          "title": "Exporte seu chat",
+          "description": "No seu chat do WhatsApp: Toque nos 3 pontos → Mais → Exportar conversa → Sem mídia"
+        },
+        "1": {
+          "title": "Pronto! Compartilhe com ChatSalsa",
+          "description": "Toque em ChatSalsa para fazer upload do seu arquivo. Se não aparecer, instale o app em chatsalsa.com"
+        }
+      }
+    }
   },
   "preview": {
     "title": "Descubra os segredos das suas conversas do",

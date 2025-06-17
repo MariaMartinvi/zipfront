@@ -15,18 +15,50 @@ function WhatsappInstructions() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [platform, setPlatform] = useState(detectPlatform());
   const [activeTab, setActiveTab] = useState('carousel');
+  const [isCarouselPaused, setIsCarouselPaused] = useState(false);
 
-  // Pasos simplificados para Android (solo 2 pasos)
+  // Pasos simplificados para Android (ahora 3 pasos)
   const androidStepsSimplified = [
     {
       id: 1,
+      title: t('whatsapp.simplified_steps.android.install.title'),
+      description: t('whatsapp.simplified_steps.android.install.description'),
+      image: null,
+      icon: "📱",
+      hasButton: true,
+      buttonText: t('whatsapp.simplified_steps.android.install.button'),
+      buttonAction: () => {
+        // Pausar el carrusel automático
+        setIsCarouselPaused(true);
+        
+        // Scroll suave al área de upload donde pueden subir archivos
+        const uploadSection = document.querySelector('.upload-section') || 
+                              document.querySelector('[class*="upload"]') || 
+                              document.querySelector('input[type="file"]')?.closest('div');
+        
+        if (uploadSection) {
+          uploadSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'center'
+          });
+        } else {
+          // Fallback: scroll hacia abajo
+          window.scrollBy({
+            top: 300,
+            behavior: 'smooth'
+          });
+        }
+      }
+    },
+    {
+      id: 2,
       title: t('whatsapp.simplified_steps.android.0.title'),
       description: t('whatsapp.simplified_steps.android.0.description'),
       image: "/android-step1.png",
       icon: "📱"
     },
     {
-      id: 2, 
+      id: 3, 
       title: t('whatsapp.simplified_steps.android.1.title'),
       description: t('whatsapp.simplified_steps.android.1.description'),
       image: "/android-step2.png",
@@ -109,12 +141,14 @@ function WhatsappInstructions() {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSlide((prevSlide) => (prevSlide + 1) % steps.length);
-    }, 6000); // Más tiempo para leer
-    
-    return () => clearInterval(interval);
-  }, [steps.length]);
+    if (!isCarouselPaused) {
+      const interval = setInterval(() => {
+        setActiveSlide((prevSlide) => (prevSlide + 1) % steps.length);
+      }, 10000); // Más tiempo para leer - aumentado de 6000 a 10000 (10 segundos)
+      
+      return () => clearInterval(interval);
+    }
+  }, [steps.length, isCarouselPaused]);
 
   const goToSlide = (index) => {
     setActiveSlide(index);
@@ -218,14 +252,26 @@ function WhatsappInstructions() {
                           <h3 className="simple-title">{step.title}</h3>
                           <p className="simple-description">{step.description}</p>
                         </div>
-                                                 {/* Imagen real del paso */}
-                         <div className="step-image-container">
-                           <img 
-                             src={step.image} 
-                             alt={step.title}
-                             className="step-image"
-                           />
-                         </div>
+                        
+                        {/* Botón de instalación o imagen del paso */}
+                        {step.hasButton ? (
+                          <div className="step-button-container">
+                            <button 
+                              className="install-app-button"
+                              onClick={step.buttonAction}
+                            >
+                              {step.buttonText}
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="step-image-container">
+                            <img 
+                              src={step.image} 
+                              alt={step.title}
+                              className="step-image"
+                            />
+                          </div>
+                        )}
                       </div>
                     ) : (
                       /* Layout original para otras plataformas */
@@ -255,13 +301,6 @@ function WhatsappInstructions() {
               />
             ))}
           </div>
-          
-          {/* Mensaje motivacional para Android, iOS y Desktop */}
-          {(platform === 'android' || platform === 'ios' || platform === 'desktop') && (
-            <div className="android-footer">
-              <p className="encouragement">{t('whatsapp.footer_message')}</p>
-            </div>
-          )}
         </div>
       )}
       

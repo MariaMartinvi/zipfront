@@ -290,16 +290,21 @@
       }
     },
     "simplified_steps": {
-      "android": [
-        {
-          "title": "Super facile ! Exportez votre chat",
+      "android": {
+        "install": {
+          "title": "Super facile ! Installez ChatSalsa",
+          "description": "Installez notre app pour partager des fichiers depuis WhatsApp",
+          "button": "🚀 Installer l'App"
+        },
+        "0": {
+          "title": "Exportez votre chat",
           "description": "Dans votre chat WhatsApp : Touchez les 3 points → Plus → Exporter le chat → Sans médias"
         },
-        {
+        "1": {
           "title": "Terminé ! Partagez avec ChatSalsa",
           "description": "Touchez ChatSalsa pour télécharger votre fichier. S'il n'apparaît pas, installez l'app depuis chatsalsa.com"
         }
-      ],
+      },
       "ios": [
         {
           "title": "Super facile ! Exportez votre chat",
