@@ -181,7 +181,7 @@ function WhatsappInstructions() {
 
   return (
     <div className="whatsapp-instructions">
-      {/* Título motivacional para Android */}
+      {/* Títulos motivacionales - ahora se muestran en todos los dispositivos */}
       {platform === 'android' && (
         <div className="android-hero">
           <h2>{t('whatsapp.hero.android.title')}</h2>
@@ -189,7 +189,6 @@ function WhatsappInstructions() {
         </div>
       )}
       
-      {/* Título motivacional para iOS */}
       {platform === 'ios' && (
         <div className="android-hero">
           <h2>{t('whatsapp.hero.ios.title')}</h2>
@@ -197,7 +196,6 @@ function WhatsappInstructions() {
         </div>
       )}
       
-      {/* Título motivacional para Desktop */}
       {platform === 'desktop' && (
         <div className="android-hero">
           <h2>{t('whatsapp.hero.desktop.title')}</h2>
