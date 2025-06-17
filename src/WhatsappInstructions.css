@@ -927,42 +927,7 @@
 }
 /* ===== FIN RESPONSIVE ANDROID ===== */
 
-/* Ocultar títulos hero en móviles para optimizar el espacio vertical */
-@media (max-width: 768px) {
-  .whatsapp-instructions .android-hero,
-  .whatsapp-instructions .ios-hero,
-  .whatsapp-instructions h2,
-  .android-hero,
-  .ios-hero,
-  div.android-hero,
-  div.ios-hero {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    opacity: 0 !important;
-  }
-  
-  /* También ocultar cualquier h2 dentro de whatsapp-instructions */
-  .whatsapp-instructions > h2,
-  .whatsapp-instructions h2:first-child,
-  .whatsapp-instructions h2:nth-child(1),
-  .whatsapp-instructions h2:nth-child(2) {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  
-  /* Reducir márgenes del título principal en móviles */
-  .upload-section h2 {
-    margin-bottom: 15px !important;
-    margin-top: 10px !important;
-    font-size: 1.8rem !important;
-  }
-}
+/* Los títulos hero ahora se muestran en móviles */
 
 .step-button-container {
   width: 100%;

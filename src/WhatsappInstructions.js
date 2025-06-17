@@ -31,22 +31,23 @@ function WhatsappInstructions() {
         // Pausar el carrusel automático
         setIsCarouselPaused(true);
         
-        // Intentar instalar la PWA
+        // Intentar instalar la PWA usando la misma lógica exitosa
         const installPWA = () => {
           // Buscar el evento de instalación guardado globalmente
           if (window.deferredPrompt) {
+            // Mostrar el prompt de instalación
             window.deferredPrompt.prompt();
+            
+            // Esperar a que el usuario responda al prompt
             window.deferredPrompt.userChoice.then((choiceResult) => {
               if (choiceResult.outcome === 'accepted') {
-                console.log('PWA instalada correctamente');
+                console.log('Usuario aceptó la instalación');
+              } else {
+                console.log('Usuario rechazó la instalación');
               }
+              // Limpiar el prompt guardado
               window.deferredPrompt = null;
             });
-          } else {
-            // Fallback: mostrar instrucciones para instalar PWA manualmente
-            alert('¡Instala ChatSalsa como app!\n\n' +
-                  'Android Chrome: Menú (⋮) → "Instalar aplicación" o "Añadir a pantalla de inicio"\n\n' +
-                  'Después podrás compartir archivos directamente desde WhatsApp a ChatSalsa');
           }
         };
         
