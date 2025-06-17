@@ -258,7 +258,10 @@ function WhatsappInstructions() {
                           <div className="step-button-container">
                             <button 
                               className="install-app-button"
-                              onClick={step.buttonAction}
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevenir que se active handleSlideClick
+                                step.buttonAction();
+                              }}
                             >
                               {step.buttonText}
                             </button>

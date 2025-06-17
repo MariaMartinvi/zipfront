@@ -11,8 +11,8 @@ export const PLANS = {
     id: 'free',
     name: 'Free',
     price: '',
-    quota: 2,
-    description: 'Try our service with 2 free chat analyses'
+    quota: 1,
+    description: 'Try our service with 1 free chat analysis'
   },
   BASIC: {
     id: 'basic',

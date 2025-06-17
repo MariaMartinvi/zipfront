@@ -747,7 +747,7 @@ export const canUploadChat = async (userId) => {
         canUpload: true,
         plan: 'free',
         currentUsage: 0,
-        quota: 2,
+        quota: 1,
         message: 'Usuario nuevo - plan gratuito aplicado'
       };
     }
@@ -775,11 +775,11 @@ export const canUploadChat = async (userId) => {
     let canUpload = false;
     let quota = 0;
     
-    // Free plan users can upload 2 chats
+    // Free plan users can upload 1 chat
     if (plan === 'free') {
-      quota = 2;
-      canUpload = currentUsage < 2;
-      console.log(`[canUploadChat] Plan FREE - Comparando: ${currentUsage} < 2 = ${canUpload}`);
+      quota = 1;
+      canUpload = currentUsage < 1;
+      console.log(`[canUploadChat] Plan FREE - Comparando: ${currentUsage} < 1 = ${canUpload}`);
     }
     // For paid plans, check their quota
     else if (plan === 'basic') {
