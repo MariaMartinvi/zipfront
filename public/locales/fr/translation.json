@@ -275,122 +275,66 @@
     "title": "Comment partager un chat depuis WhatsApp",
     "step_by_step": "Étape par étape",
     "video": "Tutoriel vidéo",
+    "hero": {
+      "android": {
+        "title": "🚀 Votre analyse en 10 secondes !",
+        "subtitle": "Seulement 2 étapes super simples :"
+      },
+      "ios": {
+        "title": "🚀 Votre analyse en 10 secondes !",
+        "subtitle": "Seulement 3 étapes super simples :"
+      },
+      "desktop": {
+        "title": "💻 Votre analyse en 10 secondes !",
+        "subtitle": "Seulement 3 étapes super simples :"
+      }
+    },
+    "simplified_steps": {
+      "android": [
+        {
+          "title": "Super facile ! Exportez votre chat",
+          "description": "Dans votre chat WhatsApp : Touchez les 3 points → Plus → Exporter le chat → Sans médias"
+        },
+        {
+          "title": "Terminé ! Partagez avec ChatSalsa",
+          "description": "Touchez ChatSalsa pour télécharger votre fichier et c'est fait !"
+        }
+      ],
+      "ios": [
+        {
+          "title": "Super facile ! Exportez votre chat",
+          "description": "Dans votre chat WhatsApp : Allez à Info du groupe → Exporter le chat → Sans médias"
+        },
+        {
+          "title": "Sauvegardez sur votre iPhone",
+          "description": "Touchez 'Sauvegarder dans Fichiers' → 'Sur mon iPhone' → Sauvegarder"
+        },
+        {
+          "title": "Terminé ! Téléchargez sur ChatSalsa",
+          "description": "Dans ChatSalsa, touchez 'Sélectionner un fichier' et vous avez votre analyse !"
+        }
+      ],
+      "desktop": [
+        {
+          "title": "Super facile ! Exportez depuis votre téléphone",
+          "description": "Dans votre chat WhatsApp : Touchez les 3 points → Plus → Exporter le chat → Sans médias"
+        },
+        {
+          "title": "Envoyez par email",
+          "description": "Partagez le fichier → Gmail → Envoyez-vous le fichier par email"
+        },
+        {
+          "title": "Terminé ! Téléchargez depuis votre PC",
+          "description": "Ouvrez l'email sur votre PC, téléchargez le fichier et téléchargez-le sur ChatSalsa"
+        }
+      ]
+    },
+    "footer_message": "C'est aussi simple que ça ! 🎉",
     "platforms": {
       "android": "Android",
       "ios": "iOS",
       "desktop": "PC/Mac"
-    },
-    "android_steps": [
-      {
-        "title": "Installez l'application",
-        "description": "Assurez-vous d'avoir cette application installée sur votre appareil",
-        "icon": "📱"
-      },
-      {
-        "title": "Ouvrez votre chat WhatsApp",
-        "description": "Allez dans le groupe ou la conversation que vous souhaitez analyser",
-        "icon": "💬"
-      },
-      {
-        "title": "Accédez au menu",
-        "description": "Appuyez sur les trois points dans le coin supérieur droit",
-        "icon": "⋮"
-      },
-      {
-        "title": "Sélectionnez 'Plus'",
-        "description": "Recherchez et sélectionnez l'option 'Plus' dans le menu déroulant",
-        "icon": "+"
-      },
-      {
-        "title": "Exportez le chat",
-        "description": "Sélectionnez 'Exporter la discussion' parmi les options disponibles",
-        "icon": "📤"
-      },
-      {
-        "title": "Partagez avec cette application",
-        "description": "Choisissez cette application dans la liste des options de partage",
-        "icon": "✓"
-      }
-    ],
-    "ios_steps": [
-      {
-        "title": "Ouvrez votre chat WhatsApp",
-        "description": "Allez dans le groupe ou la conversation que vous souhaitez exporter",
-        "icon": "💬"
-      },
-      {
-        "title": "Appuyez sur le nom du chat",
-        "description": "En haut du chat, appuyez sur le nom pour voir les détails",
-        "icon": "👆"
-      },
-      {
-        "title": "Faites défiler jusqu'en bas",
-        "description": "Dans les informations du chat, faites défiler jusqu'au bas de l'écran",
-        "icon": "⬇️"
-      },
-      {
-        "title": "Exportez le chat",
-        "description": "Appuyez sur 'Exporter la discussion' parmi les options disponibles",
-        "icon": "📤"
-      },
-      {
-        "title": "Sélectionnez Sans média",
-        "description": "Choisissez l'option 'Sans média' pour exporter uniquement les messages",
-        "icon": "📝"
-      },
-      {
-        "title": "Enregistrez dans les fichiers",
-        "description": "Appuyez sur 'Enregistrer dans Fichiers' pour sauvegarder sur votre iPhone",
-        "icon": "💾"
-      },
-      {
-        "title": "Enregistrez localement",
-        "description": "Sélectionnez 'Sur mon iPhone' et appuyez sur enregistrer",
-        "icon": "📂"
-      },
-      {
-        "title": "Ouvrez notre site web",
-        "description": "Ouvrez ce site web et sélectionnez le fichier enregistré",
-        "icon": "✓"
-      }
-    ],
-    "desktop_steps": [
-      {
-        "title": "Ouvrez WhatsApp sur votre appareil",
-        "description": "Ouvrez l'application WhatsApp sur votre appareil mobile (Android ou iOS)",
-        "icon": "📱"
-      },
-      {
-        "title": "Extrayez le chat",
-        "description": "Suivez les instructions d'exportation selon votre appareil (sélectionnez l'onglet Android ou iOS)",
-        "icon": "📤"
-      },
-      {
-        "title": "Envoyez le fichier par email",
-        "description": "Sélectionnez 'Partager' ou 'Envoyer par email' et envoyez-vous le fichier",
-        "icon": "📧"
-      },
-      {
-        "title": "Accédez à votre email sur PC",
-        "description": "Sur votre ordinateur (PC ou Mac), ouvrez votre email et cherchez le message avec le chat",
-        "icon": "💻"
-      },
-      {
-        "title": "Téléchargez le fichier",
-        "description": "Téléchargez la pièce jointe .txt sur votre ordinateur. N'oubliez pas où vous l'enregistrez",
-        "icon": "💾"
-      },
-      {
-        "title": "Visitez ChatSalsa",
-        "description": "Ouvrez ChatSalsa dans le navigateur de votre ordinateur (la page où vous êtes actuellement)",
-        "icon": "🌐"
-      },
-      {
-        "title": "Téléchargez le fichier",
-        "description": "Cliquez sur 'Télécharger un fichier' et sélectionnez le fichier chat .zip téléchargé",
-        "icon": "📁"
-      }
-    ]
+    }
   },
   "preview": {
     "title": "Découvrez les secrets de vos conversations",

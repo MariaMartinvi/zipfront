@@ -293,6 +293,61 @@
     "title": "How to share a chat from WhatsApp",
     "step_by_step": "Step by step",
     "video": "Video tutorial",
+    "hero": {
+      "android": {
+        "title": "🚀 Get your analysis in 10 seconds!",
+        "subtitle": "Just 2 super simple steps:"
+      },
+      "ios": {
+        "title": "🚀 Get your analysis in 10 seconds!",
+        "subtitle": "Just 3 super simple steps:"
+      },
+      "desktop": {
+        "title": "💻 Get your analysis in 10 seconds!",
+        "subtitle": "Just 3 super simple steps:"
+      }
+    },
+    "simplified_steps": {
+      "android": [
+        {
+          "title": "Super easy! Export your chat",
+          "description": "In your WhatsApp chat: Tap the 3 dots → More → Export chat → Without media"
+        },
+        {
+          "title": "Done! Share with ChatSalsa",
+          "description": "Tap ChatSalsa to upload your file and you're done!"
+        }
+      ],
+      "ios": [
+        {
+          "title": "Super easy! Export your chat",
+          "description": "In your WhatsApp chat: Go to Group info → Export chat → Without media"
+        },
+        {
+          "title": "Save to your iPhone",
+          "description": "Tap 'Save to Files' → 'On My iPhone' → Save"
+        },
+        {
+          "title": "Done! Upload to ChatSalsa",
+          "description": "In ChatSalsa tap 'Select file' and you have your analysis!"
+        }
+      ],
+      "desktop": [
+        {
+          "title": "Super easy! Export from your phone",
+          "description": "In your WhatsApp chat: Tap the 3 dots → More → Export chat → Without media"
+        },
+        {
+          "title": "Send by email",
+          "description": "Share the file → Gmail → Email the file to yourself"
+        },
+        {
+          "title": "Done! Upload from your PC",
+          "description": "Open the email on your PC, download the file and upload it to ChatSalsa"
+        }
+      ]
+    },
+    "footer_message": "It's that simple! 🎉",
     "platforms": {
       "android": "Android",
       "ios": "iOS",

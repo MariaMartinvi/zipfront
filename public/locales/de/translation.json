@@ -513,8 +513,76 @@
       "close": "Schließen",
       "image_cta": "🚀 Analysieren Sie Ihre Chats KOSTENLOS mit",
       "brand_name": "CHATSALSA.COM"
+    },
+    "android": {
+      "title": "🚀 Ihre Analyse in 10 Sekunden!",
+      "subtitle": "Nur 2 super einfache Schritte:"
+    },
+    "ios": {
+      "title": "🚀 Ihre Analyse in 10 Sekunden!",
+      "subtitle": "Nur 3 super einfache Schritte:"
+    },
+    "desktop": {
+      "title": "💻 Ihre Analyse in 10 Sekunden!",
+      "subtitle": "Nur 3 super einfache Schritte:"
     }
   },
+  "simplified_steps": {
+    "android": [
+      {
+        "title": "Super einfach! Chat exportieren",
+        "description": "In Ihrem WhatsApp-Chat: Tippen Sie auf die 3 Punkte → Mehr → Chat exportieren → Ohne Medien"
+      },
+      {
+        "title": "Fertig! Mit ChatSalsa teilen",
+        "description": "Tippen Sie auf ChatSalsa, um Ihre Datei hochzuladen und fertig!"
+      }
+    ],
+    "ios": [
+      {
+        "title": "Super einfach! Chat exportieren",
+        "description": "In Ihrem WhatsApp-Chat: Gehen Sie zu Gruppeninfo → Chat exportieren → Ohne Medien"
+      },
+      {
+        "title": "Auf iPhone speichern",
+        "description": "Tippen Sie auf 'In Dateien sichern' → 'Auf meinem iPhone' → Sichern"
+      },
+      {
+        "title": "Fertig! Zu ChatSalsa hochladen",
+        "description": "In ChatSalsa auf 'Datei auswählen' tippen und Sie haben Ihre Analyse!"
+      }
+    ],
+    "desktop": [
+      {
+        "title": "Super einfach! Von Ihrem Telefon exportieren",
+        "description": "In Ihrem WhatsApp-Chat: Tippen Sie auf die 3 Punkte → Mehr → Chat exportieren → Ohne Medien"
+      },
+      {
+        "title": "Per E-Mail senden",
+        "description": "Datei teilen → Gmail → Senden Sie sich die Datei per E-Mail"
+      },
+      {
+        "title": "Fertig! Von Ihrem PC hochladen",
+        "description": "Öffnen Sie die E-Mail auf Ihrem PC, laden Sie die Datei herunter und laden Sie sie zu ChatSalsa hoch"
+      }
+    ]
+  },
+  "footer_message": "So einfach ist das! 🎉",
+  "platforms": {
+    "android": {
+      "title": "🚀 Ihre Analyse in 10 Sekunden!",
+      "subtitle": "Nur 2 super einfache Schritte:"
+    },
+    "ios": {
+      "title": "🚀 Ihre Analyse in 10 Sekunden!",
+      "subtitle": "Nur 3 super einfache Schritte:"
+    },
+    "desktop": {
+      "title": "💻 Ihre Analyse in 10 Sekunden!",
+      "subtitle": "Nur 3 super einfache Schritte:"
+    }
+  }
+},
   "auth": {
     "login": {
       "title": "Anmelden",

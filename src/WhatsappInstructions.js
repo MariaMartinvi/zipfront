@@ -20,15 +20,15 @@ function WhatsappInstructions() {
   const androidStepsSimplified = [
     {
       id: 1,
-      title: "¡Súper fácil! Exporta tu chat",
-      description: "En tu chat de WhatsApp: Toca los 3 puntos → Más → Exportar chat → Sin medios",
+      title: t('whatsapp.simplified_steps.android.0.title'),
+      description: t('whatsapp.simplified_steps.android.0.description'),
       image: "/android-step1.png",
       icon: "📱"
     },
     {
       id: 2, 
-      title: "¡Listo! Comparte con ChatSalsa",
-      description: "Toca ChatSalsa para subir tu archivo y ¡ya está!",
+      title: t('whatsapp.simplified_steps.android.1.title'),
+      description: t('whatsapp.simplified_steps.android.1.description'),
       image: "/android-step2.png",
       icon: "🚀"
     }
@@ -38,24 +38,49 @@ function WhatsappInstructions() {
   const iosStepsSimplified = [
     {
       id: 1,
-      title: "¡Súper fácil! Exporta tu chat",
-      description: "En tu chat de WhatsApp: Clica en el nombre del grupo →Ves hasta Exportar chat → Sin medios",
+      title: t('whatsapp.simplified_steps.ios.0.title'),
+      description: t('whatsapp.simplified_steps.ios.0.description'),
       image: "/ios-step1.png",
       icon: "📱"
     },
     {
       id: 2,
-      title: "Guarda en tu iPhone",
-      description: "Toca 'Guardar en archivos' → 'en mi iPhone' → Guardar",
+      title: t('whatsapp.simplified_steps.ios.1.title'),
+      description: t('whatsapp.simplified_steps.ios.1.description'),
       image: "/ios-step2.png",
       icon: "💾"
     },
     {
       id: 3,
-      title: "¡Listo! Sube a ChatSalsa",
-      description: "En ChatSalsa toca 'Seleccionar archivo' y ¡ya tienes tu análisis!",
+      title: t('whatsapp.simplified_steps.ios.2.title'),
+      description: t('whatsapp.simplified_steps.ios.2.description'),
       image: "/ios-step3.png",
       icon: "🚀"
+    }
+  ];
+
+  // Pasos simplificados para Desktop (3 pasos)
+  const desktopStepsSimplified = [
+    {
+      id: 1,
+      title: t('whatsapp.simplified_steps.desktop.0.title'),
+      description: t('whatsapp.simplified_steps.desktop.0.description'),
+      image: "/android-step1.png",
+      icon: "📱"
+    },
+    {
+      id: 2,
+      title: t('whatsapp.simplified_steps.desktop.1.title'),
+      description: t('whatsapp.simplified_steps.desktop.1.description'),
+      image: "/desktop-step2.png",
+      icon: "📧"
+    },
+    {
+      id: 3,
+      title: t('whatsapp.simplified_steps.desktop.2.title'),
+      description: t('whatsapp.simplified_steps.desktop.2.description'),
+      image: "/desktop-step3.png",
+      icon: "💻"
     }
   ];
 
@@ -66,7 +91,7 @@ function WhatsappInstructions() {
     } else if (platform === 'ios') {
       return iosStepsSimplified;
     } else {
-      return t('whatsapp.desktop_steps', { returnObjects: true });
+      return desktopStepsSimplified;
     }
   };
 
@@ -108,24 +133,32 @@ function WhatsappInstructions() {
       {/* Título motivacional para Android */}
       {platform === 'android' && (
         <div className="android-hero">
-                     <h2>🚀 ¡En 10 segundos tienes tu análisis!</h2>
-          <p className="subtitle">Solo 2 pasos súper sencillos:</p>
+          <h2>{t('whatsapp.hero.android.title')}</h2>
+          <p className="subtitle">{t('whatsapp.hero.android.subtitle')}</p>
         </div>
       )}
       
       {/* Título motivacional para iOS */}
       {platform === 'ios' && (
         <div className="android-hero">
-          <h2>🚀 ¡En 10 segundos tienes tu análisis!</h2>
-          <p className="subtitle">Solo 3 pasos súper sencillos:</p>
+          <h2>{t('whatsapp.hero.ios.title')}</h2>
+          <p className="subtitle">{t('whatsapp.hero.ios.subtitle')}</p>
+        </div>
+      )}
+      
+      {/* Título motivacional para Desktop */}
+      {platform === 'desktop' && (
+        <div className="android-hero">
+          <h2>{t('whatsapp.hero.desktop.title')}</h2>
+          <p className="subtitle">{t('whatsapp.hero.desktop.subtitle')}</p>
         </div>
       )}
       
       {/* Título general para otras plataformas */}
-      {platform !== 'android' && platform !== 'ios' && <h2>{t('whatsapp.title')}</h2>}
+      {platform !== 'android' && platform !== 'ios' && platform !== 'desktop' && <h2>{t('whatsapp.title')}</h2>}
       
-      {/* Solo mostrar selector de plataforma en desktop */}
-      {platform === 'desktop' && (
+      {/* Mostrar selector de plataforma en desktop SIEMPRE */}
+      {detectPlatform() === 'desktop' && (
         <div className="platform-selector">
           <button 
             className={`platform-button ${platform === 'android' ? 'active' : ''}`}
@@ -153,13 +186,13 @@ function WhatsappInstructions() {
           className={`tab-button ${activeTab === 'carousel' ? 'active' : ''}`}
           onClick={() => setActiveTab('carousel')}
         >
-          {platform === 'android' ? '📱 Paso a paso' : platform === 'ios' ? '📱 Paso a paso' : t('whatsapp.step_by_step')}
+          {platform === 'android' ? '📱 Paso a paso' : platform === 'ios' ? '📱 Paso a paso' : platform === 'desktop' ? '💻 Paso a paso' : t('whatsapp.step_by_step')}
         </button>
         <button 
           className={`tab-button ${activeTab === 'video' ? 'active' : ''}`}
           onClick={() => setActiveTab('video')}
         >
-          {platform === 'android' ? '🎥 Video' : platform === 'ios' ? '🎥 Video' : t('whatsapp.video')}
+          {platform === 'android' ? '🎥 Video' : platform === 'ios' ? '🎥 Video' : platform === 'desktop' ? '🎥 Video' : t('whatsapp.video')}
         </button>
       </div>
       
@@ -171,12 +204,12 @@ function WhatsappInstructions() {
               {steps.map((step, index) => (
                 <div 
                   key={index}
-                  className={`carousel-slide ${index === activeSlide ? 'active' : ''} ${(platform === 'android' || platform === 'ios') ? 'simplified-slide' : ''}`}
+                  className={`carousel-slide ${index === activeSlide ? 'active' : ''} ${(platform === 'android' || platform === 'ios' || platform === 'desktop') ? 'simplified-slide' : ''}`}
                   onClick={handleSlideClick}
                 >
                   <div className="slide-content">
-                    {/* Para Android e iOS: layout simplificado */}
-                    {(platform === 'android' || platform === 'ios') ? (
+                    {/* Para Android, iOS e Desktop: layout simplificado */}
+                    {(platform === 'android' || platform === 'ios' || platform === 'desktop') ? (
                       <div className="simplified-layout">
                         <div className="step-number">
                           <span className="big-number">{step.id}</span>
@@ -223,10 +256,10 @@ function WhatsappInstructions() {
             ))}
           </div>
           
-          {/* Mensaje motivacional para Android e iOS */}
-          {(platform === 'android' || platform === 'ios') && (
+          {/* Mensaje motivacional para Android, iOS y Desktop */}
+          {(platform === 'android' || platform === 'ios' || platform === 'desktop') && (
             <div className="android-footer">
-              <p className="encouragement">¡Es así de simple! 🎉</p>
+              <p className="encouragement">{t('whatsapp.footer_message')}</p>
             </div>
           )}
         </div>

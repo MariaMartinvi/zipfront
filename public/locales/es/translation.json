@@ -331,6 +331,61 @@
     "title": "Cómo compartir un chat desde WhatsApp",
     "step_by_step": "Paso a paso",
     "video": "Video tutorial",
+    "hero": {
+      "android": {
+        "title": "🚀 ¡En 10 segundos tienes tu análisis!",
+        "subtitle": "Solo 2 pasos súper sencillos:"
+      },
+      "ios": {
+        "title": "🚀 ¡En 10 segundos tienes tu análisis!",
+        "subtitle": "Solo 3 pasos súper sencillos:"
+      },
+      "desktop": {
+        "title": "💻 ¡En 10 segundos tienes tu análisis!",
+        "subtitle": "Solo 3 pasos súper sencillos:"
+      }
+    },
+    "simplified_steps": {
+      "android": [
+        {
+          "title": "¡Súper fácil! Exporta tu chat",
+          "description": "En tu chat de WhatsApp: Toca los 3 puntos → Más → Exportar chat → Sin medios"
+        },
+        {
+          "title": "¡Listo! Comparte con ChatSalsa",
+          "description": "Toca ChatSalsa para subir tu archivo y ¡ya está!"
+        }
+      ],
+      "ios": [
+        {
+          "title": "¡Súper fácil! Exporta tu chat",
+          "description": "En tu chat de WhatsApp: Ve a Info del grupo → Exportar chat → Sin medios"
+        },
+        {
+          "title": "Guarda en tu iPhone",
+          "description": "Toca 'Guardar en Archivos' → 'En mi iPhone' → Guardar"
+        },
+        {
+          "title": "¡Listo! Sube a ChatSalsa",
+          "description": "En ChatSalsa toca 'Seleccionar archivo' y ¡ya tienes tu análisis!"
+        }
+      ],
+      "desktop": [
+        {
+          "title": "¡Súper fácil! Exporta desde tu teléfono",
+          "description": "En tu chat de WhatsApp: Toca los 3 puntos → Más → Exportar chat → Sin medios"
+        },
+        {
+          "title": "Envía por email",
+          "description": "Comparte el archivo → Gmail → Envíate el archivo a tu email"
+        },
+        {
+          "title": "¡Listo! Sube desde tu PC",
+          "description": "Abre el email en tu PC, descarga el archivo y súbelo a ChatSalsa"
+        }
+      ]
+    },
+    "footer_message": "¡Es así de simple! 🎉",
     "platforms": {
       "android": "Android",
       "ios": "iOS",
