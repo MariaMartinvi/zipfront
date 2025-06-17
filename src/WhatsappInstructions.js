@@ -31,23 +31,40 @@ function WhatsappInstructions() {
         // Pausar el carrusel automático
         setIsCarouselPaused(true);
         
-        // Scroll suave al área de upload donde pueden subir archivos
-        const uploadSection = document.querySelector('.upload-section') || 
-                              document.querySelector('[class*="upload"]') || 
-                              document.querySelector('input[type="file"]')?.closest('div');
+        // Intentar instalar la PWA
+        const installPWA = () => {
+          // Buscar el evento de instalación guardado globalmente
+          if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+            window.deferredPrompt.userChoice.then((choiceResult) => {
+              if (choiceResult.outcome === 'accepted') {
+                console.log('PWA instalada correctamente');
+              }
+              window.deferredPrompt = null;
+            });
+          } else {
+            // Fallback: mostrar instrucciones para instalar PWA manualmente
+            alert('¡Instala ChatSalsa como app!\n\n' +
+                  'Android Chrome: Menú (⋮) → "Instalar aplicación" o "Añadir a pantalla de inicio"\n\n' +
+                  'Después podrás compartir archivos directamente desde WhatsApp a ChatSalsa');
+          }
+        };
         
-        if (uploadSection) {
-          uploadSection.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'center'
-          });
-        } else {
-          // Fallback: scroll hacia abajo
-          window.scrollBy({
-            top: 300,
-            behavior: 'smooth'
-          });
-        }
+        installPWA();
+        
+        // También hacer scroll hacia la sección de upload después de un momento
+        setTimeout(() => {
+          const uploadSection = document.querySelector('.upload-section') || 
+                                document.querySelector('[class*="upload"]') || 
+                                document.querySelector('input[type="file"]')?.closest('div');
+          
+          if (uploadSection) {
+            uploadSection.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }
+        }, 2000); // Esperar 2 segundos antes de hacer scroll
       }
     },
     {
