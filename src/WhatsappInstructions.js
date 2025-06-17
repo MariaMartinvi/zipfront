@@ -159,26 +159,26 @@ function WhatsappInstructions() {
       
       {/* Mostrar selector de plataforma en desktop SIEMPRE */}
       {detectPlatform() === 'desktop' && (
-        <div className="platform-selector">
-          <button 
-            className={`platform-button ${platform === 'android' ? 'active' : ''}`}
-            onClick={() => togglePlatform('android')}
-          >
-            {t('whatsapp.platforms.android')}
-          </button>
-          <button 
-            className={`platform-button ${platform === 'ios' ? 'active' : ''}`}
-            onClick={() => togglePlatform('ios')}
-          >
-            {t('whatsapp.platforms.ios')}
-          </button>
-          <button 
-            className={`platform-button ${platform === 'desktop' ? 'active' : ''}`}
-            onClick={() => togglePlatform('desktop')}
-          >
-            {t('whatsapp.platforms.desktop')}
-          </button>
-        </div>
+      <div className="platform-selector">
+        <button 
+          className={`platform-button ${platform === 'android' ? 'active' : ''}`}
+          onClick={() => togglePlatform('android')}
+        >
+          {t('whatsapp.platforms.android')}
+        </button>
+        <button 
+          className={`platform-button ${platform === 'ios' ? 'active' : ''}`}
+          onClick={() => togglePlatform('ios')}
+        >
+          {t('whatsapp.platforms.ios')}
+        </button>
+        <button 
+          className={`platform-button ${platform === 'desktop' ? 'active' : ''}`}
+          onClick={() => togglePlatform('desktop')}
+        >
+          {t('whatsapp.platforms.desktop')}
+        </button>
+      </div>
       )}
       
       <div className="instruction-tabs">
@@ -229,14 +229,14 @@ function WhatsappInstructions() {
                       </div>
                     ) : (
                       /* Layout original para otras plataformas */
-                      <div className="slide-content">
-                        <div className={`process-icon ${index % 2 === 0 ? 'green-border' : 'purple-border'}`}>
-                          <span className="emoji-icon">{step.icon}</span>
-                        </div>
-                        <div className="slide-text">
-                          <h3 className="slide-title">{step.title}</h3>
-                          <p className="slide-description">{step.description}</p>
-                        </div>
+                  <div className="slide-content">
+                    <div className={`process-icon ${index % 2 === 0 ? 'green-border' : 'purple-border'}`}>
+                      <span className="emoji-icon">{step.icon}</span>
+                    </div>
+                    <div className="slide-text">
+                      <h3 className="slide-title">{step.title}</h3>
+                      <p className="slide-description">{step.description}</p>
+                    </div>
                       </div>
                     )}
                   </div>

@@ -920,3 +920,11 @@
   }
 }
 /* ===== FIN RESPONSIVE ANDROID ===== */
+
+/* Ocultar títulos hero en móviles para optimizar el espacio vertical */
+@media (max-width: 768px) {
+  .android-hero,
+  .ios-hero {
+    display: none !important;
+  }
+}
