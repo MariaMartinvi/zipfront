@@ -16,6 +16,7 @@ function WhatsappInstructions() {
   const [platform, setPlatform] = useState(detectPlatform());
   const [activeTab, setActiveTab] = useState('carousel');
   const [isCarouselPaused, setIsCarouselPaused] = useState(false);
+  const [promptInstall, setPromptInstall] = useState(null);
 
   // Pasos simplificados para Android (ahora 3 pasos)
   const androidStepsSimplified = [
@@ -33,22 +34,24 @@ function WhatsappInstructions() {
         
         // Intentar instalar la PWA usando la misma lógica exitosa
         const installPWA = () => {
-          // Buscar el evento de instalación guardado globalmente
-          if (window.deferredPrompt) {
-            // Mostrar el prompt de instalación
-            window.deferredPrompt.prompt();
-            
-            // Esperar a que el usuario responda al prompt
-            window.deferredPrompt.userChoice.then((choiceResult) => {
-              if (choiceResult.outcome === 'accepted') {
-                console.log('Usuario aceptó la instalación');
-              } else {
-                console.log('Usuario rechazó la instalación');
-              }
-              // Limpiar el prompt guardado
-              window.deferredPrompt = null;
-            });
+          if (!promptInstall) {
+            console.log('No hay prompt de instalación disponible');
+            return;
           }
+          
+          // Mostrar el prompt de instalación
+          promptInstall.prompt();
+          
+          // Esperar a que el usuario responda al prompt
+          promptInstall.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('Usuario aceptó la instalación');
+            } else {
+              console.log('Usuario rechazó la instalación');
+            }
+            // Limpiar el prompt guardado
+            setPromptInstall(null);
+          });
         };
         
         installPWA();
@@ -157,6 +160,18 @@ function WhatsappInstructions() {
     setPlatform(newPlatform);
     setActiveSlide(0);
   };
+
+  // Capturar el evento de instalación PWA
+  useEffect(() => {
+    const handler = (e) => {
+      // Guarda el evento sin llamar a preventDefault
+      setPromptInstall(e);
+    };
+    
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
 
   useEffect(() => {
     if (!isCarouselPaused) {
