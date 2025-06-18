@@ -60,15 +60,15 @@ const SimplePaymentSuccess = () => {
                 'conversion_value': conversionValue
               });
               
-              // También enviar directamente a gtag como respaldo
-              window.gtag('event', 'purchase', {
-                'transaction_id': sessionId,
-                'value': conversionValue,
-                'currency': 'EUR',
-                'user_id': user.uid,
-                'custom_parameter_1': userPlan,
-                'send_to': 'AW-17125098813/PURCHASE_LABEL' // Crear nueva conversión para compras
-              });
+                             // También enviar directamente a gtag como respaldo
+               window.gtag('event', 'conversion', {
+                 'send_to': 'AW-17125098813/CuhGCMf20d0aEL2K8eU_',
+                 'value': conversionValue,
+                 'currency': 'EUR',
+                 'transaction_id': sessionId,
+                 'user_id': user.uid,
+                 'custom_parameter_1': userPlan
+               });
               
               // Marcar como enviado para evitar duplicados
               localStorage.setItem(purchaseKey, 'true');
