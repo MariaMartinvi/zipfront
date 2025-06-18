@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './WhatsappInstructions.css';
+import InstallPWA from './InstallPWA';
 
 // Detectar plataforma automáticamente
 const detectPlatform = () => {
@@ -16,8 +17,6 @@ function WhatsappInstructions() {
   const [platform, setPlatform] = useState(detectPlatform());
   const [activeTab, setActiveTab] = useState('carousel');
   const [isCarouselPaused, setIsCarouselPaused] = useState(false);
-  const [promptInstall, setPromptInstall] = useState(null);
-
   // Pasos simplificados para Android (ahora 3 pasos)
   const androidStepsSimplified = [
     {
@@ -32,31 +31,7 @@ function WhatsappInstructions() {
         // Pausar el carrusel automático
         setIsCarouselPaused(true);
         
-        // Intentar instalar la PWA usando la misma lógica exitosa
-        const installPWA = () => {
-          if (!promptInstall) {
-            console.log('No hay prompt de instalación disponible');
-            return;
-          }
-          
-          // Mostrar el prompt de instalación
-          promptInstall.prompt();
-          
-          // Esperar a que el usuario responda al prompt
-          promptInstall.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              console.log('Usuario aceptó la instalación');
-            } else {
-              console.log('Usuario rechazó la instalación');
-            }
-            // Limpiar el prompt guardado
-            setPromptInstall(null);
-          });
-        };
-        
-        installPWA();
-        
-        // También hacer scroll hacia la sección de upload después de un momento
+        // Hacer scroll hacia la sección de upload después de un momento
         setTimeout(() => {
           const uploadSection = document.querySelector('.upload-section') || 
                                 document.querySelector('[class*="upload"]') || 
@@ -161,17 +136,7 @@ function WhatsappInstructions() {
     setActiveSlide(0);
   };
 
-  // Capturar el evento de instalación PWA
-  useEffect(() => {
-    const handler = (e) => {
-      // Guarda el evento sin llamar a preventDefault
-      setPromptInstall(e);
-    };
-    
-    window.addEventListener('beforeinstallprompt', handler);
 
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
 
   useEffect(() => {
     if (!isCarouselPaused) {
@@ -287,15 +252,18 @@ function WhatsappInstructions() {
                         {/* Botón de instalación o imagen del paso */}
                         {step.hasButton ? (
                           <div className="step-button-container">
-                            <button 
-                              className="install-app-button"
+                            <InstallPWA />
+                            <div 
+                              style={{ marginTop: '10px', cursor: 'pointer' }}
                               onClick={(e) => {
                                 e.stopPropagation(); // Prevenir que se active handleSlideClick
                                 step.buttonAction();
                               }}
                             >
-                              {step.buttonText}
-                            </button>
+                              <small style={{ color: '#666', fontSize: '12px' }}>
+                                👆 {step.buttonText}
+                              </small>
+                            </div>
                           </div>
                         ) : (
                           <div className="step-image-container">

@@ -29,9 +29,10 @@ i18n
     },
     // Opciones de detección
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'], // Añadir htmlTag como opción
+      order: ['querystring', 'localStorage', 'navigator', 'htmlTag'], // Añadir querystring como primera opción
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',
+      lookupQuerystring: 'lang', // Parámetro de URL que detectará (ej: ?lang=en)
       // checkWhitelist: true // Esta opción está obsoleta, se usa supportedLngs
     }
   });
