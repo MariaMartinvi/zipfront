@@ -330,6 +330,34 @@ export const registerUser = async (email, password, displayName) => {
     console.log('📧 Email de verificación enviado a:', email);
     console.log('🔒 Cerrando sesión hasta verificar email...');
     
+    // 🎯 ENVIAR EVENTO DE CONVERSIÓN A GOOGLE ADS
+    if (isNewUser && window.gtag) {
+      console.log('📊 Enviando evento de signup a Google Ads via GTM...');
+      
+      // Enviar evento al dataLayer para GTM
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event': 'signup_completed',
+        'user_id': user.uid,
+        'email': email,
+        'method': 'email',
+        'timestamp': new Date().toISOString(),
+        'conversion_id': user.uid,
+        'conversion_label': 'signup',
+        'conversion_value': 1
+      });
+      
+      // También enviar directamente a gtag como respaldo
+      window.gtag('event', 'sign_up', {
+        'method': 'email',
+        'user_id': user.uid,
+        'custom_parameter_1': 'firebase_auth',
+        'send_to': 'AW-17125098813/GlRoCLicyd0aEL2K8eU_'
+      });
+      
+      console.log('✅ Evento de signup enviado a GTM y Google Ads');
+    }
+    
     // Desloguar inmediatamente - no mantener autenticación sin verificar
     await auth.signOut();
     
@@ -993,6 +1021,37 @@ export const loginWithGoogle = async () => {
     }
 
     console.log('✅ Email verificado en Google login, login exitoso!');
+    
+    // 🎯 ENVIAR EVENTO DE CONVERSIÓN A GOOGLE ADS (para registro con Google)
+    // Verificar si es un nuevo usuario comparando metadata
+    const isNewUser = data.is_new_user || false;
+    
+    if (isNewUser && window.gtag) {
+      console.log('📊 Enviando evento de signup (Google) a Google Ads via GTM...');
+      
+      // Enviar evento al dataLayer para GTM
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event': 'signup_completed',
+        'user_id': user.uid,
+        'email': user.email,
+        'method': 'google',
+        'timestamp': new Date().toISOString(),
+        'conversion_id': user.uid,
+        'conversion_label': 'signup_google',
+        'conversion_value': 1
+      });
+      
+             // También enviar directamente a gtag como respaldo
+       window.gtag('event', 'sign_up', {
+         'method': 'google',
+         'user_id': user.uid,
+         'custom_parameter_1': 'google_auth',
+         'send_to': 'AW-17125098813/GlRoCLicyd0aEL2K8eU_'
+       });
+      
+      console.log('✅ Evento de signup (Google) enviado a GTM y Google Ads');
+    }
     
     return user;
     

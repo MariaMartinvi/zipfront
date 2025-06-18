@@ -16,9 +16,68 @@ const SimplePaymentSuccess = () => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
+          // Obtener parámetros de la URL para verificar el pago
+          const urlParams = new URLSearchParams(location.search);
+          const sessionId = urlParams.get('session_id');
+          
           // Actualizar el plan del usuario
           const userPlan = await getUserPlan(user.uid);
           console.log('Plan actualizado:', userPlan);
+          
+          // 🎯 ENVIAR EVENTO DE CONVERSIÓN DE COMPRA A GOOGLE ADS
+          // Solo si tenemos session_id (confirmación de pago exitoso)
+          if (sessionId && window.gtag) {
+            // Verificar si ya enviamos este evento para evitar duplicados
+            const purchaseKey = `purchase_tracked_${sessionId}`;
+            const alreadyTracked = localStorage.getItem(purchaseKey);
+            
+            if (!alreadyTracked) {
+              console.log('📊 Enviando evento de compra a Google Ads via GTM...');
+              
+              // Obtener información del plan para el valor de conversión
+              const planValues = {
+                'basic': 4,
+                'standard': 8, 
+                'premium': 10,
+                'free': 0
+              };
+              
+              const conversionValue = planValues[userPlan] || 0;
+              
+              // Enviar evento al dataLayer para GTM
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                'event': 'purchase_completed',
+                'user_id': user.uid,
+                'email': user.email,
+                'plan': userPlan,
+                'value': conversionValue,
+                'currency': 'EUR',
+                'transaction_id': sessionId,
+                'timestamp': new Date().toISOString(),
+                'conversion_id': user.uid,
+                'conversion_label': 'purchase',
+                'conversion_value': conversionValue
+              });
+              
+              // También enviar directamente a gtag como respaldo
+              window.gtag('event', 'purchase', {
+                'transaction_id': sessionId,
+                'value': conversionValue,
+                'currency': 'EUR',
+                'user_id': user.uid,
+                'custom_parameter_1': userPlan,
+                'send_to': 'AW-17125098813/PURCHASE_LABEL' // Crear nueva conversión para compras
+              });
+              
+              // Marcar como enviado para evitar duplicados
+              localStorage.setItem(purchaseKey, 'true');
+              
+              console.log(`✅ Evento de compra enviado - Plan: ${userPlan}, Valor: €${conversionValue}`);
+            } else {
+              console.log('⚠️ Evento de compra ya fue enviado anteriormente para esta sesión');
+            }
+          }
           
           // User is signed in, redirect to plans page with success flag
           console.log('User is authenticated, redirecting to plans page');
@@ -42,7 +101,7 @@ const SimplePaymentSuccess = () => {
     
     // Cleanup subscription
     return () => unsubscribe();
-  }, [navigate, t]);
+  }, [navigate, t, location.search]);
   
   return (
     <div style={{
