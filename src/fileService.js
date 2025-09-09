@@ -5,7 +5,7 @@
 import { PROMPTS, USER_PREFIXES, ERROR_MESSAGES } from './services/azure/constants';
 import { userSession } from './utils/userSession';
 import { anonymizationService } from './services/anonymizationService';
-import azureService from './services/azure/AzureService';
+import unifiedAIService from './services/UnifiedAIService';
 
 // Nota: Esta API_URL ya no se usa para las solicitudes a Azure (que se hacen directamente desde el cliente)
 // pero se mantiene por compatibilidad con posibles usos futuros o para otras funciones
@@ -380,11 +380,11 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     const { processedContent, nameMapping } = processContentForAzure(chatContent, language);
     console.log(`Longitud después de anonimizar: ${processedContent.length} caracteres`);
     
-    // 🔄 USAR NUEVO AZURESERVICE (con fallback automático incluido)
-    console.log('🔄 Usando nuevo AzureService con fallback automático...');
+    // 🔄 USAR NUEVO SISTEMA UNIFICADO (ChatGPT + Mistral con fallback automático)
+    console.log('🔄 Usando nuevo sistema unificado ChatGPT + Mistral...');
     
     try {
-      const result = await azureService.getResponse(processedContent, language);
+      const result = await unifiedAIService.getResponse(processedContent, language);
       
       if (result.success) {
         let analysisResult = result.response;
@@ -402,8 +402,8 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
         console.log('nameMapping guardado globalmente:', nameMapping);
         
         // Guardar también la respuesta completa para el juego
-        window.lastAzureResponse = analysisResult;
-        console.log('Respuesta de Azure guardada globalmente para el juego');
+        window.lastAIResponse = analysisResult;
+        console.log('Respuesta de IA guardada globalmente para el juego');
         
         return {
           success: true,
@@ -411,18 +411,18 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
           response: analysisResult
         };
       } else {
-        throw new Error(result.error || 'Error en AzureService');
+        throw new Error(result.error || 'Error en el sistema de IA');
       }
-    } catch (azureServiceError) {
-      console.error('❌ Error en AzureService:', azureServiceError);
+    } catch (aiServiceError) {
+      console.error('❌ Error en el sistema de IA:', aiServiceError);
       
       return {
         success: false,
-        error: azureServiceError.message || 'Error al procesar la solicitud con todos los modelos disponibles.'
+        error: aiServiceError.message || 'Error al procesar la solicitud con todos los modelos disponibles.'
       };
     }
   } catch (error) {
-    console.error("Error al analizar el chat con Azure OpenAI:", error);
+    console.error("Error al analizar el chat con el sistema de IA:", error);
     
     // Manejar errores específicos
     if (error.status === 429 || error.statusCode === 429) {

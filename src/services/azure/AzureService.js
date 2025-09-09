@@ -9,6 +9,7 @@
 import { getEnvVariable } from '../../fileService';
 import { selectOptimalModel } from './ModelSelector';
 import { RetryManager } from './RetryManager';
+import { ContentFilterHandler } from './ContentFilterHandler';
 import { 
   ALTERNATIVE_APIS, 
   PROMPTS, 
@@ -62,6 +63,43 @@ export class AzureService {
    * @returns {Promise<Object>} - Resultado del análisis
    */
   async getResponse(textContent, language = 'es') {
+    
+    // Función wrapper para usar con ContentFilterHandler
+    const makeApiCall = async (prompt, content) => {
+      return await this._makeDirectApiCall(prompt, content, language);
+    };
+
+    try {
+      // Usar ContentFilterHandler para manejo robusto de filtros
+      const prompt = PROMPTS[language] || PROMPTS['es'];
+      
+      return await ContentFilterHandler.retryWithFallback(
+        makeApiCall,
+        prompt,
+        textContent,
+        language // idioma para el fallback
+      );
+      
+    } catch (error) {
+      console.error('❌ Error final en getResponse:', error);
+      
+      const errorMsg = ERROR_MESSAGES[language]?.unknown_error || 
+                      "Error desconocido al analizar el chat";
+      return {
+        success: false,
+        error: errorMsg
+      };
+    }
+  }
+
+  /**
+   * Realiza la llamada directa a la API (sin retry logic)
+   * @param {string} prompt - Prompt del sistema
+   * @param {string} textContent - Contenido a analizar  
+   * @param {string} language - Idioma del análisis
+   * @returns {Promise<Object>} - Resultado del análisis
+   */
+  async _makeDirectApiCall(prompt, textContent, language) {
     try {
       
       // Validar y normalizar el idioma
@@ -88,8 +126,8 @@ export class AzureService {
       let userContent = textContent;
       const contentLength = userContent.length;
       
-      // Obtener el prompt en el idioma correspondiente
-      const systemPrompt = PROMPTS[language] || PROMPTS['es'];
+      // Usar el prompt pasado como parámetro
+      const systemPrompt = prompt;
       const userPrefix = USER_PREFIXES[language] || USER_PREFIXES['es'];
       
       // Preparar los mensajes para la API
@@ -225,6 +263,13 @@ export class AzureService {
           
         } catch (error) {
           console.error(`>>> ERROR con ${api.name} (${api.model}):`, error);
+          
+          // 🚨 PRIORIDAD: Content filtering errors van directamente al fallback GPT-4 mini
+          if (ContentFilterHandler.isContentFilterError(error)) {
+            console.log(`🚨 CONTENT FILTERING detectado en ${api.name} - Propagando error para activar fallback a GPT-4 mini`);
+            console.log(`🚨 Detalle del error: ${error.message || error.toString()}`);
+            throw error; // Propagar inmediatamente para que ContentFilterHandler lo maneje
+          }
           
           if (error.status === 429 || error.statusCode === 429) {
             // Rate limit, continuar con la siguiente API

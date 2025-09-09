@@ -39,27 +39,27 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     if (chatGptResponse && !htmlContent) {
 
       
-      // Buscar respuesta de Azure en variable global
-      const azureResponse = window.lastAzureResponse;
-      
-      if (azureResponse) {
+          // Buscar respuesta de IA en variable global
+    const aiResponse = window.lastAIResponse || window.lastAzureResponse; // Mantener compatibilidad
+
+    if (aiResponse) {
         // Buscar GAME_DATA en la respuesta
-        const gameDataMatch = azureResponse.match(/GAME_DATA:/);
+        const gameDataMatch = aiResponse.match(/GAME_DATA:/);
         
         if (gameDataMatch) {
           try {
             // Buscar la posición inicial del array
-            const startIndex = azureResponse.indexOf('GAME_DATA:[');
+            const startIndex = aiResponse.indexOf('GAME_DATA:[');
             if (startIndex !== -1) {
               // Extraer desde '[' hasta encontrar el ']' que cierra el array principal
-              let arrayStart = azureResponse.indexOf('[', startIndex);
+              let arrayStart = aiResponse.indexOf('[', startIndex);
               let bracketCount = 0;
               let endIndex = arrayStart;
               
-              for (let i = arrayStart; i < azureResponse.length; i++) {
-                if (azureResponse[i] === '[') {
+              for (let i = arrayStart; i < aiResponse.length; i++) {
+                if (aiResponse[i] === '[') {
                   bracketCount++;
-                } else if (azureResponse[i] === ']') {
+                } else if (aiResponse[i] === ']') {
                   bracketCount--;
                   if (bracketCount === 0) {
                     endIndex = i;
@@ -69,7 +69,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
               }
               
               // Extraer el JSON completo
-              let jsonStr = azureResponse.substring(arrayStart, endIndex + 1);
+              let jsonStr = aiResponse.substring(arrayStart, endIndex + 1);
               
               // Intentar parsear el JSON
               const parsedData = JSON.parse(jsonStr);
