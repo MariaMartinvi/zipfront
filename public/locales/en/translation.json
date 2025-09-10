@@ -618,7 +618,15 @@
       "or": "or",
       "error": "Error registering. Please try again.",
       "password_mismatch": "Passwords do not match.",
-      "redirecting": "Account created successfully. Redirecting..."
+      "redirecting": "Account created successfully. Redirecting...",
+      "verification_sent": "Email verification sent",
+      "verification_instruction": "We have sent a verification email to:",
+      "verification_details": "Please check your inbox and click the link to activate your account.",
+      "verification_note": "Note:",
+      "verification_spam": "If you don't see the email, check your spam folder.",
+      "go_to_login": "Go to login",
+      "captcha_verified": "Security verification completed",
+      "captcha_verifying": "Verifying you're human..."
     },
     "password_reset": {
       "title": "Reset Password",
@@ -738,6 +746,37 @@
     "sunday": "Sunday"
   },
   "messages": "Messages",
+  "errors": {
+    "auth": {
+      "invalid-credential": "Invalid credentials. Please verify your email and password.",
+      "invalid-email": "Invalid email format.",
+      "user-disabled": "This account has been disabled.",
+      "user-not-found": "No account exists with this email.",
+      "wrong-password": "Incorrect password.",
+      "email-already-in-use": "An account already exists with this email.",
+      "weak-password": "The password is too weak. It must have at least 6 characters.",
+      "operation-not-allowed": "This operation is not allowed.",
+      "account-exists-with-different-credential": "An account already exists with this email but with a different sign-in method.",
+      "invalid-api-key": "The Firebase API key is invalid or has expired. Contact the administrator.",
+      "network-request-failed": "Connection error. Check your internet connection.",
+      "popup-closed-by-user": "Login canceled. Window closed before authentication was completed.",
+      "popup-blocked": "The browser blocked the popup window. Please allow popups for this site or try again.",
+      "unauthorized-domain": "This domain is not authorized for OAuth operations.",
+      "too-many-requests": "Too many failed attempts. Please try again later.",
+      "email-not-verified": "You must verify your email before you can sign in. Please check your inbox and click the verification link."
+    },
+    "firestore": {
+      "permission-denied": "You do not have permission to access this data.",
+      "unavailable": "The service is currently unavailable."
+    },
+    "custom": {
+      "invalid-user-id": "Invalid user ID",
+      "user-not-found": "User not found",
+      "auth-mismatch": "Not authenticated to update this user",
+      "count-update-error": "Error updating counter"
+    },
+    "default": "An error has occurred. Please try again."
+  },
   "date": {
     "format": "MMMM d, yy",
     "months": {

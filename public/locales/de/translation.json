@@ -680,7 +680,15 @@
       "or": "oder",
       "error": "Fehler bei der Registrierung. Bitte versuchen Sie es erneut.",
       "password_mismatch": "Die Passwörter stimmen nicht überein.",
-      "redirecting": "Konto erfolgreich erstellt. Weiterleitung..."
+      "redirecting": "Konto erfolgreich erstellt. Weiterleitung...",
+      "verification_sent": "Bestätigungs-E-Mail gesendet",
+      "verification_instruction": "Wir haben eine Bestätigungs-E-Mail gesendet an:",
+      "verification_details": "Bitte überprüfen Sie Ihren Posteingang und klicken Sie auf den Link, um Ihr Konto zu aktivieren.",
+      "verification_note": "Hinweis:",
+      "verification_spam": "Wenn Sie die E-Mail nicht sehen, überprüfen Sie Ihren Spam-Ordner.",
+      "go_to_login": "Zum Login gehen",
+      "captcha_verified": "Sicherheitsüberprüfung abgeschlossen",
+      "captcha_verifying": "Überprüfung, dass Sie ein Mensch sind..."
     },
     "password_reset": {
       "title": "Passwort zurücksetzen",
@@ -799,6 +807,37 @@
         "session": "Sitzung abgelaufen. Bitte melden Sie sich erneut an."
       }
     }
+  },
+  "errors": {
+    "auth": {
+      "invalid-credential": "Ungültige Anmeldedaten. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.",
+      "invalid-email": "Ungültiges E-Mail-Format.",
+      "user-disabled": "Dieses Konto wurde deaktiviert.",
+      "user-not-found": "Es existiert kein Konto mit dieser E-Mail.",
+      "wrong-password": "Falsches Passwort.",
+      "email-already-in-use": "Ein Konto mit dieser E-Mail existiert bereits.",
+      "weak-password": "Das Passwort ist zu schwach. Es muss mindestens 6 Zeichen haben.",
+      "operation-not-allowed": "Diese Operation ist nicht erlaubt.",
+      "account-exists-with-different-credential": "Ein Konto mit dieser E-Mail existiert bereits, aber mit einer anderen Anmeldemethode.",
+      "invalid-api-key": "Der Firebase-API-Schlüssel ist ungültig oder abgelaufen. Kontaktieren Sie den Administrator.",
+      "network-request-failed": "Verbindungsfehler. Überprüfen Sie Ihre Internetverbindung.",
+      "popup-closed-by-user": "Anmeldung abgebrochen. Fenster wurde vor Abschluss der Authentifizierung geschlossen.",
+      "popup-blocked": "Der Browser hat das Popup-Fenster blockiert. Bitte erlauben Sie Popups für diese Seite oder versuchen Sie es erneut.",
+      "unauthorized-domain": "Diese Domain ist nicht für OAuth-Operationen autorisiert.",
+      "too-many-requests": "Zu viele fehlgeschlagene Versuche. Bitte versuchen Sie es später erneut.",
+      "email-not-verified": "Sie müssen Ihre E-Mail-Adresse verifizieren, bevor Sie sich anmelden können. Bitte überprüfen Sie Ihren Posteingang und klicken Sie auf den Bestätigungslink."
+    },
+    "firestore": {
+      "permission-denied": "Sie haben keine Berechtigung, auf diese Daten zuzugreifen.",
+      "unavailable": "Der Dienst ist derzeit nicht verfügbar."
+    },
+    "custom": {
+      "invalid-user-id": "Ungültige Benutzer-ID",
+      "user-not-found": "Benutzer nicht gefunden",
+      "auth-mismatch": "Nicht authentifiziert, um diesen Benutzer zu aktualisieren",
+      "count-update-error": "Fehler beim Aktualisieren des Zählers"
+    },
+    "default": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
   },
   "date": {
     "format": "d. MMMM yy",

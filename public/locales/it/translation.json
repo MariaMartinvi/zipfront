@@ -245,7 +245,15 @@
       "or": "oppure",
       "error": "Errore durante la registrazione. Per favore riprova.",
       "password_mismatch": "Le password non coincidono.",
-      "redirecting": "Account creato con successo. Reindirizzamento..."
+      "redirecting": "Account creato con successo. Reindirizzamento...",
+      "verification_sent": "Email di verifica inviata",
+      "verification_instruction": "Abbiamo inviato un'email di verifica a:",
+      "verification_details": "Controlla la tua casella di posta e clicca sul link per attivare il tuo account.",
+      "verification_note": "Nota:",
+      "verification_spam": "Se non vedi l'email, controlla la cartella spam.",
+      "go_to_login": "Vai al login",
+      "captcha_verified": "Verifica di sicurezza completata",
+      "captcha_verifying": "Verificando che sei umano..."
     },
     "password_reset": {
       "title": "Reimposta Password",
@@ -631,6 +639,37 @@
       "funny_messages": "Messaggi che fanno ridere",
       "funny_percentage": "% di messaggi divertenti"
     }
+  },
+  "errors": {
+    "auth": {
+      "invalid-credential": "Credenziali non valide. Verifica email e password.",
+      "invalid-email": "Formato email non valido.",
+      "user-disabled": "Questo account è stato disabilitato.",
+      "user-not-found": "Non esiste un account con questa email.",
+      "wrong-password": "Password errata.",
+      "email-already-in-use": "Esiste già un account con questa email.",
+      "weak-password": "La password è troppo debole. Deve avere almeno 6 caratteri.",
+      "operation-not-allowed": "Questa operazione non è consentita.",
+      "account-exists-with-different-credential": "Esiste già un account con questa email ma con un metodo di accesso diverso.",
+      "invalid-api-key": "La chiave API Firebase non è valida o è scaduta. Contatta l'amministratore.",
+      "network-request-failed": "Errore di connessione. Verifica la tua connessione internet.",
+      "popup-closed-by-user": "Accesso annullato. Finestra chiusa prima del completamento dell'autenticazione.",
+      "popup-blocked": "Il browser ha bloccato la finestra popup. Per favore consenti i popup per questo sito o riprova.",
+      "unauthorized-domain": "Questo dominio non è autorizzato per le operazioni OAuth.",
+      "too-many-requests": "Troppi tentativi falliti. Riprova più tardi.",
+      "email-not-verified": "Devi verificare la tua email prima di poter accedere. Per favore controlla la tua casella di posta e clicca sul link di verifica."
+    },
+    "firestore": {
+      "permission-denied": "Non hai il permesso di accedere a questi dati.",
+      "unavailable": "Il servizio non è disponibile al momento."
+    },
+    "custom": {
+      "invalid-user-id": "ID utente non valido",
+      "user-not-found": "Utente non trovato",
+      "auth-mismatch": "Non autenticato per aggiornare questo utente",
+      "count-update-error": "Errore durante l'aggiornamento del contatore"
+    },
+    "default": "Si è verificato un errore. Riprova."
   },
   "date": {
     "format": "d MMMM yy",

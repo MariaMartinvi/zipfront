@@ -638,7 +638,15 @@
       "or": "ou",
       "error": "Erro ao registrar. Tente novamente.",
       "password_mismatch": "As senhas não coincidem.",
-      "redirecting": "Conta criada com sucesso. Redirecionando..."
+      "redirecting": "Conta criada com sucesso. Redirecionando...",
+      "verification_sent": "Email de verificação enviado",
+      "verification_instruction": "Enviamos um email de verificação para:",
+      "verification_details": "Verifique sua caixa de entrada e clique no link para ativar sua conta.",
+      "verification_note": "Nota:",
+      "verification_spam": "Se não vir o email, verifique sua pasta de spam.",
+      "go_to_login": "Ir para login",
+      "captcha_verified": "Verificação de segurança concluída",
+      "captcha_verifying": "Verificando se você é humano..."
     },
     "password_reset": {
       "title": "Redefinir Senha",
@@ -756,6 +764,37 @@
         "session": "Sessão expirada. Faça login novamente."
       }
     }
+  },
+  "errors": {
+    "auth": {
+      "invalid-credential": "Credenciais inválidas. Por favor, verifique seu email e senha.",
+      "invalid-email": "Formato de email inválido.",
+      "user-disabled": "Esta conta foi desabilitada.",
+      "user-not-found": "Não existe uma conta com este email.",
+      "wrong-password": "Senha incorreta.",
+      "email-already-in-use": "Já existe uma conta com este email.",
+      "weak-password": "A senha é muito fraca. Deve ter pelo menos 6 caracteres.",
+      "operation-not-allowed": "Esta operação não é permitida.",
+      "account-exists-with-different-credential": "Já existe uma conta com este email mas com um método de login diferente.",
+      "invalid-api-key": "A chave API do Firebase é inválida ou expirou. Entre em contato com o administrador.",
+      "network-request-failed": "Erro de conexão. Verifique sua conexão com a internet.",
+      "popup-closed-by-user": "Login cancelado. Janela fechada antes de completar a autenticação.",
+      "popup-blocked": "O navegador bloqueou a janela popup. Por favor, permita popups para este site ou tente novamente.",
+      "unauthorized-domain": "Este domínio não está autorizado para operações OAuth.",
+      "too-many-requests": "Muitas tentativas falharam. Por favor, tente novamente mais tarde.",
+      "email-not-verified": "Você deve verificar seu email antes de poder fazer login. Por favor, verifique sua caixa de entrada e clique no link de verificação."
+    },
+    "firestore": {
+      "permission-denied": "Você não tem permissão para acessar estes dados.",
+      "unavailable": "O serviço está temporariamente indisponível."
+    },
+    "custom": {
+      "invalid-user-id": "ID de usuário inválido",
+      "user-not-found": "Usuário não encontrado",
+      "auth-mismatch": "Não autenticado para atualizar este usuário",
+      "count-update-error": "Erro ao atualizar contador"
+    },
+    "default": "Ocorreu um erro. Por favor, tente novamente."
   },
   "date": {
     "format": "MMMM d, yy",

@@ -102,163 +102,37 @@ setPersistence(auth, browserLocalPersistence)
 
 const db = getFirestore(app);
 
-// Mensajes de error por idioma
-const errorMessagesByLanguage = {
-  es: {
-    // Errores de autenticación
-    'auth/invalid-credential': 'Credenciales inválidas. Por favor verifica tu email y contraseña.',
-    'auth/invalid-email': 'El formato del email no es válido.',
-    'auth/user-disabled': 'Esta cuenta ha sido deshabilitada.',
-    'auth/user-not-found': 'No existe una cuenta con este email.',
-    'auth/wrong-password': 'Contraseña incorrecta.',
-    'auth/email-already-in-use': 'Ya existe una cuenta con este email.',
-    'auth/weak-password': 'La contraseña es demasiado débil. Debe tener al menos 6 caracteres.',
-    'auth/operation-not-allowed': 'Esta operación no está permitida.',
-    'auth/account-exists-with-different-credential': 'Ya existe una cuenta con este email pero con un método de inicio de sesión diferente.',
-    'auth/invalid-api-key': 'La clave API de Firebase no es válida o ha expirado. Contacta al administrador.',
-    'auth/network-request-failed': 'Error de conexión. Verifica tu conexión a internet.',
-    'auth/popup-closed-by-user': 'Inicio de sesión cancelado. Ventana cerrada antes de completar la autenticación.',
-    'auth/popup-blocked': 'El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio o inténtalo de nuevo.',
-    'auth/unauthorized-domain': 'Este dominio no está autorizado para operaciones de OAuth.',
-    'auth/too-many-requests': 'Demasiados intentos fallidos. Por favor, inténtalo más tarde.',
-    'auth/email-not-verified': 'Debes verificar tu email antes de poder iniciar sesión. Revisa tu bandeja de entrada.',
-    // Errores específicos de Firestore
-    'permission-denied': 'No tienes permiso para acceder a estos datos.',
-    'unavailable': 'El servicio no está disponible en este momento.',
-    // Error genérico
-    'default': 'Ha ocurrido un error. Por favor, inténtalo de nuevo.',
-    // Errores personalizados de la aplicación
-    'invalid-user-id': 'ID de usuario no válido',
-    'user-not-found': 'Usuario no encontrado',
-    'auth-mismatch': 'No está autenticado para actualizar este usuario',
-    'count-update-error': 'Error al actualizar contador'
-  },
-  en: {
-    // Authentication errors
-    'auth/invalid-credential': 'Invalid credentials. Please verify your email and password.',
-    'auth/invalid-email': 'Invalid email format.',
-    'auth/user-disabled': 'This account has been disabled.',
-    'auth/user-not-found': 'No account exists with this email.',
-    'auth/wrong-password': 'Incorrect password.',
-    'auth/email-already-in-use': 'An account already exists with this email.',
-    'auth/weak-password': 'The password is too weak. It must have at least 6 characters.',
-    'auth/operation-not-allowed': 'This operation is not allowed.',
-    'auth/account-exists-with-different-credential': 'An account already exists with this email but with a different sign-in method.',
-    'auth/invalid-api-key': 'The Firebase API key is invalid or has expired. Contact the administrator.',
-    'auth/network-request-failed': 'Connection error. Check your internet connection.',
-    'auth/popup-closed-by-user': 'Login canceled. Window closed before authentication was completed.',
-    'auth/popup-blocked': 'The browser blocked the popup window. Please allow popups for this site or try again.',
-    'auth/unauthorized-domain': 'This domain is not authorized for OAuth operations.',
-    'auth/too-many-requests': 'Too many failed attempts. Please try again later.',
-    // Firestore specific errors
-    'permission-denied': 'You do not have permission to access this data.',
-    'unavailable': 'The service is currently unavailable.',
-    // Generic error
-    'default': 'An error has occurred. Please try again.',
-    // Custom application errors
-    'invalid-user-id': 'Invalid user ID',
-    'user-not-found': 'User not found',
-    'auth-mismatch': 'Not authenticated to update this user',
-    'count-update-error': 'Error updating counter'
-  },
-  fr: {
-    // Erreurs d'authentification
-    'auth/invalid-credential': 'Identifiants invalides. Veuillez vérifier votre email et mot de passe.',
-    'auth/invalid-email': 'Format d\'email invalide.',
-    'auth/user-disabled': 'Ce compte a été désactivé.',
-    'auth/user-not-found': 'Aucun compte n\'existe avec cet email.',
-    'auth/wrong-password': 'Mot de passe incorrect.',
-    'auth/email-already-in-use': 'Un compte existe déjà avec cet email.',
-    'auth/weak-password': 'Le mot de passe est trop faible. Il doit comporter au moins 6 caractères.',
-    'auth/operation-not-allowed': 'Cette opération n\'est pas autorisée.',
-    'auth/account-exists-with-different-credential': 'Un compte existe déjà avec cet email mais avec une méthode de connexion différente.',
-    'auth/invalid-api-key': 'La clé API Firebase est invalide ou a expiré. Contactez l\'administrateur.',
-    'auth/network-request-failed': 'Erreur de connexion. Vérifiez votre connexion internet.',
-    'auth/popup-closed-by-user': 'Connexion annulée. Fenêtre fermée avant la fin de l\'authentification.',
-    'auth/unauthorized-domain': 'Ce domaine n\'est pas autorisé pour les opérations OAuth.',
-    'auth/too-many-requests': 'Trop de tentatives échouées. Veuillez réessayer plus tard.',
-    // Erreurs spécifiques à Firestore
-    'permission-denied': 'Vous n\'avez pas la permission d\'accéder à ces données.',
-    'unavailable': 'Le service est actuellement indisponible.',
-    // Erreur générique
-    'default': 'Une erreur s\'est produite. Veuillez réessayer.',
-    // Erreurs personnalisées de l'application
-    'invalid-user-id': 'ID utilisateur non valide',
-    'user-not-found': 'Utilisateur non trouvé',
-    'auth-mismatch': 'Non authentifié pour mettre à jour cet utilisateur',
-    'count-update-error': 'Erreur lors de la mise à jour du compteur'
-  },
-  de: {
-    // Authentifizierungsfehler
-    'auth/invalid-credential': 'Ungültige Anmeldedaten. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.',
-    'auth/invalid-email': 'Ungültiges E-Mail-Format.',
-    'auth/user-disabled': 'Dieses Konto wurde deaktiviert.',
-    'auth/user-not-found': 'Es existiert kein Konto mit dieser E-Mail.',
-    'auth/wrong-password': 'Falsches Passwort.',
-    'auth/email-already-in-use': 'Ein Konto mit dieser E-Mail existiert bereits.',
-    'auth/weak-password': 'Das Passwort ist zu schwach. Es muss mindestens 6 Zeichen haben.',
-    'auth/operation-not-allowed': 'Diese Operation ist nicht erlaubt.',
-    'auth/account-exists-with-different-credential': 'Ein Konto mit dieser E-Mail existiert bereits, aber mit einer anderen Anmeldemethode.',
-    'auth/invalid-api-key': 'Der Firebase-API-Schlüssel ist ungültig oder abgelaufen. Kontaktieren Sie den Administrator.',
-    'auth/network-request-failed': 'Verbindungsfehler. Überprüfen Sie Ihre Internetverbindung.',
-    'auth/popup-closed-by-user': 'Anmeldung abgebrochen. Fenster wurde vor Abschluss der Authentifizierung geschlossen.',
-    'auth/unauthorized-domain': 'Diese Domain ist nicht für OAuth-Operationen autorisiert.',
-    'auth/too-many-requests': 'Zu viele fehlgeschlagene Versuche. Bitte versuchen Sie es später erneut.',
-    // Firestore-spezifische Fehler
-    'permission-denied': 'Sie haben keine Berechtigung, auf diese Daten zuzugreifen.',
-    'unavailable': 'Der Dienst ist derzeit nicht verfügbar.',
-    // Allgemeiner Fehler
-    'default': 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',
-    // Benutzerdefinierte Anwendungsfehler
-    'invalid-user-id': 'Ungültige Benutzer-ID',
-    'user-not-found': 'Benutzer nicht gefunden',
-    'auth-mismatch': 'Nicht authentifiziert, um diesen Benutzer zu aktualisieren',
-    'count-update-error': 'Fehler beim Aktualisieren des Zählers'
-  },
-  it: {
-    // Errori di autenticazione
-    'auth/invalid-credential': 'Credenziali non valide. Verifica email e password.',
-    'auth/invalid-email': 'Formato email non valido.',
-    'auth/user-disabled': 'Questo account è stato disabilitato.',
-    'auth/user-not-found': 'Non esiste un account con questa email.',
-    'auth/wrong-password': 'Password errata.',
-    'auth/email-already-in-use': 'Esiste già un account con questa email.',
-    'auth/weak-password': 'La password è troppo debole. Deve avere almeno 6 caratteri.',
-    'auth/operation-not-allowed': 'Questa operazione non è consentita.',
-    'auth/account-exists-with-different-credential': 'Esiste già un account con questa email ma con un metodo di accesso diverso.',
-    'auth/invalid-api-key': 'La chiave API Firebase non è valida o è scaduta. Contatta l\'amministratore.',
-    'auth/network-request-failed': 'Errore di connessione. Verifica la tua connessione internet.',
-    'auth/popup-closed-by-user': 'Accesso annullato. Finestra chiusa prima del completamento dell\'autenticazione.',
-    'auth/unauthorized-domain': 'Questo dominio non è autorizzato per le operazioni OAuth.',
-    'auth/too-many-requests': 'Troppi tentativi falliti. Riprova più tardi.',
-    // Errori specifici di Firestore
-    'permission-denied': 'Non hai il permesso di accedere a questi dati.',
-    'unavailable': 'Il servizio non è disponibile al momento.',
-    // Errore generico
-    'default': 'Si è verificato un errore. Riprova.',
-    // Errori personalizzati dell'applicazione
-    'invalid-user-id': 'ID utente non valido',
-    'user-not-found': 'Utente non trovato',
-    'auth-mismatch': 'Non autenticato per aggiornare questo utente',
-    'count-update-error': 'Errore durante l\'aggiornamento del contatore'
-  }
-};
 
 // Traducir mensajes de error de Firebase a mensajes amigables según el idioma actual
 export const getErrorMessage = (errorCode) => {
-  // Obtener el idioma actual del sistema i18next
-  const currentLanguage = i18next.language || 'es';
+  if (!errorCode) {
+    return i18next.t('errors.default', 'Ha ocurrido un error. Por favor, inténtalo de nuevo.');
+  }
+
+  // Detectar el tipo de error y construir la clave de traducción
+  let translationKey = 'errors.default';
   
-  // Seleccionar los mensajes de error para el idioma actual, con español como fallback
-  const errorMessages = errorMessagesByLanguage[currentLanguage] || errorMessagesByLanguage.es;
-  
-  // Si encontramos el código de error específico, devolvemos su mensaje traducido
-  if (errorCode && errorMessages[errorCode]) {
-    return errorMessages[errorCode];
+  if (errorCode.startsWith('auth/')) {
+    // Errores de autenticación de Firebase
+    const authErrorKey = errorCode.replace('auth/', '');
+    translationKey = `errors.auth.${authErrorKey}`;
+  } else if (errorCode === 'permission-denied' || errorCode === 'unavailable') {
+    // Errores de Firestore
+    translationKey = `errors.firestore.${errorCode}`;
+  } else {
+    // Errores personalizados de la aplicación
+    translationKey = `errors.custom.${errorCode}`;
   }
   
-  // Si no hay código específico o no lo tenemos catalogado, devolvemos un mensaje genérico
-  return errorMessages['default'];
+  // Intentar obtener la traducción, con fallback al mensaje por defecto
+  const translatedMessage = i18next.t(translationKey);
+  
+  // Si la traducción no existe (devuelve la misma clave), usar el mensaje por defecto
+  if (translatedMessage === translationKey) {
+    return i18next.t('errors.default', 'Ha ocurrido un error. Por favor, inténtalo de nuevo.');
+  }
+  
+  return translatedMessage;
 };
 
 // Register a new user

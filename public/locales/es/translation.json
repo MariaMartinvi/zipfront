@@ -775,6 +775,37 @@
       }
     }
   },
+  "errors": {
+    "auth": {
+      "invalid-credential": "Credenciales inválidas. Por favor verifica tu email y contraseña.",
+      "invalid-email": "El formato del email no es válido.",
+      "user-disabled": "Esta cuenta ha sido deshabilitada.",
+      "user-not-found": "No existe una cuenta con este email.",
+      "wrong-password": "Contraseña incorrecta.",
+      "email-already-in-use": "Ya existe una cuenta con este email.",
+      "weak-password": "La contraseña es demasiado débil. Debe tener al menos 6 caracteres.",
+      "operation-not-allowed": "Esta operación no está permitida.",
+      "account-exists-with-different-credential": "Ya existe una cuenta con este email pero con un método de inicio de sesión diferente.",
+      "invalid-api-key": "La clave API de Firebase no es válida o ha expirado. Contacta al administrador.",
+      "network-request-failed": "Error de conexión. Verifica tu conexión a internet.",
+      "popup-closed-by-user": "Inicio de sesión cancelado. Ventana cerrada antes de completar la autenticación.",
+      "popup-blocked": "El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio o inténtalo de nuevo.",
+      "unauthorized-domain": "Este dominio no está autorizado para operaciones de OAuth.",
+      "too-many-requests": "Demasiados intentos fallidos. Por favor, inténtalo más tarde.",
+      "email-not-verified": "Debes verificar tu email antes de poder iniciar sesión. Por favor, revisa tu bandeja de entrada y haz clic en el enlace de verificación."
+    },
+    "firestore": {
+      "permission-denied": "No tienes permiso para acceder a estos datos.",
+      "unavailable": "El servicio no está disponible en este momento."
+    },
+    "custom": {
+      "invalid-user-id": "ID de usuario no válido",
+      "user-not-found": "Usuario no encontrado",
+      "auth-mismatch": "No está autenticado para actualizar este usuario",
+      "count-update-error": "Error al actualizar contador"
+    },
+    "default": "Ha ocurrido un error. Por favor, inténtalo de nuevo."
+  },
   "date": {
     "format": "MMMM d, yy",
     "months": {

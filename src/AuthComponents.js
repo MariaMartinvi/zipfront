@@ -1,6 +1,6 @@
 // AuthComponents.js
 import React, { useState, useEffect } from 'react';
-import { loginUser, registerUser, resetPassword, getCurrentUser, loginWithGoogle, handleGoogleRedirectResult } from './firebase_auth';
+import { loginUser, registerUser, resetPassword, getCurrentUser, loginWithGoogle, handleGoogleRedirectResult, getErrorMessage } from './firebase_auth';
 import './AuthComponents.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -119,7 +119,7 @@ export const Login = ({ onLoginSuccess }) => {
         }
       } catch (error) {
         console.error('Error handling Google redirect result:', error);
-        setError(error.message || t('auth.login.error'));
+        setError(getErrorMessage(error.code) || error.message || t('auth.login.error'));
         setIsLoading(false);
       }
     };
@@ -168,7 +168,7 @@ export const Login = ({ onLoginSuccess }) => {
         setShowResendEmail(false);
       }
       
-      setError(error.message || t('auth.login.error'));
+      setError(getErrorMessage(error.code) || error.message || t('auth.login.error'));
       setIsLoading(false);
       setIsRedirecting(false);
     }
@@ -303,7 +303,7 @@ export const Login = ({ onLoginSuccess }) => {
       
     } catch (error) {
       console.error('Google login error:', error);
-      setError(error.message || t('auth.login.error'));
+      setError(getErrorMessage(error.code) || error.message || t('auth.login.error'));
       setIsLoading(false);
       setIsRedirecting(false);
     }
