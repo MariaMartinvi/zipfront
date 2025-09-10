@@ -1192,22 +1192,22 @@ function AppContent() {
         
         // NUEVO: Extraer datos del juego de titulares de la respuesta
         try {
-          const azureResponse = window.lastAzureResponse;
-          if (azureResponse) {
-            const gameDataMatch = azureResponse.match(/GAME_DATA:/);
+          const aiResponse = window.lastAIResponse;
+          if (aiResponse) {
+            const gameDataMatch = aiResponse.match(/GAME_DATA:/);
             if (gameDataMatch) {
               // Buscar la posición inicial del array
-              const startIndex = azureResponse.indexOf('GAME_DATA:[');
+              const startIndex = aiResponse.indexOf('GAME_DATA:[');
               if (startIndex !== -1) {
                 // Extraer desde '[' hasta encontrar el ']' que cierra el array principal
-                let arrayStart = azureResponse.indexOf('[', startIndex);
+                let arrayStart = aiResponse.indexOf('[', startIndex);
                 let bracketCount = 0;
                 let endIndex = arrayStart;
                 
-                for (let i = arrayStart; i < azureResponse.length; i++) {
-                  if (azureResponse[i] === '[') {
+                for (let i = arrayStart; i < aiResponse.length; i++) {
+                  if (aiResponse[i] === '[') {
                     bracketCount++;
-                  } else if (azureResponse[i] === ']') {
+                  } else if (aiResponse[i] === ']') {
                     bracketCount--;
                     if (bracketCount === 0) {
                       endIndex = i;
@@ -1217,7 +1217,7 @@ function AppContent() {
                 }
                 
                 // Extraer el JSON completo
-                let jsonStr = azureResponse.substring(arrayStart, endIndex + 1);
+                let jsonStr = aiResponse.substring(arrayStart, endIndex + 1);
                 const parsedData = JSON.parse(jsonStr);
                 
                 if (parsedData && Array.isArray(parsedData) && parsedData.length >= 2) {
