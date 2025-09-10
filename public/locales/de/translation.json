@@ -290,6 +290,66 @@
     "title": "So teilen Sie einen Chat von WhatsApp",
     "step_by_step": "Schritt für Schritt",
     "video": "Videoanleitung",
+    "hero": {
+      "android": {
+        "title": "🚀 Ihre Analyse in 10 Sekunden!",
+        "subtitle": "Nur 3 super einfache Schritte:"
+      },
+      "ios": {
+        "title": "🚀 Ihre Analyse in 10 Sekunden!",
+        "subtitle": "Nur 3 super einfache Schritte:"
+      },
+      "desktop": {
+        "title": "💻 Ihre Analyse in 10 Sekunden!",
+        "subtitle": "Nur 3 super einfache Schritte:"
+      }
+    },
+    "simplified_steps": {
+      "android": {
+        "install": {
+          "title": "Super einfach! ChatSalsa installieren",
+          "description": "Installieren Sie unsere App, um Dateien von WhatsApp zu teilen",
+          "button": "🚀 App installieren"
+        },
+        "0": {
+          "title": "Exportieren Sie Ihren Chat",
+          "description": "In Ihrem WhatsApp-Chat: Tippen Sie auf die 3 Punkte → Mehr → Chat exportieren → Ohne Medien"
+        },
+        "1": {
+          "title": "Fertig! Mit ChatSalsa teilen",
+          "description": "Tippen Sie auf ChatSalsa, um Ihre Datei hochzuladen. Wenn es nicht erscheint, installieren Sie die App von chatsalsa.com"
+        }
+      },
+      "ios": [
+        {
+          "title": "Super einfach! Exportieren Sie Ihren Chat",
+          "description": "In Ihrem WhatsApp-Chat: Gehen Sie zu Gruppeninfo → Chat exportieren → Ohne Medien"
+        },
+        {
+          "title": "Auf Ihrem iPhone speichern",
+          "description": "Tippen Sie auf 'In Dateien speichern' → 'Auf meinem iPhone' → Speichern"
+        },
+        {
+          "title": "Fertig! Zu ChatSalsa hochladen",
+          "description": "In ChatSalsa tippen Sie auf 'Datei auswählen' und Sie haben Ihre Analyse!"
+        }
+      ],
+      "desktop": [
+        {
+          "title": "Super einfach! Von Ihrem Telefon exportieren",
+          "description": "In Ihrem WhatsApp-Chat: Tippen Sie auf die 3 Punkte → Mehr → Chat exportieren → Ohne Medien"
+        },
+        {
+          "title": "Per E-Mail senden",
+          "description": "Datei teilen → Gmail → Senden Sie sich die Datei per E-Mail"
+        },
+        {
+          "title": "Fertig! Von Ihrem PC hochladen",
+          "description": "Öffnen Sie die E-Mail auf Ihrem PC, laden Sie die Datei herunter und laden Sie sie zu ChatSalsa hoch"
+        }
+      ]
+    },
+    "footer_message": "So einfach ist das! 🎉",
     "platforms": {
       "android": "Android",
       "ios": "iOS",
@@ -594,8 +654,7 @@
       "title": "💻 Ihre Analyse in 10 Sekunden!",
       "subtitle": "Nur 3 super einfache Schritte:"
     }
-  }
-},
+  },
   "auth": {
     "login": {
       "title": "Anmelden",
@@ -684,6 +743,52 @@
     },
     "per_month": "/Monat",
     "current_plan_badge": "✓ Aktueller Plan"
+  },
+  "freemium": {
+    "header": {
+      "title": "🎉 ChatSalsa ist KOSTENLOS",
+      "subtitle": "Unbegrenzte statistische Analysen • Zahlen Sie nur für KI, wenn Sie sie brauchen"
+    },
+    "loading": "Wird geladen...",
+    "error_loading": "Fehler beim Laden der Benutzerdaten",
+    "stats": {
+      "statistical_analysis": "📊 Statistische Analysen",
+      "unlimited": "UNBEGRENZT",
+      "always_free": "Immer kostenlos",
+      "ai_credits": "🤖 KI-Kredits",
+      "admin_account": "Administrator-Konto",
+      "ai_available": "Verfügbare KI-Analysen"
+    },
+    "admin_badge": "🔧 ADMINISTRATOR-KONTO - VOLLZUGRIFF",
+    "ai_pack": {
+      "title": "🤖 KI-Analyse-Paket",
+      "price": "5€",
+      "analyses": "10 Analysen",
+      "features": {
+        "psychological": "Vollständige psychologische Analyse",
+        "personalities": "Persönlichkeiten jedes Teilnehmers",
+        "group_dynamics": "Detaillierte Gruppendynamiken",
+        "no_subscription": "Kein Abonnement - Einmalige Zahlung"
+      },
+      "admin_button": "Administrator-Zugang",
+      "purchase_button": "🔓 KI-Paket kaufen (5€)",
+      "processing": "⏳ Wird verarbeitet..."
+    },
+    "how_it_works": {
+      "title": "💡 Wie funktioniert es?",
+      "step1": {
+        "title": "1. Kostenlose Analyse",
+        "description": "Laden Sie Ihren Chat hoch und erhalten Sie vollständige Statistiken ohne Grenzen"
+      },
+      "step2": {
+        "title": "2. Optionale KI",
+        "description": "Kaufen Sie Kredits nur, wenn Sie eine tiefe psychologische Analyse wünschen"
+      },
+      "step3": {
+        "title": "3. Kein Abonnement",
+        "description": "Einmalige Zahlung pro Paket - Keine monatlichen Verpflichtungen"
+      }
+    }
   },
   "payment": {
     "success": {

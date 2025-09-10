@@ -216,13 +216,13 @@ function WhatsappInstructions() {
           className={`tab-button ${activeTab === 'carousel' ? 'active' : ''}`}
           onClick={() => setActiveTab('carousel')}
         >
-          {platform === 'android' ? '📱 Paso a paso' : platform === 'ios' ? '📱 Paso a paso' : platform === 'desktop' ? '💻 Paso a paso' : t('whatsapp.step_by_step')}
+{platform === 'desktop' ? '💻' : '📱'} {t('whatsapp.step_by_step')}
         </button>
         <button 
           className={`tab-button ${activeTab === 'video' ? 'active' : ''}`}
           onClick={() => setActiveTab('video')}
         >
-          {platform === 'android' ? '🎥 Video' : platform === 'ios' ? '🎥 Video' : platform === 'desktop' ? '🎥 Video' : t('whatsapp.video')}
+🎥 {t('whatsapp.video')}
         </button>
       </div>
       

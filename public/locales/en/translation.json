@@ -682,6 +682,52 @@
     "per_month": "/month",
     "current_plan_badge": "✓ Current Plan"
   },
+  "freemium": {
+    "header": {
+      "title": "🎉 ChatSalsa is FREE",
+      "subtitle": "Unlimited statistical analysis • Only pay for AI when you need it"
+    },
+    "loading": "Loading...",
+    "error_loading": "Error loading user data",
+    "stats": {
+      "statistical_analysis": "📊 Statistical Analysis",
+      "unlimited": "UNLIMITED",
+      "always_free": "Always free",
+      "ai_credits": "🤖 AI Credits",
+      "admin_account": "Administrator account",
+      "ai_available": "AI analyses available"
+    },
+    "admin_badge": "🔧 ADMINISTRATOR ACCOUNT - FULL ACCESS",
+    "ai_pack": {
+      "title": "🤖 AI Analysis Pack",
+      "price": "5€",
+      "analyses": "10 analyses",
+      "features": {
+        "psychological": "Complete psychological analysis",
+        "personalities": "Personality of each participant",
+        "group_dynamics": "Detailed group dynamics",
+        "no_subscription": "No subscription - One-time payment"
+      },
+      "admin_button": "Administrator Access",
+      "purchase_button": "🔓 Buy AI Pack (5€)",
+      "processing": "⏳ Processing..."
+    },
+    "how_it_works": {
+      "title": "💡 How does it work?",
+      "step1": {
+        "title": "1. Free Analysis",
+        "description": "Upload your chat and get complete statistics without limits"
+      },
+      "step2": {
+        "title": "2. Optional AI",
+        "description": "Buy credits only when you want deep psychological analysis"
+      },
+      "step3": {
+        "title": "3. No Subscription",
+        "description": "One-time payment per pack - No monthly commitments"
+      }
+    }
+  },
   "weekdays": {
     "monday": "Monday",
     "tuesday": "Tuesday",

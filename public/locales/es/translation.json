@@ -719,6 +719,52 @@
     "per_month": "/mes",
     "current_plan_badge": "✓ Plan Actual"
   },
+  "freemium": {
+    "header": {
+      "title": "🎉 ChatSalsa es GRATIS",
+      "subtitle": "Análisis estadísticos ilimitados • Solo paga por la IA cuando la necesites"
+    },
+    "loading": "Cargando...",
+    "error_loading": "Error cargando datos del usuario",
+    "stats": {
+      "statistical_analysis": "📊 Análisis Estadísticos",
+      "unlimited": "ILIMITADOS",
+      "always_free": "Siempre gratis",
+      "ai_credits": "🤖 Créditos de IA",
+      "admin_account": "Cuenta administrador",
+      "ai_available": "Análisis IA disponibles"
+    },
+    "admin_badge": "🔧 CUENTA ADMINISTRADOR - ACCESO COMPLETO",
+    "ai_pack": {
+      "title": "🤖 Pack Análisis IA",
+      "price": "5€",
+      "analyses": "10 análisis",
+      "features": {
+        "psychological": "Análisis psicológico completo",
+        "personalities": "Personalidades de cada participante", 
+        "group_dynamics": "Dinámicas de grupo detalladas",
+        "no_subscription": "Sin suscripción - Pago único"
+      },
+      "admin_button": "Acceso Administrador",
+      "purchase_button": "🔓 Comprar Pack IA (5€)",
+      "processing": "⏳ Procesando..."
+    },
+    "how_it_works": {
+      "title": "💡 ¿Cómo funciona?",
+      "step1": {
+        "title": "1. Análisis Gratis",
+        "description": "Sube tu chat y obtén estadísticas completas sin límites"
+      },
+      "step2": {
+        "title": "2. IA Opcional", 
+        "description": "Compra créditos solo cuando quieras análisis psicológico profundo"
+      },
+      "step3": {
+        "title": "3. Sin Suscripción",
+        "description": "Pago único por pack - Sin compromisos mensuales"
+      }
+    }
+  },
   "payment": {
     "success": {
       "title": "¡Pago Exitoso!",

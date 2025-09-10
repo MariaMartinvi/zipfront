@@ -32,7 +32,7 @@ const FreemiumPlans = ({ userId }) => {
         }
       } catch (error) {
         console.error('Error loading user profile:', error);
-        setError('Error cargando datos del usuario');
+        setError(t('freemium.error_loading'));
       } finally {
         setIsLoading(false);
       }
@@ -56,7 +56,7 @@ const FreemiumPlans = ({ userId }) => {
   };
 
   if (isLoading) {
-    return <div className="subscription-loading">Cargando...</div>;
+    return <div className="subscription-loading">{t('freemium.loading')}</div>;
   }
 
   const aiCredits = userProfile?.aiCredits || 0;
@@ -65,9 +65,9 @@ const FreemiumPlans = ({ userId }) => {
   return (
     <div className="subscription-container">
       <div className="freemium-header">
-        <h1>🎉 ChatSalsa es GRATIS</h1>
+        <h1>{t('freemium.header.title')}</h1>
         <p className="freemium-subtitle">
-          Análisis estadísticos ilimitados • Solo paga por la IA cuando la necesites
+          {t('freemium.header.subtitle')}
         </p>
       </div>
 
@@ -77,18 +77,18 @@ const FreemiumPlans = ({ userId }) => {
       <div className="current-plan-info freemium-status">
         <div className="freemium-stats">
           <div className="stat-card">
-            <h3>📊 Análisis Estadísticos</h3>
-            <div className="stat-value">ILIMITADOS</div>
-            <div className="stat-description">Siempre gratis</div>
+            <h3>{t('freemium.stats.statistical_analysis')}</h3>
+            <div className="stat-value">{t('freemium.stats.unlimited')}</div>
+            <div className="stat-description">{t('freemium.stats.always_free')}</div>
           </div>
           
           <div className="stat-card">
-            <h3>🤖 Créditos de IA</h3>
+            <h3>{t('freemium.stats.ai_credits')}</h3>
             <div className="stat-value">
-              {isAdmin ? 'ILIMITADOS' : aiCredits}
+              {isAdmin ? t('freemium.stats.unlimited') : aiCredits}
             </div>
             <div className="stat-description">
-              {isAdmin ? 'Cuenta administrador' : 'Análisis IA disponibles'}
+              {isAdmin ? t('freemium.stats.admin_account') : t('freemium.stats.ai_available')}
             </div>
           </div>
         </div>
@@ -104,7 +104,7 @@ const FreemiumPlans = ({ userId }) => {
             fontWeight: "bold",
             border: "2px solid #ff8c42"
           }}>
-            🔧 CUENTA ADMINISTRADOR - ACCESO COMPLETO
+            {t('freemium.admin_badge')}
           </div>
         )}
       </div>
@@ -113,36 +113,36 @@ const FreemiumPlans = ({ userId }) => {
       <div className="ai-purchase-section">
         <div className="ai-pack-card">
           <div className="ai-pack-header">
-            <h2>🤖 Pack Análisis IA</h2>
+            <h2>{t('freemium.ai_pack.title')}</h2>
             <div className="ai-pack-price">
-              <span className="price-amount">5€</span>
-              <span className="price-period">10 análisis</span>
+              <span className="price-amount">{t('freemium.ai_pack.price')}</span>
+              <span className="price-period">{t('freemium.ai_pack.analyses')}</span>
             </div>
           </div>
           
           <div className="ai-pack-features">
             <div className="ai-feature">
               <span className="feature-check">🧠</span>
-              <span>Análisis psicológico completo</span>
+              <span>{t('freemium.ai_pack.features.psychological')}</span>
             </div>
             <div className="ai-feature">
               <span className="feature-check">💬</span>
-              <span>Personalidades de cada participante</span>
+              <span>{t('freemium.ai_pack.features.personalities')}</span>
             </div>
             <div className="ai-feature">
               <span className="feature-check">📈</span>
-              <span>Dinámicas de grupo detalladas</span>
+              <span>{t('freemium.ai_pack.features.group_dynamics')}</span>
             </div>
             <div className="ai-feature">
               <span className="feature-check">💎</span>
-              <span>Sin suscripción - Pago único</span>
+              <span>{t('freemium.ai_pack.features.no_subscription')}</span>
             </div>
           </div>
           
           <div className="ai-pack-action">
             {isAdmin ? (
               <button className="ai-purchase-button admin" disabled>
-                Acceso Administrador
+                {t('freemium.ai_pack.admin_button')}
               </button>
             ) : (
               <button 
@@ -150,7 +150,7 @@ const FreemiumPlans = ({ userId }) => {
                 onClick={handlePurchaseAI}
                 disabled={isPurchasing}
               >
-                {isPurchasing ? '⏳ Procesando...' : '🔓 Comprar Pack IA (5€)'}
+                {isPurchasing ? t('freemium.ai_pack.processing') : t('freemium.ai_pack.purchase_button')}
               </button>
             )}
           </div>
@@ -159,29 +159,29 @@ const FreemiumPlans = ({ userId }) => {
 
       {/* Información adicional */}
       <div className="freemium-info">
-        <h3>💡 ¿Cómo funciona?</h3>
+        <h3>{t('freemium.how_it_works.title')}</h3>
         <div className="info-grid">
           <div className="info-item">
             <div className="info-icon">📊</div>
             <div className="info-content">
-              <h4>1. Análisis Gratis</h4>
-              <p>Sube tu chat y obtén estadísticas completas sin límites</p>
+              <h4>{t('freemium.how_it_works.step1.title')}</h4>
+              <p>{t('freemium.how_it_works.step1.description')}</p>
             </div>
           </div>
           
           <div className="info-item">
             <div className="info-icon">🤖</div>
             <div className="info-content">
-              <h4>2. IA Opcional</h4>
-              <p>Compra créditos solo cuando quieras análisis psicológico profundo</p>
+              <h4>{t('freemium.how_it_works.step2.title')}</h4>
+              <p>{t('freemium.how_it_works.step2.description')}</p>
             </div>
           </div>
           
           <div className="info-item">
             <div className="info-icon">💰</div>
             <div className="info-content">
-              <h4>3. Sin Suscripción</h4>
-              <p>Pago único por pack - Sin compromisos mensuales</p>
+              <h4>{t('freemium.how_it_works.step3.title')}</h4>
+              <p>{t('freemium.how_it_works.step3.description')}</p>
             </div>
           </div>
         </div>

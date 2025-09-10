@@ -315,6 +315,52 @@
     "per_month": "/mese",
     "current_plan_badge": "✓ Piano Attuale"
   },
+  "freemium": {
+    "header": {
+      "title": "🎉 ChatSalsa è GRATIS",
+      "subtitle": "Analisi statistiche illimitate • Paga per l'IA solo quando ne hai bisogno"
+    },
+    "loading": "Caricamento...",
+    "error_loading": "Errore nel caricamento dei dati utente",
+    "stats": {
+      "statistical_analysis": "📊 Analisi Statistiche",
+      "unlimited": "ILLIMITATE",
+      "always_free": "Sempre gratis",
+      "ai_credits": "🤖 Crediti IA",
+      "admin_account": "Account amministratore",
+      "ai_available": "Analisi IA disponibili"
+    },
+    "admin_badge": "🔧 ACCOUNT AMMINISTRATORE - ACCESSO COMPLETO",
+    "ai_pack": {
+      "title": "🤖 Pacchetto Analisi IA",
+      "price": "5€",
+      "analyses": "10 analisi",
+      "features": {
+        "psychological": "Analisi psicologica completa",
+        "personalities": "Personalità di ogni partecipante",
+        "group_dynamics": "Dinamiche di gruppo dettagliate",
+        "no_subscription": "Nessun abbonamento - Pagamento unico"
+      },
+      "admin_button": "Accesso Amministratore",
+      "purchase_button": "🔓 Acquista Pacchetto IA (5€)",
+      "processing": "⏳ Elaborazione..."
+    },
+    "how_it_works": {
+      "title": "💡 Come funziona?",
+      "step1": {
+        "title": "1. Analisi Gratuita",
+        "description": "Carica la tua chat e ottieni statistiche complete senza limiti"
+      },
+      "step2": {
+        "title": "2. IA Opzionale",
+        "description": "Acquista crediti solo quando vuoi un'analisi psicologica approfondita"
+      },
+      "step3": {
+        "title": "3. Nessun Abbonamento",
+        "description": "Pagamento unico per pacchetto - Nessun impegno mensile"
+      }
+    }
+  },
   "preview": {
     "title": "Scopri i segreti delle tue conversazioni",
     "description": "Combiniamo statistiche e Intelligenza Artificiale avanzata per rivelare dati affascinanti sui profili psicologici dei partecipanti e le dinamiche di gruppo.",
@@ -828,6 +874,66 @@
     "title": "Come condividere una chat da WhatsApp",
     "step_by_step": "Passo dopo passo",
     "video": "Video tutorial",
+    "hero": {
+      "android": {
+        "title": "🚀 La tua analisi in 10 secondi!",
+        "subtitle": "Solo 3 passaggi super semplici:"
+      },
+      "ios": {
+        "title": "🚀 La tua analisi in 10 secondi!",
+        "subtitle": "Solo 3 passaggi super semplici:"
+      },
+      "desktop": {
+        "title": "💻 La tua analisi in 10 secondi!",
+        "subtitle": "Solo 3 passaggi super semplici:"
+      }
+    },
+    "simplified_steps": {
+      "android": {
+        "install": {
+          "title": "Super facile! Installa ChatSalsa",
+          "description": "Installa la nostra app per condividere file da WhatsApp",
+          "button": "🚀 Installa App"
+        },
+        "0": {
+          "title": "Esporta la tua chat",
+          "description": "Nella tua chat WhatsApp: Tocca i 3 punti → Altro → Esporta chat → Senza media"
+        },
+        "1": {
+          "title": "Fatto! Condividi con ChatSalsa",
+          "description": "Tocca ChatSalsa per caricare il tuo file. Se non appare, installa l'app da chatsalsa.com"
+        }
+      },
+      "ios": [
+        {
+          "title": "Super facile! Esporta la tua chat",
+          "description": "Nella tua chat WhatsApp: Vai a Info gruppo → Esporta chat → Senza media"
+        },
+        {
+          "title": "Salva sul tuo iPhone",
+          "description": "Tocca 'Salva in File' → 'Sul mio iPhone' → Salva"
+        },
+        {
+          "title": "Fatto! Carica su ChatSalsa",
+          "description": "In ChatSalsa tocca 'Seleziona file' e hai la tua analisi!"
+        }
+      ],
+      "desktop": [
+        {
+          "title": "Super facile! Esporta dal tuo telefono",
+          "description": "Nella tua chat WhatsApp: Tocca i 3 punti → Altro → Esporta chat → Senza media"
+        },
+        {
+          "title": "Invia per email",
+          "description": "Condividi il file → Gmail → Inviati il file per email"
+        },
+        {
+          "title": "Fatto! Carica dal tuo PC",
+          "description": "Apri l'email sul tuo PC, scarica il file e caricalo su ChatSalsa"
+        }
+      ]
+    },
+    "footer_message": "È così semplice! 🎉",
     "platforms": {
       "android": "Android",
       "ios": "iOS",

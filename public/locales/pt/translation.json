@@ -303,6 +303,66 @@
     "title": "Como compartilhar um chat do WhatsApp",
     "step_by_step": "Passo a passo",
     "video": "Tutorial em vídeo",
+    "hero": {
+      "android": {
+        "title": "🚀 Sua análise em 10 segundos!",
+        "subtitle": "Apenas 3 passos super simples:"
+      },
+      "ios": {
+        "title": "🚀 Sua análise em 10 segundos!",
+        "subtitle": "Apenas 3 passos super simples:"
+      },
+      "desktop": {
+        "title": "💻 Sua análise em 10 segundos!",
+        "subtitle": "Apenas 3 passos super simples:"
+      }
+    },
+    "simplified_steps": {
+      "android": {
+        "install": {
+          "title": "Super fácil! Instale o ChatSalsa",
+          "description": "Instale nosso app para compartilhar arquivos do WhatsApp",
+          "button": "🚀 Instalar App"
+        },
+        "0": {
+          "title": "Exporte seu chat",
+          "description": "No seu chat do WhatsApp: Toque nos 3 pontos → Mais → Exportar conversa → Sem mídia"
+        },
+        "1": {
+          "title": "Pronto! Compartilhe com ChatSalsa",
+          "description": "Toque em ChatSalsa para enviar seu arquivo. Se não aparecer, instale o app em chatsalsa.com"
+        }
+      },
+      "ios": [
+        {
+          "title": "Super fácil! Exporte seu chat",
+          "description": "No seu chat do WhatsApp: Vá para Info do grupo → Exportar conversa → Sem mídia"
+        },
+        {
+          "title": "Salve no seu iPhone",
+          "description": "Toque em 'Salvar em Arquivos' → 'No meu iPhone' → Salvar"
+        },
+        {
+          "title": "Pronto! Envie para ChatSalsa",
+          "description": "No ChatSalsa toque em 'Selecionar arquivo' e você tem sua análise!"
+        }
+      ],
+      "desktop": [
+        {
+          "title": "Super fácil! Exporte do seu telefone",
+          "description": "No seu chat do WhatsApp: Toque nos 3 pontos → Mais → Exportar conversa → Sem mídia"
+        },
+        {
+          "title": "Envie por email",
+          "description": "Compartilhe o arquivo → Gmail → Envie o arquivo para você mesmo"
+        },
+        {
+          "title": "Pronto! Envie do seu PC",
+          "description": "Abra o email no seu PC, baixe o arquivo e envie para ChatSalsa"
+        }
+      ]
+    },
+    "footer_message": "É assim tão simples! 🎉",
     "platforms": {
       "android": "Android",
       "ios": "iOS",
@@ -640,6 +700,52 @@
     },
     "per_month": "/mês",
     "current_plan_badge": "✓ Plano Atual"
+  },
+  "freemium": {
+    "header": {
+      "title": "🎉 ChatSalsa é GRÁTIS",
+      "subtitle": "Análises estatísticas ilimitadas • Pague pela IA apenas quando precisar"
+    },
+    "loading": "Carregando...",
+    "error_loading": "Erro ao carregar dados do usuário",
+    "stats": {
+      "statistical_analysis": "📊 Análises Estatísticas",
+      "unlimited": "ILIMITADAS",
+      "always_free": "Sempre grátis",
+      "ai_credits": "🤖 Créditos de IA",
+      "admin_account": "Conta administrador",
+      "ai_available": "Análises de IA disponíveis"
+    },
+    "admin_badge": "🔧 CONTA ADMINISTRADOR - ACESSO COMPLETO",
+    "ai_pack": {
+      "title": "🤖 Pacote Análise IA",
+      "price": "5€",
+      "analyses": "10 análises",
+      "features": {
+        "psychological": "Análise psicológica completa",
+        "personalities": "Personalidades de cada participante",
+        "group_dynamics": "Dinâmicas de grupo detalhadas",
+        "no_subscription": "Sem assinatura - Pagamento único"
+      },
+      "admin_button": "Acesso Administrador",
+      "purchase_button": "🔓 Comprar Pacote IA (5€)",
+      "processing": "⏳ Processando..."
+    },
+    "how_it_works": {
+      "title": "💡 Como funciona?",
+      "step1": {
+        "title": "1. Análise Gratuita",
+        "description": "Carregue seu chat e obtenha estatísticas completas sem limites"
+      },
+      "step2": {
+        "title": "2. IA Opcional",
+        "description": "Compre créditos apenas quando quiser análise psicológica profunda"
+      },
+      "step3": {
+        "title": "3. Sem Assinatura",
+        "description": "Pagamento único por pacote - Sem compromissos mensais"
+      }
+    }
   },
   "payment": {
     "success": {
