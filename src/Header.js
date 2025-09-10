@@ -28,7 +28,11 @@ const Header = ({ user }) => {
     e.preventDefault();
     const uploadSection = document.getElementById('upload-section');
     if (uploadSection) {
+      // Si estamos en la página principal, hacer scroll
       uploadSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Si no estamos en la página principal, navegar primero
+      window.location.href = '/#upload-section';
     }
   };
 
