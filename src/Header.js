@@ -23,19 +23,6 @@ const Header = ({ user }) => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Función para hacer scroll a la sección de carga
-  const scrollToUploadSection = (e) => {
-    e.preventDefault();
-    const uploadSection = document.getElementById('upload-section');
-    if (uploadSection) {
-      // Si estamos en la página principal, hacer scroll
-      uploadSection.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      // Si no estamos en la página principal, navegar primero
-      window.location.href = '/#upload-section';
-    }
-  };
-
   return (
     <header className="app-header">
       <div className="header-container">
@@ -56,9 +43,6 @@ const Header = ({ user }) => {
             <Link to="/" className="nav-link">{t('header.home')}</Link>
             {user ? (
               <>
-                <Link to="/" className="nav-link" onClick={scrollToUploadSection}>
-                  <span role="img" aria-label="Upload">📤</span> {t('actions.upload')}
-                </Link>
                 <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
                 <LanguageSwitcher />
                 <div className="user-menu">
@@ -106,9 +90,6 @@ const Header = ({ user }) => {
           <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>{t('header.home')}</Link>
           {user ? (
             <>
-              <Link to="/" className="mobile-nav-link" onClick={scrollToUploadSection}>
-                <span role="img" aria-label="Upload">📤</span> {t('actions.upload')}
-              </Link>
               <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <button 
