@@ -10,14 +10,15 @@ import AnalisisResumenGeneral from './AnalisisResumenGeneral';
 import AnalisisEstadistico from './AnalisisEstadistico';
 import AnalisisTop from './Analisis_top';
 import { AuthContainer, Login, Register, PasswordReset } from './AuthComponents';
-import SubscriptionPlans from './SubscriptionPlans';
-import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat } from './firebase_auth';
+import FreemiumPlans from './FreemiumPlans';
+import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits } from './firebase_auth';
 import Header from './Header';
 import Footer from './Footer';
 import UserPlanBanner from './UserPlanBanner';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
 import PaymentSuccessBanner from './PaymentSuccessBanner';
 import CookieBanner from './CookieBanner';
+import DebugEnv from './components/DebugEnv';
 import { useAuth } from './AuthContext';
 import { deleteFiles, uploadFile, getMistralResponse, startChatAnalysis, getAzureResponse } from './fileService';
 import Contact from './Paginasextra/Contact';
@@ -59,13 +60,12 @@ function HomePage() {
   );
 }
 
-// Wrapper component for SubscriptionPlans to access location data
+// Wrapper component for FreemiumPlans to access location data
 function PlansWithLocationCheck({ user }) {
   const location = useLocation();
   return (
-    <SubscriptionPlans 
+    <FreemiumPlans 
       userId={user?.uid} 
-      paymentSuccess={location.search.includes('payment_success=true')} 
     />
   );
 }
@@ -345,6 +345,8 @@ function AppContent() {
   const [gameUrl, setGameUrl] = useState("");
   // State para mostrar el mensaje de "copiado"
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
+  // Estado para créditos del usuario
+  const [userCredits, setUserCredits] = useState(null);
   
   // Configuración de privacidad
   const [skipAIPsychologicalAnalysis, setSkipAIPsychologicalAnalysis] = useState(false);
@@ -594,9 +596,9 @@ function AppContent() {
             }, 1800000); // 30 minutos
           }, 500);
           
-          // Iniciar el análisis psicológico en background sin bloquear la UI
-          // Pasar el contenido del chat directamente para evitar problemas de timing
-          fetchMistralResponse(extractedContent.chat);
+          // ❌ ANÁLISIS IA ELIMINADO: Solo bajo demanda con créditos
+          // NO llamar fetchMistralResponse() automáticamente
+          console.log("📊 Análisis estadístico completado - IA disponible bajo demanda");
           
           return true;
         } else {
@@ -1061,11 +1063,12 @@ function AppContent() {
         console.error("Error al guardar chatData en localStorage:", error);
       }
       
-      // Activar la visualización del análisis
+      // Activar la visualización del análisis estadístico (GRATIS)
       setShowAnalysis(true);
       
-      // Proceder con el análisis AI
-      fetchMistralResponse();
+      // NO llamar automáticamente fetchMistralResponse()
+      // El análisis IA ahora se controla por separado según créditos del usuario
+      console.log("✅ Análisis estadístico listo - IA se controlará por separado");
     } else {
       console.error("Error: No se pudo extraer el chat del archivo");
       setError("No se pudo extraer el chat del archivo. Verifica que sea un archivo ZIP válido de WhatsApp.");
@@ -1284,6 +1287,82 @@ function AppContent() {
       return false;
     }
   };
+
+  // NUEVA FUNCIÓN: Iniciar análisis IA con control de créditos
+  const startAIAnalysis = async () => {
+    try {
+      console.log('🤖 Iniciando análisis IA con control de créditos...');
+      
+      // Verificar que hay datos de chat disponibles
+      if (!chatData) {
+        setError('No hay datos de chat disponibles para analizar');
+        return false;
+      }
+      
+      // Verificar que el usuario está autenticado
+      const currentUser = await getCurrentUser();
+      if (!currentUser) {
+        setError('Debes estar autenticado para usar análisis IA');
+        return false;
+      }
+      
+      // Verificar si el usuario puede usar IA
+      const aiPermission = await canUseAI(currentUser.uid);
+      if (!aiPermission.canUse) {
+        console.log('❌ Usuario sin créditos de IA:', aiPermission.message);
+        
+        // Confirmar si el usuario quiere comprar créditos
+        const shouldPurchase = window.confirm(
+          '🤖 Necesitas créditos de IA para este análisis.\n\n' +
+          '💰 Pack de 10 análisis IA: 5€\n\n' +
+          '¿Quieres comprar ahora?'
+        );
+        
+        if (shouldPurchase) {
+          try {
+            await purchaseAICredits(currentUser.uid);
+            return false; // Se redirigirá a Stripe
+          } catch (error) {
+            console.error('Error iniciando compra:', error);
+            setError('Error iniciando la compra. Inténtalo de nuevo.');
+          }
+        }
+        
+        setError('Sin créditos de IA disponibles. Compra un pack para continuar.');
+        return false;
+      }
+      
+      console.log('✅ Usuario puede usar IA:', aiPermission.message);
+      
+      // Hacer el análisis IA primero
+      console.log('🚀 Iniciando análisis IA...');
+      const analysisResult = await fetchMistralResponse();
+      
+      // Solo decrementar créditos si el análisis fue exitoso
+      if (analysisResult) {
+        try {
+          const creditResult = await decrementAICredits(currentUser.uid);
+          console.log('💳 Créditos decrementados tras análisis exitoso:', creditResult.message);
+          
+          // Actualizar estado de créditos en tiempo real
+          const updatedCredits = await canUseAI(currentUser.uid);
+          setUserCredits(updatedCredits);
+        } catch (creditError) {
+          console.error('❌ Error decrementando créditos tras análisis exitoso:', creditError);
+          // No retornamos false aquí porque el análisis ya fue exitoso
+        }
+      } else {
+        console.log('💾 Análisis falló - créditos preservados');
+      }
+      
+      return analysisResult;
+      
+    } catch (error) {
+      console.error('❌ Error en startAIAnalysis:', error);
+      setError(`Error iniciando análisis IA: ${error.message}`);
+      return false;
+    }
+  };
   
   // Add this new function for checking if processing is complete before deleting
   const checkAndDeleteFiles = async (operationId, retries = 5, delay = 20000) => {
@@ -1364,11 +1443,44 @@ const tryDeleteFiles = async (operationId) => {
       // Mostrar inmediatamente los datos de análisis estadístico
       setShowAnalysis(true);
       
-      // Iniciar análisis psicológico solo si fue solicitado por otra vía (no desde processZipFile)
-      // Pasar chatData como parámetro para asegurar que use el contenido correcto
-      fetchMistralResponse(chatData);
+      // ✅ NUEVO: Verificar créditos y ejecutar análisis IA automáticamente si los tiene
+      const checkCreditsAndStartAI = async () => {
+        try {
+          const aiPermission = await canUseAI(user.uid);
+          if (aiPermission.canUse) {
+            console.log('✅ Usuario tiene créditos, iniciando análisis IA automáticamente:', aiPermission.message);
+            // Ejecutar análisis IA automáticamente
+            await startAIAnalysis();
+          } else {
+            console.log('⏳ Usuario sin créditos, esperando acción manual:', aiPermission.message);
+          }
+        } catch (error) {
+          console.error('❌ Error verificando créditos para análisis automático:', error);
+        }
+      };
+      
+      checkCreditsAndStartAI();
     }
   }, [chatData, chatGptResponse, isFetchingMistral, user]); // Agregar user como dependencia
+
+  // Efecto para cargar créditos del usuario
+  useEffect(() => {
+    const loadUserCredits = async () => {
+      if (user?.uid) {
+        try {
+          const aiPermission = await canUseAI(user.uid);
+          setUserCredits(aiPermission);
+        } catch (error) {
+          console.error('Error cargando créditos del usuario:', error);
+          setUserCredits({ canUse: false, aiCredits: 0, message: 'Error cargando créditos' });
+        }
+      } else {
+        setUserCredits(null);
+      }
+    };
+
+    loadUserCredits();
+  }, [user]);
 
   // Efecto para manejar compartir archivos y configurar Service Worker
   useEffect(() => {
@@ -2041,13 +2153,44 @@ const tryDeleteFiles = async (operationId) => {
                         </div>
                         <p>{t('app.analysis.preparing_psychological')}</p>
                       </div>
-                    ) : (
-                      chatGptResponse && <Chatgptresultados 
+                    ) : chatGptResponse ? (
+                      <Chatgptresultados 
                         chatGptResponse={chatGptResponse}
                         promptInput={chatData?.prompt} 
                         usuarioId={user?.uid || "anonymous"} 
                       />
-                    )}
+                    ) : chatData && userCredits && !userCredits.canUse ? (
+                      // Mostrar preview bloqueado SOLO cuando hay datos pero el usuario NO tiene créditos
+                      <div className="ai-analysis-locked">
+                        <div className="locked-preview">
+                          <h3>🧠 Análisis Psicológico Completo</h3>
+                          <div className="preview-items">
+                            <div className="preview-item">
+                              <h4>📊 Perfiles Psicológicos Individuales</h4>
+                              <p className="blurred">Análisis detallado de la personalidad de cada participante...</p>
+                            </div>
+                            <div className="preview-item">
+                              <h4>🎭 Dinámicas de Grupo</h4>
+                              <p className="blurred">Patrones de comunicación y relaciones interpersonales...</p>
+                            </div>
+                            <div className="preview-item">
+                              <h4>💭 Análisis Emocional</h4>
+                              <p className="blurred">Estados emocionales y tendencias comunicativas...</p>
+                            </div>
+                          </div>
+                          <div className="unlock-section">
+                            <button 
+                              className="unlock-ai-button"
+                              onClick={startAIAnalysis}
+                              disabled={isLoading}
+                            >
+                              🔓 Desbloquear Análisis IA - Pack 10 análisis por 5€
+                            </button>
+                            <p className="unlock-note">Solo 0.50€ por análisis completo</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 )}
 
@@ -2275,6 +2418,7 @@ function App() {
     <div className="app-container">
       <SecurityCaptchaProvider userLanguage={getCurrentLanguage()}>
         <Router>
+          <DebugEnv />
           <AppContent />
         </Router>
       </SecurityCaptchaProvider>

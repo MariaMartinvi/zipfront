@@ -803,25 +803,26 @@ export const canUploadChat = async (userId) => {
     let canUpload = false;
     let quota = 0;
     
-    // Free plan users can upload 1 chat
+    // NUEVO SISTEMA: Análisis estadístico SIEMPRE gratis e ilimitado
+    // Solo controlamos los créditos de IA por separado
     if (plan === 'free') {
-      quota = 1;
-      canUpload = currentUsage < 1;
-      console.log(`[canUploadChat] Plan FREE - Comparando: ${currentUsage} < 1 = ${canUpload}`);
+      quota = 999999; // Ilimitado para estadísticas
+      canUpload = true; // Siempre puede subir para análisis estadístico
+      console.log(`[canUploadChat] Plan FREE - Uploads ILIMITADOS para estadísticas`);
     }
-    // For paid plans, check their quota
+    // Para planes pagados también ilimitados (ya que ahora usamos créditos IA)
     else if (plan === 'basic') {
-      quota = 5;
-      canUpload = currentUsage < 5;
-      console.log(`[canUploadChat] Plan BASIC - Comparando: ${currentUsage} < 5 = ${canUpload}`);
+      quota = 999999; // Ilimitado para estadísticas
+      canUpload = true; // Siempre puede subir
+      console.log(`[canUploadChat] Plan BASIC - Uploads ILIMITADOS`);
     } else if (plan === 'standard') {
-      quota = 10;
-      canUpload = currentUsage < 10;
-      console.log(`[canUploadChat] Plan STANDARD - Comparando: ${currentUsage} < 10 = ${canUpload}`);
+      quota = 999999; // Ilimitado para estadísticas
+      canUpload = true; // Siempre puede subir
+      console.log(`[canUploadChat] Plan STANDARD - Uploads ILIMITADOS`);
     } else if (plan === 'premium') {
-      quota = 20;
-      canUpload = currentUsage < 20;
-      console.log(`[canUploadChat] Plan PREMIUM - Comparando: ${currentUsage} < 20 = ${canUpload}`);
+      quota = 999999; // Ilimitado para estadísticas
+      canUpload = true; // Siempre puede subir
+      console.log(`[canUploadChat] Plan PREMIUM - Uploads ILIMITADOS`);
     }
     
     console.log(`[canUploadChat] RESULTADO FINAL - Puede subir: ${canUpload} (${currentUsage}/${quota})`);
@@ -830,6 +831,101 @@ export const canUploadChat = async (userId) => {
   } catch (error) {
     console.error('[canUploadChat] Error verificando capacidad de subida:', error);
     throw error;
+  }
+};
+
+// NUEVA FUNCIÓN: Comprar pack de créditos IA
+export const purchaseAICredits = async (userId) => {
+  try {
+    const idToken = await auth.currentUser.getIdToken();
+    
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/create-checkout-session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`
+      },
+      body: JSON.stringify({
+        priceId: process.env.REACT_APP_STRIPE_PRICE_ID_FLAT || 'price_1S5Sk8F4OlRGsz64GAn5xcSv',
+        userId: userId
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Error creating checkout session');
+    }
+
+    const data = await response.json();
+    
+    // Redirigir a Stripe Checkout
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error('No checkout URL received');
+    }
+    
+  } catch (error) {
+    console.error('Error purchasing AI credits:', error);
+    throw error;
+  }
+};
+
+// NUEVA FUNCIÓN: Verificar si puede usar análisis IA
+export const canUseAI = async (userId) => {
+  try {
+    console.log(`[canUseAI] Verificando créditos de IA para usuario: ${userId}`);
+    
+    if (!userId) {
+      console.error(`[canUseAI] Error: ID de usuario inválido o vacío`);
+      throw new Error('ID de usuario requerido');
+    }
+    
+    // Consulta fresca a Firestore
+    const userRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      console.log(`[canUseAI] Usuario ${userId} no encontrado, sin créditos de IA`);
+      return {
+        canUse: false,
+        aiCredits: 0,
+        message: 'Usuario sin créditos de IA'
+      };
+    }
+    
+    const userProfile = userDoc.data();
+    const aiCredits = userProfile.aiCredits || 0;
+    const isAdmin = userProfile.is_admin || false;
+    
+    console.log(`[canUseAI] Créditos IA: ${aiCredits}, Es Admin: ${isAdmin}`);
+    
+    // Admin tiene IA ilimitada
+    if (isAdmin) {
+      console.log(`[canUseAI] Usuario ADMINISTRADOR - IA ilimitada`);
+      return {
+        canUse: true,
+        aiCredits: 'unlimited',
+        message: 'Usuario administrador - IA ilimitada'
+      };
+    }
+    
+    // Verificar si tiene créditos disponibles
+    const canUse = aiCredits > 0;
+    console.log(`[canUseAI] RESULTADO - Puede usar IA: ${canUse} (${aiCredits} créditos)`);
+    
+    return {
+      canUse: canUse,
+      aiCredits: aiCredits,
+      message: canUse ? `${aiCredits} créditos disponibles` : 'Sin créditos de IA'
+    };
+    
+  } catch (error) {
+    console.error('[canUseAI] Error verificando créditos de IA:', error);
+    return {
+      canUse: false,
+      aiCredits: 0,
+      message: 'Error verificando créditos'
+    };
   }
 };
 
@@ -901,6 +997,70 @@ export const incrementChatUsage = async (userId) => {
     return true;
   } catch (error) {
     console.error('[incrementChatUsage] Error general:', error);
+    throw error;
+  }
+};
+
+// NUEVA FUNCIÓN: Decrementar créditos de IA cuando se usen
+export const decrementAICredits = async (userId) => {
+  try {
+    console.log(`[decrementAICredits] Decrementando créditos de IA para usuario: ${userId}`);
+    
+    if (!userId) {
+      console.error(`[decrementAICredits] Error: ID de usuario inválido o vacío`);
+      throw new Error('ID de usuario requerido');
+    }
+    
+    // Obtener datos actuales del usuario
+    const userRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      console.error(`[decrementAICredits] Usuario ${userId} no encontrado`);
+      throw new Error('Usuario no encontrado');
+    }
+    
+    const userProfile = userDoc.data();
+    const currentCredits = userProfile.aiCredits || 0;
+    const isAdmin = userProfile.is_admin || false;
+    
+    console.log(`[decrementAICredits] Créditos actuales: ${currentCredits}, Es Admin: ${isAdmin}`);
+    
+    // Admin no consume créditos
+    if (isAdmin) {
+      console.log(`[decrementAICredits] Usuario ADMINISTRADOR - no consume créditos`);
+      return {
+        success: true,
+        creditsRemaining: 'unlimited',
+        message: 'Admin - créditos ilimitados'
+      };
+    }
+    
+    // Verificar si tiene créditos disponibles
+    if (currentCredits <= 0) {
+      console.error(`[decrementAICredits] Usuario sin créditos disponibles: ${currentCredits}`);
+      throw new Error('Sin créditos de IA disponibles');
+    }
+    
+    // Decrementar los créditos
+    const newCredits = currentCredits - 1;
+    console.log(`[decrementAICredits] Actualizando créditos: ${currentCredits} -> ${newCredits}`);
+    
+    await updateDoc(userRef, {
+      aiCredits: newCredits,
+      lastAIUsage: new Date()
+    });
+    
+    console.log(`[decrementAICredits] Créditos actualizados exitosamente`);
+    
+    return {
+      success: true,
+      creditsRemaining: newCredits,
+      message: `${newCredits} créditos restantes`
+    };
+    
+  } catch (error) {
+    console.error('[decrementAICredits] Error decrementando créditos de IA:', error);
     throw error;
   }
 };

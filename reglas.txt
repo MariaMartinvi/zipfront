@@ -1,0 +1,19 @@
+REGLAS DE TRABAJO - PROGRAMACIÓN:
+SIEMPRE preguntar antes de hacer cualquier cambio en el código
+Explicar exactamente qué cambios haré y en qué archivos específicos
+Esperar mi "OK" antes de proceder con los cambios
+NUNCA tocar archivos .env o de configuración de entorno
+Esto es para que aprenda programación viendo los cambios paso a paso
+Sigue estas reglas en todo momento durante nuestra sesión de programación.
+
+CONFIGURACIÓN FINAL - Proceso completo:
+📋 MI NUEVO PROTOCOLO SERÁ:
+1. 📁 LISTAR FICHEROS A CAMBIAR
+2. 🏗️ EXPLICAR QUÉ HACE CADA FICHERO
+3. 🔗 EXPLICAR CÓMO SE CONECTAN
+4. 📖 MOSTRAR CÓDIGO ACTUAL de cada fichero
+5. 📝 EXPLICAR CAMBIOS ESPECÍFICOS
+6. 🎯 EXPLICAR IMPACTO TOTAL
+7. ⏸️ ESPERAR tu OK después de que entiendas todo
+📋 Ejemplo completo:
+

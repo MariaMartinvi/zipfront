@@ -453,15 +453,23 @@
     }
   },
   "hero": {
-    "badge": "KONVERSATIONSANALYSE",
+    "badge": "ENTDECKE DIE WAHRHEIT 🕵️",
     "title": {
-      "discover": "Entdecken Sie die Geheimnisse",
-      "conversations": "Ihrer Unterhaltungen auf"
+      "discover": "Wer ist der toxischste",
+      "conversations": "in deiner WhatsApp-Gruppe?"
     },
-    "description": "Wir kombinieren Statistik und fortgeschrittene Künstliche Intelligenz, um faszinierende Einblicke in die psychologischen Profile der Teilnehmer und Gruppendynamik zu enthüllen.",
+    "description": "💀 Entdecke wer dominiert, wer Drama macht und wer nie antwortet. Komplette psychologische Analyse deiner Gruppe in 2 Minuten.",
     "buttons": {
-      "analyze": "Meinen Chat analysieren",
-      "how_it_works": "Wie es funktioniert"
+      "analyze": "🔥 KOSTENLOS analysieren",
+      "how_it_works": "Beispiel ansehen"
+    },
+    "ai_purchase": {
+      "title": "🤖 Sie benötigen KI-Credits für diese Analyse.",
+      "price": "💰 Paket von 10 KI-Analysen: 5€",
+      "question": "Möchten Sie jetzt kaufen?",
+      "no_credits": "Keine KI-Credits verfügbar. Kaufen Sie ein Paket zum Fortfahren.",
+      "error_purchase": "Fehler beim Starten des Kaufs. Bitte versuchen Sie es erneut.",
+      "unlock_button": "🔓 KI-Analyse freischalten (5€)"
     },
     "security": {
       "title": "100% Privat und Sicher",

@@ -707,3 +707,247 @@
   font-size: 16px;
   z-index: 10;
 }
+
+/* FREEMIUM STYLES */
+.freemium-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.freemium-header h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7122AC, #25D366);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 15px;
+}
+
+.freemium-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.freemium-status {
+  background: linear-gradient(135deg, #F8FAFC, #F1F5F9);
+  border: 2px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 40px;
+}
+
+.freemium-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 25px;
+  background: white;
+  border-radius: 16px;
+  border: 2px solid #E2E8F0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stat-card h3 {
+  font-size: 1.1rem;
+  color: #64748B;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7122AC, #25D366);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 5px;
+}
+
+.stat-description {
+  font-size: 0.9rem;
+  color: #94A3B8;
+}
+
+.ai-purchase-section {
+  margin-bottom: 50px;
+}
+
+.ai-pack-card {
+  background: linear-gradient(135deg, #FFFFFF, #F8FAFC);
+  border: 3px solid #7122AC;
+  border-radius: 24px;
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(113, 34, 172, 0.1);
+}
+
+.ai-pack-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #7122AC, #25D366);
+}
+
+.ai-pack-header {
+  margin-bottom: 30px;
+}
+
+.ai-pack-header h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #7122AC;
+  margin-bottom: 15px;
+}
+
+.ai-pack-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ai-pack-price .price-amount {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #25D366;
+}
+
+.ai-pack-price .price-period {
+  font-size: 1.1rem;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.ai-pack-features {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 40px;
+  text-align: left;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ai-feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.ai-feature .feature-check {
+  font-size: 1.2rem;
+}
+
+.ai-purchase-button {
+  background: linear-gradient(135deg, #7122AC, #8B5CF6);
+  color: white;
+  border: none;
+  padding: 18px 40px;
+  border-radius: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(113, 34, 172, 0.3);
+}
+
+.ai-purchase-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(113, 34, 172, 0.4);
+}
+
+.ai-purchase-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ai-purchase-button.admin {
+  background: linear-gradient(135deg, #FF6B35, #FF8C42);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+}
+
+.freemium-info {
+  background: linear-gradient(135deg, #F0F9FF, #E0F2FE);
+  border: 2px solid #0EA5E9;
+  border-radius: 20px;
+  padding: 40px;
+}
+
+.freemium-info h3 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0EA5E9;
+  margin-bottom: 30px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.info-item {
+  text-align: center;
+}
+
+.info-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.info-content h4 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 10px;
+}
+
+.info-content p {
+  color: #64748B;
+  line-height: 1.5;
+}
+
+/* Mobile Responsive para Freemium */
+@media (max-width: 768px) {
+  .freemium-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .freemium-stats {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .ai-pack-card {
+    padding: 30px 20px;
+  }
+  
+  .ai-pack-header h2 {
+    font-size: 2rem;
+  }
+  
+  .ai-pack-price .price-amount {
+    font-size: 2.5rem;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+}

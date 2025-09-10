@@ -483,15 +483,23 @@
     }
   },
   "hero": {
-    "badge": "ANÁLISE DE CONVERSAS",
+    "badge": "DESCUBRA A VERDADE 🕵️",
     "title": {
-      "discover": "Descubra os segredos das",
-      "conversations": "suas conversas"
+      "discover": "Quem é o mais tóxico",
+      "conversations": "do seu grupo WhatsApp?"
     },
-    "description": "Combinamos estatística e Inteligência Artificial avançada para revelar insights fascinantes sobre os perfis psicológicos dos participantes e dinâmicas de grupo.",
+    "description": "💀 Descubra quem domina, quem faz drama e quem nunca responde. Análise psicológica completa do seu grupo em 2 minutos.",
     "buttons": {
-      "analyze": "Analisar meu chat",
-      "how_it_works": "Como funciona"
+      "analyze": "🔥 Analisar GRÁTIS agora",
+      "how_it_works": "Ver exemplo real"
+    },
+    "ai_purchase": {
+      "title": "🤖 Você precisa de créditos de IA para esta análise.",
+      "price": "💰 Pacote de 10 análises IA: 5€",
+      "question": "Quer comprar agora?",
+      "no_credits": "Nenhum crédito de IA disponível. Compre um pacote para continuar.",
+      "error_purchase": "Erro ao iniciar a compra. Tente novamente.",
+      "unlock_button": "🔓 Desbloquear Análise IA (5€)"
     },
     "security": {
       "title": "100% Privado e Seguro",

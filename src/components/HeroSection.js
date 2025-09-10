@@ -11,12 +11,12 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick, onViewAnalysisClick }) 
         <div className="hero-text">
           <span className="new-hero-badge">{t('hero.badge', 'ANÁLISIS DE WHATSAPP')}</span>
           <h1 className="hero-title">
-            {t('hero.title.discover', 'Descubre los secretos de')}
-            <span className="gradient-text"> {t('hero.title.conversations', 'tus conversaciones de')}</span>
-            <span className="whatsapp-text"> {t('hero.title.whatsapp', 'WhatsApp')}</span> {t('hero.title.conversations_suffix', '')}
+            {t('hero.title.discover', '¿Quién habla más en tu grupo?')}
+            <span className="gradient-text"> {t('hero.title.conversations', 'Descubre los secretos ocultos')}</span>
+            <span className="whatsapp-text"> {t('hero.title.whatsapp', 'de WhatsApp')}</span> {t('hero.title.conversations_suffix', '')}
           </h1>
           <p className="hero-description">
-            {t('hero.description', 'Combinamos la estadística y la Inteligencia Artificial avanzada para revelarte datos fascinantes sobre los perfiles psicológicos de los participantes y las dinámicas de grupo.')}
+            {t('hero.description', '🔥 Análisis psicológico + estadísticas detalladas de tus chats. ¿Quién es el más gracioso? ¿El más intenso? ¡Descúbrelo en 30 segundos!')}
           </p>
           <div className="hero-actions">
             <button className="cta-primary" onClick={onAnalyzeClick}>

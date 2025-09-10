@@ -10,15 +10,23 @@
     "free_trial": "Prova gratuita"
   },
   "hero": {
-    "badge": "ANALISI DELLE CONVERSAZIONI",
+    "badge": "SCOPRI LA VERITÀ 🕵️",
     "title": {
-      "discover": "Scopri i segreti delle",
-      "conversations": "tue conversazioni"
+      "discover": "Chi è il più tossico",
+      "conversations": "del tuo gruppo WhatsApp?"
     },
-    "description": "Combiniamo statistiche e Intelligenza Artificiale avanzata per rivelare approfondimenti affascinanti sui profili psicologici dei partecipanti e le dinamiche di gruppo.",
+    "description": "💀 Scopri chi domina, chi fa drammi e chi non risponde mai. Analisi psicologica completa del tuo gruppo in 2 minuti.",
     "buttons": {
-      "analyze": "Analizza la mia chat",
-      "how_it_works": "Come funziona"
+      "analyze": "🔥 Analizza GRATIS ora",
+      "how_it_works": "Vedi esempio reale"
+    },
+    "ai_purchase": {
+      "title": "🤖 Hai bisogno di crediti IA per questa analisi.",
+      "price": "💰 Pacchetto di 10 analisi IA: 5€",
+      "question": "Vuoi comprare ora?",
+      "no_credits": "Nessun credito IA disponibile. Compra un pacchetto per continuare.",
+      "error_purchase": "Errore nell'avviare l'acquisto. Prova di nuovo.",
+      "unlock_button": "🔓 Sblocca Analisi IA (5€)"
     },
     "security": {
       "title": "100% Privato e Sicuro",
