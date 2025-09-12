@@ -502,6 +502,11 @@
     "ai_pack": {
       "title": "🤖 Pack Analyse IA",
       "price": "5€",
+      "original_price": "10€",
+      "discount_badge": "🔥 OFFRE SPÉCIALE",
+      "discount_percentage": "-50%",
+      "limited_time": "Pour un temps limité seulement!",
+      "full_analysis_note": "✨ Débloquez l'analyse IA COMPLÈTE pour ce chat",
       "analyses": "10 analyses",
       "features": {
         "psychological": "Analyse psychologique complète",
@@ -838,12 +843,14 @@
       "view_analysis_of": "Voir l'analyse de"
     },
     "ai_purchase": {
-      "title": "🤖 Vous avez besoin de crédits IA pour cette analyse.",
-      "price": "💰 Pack de 10 analyses IA : 5€",
-      "question": "Voulez-vous acheter maintenant ?",
+      "title": "🤖 Débloquez l'analyse IA COMPLÈTE de ce chat",
+      "price": "💰 Pack de 10 analyses IA : ~~10€~~ 5€",
+      "discount_notice": "🔥 Offre spéciale -50% ! Pour un temps limité seulement",
+      "full_chat_notice": "✨ Inclut l'analyse complète : personnalités + dynamiques + recommandations",
+      "question": "Voulez-vous profiter de cette offre?",
       "no_credits": "Aucun crédit IA disponible. Achetez un pack pour continuer.",
       "error_purchase": "Erreur lors du démarrage de l'achat. Veuillez réessayer.",
-      "unlock_button": "🔓 Débloquer l'analyse IA (5€)"
+      "unlock_button": "🔓 Acheter avec Réduction (5€)"
     },
     "security": {
       "title": "100% Privé et Sécurisé",

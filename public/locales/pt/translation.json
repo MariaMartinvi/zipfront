@@ -584,12 +584,14 @@
       "view_analysis_of": "Ver análise de"
     },
     "ai_purchase": {
-      "title": "🤖 Você precisa de créditos de IA para esta análise.",
-      "price": "💰 Pacote de 10 análises IA: 5€",
-      "question": "Quer comprar agora?",
+      "title": "🤖 Desbloqueie a análise IA COMPLETA desta conversa",
+      "price": "💰 Pacote de 10 análises IA: ~~10€~~ 5€",
+      "discount_notice": "🔥 Oferta especial -50%! Apenas por tempo limitado",
+      "full_chat_notice": "✨ Inclui análise completa: personalidades + dinâmicas + recomendações",
+      "question": "Quer aproveitar esta oferta?",
       "no_credits": "Nenhum crédito de IA disponível. Compre um pacote para continuar.",
       "error_purchase": "Erro ao iniciar a compra. Tente novamente.",
-      "unlock_button": "🔓 Desbloquear Análise IA (5€)"
+      "unlock_button": "🔓 Comprar com Desconto (5€)"
     },
     "security": {
       "title": "100% Privado e Seguro",
@@ -758,6 +760,11 @@
     "ai_pack": {
       "title": "🤖 Pacote Análise IA",
       "price": "5€",
+      "original_price": "10€",
+      "discount_badge": "🔥 OFERTA ESPECIAL",
+      "discount_percentage": "-50%",
+      "limited_time": "Apenas por tempo limitado!",
+      "full_analysis_note": "✨ Desbloqueie a análise IA COMPLETA para este chat",
       "analyses": "10 análises",
       "features": {
         "psychological": "Análise psicológica completa",
@@ -783,6 +790,13 @@
         "title": "3. Sem Assinatura",
         "description": "Pagamento único por pacote - Sem compromissos mensais"
       }
+    },
+    "public": {
+      "register_to_see": "Cadastre-se para ver seus créditos",
+      "cta_title": "Cadastre-se grátis e comece a analisar!",
+      "cta_description": "Crie sua conta em segundos e obtenha análises estatísticas ilimitadas",
+      "register_button": "📝 Criar conta gratuita",
+      "register_and_buy": "📝 Cadastrar e Comprar (5€)"
     }
   },
   "payment": {

@@ -41,9 +41,9 @@ const Header = ({ user }) => {
           {/* Desktop Navigation */}
           <nav className="desktop-nav">
             <Link to="/" className="nav-link">{t('header.home')}</Link>
+            <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
             {user ? (
               <>
-                <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
                 <LanguageSwitcher />
                 <div className="user-menu">
                   <button 
@@ -88,9 +88,9 @@ const Header = ({ user }) => {
       {isMenuOpen && (
         <div className="mobile-menu">
           <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>{t('header.home')}</Link>
+          <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
           {user ? (
             <>
-              <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <button 
                   className="mobile-nav-link mobile-logout"

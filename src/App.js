@@ -1311,10 +1311,12 @@ function AppContent() {
       if (!aiPermission.canUse) {
         console.log('❌ Usuario sin créditos de IA:', aiPermission.message);
         
-        // Confirmar si el usuario quiere comprar créditos (multiidioma)
+        // Confirmar si el usuario quiere comprar créditos (multiidioma con oferta)
         const shouldPurchase = window.confirm(
           `${t('hero.ai_purchase.title')}\n\n` +
+          `${t('hero.ai_purchase.discount_notice')}\n` +
           `${t('hero.ai_purchase.price')}\n\n` +
+          `${t('hero.ai_purchase.full_chat_notice')}\n\n` +
           `${t('hero.ai_purchase.question')}`
         );
         
@@ -2429,12 +2431,8 @@ const tryDeleteFiles = async (operationId) => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/reset-password" element={<PasswordReset />} />
           
-          {/* Subscription Plan Routes - Now correctly passing user prop */}
-          <Route path="/plans" element={
-            <ProtectedRoute>
-              <PlansWithLocationCheck user={user} />
-            </ProtectedRoute>
-          } />
+          {/* Subscription Plan Routes - Público para todos */}
+          <Route path="/plans" element={<PlansWithLocationCheck user={user} />} />
 
           <Route path="/payment-success" element={
             <ProtectedRoute>

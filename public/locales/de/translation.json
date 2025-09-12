@@ -801,6 +801,11 @@
     "ai_pack": {
       "title": "🤖 KI-Analyse-Paket",
       "price": "5€",
+      "original_price": "10€",
+      "discount_badge": "🔥 SONDERANGEBOT",
+      "discount_percentage": "-50%",
+      "limited_time": "Nur für begrenzte Zeit!",
+      "full_analysis_note": "✨ Entsperren Sie die VOLLSTÄNDIGE KI-Analyse für diesen Chat",
       "analyses": "10 Analysen",
       "features": {
         "psychological": "Vollständige psychologische Analyse",

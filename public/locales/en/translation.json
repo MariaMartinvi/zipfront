@@ -514,12 +514,14 @@
       "view_analysis_of": "View analysis of"
     },
     "ai_purchase": {
-      "title": "🤖 You need AI credits for this analysis.",
-      "price": "💰 Pack of 10 AI analyses: €5",
-      "question": "Do you want to buy now?",
+      "title": "🤖 Unlock the COMPLETE AI analysis of this chat",
+      "price": "💰 Pack of 10 AI analyses: ~~€10~~ €5",
+      "discount_notice": "🔥 Special offer -50%! Limited time only",
+      "full_chat_notice": "✨ Includes complete analysis: personalities + dynamics + recommendations",
+      "question": "Want to take advantage of this offer?",
       "no_credits": "No AI credits available. Buy a pack to continue.",
       "error_purchase": "Error starting purchase. Please try again.",
-      "unlock_button": "🔓 Unlock AI Analysis (€5)"
+      "unlock_button": "🔓 Buy with Discount (€5)"
     },
     "analysis_title": "WhatsApp Chat Analysis",
     "share_button": {
@@ -739,6 +741,11 @@
     "ai_pack": {
       "title": "🤖 AI Analysis Pack",
       "price": "5€",
+      "original_price": "10€",
+      "discount_badge": "🔥 SPECIAL OFFER",
+      "discount_percentage": "-50%",
+      "limited_time": "Limited time only!",
+      "full_analysis_note": "✨ Unlock the COMPLETE AI analysis for this chat",
       "analyses": "10 analyses",
       "features": {
         "psychological": "Complete psychological analysis",
@@ -764,6 +771,13 @@
         "title": "3. No Subscription",
         "description": "One-time payment per pack - No monthly commitments"
       }
+    },
+    "public": {
+      "register_to_see": "Sign up to see your credits",
+      "cta_title": "Sign up free and start analyzing!",
+      "cta_description": "Create your account in seconds and get unlimited statistical analysis",
+      "register_button": "📝 Create free account",
+      "register_and_buy": "📝 Sign up and Buy (€5)"
     }
   },
   "weekdays": {

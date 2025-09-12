@@ -13,10 +13,14 @@ const FreemiumPlans = ({ userId }) => {
   const [error, setError] = useState('');
   const [isPurchasing, setIsPurchasing] = useState(false);
 
-  // Cargar perfil del usuario directamente desde Firestore
+  // Cargar perfil del usuario directamente desde Firestore (solo si está logueado)
   useEffect(() => {
     const loadUserProfile = async () => {
-      if (!userId) return;
+      if (!userId) {
+        // Usuario no logueado - mostrar pricing público
+        setIsLoading(false);
+        return;
+      }
       
       try {
         setIsLoading(true);
@@ -43,6 +47,12 @@ const FreemiumPlans = ({ userId }) => {
 
   // Manejar compra de créditos IA
   const handlePurchaseAI = async () => {
+    // Si no está logueado, redirigir al registro
+    if (!userId) {
+      window.location.href = '/register';
+      return;
+    }
+    
     try {
       setIsPurchasing(true);
       setError('');
@@ -73,7 +83,7 @@ const FreemiumPlans = ({ userId }) => {
 
       {error && <div className="subscription-error">{error}</div>}
 
-      {/* Estado actual del usuario */}
+      {/* Estado actual del usuario o promoción para no logueados */}
       <div className="current-plan-info freemium-status">
         <div className="freemium-stats">
           <div className="stat-card">
@@ -85,13 +95,49 @@ const FreemiumPlans = ({ userId }) => {
           <div className="stat-card">
             <h3>{t('freemium.stats.ai_credits')}</h3>
             <div className="stat-value">
-              {isAdmin ? t('freemium.stats.unlimited') : aiCredits}
+              {!userId ? '?' : (isAdmin ? t('freemium.stats.unlimited') : aiCredits)}
             </div>
             <div className="stat-description">
-              {isAdmin ? t('freemium.stats.admin_account') : t('freemium.stats.ai_available')}
+              {!userId 
+                ? t('freemium.public.register_to_see') 
+                : (isAdmin ? t('freemium.stats.admin_account') : t('freemium.stats.ai_available'))
+              }
             </div>
           </div>
         </div>
+
+        {!userId && (
+          <div className="public-cta-banner" style={{
+            background: "linear-gradient(135deg, #e3f2fd, #bbdefb)",
+            border: "2px solid #2196f3",
+            borderRadius: "16px",
+            padding: "20px",
+            marginTop: "20px",
+            textAlign: "center"
+          }}>
+            <h4 style={{ color: "#1565c0", marginBottom: "10px", fontSize: "1.2rem" }}>
+              ✨ {t('freemium.public.cta_title')}
+            </h4>
+            <p style={{ color: "#1976d2", marginBottom: "15px" }}>
+              {t('freemium.public.cta_description')}
+            </p>
+            <button 
+              onClick={() => window.location.href = '/register'}
+              style={{
+                background: "linear-gradient(135deg, #2196f3, #1976d2)",
+                color: "white",
+                border: "none",
+                padding: "12px 24px",
+                borderRadius: "8px",
+                fontSize: "16px",
+                fontWeight: "600",
+                cursor: "pointer"
+              }}
+            >
+              {t('freemium.public.register_button')}
+            </button>
+          </div>
+        )}
 
         {isAdmin && (
           <div className="admin-badge" style={{
@@ -113,10 +159,22 @@ const FreemiumPlans = ({ userId }) => {
       <div className="ai-purchase-section">
         <div className="ai-pack-card">
           <div className="ai-pack-header">
+            <div className="discount-badge">
+              {t('freemium.ai_pack.discount_badge')} {t('freemium.ai_pack.discount_percentage')}
+            </div>
             <h2>{t('freemium.ai_pack.title')}</h2>
             <div className="ai-pack-price">
-              <span className="price-amount">{t('freemium.ai_pack.price')}</span>
+              <div className="price-comparison">
+                <span className="original-price">{t('freemium.ai_pack.original_price')}</span>
+                <span className="current-price">{t('freemium.ai_pack.price')}</span>
+              </div>
               <span className="price-period">{t('freemium.ai_pack.analyses')}</span>
+              <div className="limited-time-notice">
+                {t('freemium.ai_pack.limited_time')}
+              </div>
+            </div>
+            <div className="full-analysis-notice">
+              {t('freemium.ai_pack.full_analysis_note')}
             </div>
           </div>
           
@@ -140,7 +198,14 @@ const FreemiumPlans = ({ userId }) => {
           </div>
           
           <div className="ai-pack-action">
-            {isAdmin ? (
+            {!userId ? (
+              <button 
+                className="ai-purchase-button"
+                onClick={handlePurchaseAI}
+              >
+                {t('freemium.public.register_and_buy')}
+              </button>
+            ) : isAdmin ? (
               <button className="ai-purchase-button admin" disabled>
                 {t('freemium.ai_pack.admin_button')}
               </button>
