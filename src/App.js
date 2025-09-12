@@ -1311,11 +1311,11 @@ function AppContent() {
       if (!aiPermission.canUse) {
         console.log('❌ Usuario sin créditos de IA:', aiPermission.message);
         
-        // Confirmar si el usuario quiere comprar créditos
+        // Confirmar si el usuario quiere comprar créditos (multiidioma)
         const shouldPurchase = window.confirm(
-          '🤖 Necesitas créditos de IA para este análisis.\n\n' +
-          '💰 Pack de 10 análisis IA: 5€\n\n' +
-          '¿Quieres comprar ahora?'
+          `${t('hero.ai_purchase.title')}\n\n` +
+          `${t('hero.ai_purchase.price')}\n\n` +
+          `${t('hero.ai_purchase.question')}`
         );
         
         if (shouldPurchase) {
@@ -1324,11 +1324,11 @@ function AppContent() {
             return false; // Se redirigirá a Stripe
           } catch (error) {
             console.error('Error iniciando compra:', error);
-            setError('Error iniciando la compra. Inténtalo de nuevo.');
+            setError(t('hero.ai_purchase.error_purchase'));
           }
         }
         
-        setError('Sin créditos de IA disponibles. Compra un pack para continuar.');
+        setError(t('hero.ai_purchase.no_credits'));
         return false;
       }
       
@@ -2163,30 +2163,169 @@ const tryDeleteFiles = async (operationId) => {
                       // Mostrar preview bloqueado SOLO cuando hay datos pero el usuario NO tiene créditos
                       <div className="ai-analysis-locked">
                         <div className="locked-preview">
-                          <h3>🧠 Análisis Psicológico Completo</h3>
-                          <div className="preview-items">
-                            <div className="preview-item">
-                              <h4>📊 Perfiles Psicológicos Individuales</h4>
-                              <p className="blurred">Análisis detallado de la personalidad de cada participante...</p>
+                          <h3>{t('hero.ai_preview.title')}</h3>
+                          
+                          {/* SECCIÓN 1: Análisis de personalidades */}
+                          <div className="preview-section">
+                            <h4>{t('hero.ai_preview.personalities_section')}</h4>
+                            <div className="personalities-preview">
+                              {(() => {
+                                // Extraer usuarios REALES del chat usando el mapeo de nombres
+                                let usuarios = [];
+                                
+                                // Método 1: Usar el mapeo de nombres reales si está disponible
+                                if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
+                                  // Obtener los nombres reales originales del chat
+                                  usuarios = Object.keys(window.lastNameMapping);
+                                  console.log('📋 Usuarios reales del chat:', usuarios);
+                                } 
+                                // Método 2: Fallback - usar datos del análisis estadístico 
+                                else if (chatData?.estadisticas?.mensajes_por_usuario) {
+                                  usuarios = Object.keys(chatData.estadisticas.mensajes_por_usuario);
+                                  console.log('📊 Usuarios del análisis estadístico:', usuarios);
+                                }
+                                // Método 3: Último fallback - usar datos del análisis top
+                                else if (window.lastAnalysisTopData?.usuarios) {
+                                  usuarios = window.lastAnalysisTopData.usuarios;
+                                  console.log('🔝 Usuarios del análisis top:', usuarios);
+                                }
+                                // Fallback de emergencia - NO debería ocurrir nunca
+                                else {
+                                  usuarios = ['Usuario 1', 'Usuario 2', 'Usuario 3'];
+                                  console.warn('⚠️ Usando fallback de emergencia para usuarios');
+                                }
+                                
+                                return usuarios.slice(0, 4).map((usuario, index) => {
+                                  // Colores de avatares como en el resultado real
+                                  const avatarColors = ['green-avatar', 'orange-avatar', 'purple-avatar', 'blue-avatar'];
+                                  const avatarColor = avatarColors[index % avatarColors.length];
+                                  const initial = usuario.charAt(0).toUpperCase();
+                                  
+                                  return (
+                                    <div key={index} className="psychology-item">
+                                      <div className={`avatar ${avatarColor}`}>
+                                        {initial}
+                                      </div>
+                                      <div className="psychology-content">
+                                        <h4><strong>{usuario}</strong></h4>
+                                        
+                                        <div className="content-sections">
+                                          <p><strong>- {t('hero.ai_preview.main_trait')}</strong></p>
+                                          <div className="blurred-content">
+                                            <p>❤️ <strong>████████ ████████</strong> – ███████ ███ ████ ███████████ ██████ ███ ██████, ████████████ ██ ████████ ███████████.</p>
+                                            <p>🌟 <strong>█████████ ███████████</strong> – ████ ██ ██████████ ███ ███████ █ ████████, ████ ██ ██ ██ ███ ████████ ██ ████████████.</p>
+                                          </div>
+                                          
+                                          <p><strong>{t('hero.ai_preview.strength')}</strong></p>
+                                          <div className="blurred-content">
+                                            <p>💬 <strong>███████████ ██████████</strong> – ███████ ███ ████████████ █ ██████ ██ ██████ █████ █ ██████.</p>
+                                          </div>
+                                          
+                                          <p><strong>{t('hero.ai_preview.improvement_area')}</strong></p>
+                                          <div className="blurred-content">
+                                            <p>📋 <strong>█████████████</strong> – ██████ ██████████ ██ ███ ███ █████ ██ ██ ████████████ ██ ████████████ ████████.</p>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="psychology-tags">
+                                          <span className={`tag ${avatarColor.replace('-avatar', '')} blurred-tag`}>
+                                            ████████ ████████
+                                          </span>
+                                          <span className={`tag ${avatarColor.replace('-avatar', '')} blurred-tag`}>
+                                            █████████ ███████████
+                                          </span>
+                                        </div>
+                                      </div>
+                                      
+                                      {/* Botón de desbloqueo individual para cada persona */}
+                                      <div className="individual-unlock-section">
+                                        <button 
+                                          className="unlock-ai-button-small"
+                                          onClick={startAIAnalysis}
+                                          disabled={isLoading}
+                                        >
+                                          🔓 {t('hero.ai_preview.view_analysis_of', 'Ver análisis de')} {usuario}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  );
+                                });
+                              })()}
                             </div>
-                            <div className="preview-item">
-                              <h4>🎭 Dinámicas de Grupo</h4>
-                              <p className="blurred">Patrones de comunicación y relaciones interpersonales...</p>
-                            </div>
-                            <div className="preview-item">
-                              <h4>💭 Análisis Emocional</h4>
-                              <p className="blurred">Estados emocionales y tendencias comunicativas...</p>
+                            <div className="unlock-section">
+                              <button 
+                                className="unlock-ai-button"
+                                onClick={startAIAnalysis}
+                                disabled={isLoading}
+                              >
+                                {t('hero.ai_preview.unlock_button')}
+                              </button>
+                              <p className="unlock-note">{t('hero.ai_preview.unlock_note')}</p>
                             </div>
                           </div>
-                          <div className="unlock-section">
-                            <button 
-                              className="unlock-ai-button"
-                              onClick={startAIAnalysis}
-                              disabled={isLoading}
-                            >
-                              🔓 Desbloquear Análisis IA - Pack 10 análisis por 5€
-                            </button>
-                            <p className="unlock-note">Solo 0.50€ por análisis completo</p>
+
+                          {/* SECCIÓN 2: Señales de Alerta */}
+                          <div className="preview-section">
+                            <h4>{t('hero.ai_preview.alerts_section')}</h4>
+                            <div className="preview-item">
+                              <div className="blurred">
+                                <p>🚩 <strong>{t('hero.ai_preview.alert_pattern')}</strong> {t('hero.ai_preview.alert_pattern_text')}</p>
+                                <p>🚩 <strong>{t('hero.ai_preview.alert_warning')}</strong> {t('hero.ai_preview.alert_warning_text')}</p>
+                              </div>
+                            </div>
+                            <div className="unlock-section">
+                              <button 
+                                className="unlock-ai-button"
+                                onClick={startAIAnalysis}
+                                disabled={isLoading}
+                              >
+                                {t('hero.ai_preview.unlock_button')}
+                              </button>
+                              <p className="unlock-note">{t('hero.ai_preview.unlock_note')}</p>
+                            </div>
+                          </div>
+
+                          {/* SECCIÓN 3: Evaluación de la relación */}
+                          <div className="preview-section">
+                            <h4>{t('hero.ai_preview.evaluation_section')}</h4>
+                            <div className="preview-item">
+                              <div className="blurred">
+                                <p><strong>{t('hero.ai_preview.general_score')}</strong> {t('hero.ai_preview.score_text')}</p>
+                                <p><strong>{t('hero.ai_preview.justification')}</strong> {t('hero.ai_preview.justification_text')}</p>
+                                <p><strong>{t('hero.ai_preview.predominant_dynamic')}</strong> {t('hero.ai_preview.dynamic_text')}</p>
+                              </div>
+                            </div>
+                            <div className="unlock-section">
+                              <button 
+                                className="unlock-ai-button"
+                                onClick={startAIAnalysis}
+                                disabled={isLoading}
+                              >
+                                {t('hero.ai_preview.unlock_button')}
+                              </button>
+                              <p className="unlock-note">{t('hero.ai_preview.unlock_note')}</p>
+                            </div>
+                          </div>
+
+                          {/* SECCIÓN 4: Recomendaciones */}
+                          <div className="preview-section">
+                            <h4>{t('hero.ai_preview.recommendations_section')}</h4>
+                            <div className="preview-item">
+                              <div className="blurred">
+                                <p>💬 <strong>{t('hero.ai_preview.improve_communication')}</strong> {t('hero.ai_preview.communication_text')}</p>
+                                <p>🤝 <strong>{t('hero.ai_preview.strengthen_bonds')}</strong> {t('hero.ai_preview.bonds_text')}</p>
+                              </div>
+                            </div>
+                            <div className="unlock-section">
+                              <button 
+                                className="unlock-ai-button"
+                                onClick={startAIAnalysis}
+                                disabled={isLoading}
+                              >
+                                {t('hero.ai_preview.unlock_button')}
+                              </button>
+                              <p className="unlock-note">{t('hero.ai_preview.unlock_note')}</p>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -2378,26 +2517,22 @@ const tryDeleteFiles = async (operationId) => {
 function App() {
   const { i18n } = useTranslation();
   
-  // Registrar beforeunload en el componente principal que nunca se desmonta
-  useEffect(() => {
-    console.log('Registrando beforeunload en app principal');
-    
-    const handleBeforeUnload = (event) => {
-      console.log('beforeunload ejecutado - SIEMPRE mostrar popup');
-      // SIEMPRE mostrar el popup sin condiciones
-      const message = '¿Estás seguro de que quieres salir?';
-      event.preventDefault();
-      event.returnValue = message;
-      return message;
-    };
-
-    // Solo registrar beforeunload - más simple y funciona para todo tipo de navegación
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []); // Sin dependencias - se ejecuta una sola vez
+  // POPUP DE SALIDA ELIMINADO - Mejor UX sin interrupciones molestas
+  // useEffect(() => {
+  //   console.log('Registrando beforeunload en app principal');
+  //   
+  //   const handleBeforeUnload = (event) => {
+  //     console.log('beforeunload ejecutado - SIEMPRE mostrar popup');
+  //     const message = '¿Estás seguro de que quieres salir?';
+  //     event.preventDefault();
+  //     event.returnValue = message;
+  //     return message;
+  //   };
+  //   window.addEventListener('beforeunload', handleBeforeUnload);
+  //   return () => {
+  //     window.removeEventListener('beforeunload', handleBeforeUnload);
+  //   };
+  // }, []);
 
   // Obtener idioma actual para reCAPTCHA
   const getCurrentLanguage = () => {

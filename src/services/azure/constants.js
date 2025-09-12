@@ -116,10 +116,10 @@ export const PROMPTS = {
   
   ## Análisis de la relación
   
-  ### 📋 **Aspectos a considerar**
-  
-  - [Lista patrones importantes observados en el grupo o en dinámicas entre participantes. Usa este formato:]  
-    [Icono apropiado] **[Etiqueta breve]** – Descripción clara en 2-3 frases.
+  ### 🚩 **Señales de Alerta**
+
+  - [Lista patrones problemáticos o señales de advertencia observados en el grupo o en dinámicas entre participantes. Usa este formato:]  
+    🚩 **[Señal de alerta específica]** – Descripción clara del patrón problemático en 2-3 frases.
   
   ---
   
@@ -228,10 +228,10 @@ export const PROMPTS = {
   
   ## Relationship Analysis
   
-  ### 📋 **Important aspects to consider**
-  
-  - [List important patterns observed in the group or in dynamics between participants. Use this format:]  
-    [Icono apropiado] **[Brief label]** – Clear description in 2-3 sentences.
+  ### 🚩 **Red Flags**
+
+  - [List problematic patterns or warning signs observed in the group or in dynamics between participants. Use this format:]  
+    🚩 **[Specific red flag]** – Clear description of the problematic pattern in 2-3 sentences.
   
   ---
   
@@ -335,10 +335,10 @@ export const PROMPTS = {
   
   ## Analyse de la relation
   
-  ### 📋 **Aspects importants à considérer**
-  
-  - [Liste des patterns importants observés dans le groupe ou dans les dynamiques entre participants. Utilisez ce format :]  
-    [Icono apropiado] **[Étiquette breve]** – Description claire en 2-3 phrases.
+  ### 🚩 **Signaux d'Alarme**
+
+  - [Liste des patterns problématiques ou signaux d'alarme observés dans le groupe ou dans les dynamiques entre participants. Utilisez ce format :]  
+    🚩 **[Signal d'alarme spécifique]** – Description claire du pattern problématique en 2-3 phrases.
   
   ---
   
@@ -442,10 +442,10 @@ export const PROMPTS = {
   
   ## Beziehungsanalyse
   
-  ### 📋 **Wichtige zu berücksichtigende Aspekte**
-  
-  - [Liste wichtiger Muster, die in der Gruppe oder in der Dynamik zwischen Teilnehmern beobachtet wurden. Verwenden Sie dieses Format:]  
-    [Icono apropiado] **[Kurzes Etikett]** – Klare Beschreibung in 2-3 Sätzen.
+  ### 🚩 **Warnsignale**
+
+  - [Liste problematischer Muster oder Warnsignale, die in der Gruppe oder in der Dynamik zwischen Teilnehmern beobachtet wurden. Verwenden Sie dieses Format:]  
+    🚩 **[Spezifisches Warnsignal]** – Klare Beschreibung des problematischen Musters in 2-3 Sätzen.
   
   ---
   
@@ -549,10 +549,10 @@ export const PROMPTS = {
   
   ## Analisi della relazione
   
-  ### 📋 **Aspetti importanti da considerare**
-  
-  - [Elenco di pattern importanti osservati nel gruppo o nelle dinamiche tra partecipanti. Usa questo formato:]  
-    [Icono apropiado] **[Etichetta breve]** – Descrizione chiara in 2-3 frasi.
+  ### 🚩 **Segnali di Allarme**
+
+  - [Elenco di pattern problematici o segnali di allarme osservati nel gruppo o nelle dinamiche tra partecipanti. Usa questo formato:]  
+    🚩 **[Segnale di allarme specifico]** – Descrizione chiara del pattern problematico in 2-3 frasi.
   
   ---
   
@@ -655,10 +655,10 @@ export const PROMPTS = {
   
   ## Análise do relacionamento
   
-  ### 📋 **Aspectos importantes a considerar**
-  
-  - [Liste padrões importantes observados no grupo ou nas dinâmicas entre participantes. Use este formato:]  
-    [Ícone apropriado] **[Rótulo breve]** – Descrição clara em 2-3 frases.
+  ### 🚩 **Sinais de Alerta**
+
+  - [Liste padrões problemáticos ou sinais de alerta observados no grupo ou nas dinâmicas entre participantes. Use este formato:]  
+    🚩 **[Sinal de alerta específico]** – Descrição clara do padrão problemático em 2-3 frases.
   
   ---
   

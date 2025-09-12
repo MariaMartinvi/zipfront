@@ -2811,4 +2811,438 @@
 .feature-icon-new .feature-icon-large {
   font-size: 48px !important;
   line-height: 48px !important;
+}
+
+/* ====================================
+   VISTA PREVIA DE ANÁLISIS IA BLOQUEADO
+   ==================================== */
+
+.ai-analysis-locked {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 20px;
+  padding: 30px;
+  margin: 20px 0;
+  border: 2px solid #dee2e6;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-analysis-locked::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #25D366, #128C7E, #075E54);
+}
+
+.locked-preview {
+  position: relative;
+  z-index: 2;
+}
+
+.locked-preview > h3 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Secciones de la vista previa */
+.preview-section {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 25px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.preview-section h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Vista previa de personalidades - FORMATO IDÉNTICO AL RESULTADO REAL */
+.personalities-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+/* Item de psicología idéntico al resultado real */
+.psychology-item {
+  display: flex;
+  gap: 20px;
+  padding: 25px;
+  background: white;
+  border-radius: 15px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.psychology-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Avatar con inicial y color */
+.psychology-item .avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  flex-shrink: 0;
+}
+
+.psychology-item .green-avatar {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+}
+
+.psychology-item .orange-avatar {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+}
+
+.psychology-item .purple-avatar {
+  background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+}
+
+.psychology-item .blue-avatar {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+/* Contenido del análisis */
+.psychology-content {
+  flex: 1;
+}
+
+.psychology-content h4 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+/* Secciones de contenido */
+.content-sections {
+  margin-bottom: 20px;
+}
+
+.content-sections > p {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Contenido borroso - ILEGIBLE */
+.blurred-content {
+  filter: blur(4px);
+  opacity: 0.6;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  transition: all 0.3s ease;
+}
+
+.blurred-content p {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #495057;
+  user-select: none;
+}
+
+.blurred-content p strong {
+  color: #2c3e50;
+}
+
+/* Tags borrosos */
+.blurred-tag {
+  filter: blur(3px);
+  opacity: 0.7;
+  user-select: none;
+}
+
+/* Tags de personalidad */
+.psychology-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.psychology-tags .tag {
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+}
+
+.psychology-tags .tag.green {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+}
+
+.psychology-tags .tag.orange {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+}
+
+.psychology-tags .tag.purple {
+  background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+}
+
+.psychology-tags .tag.blue {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+/* Sección de desbloqueo individual para cada persona */
+.individual-unlock-section {
+  margin-top: 20px;
+  padding: 15px;
+  text-align: center;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 10px;
+  border: 1px dashed #dee2e6;
+}
+
+.unlock-ai-button-small {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(37, 211, 102, 0.2);
+  min-width: 200px;
+}
+
+.unlock-ai-button-small:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+  background: linear-gradient(135deg, #128C7E, #075E54);
+}
+
+.unlock-ai-button-small:active {
+  transform: translateY(0);
+}
+
+.unlock-ai-button-small:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Contenido borroso */
+.blurred {
+  filter: blur(3px);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Eliminar el overlay de texto que aparece sobre los botones */
+.blurred::after {
+  display: none;
+}
+
+/* IMPORTANTE: Asegurar que los botones NO tengan blur */
+.unlock-ai-button,
+.unlock-ai-button-small,
+button {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Asegurar que las secciones de botones tampoco tengan blur */
+.unlock-section,
+.individual-unlock-section,
+.preview-section .unlock-section,
+.preview-item .unlock-section {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Asegurar que cualquier contenedor padre de botones esté claro */
+.unlock-section *,
+.individual-unlock-section *,
+.unlock-section button,
+.individual-unlock-section button {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Items de vista previa generales */
+.preview-item {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.preview-item p {
+  margin-bottom: 15px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #495057;
+}
+
+/* Sección de desbloqueo */
+.unlock-section {
+  text-align: center;
+  padding: 25px 20px;
+  background: linear-gradient(135deg, #fff5f5, #ffe6e6);
+  border-radius: 15px;
+  border: 2px dashed #ffc9c9;
+  margin-top: 20px;
+}
+
+.unlock-ai-button {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+  margin-bottom: 10px;
+  display: inline-block;
+  min-width: 280px;
+}
+
+.unlock-ai-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+  background: linear-gradient(135deg, #128C7E, #075E54);
+}
+
+.unlock-ai-button:active {
+  transform: translateY(0);
+}
+
+.unlock-ai-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.unlock-note {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ai-analysis-locked {
+    padding: 20px;
+    margin: 15px 0;
+  }
+  
+  .locked-preview > h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .preview-section {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .preview-section h4 {
+    font-size: 1.3rem;
+  }
+  
+  .personalities-preview {
+    gap: 20px;
+  }
+  
+  .psychology-item {
+    flex-direction: column;
+    padding: 20px;
+    gap: 15px;
+  }
+  
+  .psychology-item .avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+    align-self: flex-start;
+  }
+  
+  .psychology-content h4 {
+    font-size: 1.2rem;
+  }
+  
+  .content-sections > p {
+    font-size: 0.9rem;
+  }
+  
+  .blurred-content p {
+    font-size: 0.85rem;
+  }
+  
+  .blurred-content {
+    filter: blur(3px);
+    margin-left: 8px;
+  }
+  
+  .psychology-tags .tag {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+  
+  .individual-unlock-section {
+    padding: 12px;
+    margin-top: 15px;
+  }
+  
+  .unlock-ai-button-small {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    min-width: 180px;
+  }
+  
+  .unlock-ai-button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    min-width: 250px;
+  }
+  
+  .unlock-section {
+    padding: 20px 15px;
+  }
+  
+  .blurred::after {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
 } 
