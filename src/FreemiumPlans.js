@@ -12,6 +12,19 @@ const FreemiumPlans = ({ userId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [isPurchasing, setIsPurchasing] = useState(false);
+  
+  // 🔥 URGENCIA: Estados para countdown y escasez
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [stockLeft, setStockLeft] = useState(0);
+  const [recentPurchases, setRecentPurchases] = useState(0);
+  
+  // 🎯 SOCIAL PROOF: Estados para métricas de conversión
+  const [socialProofData, setSocialProofData] = useState({
+    totalUsers: 0,
+    monthlyAnalyses: 0,
+    dailyAnalyses: 0,
+    satisfactionRating: 4.8
+  });
 
   // Cargar perfil del usuario directamente desde Firestore (solo si está logueado)
   useEffect(() => {
@@ -44,6 +57,106 @@ const FreemiumPlans = ({ userId }) => {
 
     loadUserProfile();
   }, [userId]);
+
+  // 🔥 URGENCIA: Inicializar y mantener countdown de 24h
+  useEffect(() => {
+    const initializeUrgency = () => {
+      const now = new Date().getTime();
+      const today = new Date().toDateString();
+      
+      // Verificar si ya hay datos de hoy en localStorage
+      const savedDate = localStorage.getItem('urgency_date');
+      const savedEndTime = localStorage.getItem('urgency_end_time');
+      const savedStock = localStorage.getItem('urgency_stock');
+      const savedPurchases = localStorage.getItem('urgency_purchases');
+      
+      let endTime;
+      
+      if (savedDate === today && savedEndTime) {
+        // Usar datos existentes del día
+        endTime = parseInt(savedEndTime);
+        setStockLeft(parseInt(savedStock) || 7);
+        setRecentPurchases(parseInt(savedPurchases) || 3);
+      } else {
+        // Nuevo día - generar nuevos datos
+        endTime = now + (24 * 60 * 60 * 1000); // 24 horas desde ahora
+        const newStock = Math.floor(Math.random() * 8) + 5; // 5-12
+        const newPurchases = Math.floor(Math.random() * 8) + 1; // 1-8
+        
+        localStorage.setItem('urgency_date', today);
+        localStorage.setItem('urgency_end_time', endTime.toString());
+        localStorage.setItem('urgency_stock', newStock.toString());
+        localStorage.setItem('urgency_purchases', newPurchases.toString());
+        
+        setStockLeft(newStock);
+        setRecentPurchases(newPurchases);
+      }
+      
+      // Función para actualizar el countdown cada segundo
+      const updateCountdown = () => {
+        const now = new Date().getTime();
+        const distance = endTime - now;
+        
+        if (distance > 0) {
+          const hours = Math.floor(distance / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          
+          setTimeLeft({ hours, minutes, seconds });
+        } else {
+          // Tiempo expirado - generar nuevo countdown
+          initializeUrgency();
+        }
+      };
+      
+      updateCountdown();
+      return setInterval(updateCountdown, 1000);
+    };
+    
+    const interval = initializeUrgency();
+    return () => clearInterval(interval);
+  }, []);
+
+  // 🎯 SOCIAL PROOF: Inicializar métricas de conversión
+  useEffect(() => {
+    const initializeSocialProof = () => {
+      const today = new Date().toDateString();
+      const savedDate = localStorage.getItem('social_proof_date');
+      
+      if (savedDate === today) {
+        // Usar datos guardados del día
+        const savedData = {
+          totalUsers: parseInt(localStorage.getItem('social_proof_users')) || 15847,
+          monthlyAnalyses: parseInt(localStorage.getItem('social_proof_monthly')) || 2341,
+          dailyAnalyses: parseInt(localStorage.getItem('social_proof_daily')) || 47,
+          satisfactionRating: 4.8
+        };
+        setSocialProofData(savedData);
+      } else {
+        // Nuevo día - generar nuevos números creíbles
+        const baseUsers = 15800 + Math.floor(Math.random() * 100); // 15800-15900
+        const monthlyAnalyses = 2300 + Math.floor(Math.random() * 100); // 2300-2400
+        const dailyAnalyses = 40 + Math.floor(Math.random() * 20); // 40-60
+        
+        const newData = {
+          totalUsers: baseUsers,
+          monthlyAnalyses: monthlyAnalyses,
+          dailyAnalyses: dailyAnalyses,
+          satisfactionRating: 4.8
+        };
+        
+        // Guardar en localStorage
+        localStorage.setItem('social_proof_date', today);
+        localStorage.setItem('social_proof_users', newData.totalUsers.toString());
+        localStorage.setItem('social_proof_monthly', newData.monthlyAnalyses.toString());
+        localStorage.setItem('social_proof_daily', newData.dailyAnalyses.toString());
+        
+        setSocialProofData(newData);
+      }
+    };
+    
+    initializeSocialProof();
+  }, []);
 
   // Manejar compra de créditos IA
   const handlePurchaseAI = async () => {
@@ -173,6 +286,23 @@ const FreemiumPlans = ({ userId }) => {
                 {t('freemium.ai_pack.limited_time')}
               </div>
             </div>
+            
+            {/* 🔥 URGENCIA: Countdown y escasez */}
+            <div className="urgency-section">
+              <div className="countdown-timer">
+                <span className="countdown-label">{t('freemium.urgency.countdown_label')}</span>
+                <span className="countdown-time">
+                  {timeLeft.hours}{t('freemium.urgency.hours')} {timeLeft.minutes}{t('freemium.urgency.minutes')} {timeLeft.seconds}{t('freemium.urgency.seconds')}
+                </span>
+              </div>
+              <div className="stock-urgency">
+                {t('freemium.urgency.stock_limited', { count: stockLeft })}
+              </div>
+              <div className="recent-purchases">
+                {t('freemium.urgency.recent_purchases', { count: recentPurchases })}
+              </div>
+            </div>
+            
             <div className="full-analysis-notice">
               {t('freemium.ai_pack.full_analysis_note')}
             </div>
@@ -218,6 +348,43 @@ const FreemiumPlans = ({ userId }) => {
                 {isPurchasing ? t('freemium.ai_pack.processing') : t('freemium.ai_pack.purchase_button')}
               </button>
             )}
+          </div>
+        </div>
+      </div>
+
+      {/* 🎯 SOCIAL PROOF: Métricas de conversión */}
+      <div className="social-proof-section">
+        {/* Contador de usuarios */}
+        <div className="users-counter">
+          {t('freemium.social_proof.users_count', { count: socialProofData.totalUsers.toLocaleString() })}
+        </div>
+        
+        {/* Estadísticas de rendimiento */}
+        <div className="performance-stats">
+          <div className="stat-item">
+            {t('freemium.social_proof.analyses_completed', { count: socialProofData.monthlyAnalyses.toLocaleString() })}
+          </div>
+          <div className="stat-item">
+            {t('freemium.social_proof.satisfaction_rating', { rating: socialProofData.satisfactionRating })}
+          </div>
+          <div className="stat-item">
+            {t('freemium.social_proof.daily_analyses', { count: socialProofData.dailyAnalyses })}
+          </div>
+        </div>
+        
+        {/* Badges de confianza */}
+        <div className="trust-badges">
+          <div className="trust-badge">
+            {t('freemium.social_proof.trust_badges.secure_payment')}
+          </div>
+          <div className="trust-badge">
+            {t('freemium.social_proof.trust_badges.satisfaction_guarantee')}
+          </div>
+          <div className="trust-badge">
+            {t('freemium.social_proof.trust_badges.instant_analysis')}
+          </div>
+          <div className="trust-badge">
+            {t('freemium.social_proof.trust_badges.no_subscription')}
           </div>
         </div>
       </div>

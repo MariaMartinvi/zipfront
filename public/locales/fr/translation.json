@@ -902,6 +902,86 @@
       "close": "Fermer",
       "image_cta": "🚀 Analysez vos chats GRATUITEMENT avec",
       "brand_name": "CHATSALSA.COM"
+    },
+    "couple_demo": {
+      "title": "Analyse Psychologique Complète",
+      "subtitle": "Chat de couple : Sofia & David",
+      "psychology": {
+        "title": "Analyse des personnalités",
+        "main_traits": "Traits principaux",
+        "strengths": "Forces",
+        "improvement_areas": "Domaines d'amélioration"
+      },
+      "sofia": {
+        "name": "Sofia (27 ans)",
+        "trait1": {
+          "title": "Personnalité indépendante dominante",
+          "description": "Maintient le contrôle naturel de la relation sans effort apparent. Ses réponses sont directes et efficaces, définissant le rythme et le ton des conversations. Ne cherche pas la validation constante de son partenaire."
+        },
+        "trait2": {
+          "title": "Orientation vers les objectifs personnels",
+          "description": "Priorise clairement ses projets professionnels et sociaux. Les conversations sur la relation n'occupent que 23% de ses messages, comparé aux 67% de David."
+        },
+        "strength": {
+          "title": "Clarté communicative exceptionnelle",
+          "description": "Exprime ses besoins et limites de manière directe et sans ambiguïté. Évite les drames inutiles et maintient des conversations productives."
+        },
+        "improvement": {
+          "title": "Déconnexion émotionnelle graduelle",
+          "description": "Tendance à traiter la relation comme un aspect secondaire de sa vie, ce qui peut générer des déséquilibres émotionnels à long terme."
+        }
+      },
+      "david": {
+        "name": "David (29 ans)",
+        "trait1": {
+          "title": "Hypervigilance émotionnelle",
+          "description": "Surveille constamment l'humeur de Sofia à travers des indicateurs textuels (temps de réponse, usage d'emojis, longueur des messages). Moyenne de 34 messages pour chaque 10 de Sofia."
+        },
+        "trait2": {
+          "title": "Modèle de recherche de validation constante",
+          "description": "Reformule les messages plusieurs fois avant de les envoyer. Utilise des questions de confirmation émotionnelle fréquentes (\"Ça va ?\", \"J'ai dit quelque chose de mal ?\")."
+        },
+        "strength": {
+          "title": "Haute sensibilité émotionnelle",
+          "description": "Capacité supérieure à détecter les changements subtils dans l'état émotionnel de sa partenaire et à répondre avec empathie."
+        },
+        "improvement": {
+          "title": "Dépendance émotionnelle excessive",
+          "description": "Besoin compulsif d'attention et de confirmation qui peut être épuisant pour sa partenaire."
+        }
+      },
+      "top_profiles": {
+        "title": "Top Profils",
+        "most_messages": {
+          "title": "Plus de messages",
+          "description": "Domine le volume de conversation avec près de 70% des messages. Indique un investissement communicatif élevé."
+        },
+        "most_direct": {
+          "title": "Plus direct",
+          "description": "Communication efficace et directe. Moyenne de 50% moins de mots pour exprimer des idées similaires."
+        },
+        "most_questions": {
+          "title": "Plus de questions",
+          "description": "Pose 89% de toutes les questions, spécialement de confirmation émotionnelle et de validation."
+        },
+        "most_nocturnal": {
+          "title": "Plus nocturne",
+          "description": "67% de ses messages après 22h. Possible anxiété ou overthinking nocturne."
+        },
+        "most_focused": {
+          "title": "Plus concentré",
+          "description": "Maintient des conversations orientées vers des objectifs concrets. Évite les digressions émotionnelles."
+        },
+        "most_romantic": {
+          "title": "Plus d'emojis romantiques",
+          "description": "Utilise 340% plus d'emojis de cœur et liés à l'amour. Expression émotionnelle constante."
+        }
+      },
+      "cta": {
+        "title": "Voulez-vous analyser VOTRE chat ?",
+        "description": "Découvrez les secrets psychologiques de vos conversations WhatsApp",
+        "button": "Analyser mon chat GRATUITEMENT"
+      }
     }
   },
   "pwa": {

@@ -110,6 +110,86 @@
       "close": "Chiudi",
       "image_cta": "🚀 Analizza le tue chat GRATIS con",
       "brand_name": "CHATSALSA.COM"
+    },
+    "couple_demo": {
+      "title": "Analisi Psicologica Completa",
+      "subtitle": "Chat di coppia: Sofia & David",
+      "psychology": {
+        "title": "Analisi delle personalità",
+        "main_traits": "Tratti principali",
+        "strengths": "Punti di forza",
+        "improvement_areas": "Aree di miglioramento"
+      },
+      "sofia": {
+        "name": "Sofia (27 anni)",
+        "trait1": {
+          "title": "Personalità indipendente dominante",
+          "description": "Mantiene il controllo naturale della relazione senza sforzo apparente. Le sue risposte sono dirette ed efficienti, stabilendo il ritmo e il tono delle conversazioni. Non cerca la validazione costante del partner."
+        },
+        "trait2": {
+          "title": "Orientamento agli obiettivi personali",
+          "description": "Prioritizza chiaramente i suoi progetti professionali e sociali. Le conversazioni sulla relazione occupano solo il 23% dei suoi messaggi, rispetto al 67% di David."
+        },
+        "strength": {
+          "title": "Chiarezza comunicativa eccezionale",
+          "description": "Esprime i suoi bisogni e limiti in modo diretto e senza ambiguità. Evita drammi inutili e mantiene conversazioni produttive."
+        },
+        "improvement": {
+          "title": "Disconnessione emotiva graduale",
+          "description": "Tendenza a trattare la relazione come un aspetto secondario della sua vita, che può generare squilibri emotivi a lungo termine."
+        }
+      },
+      "david": {
+        "name": "David (29 anni)",
+        "trait1": {
+          "title": "Ipervigilanza emotiva",
+          "description": "Monitora costantemente l'umore di Sofia attraverso indicatori testuali (tempo di risposta, uso di emoji, lunghezza dei messaggi). Media di 34 messaggi per ogni 10 di lei."
+        },
+        "trait2": {
+          "title": "Schema di ricerca di validazione costante",
+          "description": "Riformula i messaggi più volte prima di inviarli. Utilizza domande di conferma emotiva frequenti (\"Stai bene?\", \"Ho detto qualcosa di sbagliato?\")."
+        },
+        "strength": {
+          "title": "Alta sensibilità emotiva",
+          "description": "Capacità superiore di rilevare cambiamenti sottili nello stato emotivo della partner e rispondere con empatia."
+        },
+        "improvement": {
+          "title": "Dipendenza emotiva eccessiva",
+          "description": "Bisogno compulsivo di attenzione e conferma che può risultare estenuante per la partner."
+        }
+      },
+      "top_profiles": {
+        "title": "Top Profili",
+        "most_messages": {
+          "title": "Più messaggi",
+          "description": "Domina il volume di conversazione con quasi il 70% dei messaggi. Indica alto investimento comunicativo."
+        },
+        "most_direct": {
+          "title": "Più diretto",
+          "description": "Comunicazione efficiente e diretta. Media del 50% in meno di parole per esprimere idee simili."
+        },
+        "most_questions": {
+          "title": "Più domande",
+          "description": "Fa l'89% di tutte le domande, specialmente di conferma emotiva e validazione."
+        },
+        "most_nocturnal": {
+          "title": "Più notturno",
+          "description": "67% dei suoi messaggi dopo le 22h. Possibile ansia o overthinking notturno."
+        },
+        "most_focused": {
+          "title": "Più concentrato",
+          "description": "Mantiene conversazioni orientate verso obiettivi concreti. Evita divagazioni emotive."
+        },
+        "most_romantic": {
+          "title": "Più emoji romantici",
+          "description": "Usa il 340% in più di emoji cuore e correlati all'amore. Espressione emotiva costante."
+        }
+      },
+      "cta": {
+        "title": "Vuoi analizzare la TUA chat?",
+        "description": "Scopri i segreti psicologici delle tue conversazioni WhatsApp",
+        "button": "Analizza la mia chat GRATIS"
+      }
     }
   },
   "features": {

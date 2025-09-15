@@ -511,7 +511,13 @@
       "bonds_text": "Specific recommendation aimed at creating greater harmony among participants...",
       "unlock_button": "🔓 Unlock AI Analysis - 10 analysis pack for 5€",
       "unlock_note": "Only 0.50€ per complete analysis",
-      "view_analysis_of": "View analysis of"
+      "view_analysis_of": "View analysis of",
+      "tooltips": {
+        "personality": "Detailed analysis of personality traits, strengths and development areas",
+        "alerts": "Identification of problematic patterns and warning signs in communication",
+        "evaluation": "Objective scoring of relationship quality and group dynamics",
+        "recommendations": "Practical advice to improve communication and strengthen relationships"
+      }
     },
     "ai_purchase": {
       "title": "🤖 Unlock the COMPLETE AI analysis of this chat",
@@ -567,6 +573,150 @@
       "close": "Close",
       "image_cta": "🚀 Analyze your chats FREE with",
       "brand_name": "CHATSALSA.COM"
+    },
+    "couple_demo": {
+      "title": "Complete Psychological Analysis",
+      "subtitle": "Couple's chat: Sofia & David",
+      "psychology": {
+        "title": "Personality Analysis",
+        "main_traits": "Main traits",
+        "strengths": "Strengths",
+        "improvement_areas": "Areas for improvement"
+      },
+      "sofia": {
+        "name": "Sofia (27 years old)",
+        "trait1": {
+          "title": "Dominant independent personality",
+          "description": "Maintains natural control of the relationship effortlessly. Her responses are direct and efficient, setting the pace and tone of conversations. She doesn't seek constant validation from her partner."
+        },
+        "trait2": {
+          "title": "Personal goal orientation",
+          "description": "Clearly prioritizes her professional and social projects. Relationship conversations occupy only 23% of her messages, compared to David's 67%."
+        },
+        "strength": {
+          "title": "Exceptional communicative clarity",
+          "description": "Expresses her needs and boundaries directly and unambiguously. Avoids unnecessary drama and maintains productive conversations."
+        },
+        "improvement": {
+          "title": "Gradual emotional disconnection",
+          "description": "Tendency to treat the relationship as a secondary aspect of her life, which can generate long-term emotional imbalances."
+        }
+      },
+      "david": {
+        "name": "David (29 years old)",
+        "trait1": {
+          "title": "Emotional hypervigilance",
+          "description": "Constantly monitors Sofia's mood through textual indicators (response time, emoji usage, message length). Average of 34 messages for every 10 of hers."
+        },
+        "trait2": {
+          "title": "Constant validation-seeking pattern",
+          "description": "Reformulates messages multiple times before sending. Uses frequent emotional confirmation questions (\"Are you okay?\", \"Did I say something wrong?\")."
+        },
+        "strength": {
+          "title": "High emotional sensitivity",
+          "description": "Superior ability to detect subtle changes in his partner's emotional state and respond with empathy."
+        },
+        "improvement": {
+          "title": "Excessive emotional dependency",
+          "description": "Compulsive need for attention and confirmation that can be exhausting for his partner."
+        }
+      },
+      "red_flags": {
+        "title": "Red Flags",
+        "alert1": {
+          "title": "📉 Asymmetric emotional investment",
+          "description": "David invests 340% more emotional energy in maintaining the relationship. Sofia participates functionally but without corresponding emotional intensity. This imbalance can lead to mutual resentment and emotional exhaustion."
+        },
+        "alert2": {
+          "title": "⏰ Unequal availability patterns",
+          "description": "David responds on average in 3.2 minutes. Sofia in 2.4 hours. This systematic difference generates attachment anxiety in David and possible defensive irritation in Sofia due to constant pressure."
+        },
+        "alert3": {
+          "title": "🔄 Established pursuer-distancer cycle",
+          "description": "The more David seeks emotional connection, the more Sofia retreats into her own spaces. This pattern self-reinforces and can lead to irreversible progressive disconnection."
+        }
+      },
+      "evaluation": {
+        "title": "Relationship Evaluation",
+        "score": {
+          "title": "📊 Overall score: 5.8/10",
+          "classification": "Classification",
+          "result": "SIGNIFICANT EMOTIONAL IMBALANCE"
+        },
+        "dynamic": {
+          "title": "🎭 Predominant dynamic",
+          "pattern": "Identified pattern",
+          "description": "PURSUER-DISTANCER. David assumes the role of emotional pursuer while Sofia adopts distancing strategies to maintain her autonomy."
+        },
+        "risk": {
+          "title": "⚠️ Risk factors",
+          "immediate": "Immediate risk",
+          "description": "David developing anxious attachment patterns, Sofia developing defensive avoidance as a self-protection mechanism."
+        },
+        "prognosis": {
+          "title": "🔮 Prognosis",
+          "evolution": "Probable evolution",
+          "description": "Without intervention, tendency toward progressive disconnection. Necessary rebalancing of dynamics or probable deterioration of relational satisfaction in both parties."
+        }
+      },
+      "recommendations": {
+        "title": "Recommendations",
+        "david": {
+          "title": "🎯 For David - Emotional independence development",
+          "description": "Foster independent activities and social relationships. Practice tolerance to emotional uncertainty. Develop self-validation to reduce dependence on constant external confirmation."
+        },
+        "sofia": {
+          "title": "💝 For Sofia - Increased emotional expressiveness",
+          "description": "Explicitly communicate her space needs without invalidating David's needs. Establish specific moments of emotional connection to balance her orientation toward external goals."
+        },
+        "couple": {
+          "title": "🤝 For the couple - Dynamic restructuring",
+          "description": "Establish clear agreements about response times and communicative expectations. Preventive couple therapy recommended to develop more balanced and satisfactory communication patterns for both."
+        }
+      },
+      "statistics": {
+        "title": "Statistical Analysis",
+        "total_messages": "Total messages analyzed",
+        "david_messages": "David's messages (67.5%)",
+        "sofia_messages": "Sofia's messages (32.5%)",
+        "david_response_time": "David's average response time",
+        "sofia_response_time": "Sofia's average response time",
+        "david_avg_words": "David's average words per message",
+        "sofia_avg_words": "Sofia's average words per message",
+        "validation_questions": "David's validation questions"
+      },
+      "top_profiles": {
+        "title": "Top Profiles",
+        "most_messages": {
+          "title": "Most messages",
+          "description": "Dominates conversation volume with almost 70% of messages. Indicates high communicative investment."
+        },
+        "most_direct": {
+          "title": "Most direct",
+          "description": "Efficient and to-the-point communication. Average 50% fewer words to express similar ideas."
+        },
+        "most_questions": {
+          "title": "Most questions",
+          "description": "Asks 89% of all questions, especially emotional confirmation and validation ones."
+        },
+        "most_nocturnal": {
+          "title": "Most nocturnal",
+          "description": "67% of messages after 10 PM. Possible anxiety or nocturnal overthinking."
+        },
+        "most_focused": {
+          "title": "Most focused",
+          "description": "Maintains conversations oriented toward concrete objectives. Avoids emotional digressions."
+        },
+        "most_romantic": {
+          "title": "Most romantic emojis",
+          "description": "Uses 340% more heart emojis and love-related ones. Constant emotional expression."
+        }
+      },
+      "cta": {
+        "title": "Want to analyze YOUR chat?",
+        "description": "Discover the psychological secrets of your WhatsApp conversations",
+        "button": "Analyze my chat FREE"
+      }
     },
     "share_description": "Share a promotional image and interactive HTML with the results",
     "security": {
@@ -778,6 +928,26 @@
       "cta_description": "Create your account in seconds and get unlimited statistical analysis",
       "register_button": "📝 Create free account",
       "register_and_buy": "📝 Sign up and Buy (€5)"
+    },
+    "urgency": {
+      "countdown_label": "⏰ Offer valid for:",
+      "hours": "h",
+      "minutes": "m",
+      "seconds": "s", 
+      "stock_limited": "🔥 Only {{count}} packs left today",
+      "recent_purchases": "👥 {{count}} people bought in the last hour"
+    },
+    "social_proof": {
+      "users_count": "🎉 Join +{{count}} users who already bought AI analysis",
+      "analyses_completed": "💳 +{{count}} AI analyses completed this month",
+      "satisfaction_rating": "⭐ {{rating}}/5 satisfaction with paid analysis",
+      "daily_analyses": "✅ +{{count}} AI analyses completed today",
+      "trust_badges": {
+        "secure_payment": "🔒 Secure payment with Stripe",
+        "satisfaction_guarantee": "💰 100% satisfaction guarantee",
+        "instant_analysis": "⚡ Instant analysis after payment",
+        "no_subscription": "🚫 No subscription - One-time payment"
+      }
     }
   },
   "weekdays": {

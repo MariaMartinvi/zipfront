@@ -22,7 +22,7 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick, onViewAnalysisClick }) 
             <button className="cta-primary" onClick={onAnalyzeClick}>
               {t('hero.buttons.analyze', 'Analizar mi chat')}
             </button>
-            <button className="cta-secondary" onClick={onLearnMoreClick}>
+            <button className="cta-secondary" onClick={() => window.open('/demo', '_blank')}>
               {t('hero.buttons.how_it_works', 'Cómo funciona')}
             </button>
           </div>
@@ -62,7 +62,7 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick, onViewAnalysisClick }) 
                 <div className="chart-bar" style={{'--height': '40%', '--color': 'var(--accent-pink)'}}></div>
                 <div className="chart-bar" style={{'--height': '25%', '--color': 'var(--accent-orange)'}}></div>
               </div>
-              <button className="view-analysis-btn" onClick={onViewAnalysisClick}>
+              <button className="view-analysis-btn" onClick={() => window.open('/demo', '_blank')}>
                 {t('hero.mockup.view_analysis', 'Ver análisis completo')} →
               </button>
             </div>

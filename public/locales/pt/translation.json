@@ -581,7 +581,13 @@
       "bonds_text": "Recomendação específica voltada para criar maior harmonia entre participantes...",
       "unlock_button": "🔓 Desbloquear Análise IA - Pacote 10 análises por 5€",
       "unlock_note": "Apenas 0,50€ por análise completa",
-      "view_analysis_of": "Ver análise de"
+      "view_analysis_of": "Ver análise de",
+      "tooltips": {
+        "personality": "Análise detalhada de traços de personalidade, pontos fortes e áreas de desenvolvimento",
+        "alerts": "Identificação de padrões problemáticos e sinais de alerta na comunicação",
+        "evaluation": "Avaliação objetiva da qualidade relacional e dinâmicas de grupo",
+        "recommendations": "Conselhos práticos para melhorar a comunicação e fortalecer relacionamentos"
+      }
     },
     "ai_purchase": {
       "title": "🤖 Desbloqueie a análise IA COMPLETA desta conversa",
@@ -643,6 +649,86 @@
       "close": "Fechar",
       "image_cta": "🚀 Analise seus chats GRÁTIS com",
       "brand_name": "CHATSALSA.COM"
+    },
+    "couple_demo": {
+      "title": "Análise Psicológica Completa",
+      "subtitle": "Chat de casal: Sofia & David",
+      "psychology": {
+        "title": "Análise de personalidades",
+        "main_traits": "Traços principais",
+        "strengths": "Pontos fortes",
+        "improvement_areas": "Áreas de melhoria"
+      },
+      "sofia": {
+        "name": "Sofia (27 anos)",
+        "trait1": {
+          "title": "Personalidade independente dominante",
+          "description": "Mantém controle natural do relacionamento sem esforço aparente. Suas respostas são diretas e eficientes, definindo o ritmo e tom das conversas. Não busca validação constante do parceiro."
+        },
+        "trait2": {
+          "title": "Orientação para objetivos pessoais",
+          "description": "Prioriza claramente seus projetos profissionais e sociais. Conversas sobre o relacionamento ocupam apenas 23% de suas mensagens, comparado aos 67% de David."
+        },
+        "strength": {
+          "title": "Clareza comunicativa excepcional",
+          "description": "Expressa suas necessidades e limites de forma direta e sem ambiguidades. Evita dramas desnecessários e mantém conversas produtivas."
+        },
+        "improvement": {
+          "title": "Desconexão emocional gradual",
+          "description": "Tendência a tratar o relacionamento como um aspecto secundário de sua vida, o que pode gerar desequilíbrios emocionais a longo prazo."
+        }
+      },
+      "david": {
+        "name": "David (29 anos)",
+        "trait1": {
+          "title": "Hipervigilância emocional",
+          "description": "Monitora constantemente o humor de Sofia através de indicadores textuais (tempo de resposta, uso de emojis, comprimento das mensagens). Média de 34 mensagens para cada 10 dela."
+        },
+        "trait2": {
+          "title": "Padrão de busca de validação constante",
+          "description": "Reformula mensagens várias vezes antes de enviar. Usa perguntas de confirmação emocional frequentes (\"Está tudo bem?\", \"Disse algo errado?\")."
+        },
+        "strength": {
+          "title": "Alta sensibilidade emocional",
+          "description": "Capacidade superior para detectar mudanças sutis no estado emocional da parceira e responder com empatia."
+        },
+        "improvement": {
+          "title": "Dependência emocional excessiva",
+          "description": "Necessidade compulsiva de atenção e confirmação que pode ser esgotante para sua parceira."
+        }
+      },
+      "top_profiles": {
+        "title": "Top Perfis",
+        "most_messages": {
+          "title": "Mais mensagens",
+          "description": "Domina o volume de conversa com quase 70% das mensagens. Indica alto investimento comunicativo."
+        },
+        "most_direct": {
+          "title": "Mais direto",
+          "description": "Comunicação eficiente e direta. Média de 50% menos palavras para expressar ideias similares."
+        },
+        "most_questions": {
+          "title": "Mais perguntas",
+          "description": "Faz 89% de todas as perguntas, especialmente de confirmação emocional e validação."
+        },
+        "most_nocturnal": {
+          "title": "Mais noturno",
+          "description": "67% de suas mensagens após 22h. Possível ansiedade ou overthinking noturno."
+        },
+        "most_focused": {
+          "title": "Mais focado",
+          "description": "Mantém conversas orientadas para objetivos concretos. Evita divagações emocionais."
+        },
+        "most_romantic": {
+          "title": "Mais emojis românticos",
+          "description": "Usa 340% mais emojis de coração e relacionados ao amor. Expressão emocional constante."
+        }
+      },
+      "cta": {
+        "title": "Quer analisar o SEU chat?",
+        "description": "Descubra os segredos psicológicos das suas conversas do WhatsApp",
+        "button": "Analisar meu chat GRÁTIS"
+      }
     }
   },
   "auth": {

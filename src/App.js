@@ -37,6 +37,7 @@ import { SecurityCaptchaProvider } from './components/SecurityCaptcha';
 import DebugLogger from './DebugLogger';
 import TopProfilesViewer from './components/TopProfilesViewer';
 import AnalysisViewer from './components/AnalysisViewer';
+import DemoExample from './components/DemoExample';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -2168,7 +2169,7 @@ const tryDeleteFiles = async (operationId) => {
                           <h3>{t('hero.ai_preview.title')}</h3>
                           
                           {/* SECCIÓN 1: Análisis de personalidades */}
-                          <div className="preview-section">
+                          <div className="preview-section" title={t('hero.ai_preview.tooltips.personality')}>
                             <h4>{t('hero.ai_preview.personalities_section')}</h4>
                             <div className="personalities-preview">
                               {(() => {
@@ -2214,18 +2215,17 @@ const tryDeleteFiles = async (operationId) => {
                                         <div className="content-sections">
                                           <p><strong>- {t('hero.ai_preview.main_trait')}</strong></p>
                                           <div className="blurred-content">
-                                            <p>❤️ <strong>████████ ████████</strong> – ███████ ███ ████ ███████████ ██████ ███ ██████, ████████████ ██ ████████ ███████████.</p>
-                                            <p>🌟 <strong>█████████ ███████████</strong> – ████ ██ ██████████ ███ ███████ █ ████████, ████ ██ ██ ██ ███ ████████ ██ ████████████.</p>
+                                            <p>El análisis de personalidad revela un perfil comunicativo complejo y multifacético. Los patrones de interacción social muestran tendencias consistentes hacia ciertos comportamientos que definen su estilo único de participación en conversaciones grupales. La frecuencia y el tono de sus mensajes indican características particulares de su personalidad que se manifiestan de manera recurrente a lo largo de las conversaciones analizadas. Estos elementos configuran un perfil distintivo que permite identificar su rol natural dentro de la dinámica del grupo.</p>
                                           </div>
                                           
                                           <p><strong>{t('hero.ai_preview.strength')}</strong></p>
                                           <div className="blurred-content">
-                                            <p>💬 <strong>███████████ ██████████</strong> – ███████ ███ ████████████ █ ██████ ██ ██████ █████ █ ██████.</p>
+                                            <p>Las fortalezas identificadas destacan por su impacto positivo en la dinámica grupal. Su capacidad para contribuir constructivamente a las conversaciones se evidencia en múltiples aspectos de su comportamiento comunicativo. La consistencia en sus patrones de interacción demuestra habilidades naturales que benefician el ambiente conversacional y facilitan el flujo de comunicación entre los participantes del grupo.</p>
                                           </div>
                                           
                                           <p><strong>{t('hero.ai_preview.improvement_area')}</strong></p>
                                           <div className="blurred-content">
-                                            <p>📋 <strong>█████████████</strong> – ██████ ██████████ ██ ███ ███ █████ ██ ██ ████████████ ██ ████████████ ████████.</p>
+                                            <p>Las áreas de desarrollo identificadas representan oportunidades de crecimiento personal que podrían optimizar aún más su efectividad comunicativa. Estos aspectos, aunque no representan deficiencias, constituyen ámbitos donde pequeños ajustes podrían generar mejoras significativas en la calidad de sus interacciones sociales y en su capacidad para influir positivamente en la dinámica del grupo.</p>
                                           </div>
                                         </div>
                                         
@@ -2267,12 +2267,11 @@ const tryDeleteFiles = async (operationId) => {
                           </div>
 
                           {/* SECCIÓN 2: Señales de Alerta */}
-                          <div className="preview-section">
+                          <div className="preview-section" title={t('hero.ai_preview.tooltips.alerts')}>
                             <h4>{t('hero.ai_preview.alerts_section')}</h4>
                             <div className="preview-item">
-                              <div className="blurred">
-                                <p>🚩 <strong>{t('hero.ai_preview.alert_pattern')}</strong> {t('hero.ai_preview.alert_pattern_text')}</p>
-                                <p>🚩 <strong>{t('hero.ai_preview.alert_warning')}</strong> {t('hero.ai_preview.alert_warning_text')}</p>
+                              <div className="blurred-content">
+                                <p>El análisis de señales de alerta revela la presencia de ciertos patrones comunicativos que requieren atención especial dentro de la dinámica grupal. Estos indicadores, identificados a través del análisis sistemático de los intercambios conversacionales, sugieren áreas donde la comunicación podría estar experimentando tensiones o desequilibrios que afectan la armonía del grupo. La frecuencia y el contexto de aparición de estos patrones permiten evaluar su impacto potencial en las relaciones interpersonales y en la calidad general de las interacciones. Es importante considerar que estas observaciones se basan en el análisis objetivo de los datos comunicativos y proporcionan una base sólida para implementar mejoras constructivas en la dinámica grupal.</p>
                               </div>
                             </div>
                             <div className="unlock-section">
@@ -2288,13 +2287,13 @@ const tryDeleteFiles = async (operationId) => {
                           </div>
 
                           {/* SECCIÓN 3: Evaluación de la relación */}
-                          <div className="preview-section">
+                          <div className="preview-section" title={t('hero.ai_preview.tooltips.evaluation')}>
                             <h4>{t('hero.ai_preview.evaluation_section')}</h4>
                             <div className="preview-item">
-                              <div className="blurred">
-                                <p><strong>{t('hero.ai_preview.general_score')}</strong> {t('hero.ai_preview.score_text')}</p>
-                                <p><strong>{t('hero.ai_preview.justification')}</strong> {t('hero.ai_preview.justification_text')}</p>
-                                <p><strong>{t('hero.ai_preview.predominant_dynamic')}</strong> {t('hero.ai_preview.dynamic_text')}</p>
+                              <div className="blurred-content">
+                                <p><strong>Puntuación general de la relación:</strong> La evaluación cuantitativa de la dinámica grupal se basa en múltiples factores que incluyen la frecuencia de interacciones positivas, el equilibrio en la participación, la presencia de conflictos y la capacidad de resolución colaborativa. El algoritmo de análisis considera variables como el tono emocional predominante, la reciprocidad en las conversaciones y la distribución del liderazgo conversacional.</p>
+                                <p><strong>Justificación detallada:</strong> Los criterios de evaluación se fundamentan en indicadores objetos extraídos del análisis lingüístico y de patrones comportamentales. La metodología empleada examina tanto elementos cuantitativos como cualitativos de la comunicación, proporcionando una visión integral del estado relacional del grupo. Factores como la empatía demostrada, la gestión de desacuerdos y la capacidad de apoyo mutuo contribuyen significativamente a la puntuación final.</p>
+                                <p><strong>Dinámica predominante identificada:</strong> El análisis revela el tipo de interacción que caracteriza mayormente las conversaciones del grupo, ya sea cooperativa, competitiva, de apoyo mutuo o con tendencias a la discordia. Esta clasificación se determina mediante el examen de patrones recurrentes en el estilo de comunicación y la respuesta emocional de los participantes ante diferentes situaciones conversacionales.</p>
                               </div>
                             </div>
                             <div className="unlock-section">
@@ -2310,22 +2309,22 @@ const tryDeleteFiles = async (operationId) => {
                           </div>
 
                           {/* SECCIÓN 4: Recomendaciones */}
-                          <div className="preview-section">
+                          <div className="preview-section" title={t('hero.ai_preview.tooltips.recommendations')}>
                             <h4>{t('hero.ai_preview.recommendations_section')}</h4>
                             <div className="preview-item">
-                              <div className="blurred">
-                                <p>💬 <strong>{t('hero.ai_preview.improve_communication')}</strong> {t('hero.ai_preview.communication_text')}</p>
-                                <p>🤝 <strong>{t('hero.ai_preview.strengthen_bonds')}</strong> {t('hero.ai_preview.bonds_text')}</p>
+                              <div className="blurred-content">
+                                <p><strong>Estrategias para optimizar la comunicación grupal:</strong> Las recomendaciones se enfocan en implementar técnicas específicas que mejoren la calidad de las interacciones y fortalezcan los vínculos entre los participantes. Estas sugerencias se basan en el análisis detallado de las áreas de oportunidad identificadas y están diseñadas para ser prácticas y aplicables en el contexto específico del grupo.</p>
+                                <p><strong>Acciones concretas para fortalecer la cohesión:</strong> Se proponen intervenciones estratégicas que fomenten un ambiente más armonioso y productivo, incluyendo técnicas de comunicación asertiva, gestión constructiva de conflictos y desarrollo de empatía grupal. Cada recomendación viene acompañada de fundamentos teóricos y ejemplos prácticos de implementación que facilitan su adopción por parte de los miembros del grupo.</p>
                               </div>
                             </div>
-                            <div className="unlock-section">
-                              <button 
-                                className="unlock-ai-button"
-                                onClick={startAIAnalysis}
-                                disabled={isLoading}
-                              >
+                          <div className="unlock-section">
+                            <button 
+                              className="unlock-ai-button"
+                              onClick={startAIAnalysis}
+                              disabled={isLoading}
+                            >
                                 {t('hero.ai_preview.unlock_button')}
-                              </button>
+                            </button>
                               <p className="unlock-note">{t('hero.ai_preview.unlock_note')}</p>
                             </div>
                           </div>
@@ -2452,6 +2451,8 @@ const tryDeleteFiles = async (operationId) => {
         {/* NUEVAS RUTAS: Visualizadores de datos compartidos */}
         <Route path="/top-profiles" element={<TopProfilesViewer />} />
         <Route path="/analysis" element={<AnalysisViewer />} />
+        {/* DEMO ANALYSIS */}
+        <Route path="/demo" element={<DemoExample />} />
         </Routes>
         
         {/* Componente de instalación de PWA */}

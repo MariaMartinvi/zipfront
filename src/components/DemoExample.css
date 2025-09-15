@@ -1,0 +1,294 @@
+/* Couple Demo Example Styles */
+.couple-demo-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.couple-demo-container * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.couple-demo-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  padding: 40px;
+}
+
+.couple-demo-header {
+  background: linear-gradient(135deg, #25D366, #7122AC);
+  color: white;
+  padding: 30px;
+  text-align: center;
+  margin: -40px -40px 40px -40px;
+}
+
+.couple-demo-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.couple-demo-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.couple-demo-section {
+  margin-bottom: 50px;
+}
+
+.couple-demo-section h2 {
+  color: #2c3e50;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  border-bottom: 3px solid #25D366;
+  padding-bottom: 10px;
+}
+
+.psychology-item {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border-left: 5px solid #25D366;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: white;
+  margin-right: 20px;
+  vertical-align: top;
+}
+
+.green-avatar { 
+  background: linear-gradient(135deg, #25D366, #128C7E); 
+}
+
+.orange-avatar { 
+  background: linear-gradient(135deg, #FF6B35, #F7931E); 
+}
+
+.purple-avatar { 
+  background: linear-gradient(135deg, #667eea, #764ba2); 
+}
+
+.blue-avatar { 
+  background: linear-gradient(135deg, #4facfe, #00f2fe); 
+}
+
+.psychology-content {
+  display: inline-block;
+  width: calc(100% - 80px);
+  vertical-align: top;
+}
+
+.psychology-content h4 {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.psychology-content p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+  color: #495057;
+}
+
+.psychology-content strong {
+  color: #2c3e50;
+}
+
+.alert-section {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 20px;
+  border-left: 5px solid #dc3545;
+}
+
+.alert-section h4 {
+  color: #721c24;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.alert-section p {
+  color: #721c24;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.evaluation-section {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 20px;
+  border-left: 5px solid #17a2b8;
+}
+
+.evaluation-section h4 {
+  color: #0c5460;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.evaluation-section p {
+  color: #0c5460;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.recommendations-section {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 20px;
+  border-left: 5px solid #fd7e14;
+}
+
+.recommendations-section h4 {
+  color: #8a4a00;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.recommendations-section p {
+  color: #8a4a00;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #25D366;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #25D366;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.top-profiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid #25D366;
+}
+
+.profile-card h4 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.profile-card .winner {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #25D366;
+  margin-bottom: 5px;
+}
+
+.profile-card .description {
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.cta-section {
+  background: linear-gradient(135deg, #25D366, #7122AC);
+  color: white;
+  padding: 40px;
+  text-align: center;
+  border-radius: 15px;
+  margin-top: 40px;
+}
+
+.cta-button {
+  background: white;
+  color: #25D366;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .couple-demo-container {
+    padding: 10px;
+  }
+
+  .couple-demo-content {
+    border-radius: 15px;
+    padding: 20px;
+  }
+
+  .couple-demo-header {
+    padding: 20px;
+    margin: -20px -20px 20px -20px;
+  }
+
+  .couple-demo-header h1 {
+    font-size: 2rem;
+  }
+
+  .psychology-content {
+    width: 100%;
+    margin-top: 15px;
+  }
+
+  .avatar {
+    display: block;
+    margin: 0 auto 15px auto;
+  }
+}

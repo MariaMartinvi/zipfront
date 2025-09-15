@@ -1,0 +1,216 @@
+{
+  "app": {
+    "title": "Analizador de Chats",
+    "welcome": "Bienvenido al analizador de chats",
+    "description": "Sube tu archivo ZIP de WhatsApp para analizarlo",
+    "upload": {
+      "title": "Analiza tu chat",
+      "button": "Sube un archivo ZIP",
+      "subtext": "o comparte directamente desde WhatsApp siguiendo los pasos anteriores",
+      "another": "¿Quieres analizar otro chat?"
+    },
+    "analysis": {
+      "statistical": "Análisis Estadístico",
+      "statistical_continuation": "Análisis Estadístico Continuación",
+      "psychological": "Análisis Psicológico",
+      "preparing_statistical": "Preparando análisis estadístico de la conversación...",
+      "preparing_psychological": "Preparando análisis psicológico de la conversación..."
+    }
+  },
+  "hero": {
+    "badge": "ANÁLISIS DE WHATSAPP",
+    "title": {
+      "discover": "¿Quién habla más en tu grupo?",
+      "conversations": "Descubre los secretos ocultos",
+      "whatsapp": "de WhatsApp",
+      "conversations_suffix": ""
+    },
+    "description": "🔥 Análisis psicológico + estadísticas detalladas de tus chats. ¿Quién es el más gracioso? ¿El más intenso? ¡Descúbrelo en 30 segundos!",
+    "buttons": {
+      "analyze": "Analizar mi chat",
+      "how_it_works": "Cómo funciona"
+    }
+  },
+  "couple_demo": {
+    "title": "Análisis Psicológico Completo",
+    "subtitle": "Chat de pareja: Sofía & David",
+    "psychology": {
+      "title": "Análisis de personalidades",
+      "main_traits": "Rasgos principales",
+      "strengths": "Fortalezas",
+      "improvement_areas": "Áreas de mejora"
+    },
+    "sofia": {
+      "name": "Sofía (27 años)",
+      "trait1": {
+        "title": "Personalidad independiente dominante",
+        "description": "Mantiene control natural de la relación sin esfuerzo aparente. Sus respuestas son directas y eficientes, marcando el ritmo y tono de las conversaciones. No busca validación constante de su pareja."
+      },
+      "trait2": {
+        "title": "Orientación a objetivos personales",
+        "description": "Prioriza claramente sus proyectos profesionales y sociales. Las conversaciones sobre la relación ocupan solo el 23% de sus mensajes, comparado con el 67% de David."
+      },
+      "strength": {
+        "title": "Claridad comunicativa excepcional",
+        "description": "Expresa sus necesidades y límites de manera directa y sin ambigüedades. Evita dramas innecesarios y mantiene conversaciones productivas."
+      },
+      "improvement": {
+        "title": "Desconexión emocional gradual",
+        "description": "Tendencia a tratar la relación como un aspecto secundario de su vida, lo que puede generar desequilibrios emocionales a largo plazo."
+      }
+    },
+    "david": {
+      "name": "David (29 años)",
+      "trait1": {
+        "title": "Hipervigilancia emocional",
+        "description": "Monitorea constantemente el estado de ánimo de Sofía a través de indicadores textuales (tiempo de respuesta, uso de emojis, longitud de mensajes). Promedio de 34 mensajes por cada 10 de ella."
+      },
+      "trait2": {
+        "title": "Patrón de búsqueda de validación constante",
+        "description": "Reformula mensajes múltiples veces antes de enviar. Utiliza preguntas de confirmación emocional frecuentes (\"¿Estás bien?\", \"¿He dicho algo malo?\")."
+      },
+      "strength": {
+        "title": "Alta sensibilidad emocional",
+        "description": "Capacidad superior para detectar cambios sutiles en el estado emocional de su pareja y responder con empatía."
+      },
+      "improvement": {
+        "title": "Dependencia emocional excesiva",
+        "description": "Necesidad compulsiva de atención y confirmación que puede resultar agotadora para su pareja."
+      }
+    },
+    "red_flags": {
+      "title": "Señales de Alerta",
+      "alert1": {
+        "title": "📉 Inversión emocional asimétrica",
+        "description": "David invierte 340% más energía emocional en mantener la relación. Sofía participa de manera funcional pero sin la intensidad emocional correspondiente. Este desequilibrio puede llevar a resentimiento mutuo y agotamiento emocional."
+      },
+      "alert2": {
+        "title": "⏰ Patrones de disponibilidad desiguales",
+        "description": "David responde en promedio en 3.2 minutos. Sofía en 2.4 horas. Esta diferencia sistemática genera ansiedad de attachment en David y posible irritación defensiva en Sofía por presión constante."
+      },
+      "alert3": {
+        "title": "🔄 Ciclo perseguidor-distanciador establecido",
+        "description": "Cuanto más busca David conexión emocional, más se retrae Sofía hacia sus propios espacios. Este patrón se autorrefuerza y puede llevar a una desconexión progresiva irreversible."
+      }
+    },
+    "evaluation": {
+      "title": "Evaluación de la relación",
+      "score": {
+        "title": "📊 Puntuación general: 5.8/10",
+        "classification": "Clasificación",
+        "result": "DESEQUILIBRIO EMOCIONAL SIGNIFICATIVO"
+      },
+      "dynamic": {
+        "title": "🎭 Dinámica predominante",
+        "pattern": "Patrón identificado",
+        "description": "PERSEGUIDOR-DISTANCIADOR. David asume rol de perseguidor emocional mientras Sofía adopta estrategias de distanciamiento para mantener su autonomía."
+      },
+      "risk": {
+        "title": "⚠️ Factores de riesgo",
+        "immediate": "Riesgo inmediato",
+        "description": "David desarrollando patrones ansiosos de attachment, Sofía desarrollando evitación defensiva como mecanismo de autoprotección."
+      },
+      "prognosis": {
+        "title": "🔮 Pronóstico",
+        "evolution": "Evolución probable",
+        "description": "Sin intervención, tendencia hacia desconexión progresiva. Necesario reequilibrio de dinámicas o probable deterioro de la satisfacción relacional en ambas partes."
+      }
+    },
+    "recommendations": {
+      "title": "Recomendaciones",
+      "david": {
+        "title": "🎯 Para David - Desarrollo de independencia emocional",
+        "description": "Fomentar actividades y relaciones sociales independientes. Practicar tolerancia a la incertidumbre emocional. Desarrollar autovalidación para reducir dependencia de confirmación externa constante."
+      },
+      "sofia": {
+        "title": "💝 Para Sofía - Incremento de expresividad emocional",
+        "description": "Comunicar explícitamente sus necesidades de espacio sin invalidar las necesidades de David. Establecer momentos específicos de conexión emocional para equilibrar su orientación hacia objetivos externos."
+      },
+      "couple": {
+        "title": "🤝 Para la pareja - Reestructuración de dinámicas",
+        "description": "Establecer acuerdos claros sobre tiempos de respuesta y expectativas comunicativas. Terapia de pareja preventiva recomendada para desarrollar patrones de comunicación más equilibrados y satisfactorios para ambos."
+      }
+    },
+    "statistics": {
+      "title": "Análisis Estadístico",
+      "total_messages": "Total mensajes analizados",
+      "david_messages": "Mensajes de David (67.5%)",
+      "sofia_messages": "Mensajes de Sofía (32.5%)",
+      "david_response_time": "Tiempo promedio respuesta David",
+      "sofia_response_time": "Tiempo promedio respuesta Sofía",
+      "david_avg_words": "Palabras promedio por mensaje David",
+      "sofia_avg_words": "Palabras promedio por mensaje Sofía",
+      "validation_questions": "Preguntas de validación de David"
+    },
+    "top_profiles": {
+      "title": "Top Perfiles",
+      "most_messages": {
+        "title": "Más mensajes",
+        "description": "Domina el volumen de conversación con casi 70% de los mensajes. Indica alta inversión comunicativa."
+      },
+      "most_direct": {
+        "title": "Más directo",
+        "description": "Comunicación eficiente y al grano. Promedio 50% menos palabras para expresar ideas similares."
+      },
+      "most_questions": {
+        "title": "Más preguntas",
+        "description": "Realiza 89% de todas las preguntas, especialmente de confirmación emocional y validación."
+      },
+      "most_nocturnal": {
+        "title": "Más nocturno",
+        "description": "67% de sus mensajes después de las 22h. Posible ansiedad o overthinking nocturno."
+      },
+      "most_focused": {
+        "title": "Más enfocado",
+        "description": "Mantiene conversaciones orientadas a objetivos concretos. Evita divagaciones emocionales."
+      },
+      "most_romantic": {
+        "title": "Más emojis románticos",
+        "description": "Usa 340% más emojis de corazón y relacionados con amor. Expresión emocional constante."
+      }
+    },
+    "cta": {
+      "title": "¿Quieres analizar TU chat?",
+      "description": "Descubre los secretos psicológicos de tus conversaciones de WhatsApp",
+      "button": "Analizar mi chat GRATIS"
+    }
+  },
+  "demo": {
+    "user_profiles": {
+      "ana": {
+        "description": "Personalidad extrovertida y organizadora natural del grupo",
+        "traits": ["Líder natural", "Comunicativa", "Organizadora"]
+      },
+      "miguel": {
+        "description": "Personalidad analítica con tendencia a la reflexión",
+        "traits": ["Analítico", "Reflexivo", "Observador"]
+      }
+    },
+    "red_flags": {
+      "items": {
+        "passive_aggressive": {
+          "description": "Patrones de comunicación indirecta detectados",
+          "tags": ["Indirecto", "Evasivo", "Pasivo-agresivo"]
+        }
+      }
+    }
+  },
+  "preview": {
+    "testimonials": {
+      "reviews": [
+        {
+          "text": "¡Increíble! Descubrí cosas de mi grupo que no sabía",
+          "author": "María, 28 años"
+        },
+        {
+          "text": "Muy divertido analizar nuestro chat familiar",
+          "author": "Carlos, 35 años"
+        },
+        {
+          "text": "Los análisis psicológicos son muy acertados",
+          "author": "Ana, 24 años"
+        }
+      ]
+    }
+  }
+}
