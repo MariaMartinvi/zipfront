@@ -628,7 +628,23 @@
       "improvement_areas": "Áreas de mejora"
     },
     "sofia": {
-      "name": "Sofía (27 años)"
+      "name": "Sofía (27 años)",
+      "trait1": {
+        "title": "Personalidad independiente dominante",
+        "description": "Mantiene el control natural de la relación sin esfuerzo aparente. Sus respuestas son directas y eficientes, estableciendo el ritmo y tono de las conversaciones. No busca validación constante de su pareja."
+      },
+      "trait2": {
+        "title": "Orientación hacia objetivos personales",
+        "description": "Prioriza claramente sus proyectos profesionales y sociales. Las conversaciones sobre la relación ocupan solo el 23% de sus mensajes, comparado con el 67% de David."
+      },
+      "strength": {
+        "title": "Claridad comunicativa excepcional",
+        "description": "Expresa sus necesidades y límites de manera directa y sin ambigüedad. Evita dramas innecesarios y mantiene conversaciones productivas."
+      },
+      "improvement": {
+        "title": "Desconexión emocional gradual",
+        "description": "Tendencia a tratar la relación como un aspecto secundario de su vida, lo que puede generar desequilibrios emocionales a largo plazo."
+      }
     },
     "david": {
       "name": "David (29 años)"
@@ -637,27 +653,27 @@
       "title": "Top Perfiles",
       "most_messages": {
         "title": "Más mensajes",
-        "description": "Domina el volumen de conversación"
+        "description": "Domina el volumen de conversación con casi el 70% de los mensajes. Indica una alta inversión comunicativa."
       },
       "most_direct": {
         "title": "Más directo",
-        "description": "Comunicación eficiente"
+        "description": "Comunicación eficiente y directa. Promedio de 50% menos palabras para expresar ideas similares."
       },
       "most_questions": {
         "title": "Más preguntas",
-        "description": "Realiza la mayoría de preguntas"
+        "description": "Realiza el 89% de todas las preguntas, especialmente de confirmación emocional y validación."
       },
       "most_nocturnal": {
         "title": "Más nocturno",
-        "description": "Mensajes nocturnos"
+        "description": "67% de sus mensajes después de las 22h. Posible ansiedad o sobrepensamiento nocturno."
       },
       "most_focused": {
         "title": "Más enfocado",
-        "description": "Conversaciones orientadas a objetivos"
+        "description": "Mantiene conversaciones orientadas hacia objetivos concretos. Evita digresiones emocionales."
       },
       "most_romantic": {
         "title": "Más emojis románticos",
-        "description": "Usa más emojis de amor"
+        "description": "Usa 340% más emojis de corazón y relacionados con el amor. Expresión emocional constante."
       }
     },
     "cta": {
