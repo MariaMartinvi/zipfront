@@ -521,10 +521,14 @@
     },
     "ai_purchase": {
       "title": "🤖 Unlock the COMPLETE AI analysis of this chat",
+      "modal_title": "Unlock the COMPLETE AI analysis of this chat",
       "price": "💰 Pack of 10 AI analyses: ~~€10~~ €5",
+      "pack_description": "Pack of 10 AI analyses",
       "discount_notice": "🔥 Special offer -50%! Limited time only",
       "full_chat_notice": "✨ Includes complete analysis: personalities + dynamics + recommendations",
       "question": "Want to take advantage of this offer?",
+      "buy_button": "Buy AI Pack (Secure payment with Stripe)",
+      "cancel_button": "Cancel",
       "no_credits": "No AI credits available. Buy a pack to continue.",
       "error_purchase": "Error starting purchase. Please try again.",
       "unlock_button": "🔓 Buy with Discount (€5)"
@@ -904,7 +908,7 @@
         "no_subscription": "No subscription - One-time payment"
       },
       "admin_button": "Administrator Access",
-      "purchase_button": "🔓 Buy AI Pack (5€)",
+      "purchase_button": "🔓 Buy AI Pack (Secure payment with Stripe)",
       "processing": "⏳ Processing..."
     },
     "how_it_works": {
@@ -1817,5 +1821,9 @@
       "description": "By continuing to use our website, you accept the use of cookies as described in this policy."
     },
     "security_badge": "Transparent Cookies"
+  },
+  "fallback": {
+    "emergency_users": ["User 1", "User 2", "User 3"],
+    "emergency_warning": "⚠️ Using emergency fallback for users"
   }
 } 

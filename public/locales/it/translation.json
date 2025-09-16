@@ -52,10 +52,14 @@
     },
     "ai_purchase": {
       "title": "🤖 Sblocca l'analisi IA COMPLETA di questa chat",
+      "modal_title": "Sblocca l'analisi IA COMPLETA di questa chat",
       "price": "💰 Pacchetto di 10 analisi IA: ~~10€~~ 5€",
+      "pack_description": "Pacchetto di 10 analisi IA",
       "discount_notice": "🔥 Offerta speciale -50%! Solo per tempo limitato",
       "full_chat_notice": "✨ Include analisi completa: personalità + dinamiche + raccomandazioni",
       "question": "Vuoi approfittare di questa offerta?",
+      "buy_button": "Compra Pacchetto IA (Pagamento sicuro con Stripe)",
+      "cancel_button": "Annulla",
       "no_credits": "Nessun credito IA disponibile. Compra un pacchetto per continuare.",
       "error_purchase": "Errore nell'avviare l'acquisto. Prova di nuovo.",
       "unlock_button": "🔓 Compra con Sconto (5€)"
@@ -467,7 +471,7 @@
         "no_subscription": "Nessun abbonamento - Pagamento unico"
       },
       "admin_button": "Accesso Amministratore",
-      "purchase_button": "🔓 Acquista Pacchetto IA (5€)",
+      "purchase_button": "🔓 Compra Pacchetto IA (Pagamento sicuro con Stripe)",
       "processing": "⏳ Elaborazione..."
     },
     "how_it_works": {
@@ -1714,5 +1718,9 @@
         "description": "Tocca ChatSalsa per caricare il tuo file. Se non appare, installa l'app da chatsalsa.com"
       }
     }
+  },
+  "fallback": {
+    "emergency_users": ["Utente 1", "Utente 2", "Utente 3"],
+    "emergency_warning": "⚠️ Utilizzo del fallback di emergenza per gli utenti"
   }
 } 

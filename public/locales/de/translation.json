@@ -561,8 +561,14 @@
     },
     "ai_purchase": {
       "title": "🤖 Sie benötigen KI-Credits für diese Analyse.",
+      "modal_title": "Schalten Sie die VOLLSTÄNDIGE KI-Analyse dieses Chats frei",
       "price": "💰 Paket von 10 KI-Analysen: 5€",
+      "pack_description": "Paket von 10 KI-Analysen",
+      "discount_notice": "🔥 Sonderangebot -50%! Nur für begrenzte Zeit",
+      "full_chat_notice": "✨ Enthält vollständige Analyse: Persönlichkeiten + Dynamiken + Empfehlungen",
       "question": "Möchten Sie jetzt kaufen?",
+      "buy_button": "KI-Paket kaufen (Sichere Zahlung mit Stripe)",
+      "cancel_button": "Abbrechen",
       "no_credits": "Keine KI-Credits verfügbar. Kaufen Sie ein Paket zum Fortfahren.",
       "error_purchase": "Fehler beim Starten des Kaufs. Bitte versuchen Sie es erneut.",
       "unlock_button": "🔓 KI-Analyse freischalten (5€)"
@@ -900,7 +906,7 @@
         "no_subscription": "Kein Abonnement - Einmalige Zahlung"
       },
       "admin_button": "Administrator-Zugang",
-      "purchase_button": "🔓 KI-Paket kaufen (5€)",
+      "purchase_button": "🔓 KI-Paket kaufen (Sichere Zahlung mit Stripe)",
       "processing": "⏳ Wird verarbeitet..."
     },
     "how_it_works": {
@@ -1673,5 +1679,9 @@
       "description": "Durch die weitere Nutzung unserer Website stimmen Sie der Verwendung von Cookies wie in dieser Richtlinie beschrieben zu."
     },
     "security_badge": "Transparente Cookies"
+  },
+  "fallback": {
+    "emergency_users": ["Benutzer 1", "Benutzer 2", "Benutzer 3"],
+    "emergency_warning": "⚠️ Notfall-Fallback für Benutzer verwenden"
   }
 } 

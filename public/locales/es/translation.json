@@ -524,10 +524,14 @@
     },
     "ai_purchase": {
       "title": "🤖 Desbloquea el análisis IA COMPLETO de este chat",
+      "modal_title": "Desbloquea el análisis IA COMPLETO de este chat",
       "price": "💰 Pack de 10 análisis IA: ~~10€~~ 5€",
+      "pack_description": "Pack de 10 análisis IA",
       "discount_notice": "🔥 ¡Oferta especial -50%! Solo por tiempo limitado",
       "full_chat_notice": "✨ Incluye análisis completo: personalidades + dinámicas + recomendaciones",
       "question": "¿Quieres aprovechar esta oferta?",
+      "buy_button": "Comprar AI Pack (Pago seguro con Stripe)",
+      "cancel_button": "Cancelar",
       "no_credits": "Sin créditos de IA disponibles. Compra un pack para continuar.",
       "error_purchase": "Error iniciando la compra. Inténtalo de nuevo.",
       "unlock_button": "🔓 Comprar con Descuento (5€)"
@@ -624,68 +628,36 @@
       "improvement_areas": "Áreas de mejora"
     },
     "sofia": {
-      "name": "Sofía (27 años)",
-      "trait1": {
-        "title": "Personalidad independiente dominante",
-        "description": "Mantiene control natural de la relación sin esfuerzo aparente. Sus respuestas son directas y eficientes, marcando el ritmo y tono de las conversaciones. No busca validación constante de su pareja."
-      },
-      "trait2": {
-        "title": "Orientación a objetivos personales",
-        "description": "Prioriza claramente sus proyectos profesionales y sociales. Las conversaciones sobre la relación ocupan solo el 23% de sus mensajes, comparado con el 67% de David."
-      },
-      "strength": {
-        "title": "Claridad comunicativa excepcional",
-        "description": "Expresa sus necesidades y límites de manera directa y sin ambigüedades. Evita dramas innecesarios y mantiene conversaciones productivas."
-      },
-      "improvement": {
-        "title": "Desconexión emocional gradual",
-        "description": "Tendencia a tratar la relación como un aspecto secundario de su vida, lo que puede generar desequilibrios emocionales a largo plazo."
-      }
+      "name": "Sofía (27 años)"
     },
     "david": {
-      "name": "David (29 años)",
-      "trait1": {
-        "title": "Hipervigilancia emocional",
-        "description": "Monitorea constantemente el estado de ánimo de Sofía a través de indicadores textuales (tiempo de respuesta, uso de emojis, longitud de mensajes). Promedio de 34 mensajes por cada 10 de ella."
-      },
-      "trait2": {
-        "title": "Patrón de búsqueda de validación constante",
-        "description": "Reformula mensajes múltiples veces antes de enviar. Utiliza preguntas de confirmación emocional frecuentes (\"¿Estás bien?\", \"¿He dicho algo malo?\")."
-      },
-      "strength": {
-        "title": "Alta sensibilidad emocional",
-        "description": "Capacidad superior para detectar cambios sutiles en el estado emocional de su pareja y responder con empatía."
-      },
-      "improvement": {
-        "title": "Dependencia emocional excesiva",
-        "description": "Necesidad compulsiva de atención y confirmación que puede resultar agotadora para su pareja."
-      }
+      "name": "David (29 años)"
     },
     "top_profiles": {
       "title": "Top Perfiles",
       "most_messages": {
         "title": "Más mensajes",
-        "description": "Domina el volumen de conversación con casi 70% de los mensajes. Indica alta inversión comunicativa."
+        "description": "Domina el volumen de conversación"
       },
       "most_direct": {
         "title": "Más directo",
-        "description": "Comunicación eficiente y al grano. Promedio 50% menos palabras para expresar ideas similares."
+        "description": "Comunicación eficiente"
       },
       "most_questions": {
         "title": "Más preguntas",
-        "description": "Realiza 89% de todas las preguntas, especialmente de confirmación emocional y validación."
+        "description": "Realiza la mayoría de preguntas"
       },
       "most_nocturnal": {
         "title": "Más nocturno",
-        "description": "67% de sus mensajes después de las 22h. Posible ansiedad o overthinking nocturno."
+        "description": "Mensajes nocturnos"
       },
       "most_focused": {
         "title": "Más enfocado",
-        "description": "Mantiene conversaciones orientadas a objetivos concretos. Evita divagaciones emocionales."
+        "description": "Conversaciones orientadas a objetivos"
       },
       "most_romantic": {
         "title": "Más emojis románticos",
-        "description": "Usa 340% más emojis de corazón y relacionados con amor. Expresión emocional constante."
+        "description": "Usa más emojis de amor"
       }
     },
     "cta": {
@@ -871,7 +843,7 @@
         "no_subscription": "Sin suscripción - Pago único"
       },
       "admin_button": "Acceso Administrador",
-      "purchase_button": "🔓 Comprar Pack IA (5€)",
+      "purchase_button": "🔓 Comprar AI Pack (Pago seguro con Stripe)",
       "processing": "⏳ Procesando..."
     },
     "how_it_works": {
@@ -1769,6 +1741,10 @@
         "title": "Privacidad Garantizada",
         "description": "Tu información personal y consultas son tratadas con total confidencialidad."
       }
+    },
+    "fallback": {
+      "emergency_users": ["Usuario 1", "Usuario 2", "Usuario 3"],
+      "emergency_warning": "⚠️ Usando fallback de emergencia para usuarios"
     }
   }
 } 

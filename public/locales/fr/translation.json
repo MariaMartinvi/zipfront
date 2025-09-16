@@ -515,7 +515,7 @@
         "no_subscription": "Pas d'abonnement - Paiement unique"
       },
       "admin_button": "Accès Administrateur",
-      "purchase_button": "🔓 Acheter Pack IA (5€)",
+      "purchase_button": "🔓 Acheter Pack IA (Paiement sécurisé avec Stripe)",
       "processing": "⏳ Traitement..."
     },
     "how_it_works": {
@@ -844,10 +844,14 @@
     },
     "ai_purchase": {
       "title": "🤖 Débloquez l'analyse IA COMPLÈTE de ce chat",
+      "modal_title": "Débloquez l'analyse IA COMPLÈTE de ce chat",
       "price": "💰 Pack de 10 analyses IA : ~~10€~~ 5€",
+      "pack_description": "Pack de 10 analyses IA",
       "discount_notice": "🔥 Offre spéciale -50% ! Pour un temps limité seulement",
       "full_chat_notice": "✨ Inclut l'analyse complète : personnalités + dynamiques + recommandations",
       "question": "Voulez-vous profiter de cette offre?",
+      "buy_button": "Acheter Pack IA (Paiement sécurisé avec Stripe)",
+      "cancel_button": "Annuler",
       "no_credits": "Aucun crédit IA disponible. Achetez un pack pour continuer.",
       "error_purchase": "Erreur lors du démarrage de l'achat. Veuillez réessayer.",
       "unlock_button": "🔓 Acheter avec Réduction (5€)"
@@ -1528,5 +1532,9 @@
       "description": "En continuant à utiliser notre site web, vous acceptez l'utilisation des cookies comme décrit dans cette politique."
     },
     "security_badge": "Cookies Transparents"
+  },
+  "fallback": {
+    "emergency_users": ["Utilisateur 1", "Utilisateur 2", "Utilisateur 3"],
+    "emergency_warning": "⚠️ Utilisation du fallback d'urgence pour les utilisateurs"
   }
 } 

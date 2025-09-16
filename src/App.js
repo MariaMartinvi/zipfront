@@ -18,6 +18,7 @@ import UserPlanBanner from './UserPlanBanner';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
 import PaymentSuccessBanner from './PaymentSuccessBanner';
 import CookieBanner from './CookieBanner';
+import AIPurchaseModal from './AIPurchaseModal';
 import DebugEnv from './components/DebugEnv';
 import { useAuth } from './AuthContext';
 import { deleteFiles, uploadFile, getMistralResponse, startChatAnalysis, getAzureResponse } from './fileService';
@@ -354,6 +355,9 @@ function AppContent() {
   
   // NUEVO: Estado para datos del juego de titulares
   const [headlinesGameData, setHeadlinesGameData] = useState(null);
+  
+  // Estado para el modal de compra de IA
+  const [showAIPurchaseModal, setShowAIPurchaseModal] = useState(false);
   
   // Tracking para evitar procesamiento duplicado
   const processedShareIds = useRef(new Set());
@@ -1312,26 +1316,8 @@ function AppContent() {
       if (!aiPermission.canUse) {
         console.log('❌ Usuario sin créditos de IA:', aiPermission.message);
         
-        // Confirmar si el usuario quiere comprar créditos (multiidioma con oferta)
-        const shouldPurchase = window.confirm(
-          `${t('hero.ai_purchase.title')}\n\n` +
-          `${t('hero.ai_purchase.discount_notice')}\n` +
-          `${t('hero.ai_purchase.price')}\n\n` +
-          `${t('hero.ai_purchase.full_chat_notice')}\n\n` +
-          `${t('hero.ai_purchase.question')}`
-        );
-        
-        if (shouldPurchase) {
-          try {
-            await purchaseAICredits(currentUser.uid);
-            return false; // Se redirigirá a Stripe
-          } catch (error) {
-            console.error('Error iniciando compra:', error);
-            setError(t('hero.ai_purchase.error_purchase'));
-          }
-        }
-        
-        setError(t('hero.ai_purchase.no_credits'));
+        // Mostrar modal de compra de créditos IA
+        setShowAIPurchaseModal(true);
         return false;
       }
       
@@ -1365,6 +1351,29 @@ function AppContent() {
       setError(`Error iniciando análisis IA: ${error.message}`);
       return false;
     }
+  };
+
+  // Funciones para manejar el modal de compra de IA
+  const handleAIPurchase = async () => {
+    try {
+      const currentUser = await getCurrentUser();
+      if (!currentUser) {
+        setError('Debes estar autenticado para comprar créditos IA');
+        return;
+      }
+      
+      setShowAIPurchaseModal(false);
+      await purchaseAICredits(currentUser.uid);
+      // Se redirigirá a Stripe automáticamente
+    } catch (error) {
+      console.error('Error iniciando compra:', error);
+      setError(t('hero.ai_purchase.error_purchase'));
+    }
+  };
+
+  const handleAIPurchaseClose = () => {
+    setShowAIPurchaseModal(false);
+    setError(t('hero.ai_purchase.no_credits'));
   };
   
   // Add this new function for checking if processing is complete before deleting
@@ -2194,8 +2203,8 @@ const tryDeleteFiles = async (operationId) => {
                                 }
                                 // Fallback de emergencia - NO debería ocurrir nunca
                                 else {
-                                  usuarios = ['Usuario 1', 'Usuario 2', 'Usuario 3'];
-                                  console.warn('⚠️ Usando fallback de emergencia para usuarios');
+                                  usuarios = t('fallback.emergency_users', { returnObjects: true });
+                                  console.warn(t('fallback.emergency_warning'));
                                 }
                                 
                                 return usuarios.slice(0, 4).map((usuario, index) => {
@@ -2506,6 +2515,13 @@ const tryDeleteFiles = async (operationId) => {
       
       {/* Barra de cookies */}
       <CookieBanner />
+      
+      {/* Modal de compra de créditos IA */}
+      <AIPurchaseModal 
+        isOpen={showAIPurchaseModal}
+        onClose={handleAIPurchaseClose}
+        onPurchase={handleAIPurchase}
+      />
       
       {/* Debug Logger para desarrollo - solo se muestra si viene de WhatsApp */}
       {/* <DebugLogger /> */}

@@ -591,10 +591,14 @@
     },
     "ai_purchase": {
       "title": "🤖 Desbloqueie a análise IA COMPLETA desta conversa",
+      "modal_title": "Desbloqueie a análise IA COMPLETA desta conversa",
       "price": "💰 Pacote de 10 análises IA: ~~10€~~ 5€",
+      "pack_description": "Pacote de 10 análises IA",
       "discount_notice": "🔥 Oferta especial -50%! Apenas por tempo limitado",
       "full_chat_notice": "✨ Inclui análise completa: personalidades + dinâmicas + recomendações",
       "question": "Quer aproveitar esta oferta?",
+      "buy_button": "Comprar Pacote IA (Pagamento seguro com Stripe)",
+      "cancel_button": "Cancelar",
       "no_credits": "Nenhum crédito de IA disponível. Compre um pacote para continuar.",
       "error_purchase": "Erro ao iniciar a compra. Tente novamente.",
       "unlock_button": "🔓 Comprar com Desconto (5€)"
@@ -859,7 +863,7 @@
         "no_subscription": "Sem assinatura - Pagamento único"
       },
       "admin_button": "Acesso Administrador",
-      "purchase_button": "🔓 Comprar Pacote IA (5€)",
+      "purchase_button": "🔓 Comprar Pacote IA (Pagamento seguro com Stripe)",
       "processing": "⏳ Processando..."
     },
     "how_it_works": {
@@ -1499,5 +1503,9 @@
         "description": "As suas informações pessoais e consultas são tratadas com total confidencialidade."
       }
     }
+  },
+  "fallback": {
+    "emergency_users": ["Usuário 1", "Usuário 2", "Usuário 3"],
+    "emergency_warning": "⚠️ Usando fallback de emergência para usuários"
   }
 } 
