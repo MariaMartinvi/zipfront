@@ -1032,35 +1032,6 @@ function AppContent() {
     }
   };
 
-  // NUEVO: Función para manejar archivos compartidos desde TWA
-  const handleTWASharedFile = async (fileUri) => {
-    try {
-      addDebugMessage(`Procesando archivo TWA: ${fileUri}`);
-      
-      // Establecer flag de procesamiento compartido
-      localStorage.setItem('whatsapp_analyzer_is_processing_shared', 'true');
-      addDebugMessage('Flag de procesamiento TWA establecido');
-      
-      // Crear un objeto de archivo simulado para mantener compatibilidad
-      const simulatedFile = {
-        name: "Chat de WhatsApp.zip", // Nombre genérico
-        type: "application/zip",
-        size: 0, // No conocemos el tamaño real
-        uri: fileUri, // Almacenar la URI original
-        isTWAFile: true // Flag para identificar que viene de TWA
-      };
-      
-      addDebugMessage(`Archivo TWA simulado creado: ${simulatedFile.name}`);
-      
-      // Procesar como archivo compartido normal
-      await handleSharedFile(simulatedFile);
-      
-    } catch (error) {
-      addDebugMessage(`Error procesando archivo TWA: ${error.message}`);
-      setError('Error al procesar el archivo compartido desde la app');
-    }
-  };
-  
   useEffect(() => {
     // Check URL for payment_success parameter
     const urlParams = new URLSearchParams(window.location.search);
@@ -1588,18 +1559,6 @@ const tryDeleteFiles = async (operationId) => {
     const hasError = urlParams.has('error');
     const shareId = urlParams.get('shared');
     const errorReason = urlParams.get('reason');
-    
-    // NUEVO: Detectar archivos compartidos desde TWA
-    const twaSharedFile = urlParams.get('twa_shared_file');
-    
-    // NUEVO: Manejar archivo desde TWA
-    if (twaSharedFile) {
-      addDebugMessage(`Archivo compartido desde TWA detectado: ${twaSharedFile}`);
-      handleTWASharedFile(twaSharedFile);
-      // COMENTADO TEMPORALMENTE: Limpiar URL después de procesar
-      // window.history.replaceState({}, document.title, window.location.pathname);
-      return;
-    }
     
     if (hasError) {
       const errorMessage = errorReason 
