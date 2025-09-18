@@ -1596,8 +1596,8 @@ const tryDeleteFiles = async (operationId) => {
     if (twaSharedFile) {
       addDebugMessage(`Archivo compartido desde TWA detectado: ${twaSharedFile}`);
       handleTWASharedFile(twaSharedFile);
-      // Limpiar URL después de procesar
-      window.history.replaceState({}, document.title, window.location.pathname);
+      // COMENTADO TEMPORALMENTE: Limpiar URL después de procesar
+      // window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
     
