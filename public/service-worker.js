@@ -71,13 +71,17 @@ self.addEventListener('fetch', event => {
   
   debug('Fetch interceptado', { url: url.pathname, method: event.request.method });
   
-  if (url.pathname === '/share-target' && event.request.method === 'POST') {
+  if (url.pathname === '/share-target') {
     debug('Solicitud de compartir desde WhatsApp detectada');
     
     event.respondWith((async () => {
       try {
         debug('Procesando solicitud de compartir');
-        const formData = await event.request.formData();
+        
+        // Verificar si es POST (con archivo) o GET (desde TWA)
+        if (event.request.method === 'POST') {
+          // PWA normal - con archivo real
+          const formData = await event.request.formData();
         debug('FormData extraído correctamente');
         
         // Verificar contenido del FormData
@@ -139,6 +143,13 @@ self.addEventListener('fetch', event => {
           debug('No se encontró ningún archivo en la solicitud');
           return Response.redirect('/?error=no-file-found');
         }
+        
+        } else {
+          // GET request - probablemente desde TWA
+          debug('Request GET a /share-target - probablemente desde TWA');
+          return Response.redirect('/?twa_opened=true');
+        }
+        
       } catch (error) {
         debug('Error procesando solicitud de compartir', error.toString());
         return Response.redirect('/?error=' + encodeURIComponent(error.message));
