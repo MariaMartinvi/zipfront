@@ -4,7 +4,6 @@ import DOMPurify from 'dompurify'; // Para seguridad
 import { useTranslation } from 'react-i18next';
 import './Chatgptresultados.css';
 import './styles/Analisis.css';
-import azureQueueService from './services/azureQueueService'; // Importamos el servicio de cola existente
 import { useAuth } from './AuthContext';
 import { createReverseTranslationMapping } from './services/azure/constants'; // NUEVO: importar función de mapeo
 import { ShareAnalysisButton } from './shareAnalysisResults'; // NUEVO: importar botón de compartir
@@ -267,50 +266,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
     }
   }, [promptInput]);
 
-  // Verificar periódicamente el estado de la solicitud encolada
-  useEffect(() => {
-    let intervalId = null;
-    
-    if (requestId && !checkingQueue) {
-      setCheckingQueue(true);
-      
-      // Verificar el estado cada 10 segundos
-      intervalId = setInterval(async () => {
-        try {
-          const status = await azureQueueService.checkRequestStatus(requestId);
-          
-          console.log('Estado de la solicitud en cola:', status);
-          
-          if (status.success) {
-            setQueueStatus(`Estado: ${status.status || 'pendiente'}`);
-            
-            // Si la solicitud ya fue procesada
-            if (status.status === 'completed' && status.result) {
-              clearInterval(intervalId);
-              setCheckingQueue(false);
-              setQueueStatus('Solicitud procesada con éxito');
-              
-              // Mostrar el resultado
-              const rawHtml = marked.parse(status.result);
-              const cleanHtml = DOMPurify.sanitize(rawHtml);
-              setHtmlContent(cleanHtml);
-            }
-          } else {
-            setQueueStatus(`Error verificando estado: ${status.error}`);
-          }
-        } catch (error) {
-          console.error('Error verificando estado:', error);
-          setQueueStatus('Error al verificar estado de la solicitud');
-        }
-      }, 10000);
-    }
-    
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [requestId, checkingQueue]);
 
   // Efecto para aplicar personalizaciones específicas según el idioma
   useEffect(() => {

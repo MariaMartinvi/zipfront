@@ -9,19 +9,17 @@ import WhatsappInstructions from './WhatsappInstructions';
 import AnalisisResumenGeneral from './AnalisisResumenGeneral';
 import AnalisisEstadistico from './AnalisisEstadistico';
 import AnalisisTop from './Analisis_top';
-import { AuthContainer, Login, Register, PasswordReset } from './AuthComponents';
+import { Login, Register, PasswordReset } from './AuthComponents';
 import FreemiumPlans from './FreemiumPlans';
 import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits } from './firebase_auth';
 import Header from './Header';
 import Footer from './Footer';
-import UserPlanBanner from './UserPlanBanner';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
 import PaymentSuccessBanner from './PaymentSuccessBanner';
 import CookieBanner from './CookieBanner';
 import AIPurchaseModal from './AIPurchaseModal';
-import DebugEnv from './components/DebugEnv';
 import { useAuth } from './AuthContext';
-import { deleteFiles, uploadFile, getMistralResponse, startChatAnalysis, getAzureResponse } from './fileService';
+import { getMistralResponse } from './fileService';
 import Contact from './Paginasextra/Contact';
 import FAQ from './Paginasextra/FAQ';
 import TermsOfService from './Paginasextra/TermsOfService';
@@ -35,7 +33,6 @@ import Juegos from './Juegos';
 import { userSession } from './utils/userSession';
 import HeroSection from './components/HeroSection';
 import { SecurityCaptchaProvider } from './components/SecurityCaptcha';
-import DebugLogger from './DebugLogger';
 import TopProfilesViewer from './components/TopProfilesViewer';
 import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
@@ -1034,6 +1031,35 @@ function AppContent() {
       }
     }
   };
+
+  // NUEVO: Función para manejar archivos compartidos desde TWA
+  const handleTWASharedFile = async (fileUri) => {
+    try {
+      addDebugMessage(`Procesando archivo TWA: ${fileUri}`);
+      
+      // Establecer flag de procesamiento compartido
+      localStorage.setItem('whatsapp_analyzer_is_processing_shared', 'true');
+      addDebugMessage('Flag de procesamiento TWA establecido');
+      
+      // Crear un objeto de archivo simulado para mantener compatibilidad
+      const simulatedFile = {
+        name: "Chat de WhatsApp.zip", // Nombre genérico
+        type: "application/zip",
+        size: 0, // No conocemos el tamaño real
+        uri: fileUri, // Almacenar la URI original
+        isTWAFile: true // Flag para identificar que viene de TWA
+      };
+      
+      addDebugMessage(`Archivo TWA simulado creado: ${simulatedFile.name}`);
+      
+      // Procesar como archivo compartido normal
+      await handleSharedFile(simulatedFile);
+      
+    } catch (error) {
+      addDebugMessage(`Error procesando archivo TWA: ${error.message}`);
+      setError('Error al procesar el archivo compartido desde la app');
+    }
+  };
   
   useEffect(() => {
     // Check URL for payment_success parameter
@@ -1563,6 +1589,18 @@ const tryDeleteFiles = async (operationId) => {
     const shareId = urlParams.get('shared');
     const errorReason = urlParams.get('reason');
     
+    // NUEVO: Detectar archivos compartidos desde TWA
+    const twaSharedFile = urlParams.get('twa_shared_file');
+    
+    // NUEVO: Manejar archivo desde TWA
+    if (twaSharedFile) {
+      addDebugMessage(`Archivo compartido desde TWA detectado: ${twaSharedFile}`);
+      handleTWASharedFile(twaSharedFile);
+      // Limpiar URL después de procesar
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+    
     if (hasError) {
       const errorMessage = errorReason 
         ? `Error: ${decodeURIComponent(errorReason)}`
@@ -2090,9 +2128,6 @@ const tryDeleteFiles = async (operationId) => {
   return (
     <div className="App">
       <Header user={user} />
-      {/* {user && userProfile && location.pathname === '/plans' && (
-        <UserPlanBanner userProfile={userProfile} />
-      )} */}
       
       <main className="App-main">
         {showPaymentSuccess && (
@@ -2205,6 +2240,29 @@ const tryDeleteFiles = async (operationId) => {
                                 else {
                                   usuarios = t('fallback.emergency_users', { returnObjects: true });
                                   console.warn(t('fallback.emergency_warning'));
+                                }
+                                
+                                // 🛡️ VERIFICACIÓN DE SEGURIDAD: Asegurar que usuarios es un array
+                                if (!Array.isArray(usuarios)) {
+                                  console.error('❌ usuarios no es un array:', usuarios);
+                                  
+                                  // 🌍 FALLBACK HARDCODED MULTIIDIOMA
+                                  const hardcodedFallbacks = {
+                                    'es': ['Usuario 1', 'Usuario 2', 'Usuario 3'],
+                                    'en': ['User 1', 'User 2', 'User 3'], 
+                                    'fr': ['Utilisateur 1', 'Utilisateur 2', 'Utilisateur 3'],
+                                    'de': ['Benutzer 1', 'Benutzer 2', 'Benutzer 3'],
+                                    'it': ['Utente 1', 'Utente 2', 'Utente 3'],
+                                    'pt': ['Usuário 1', 'Usuário 2', 'Usuário 3'],
+                                    'ca': ['Usuari 1', 'Usuari 2', 'Usuari 3'],
+                                    'eu': ['Erabiltzaile 1', 'Erabiltzaile 2', 'Erabiltzaile 3']
+                                  };
+                                  
+                                  // Detectar idioma actual y usar fallback apropiado
+                                  const currentLang = i18n.language?.split('-')[0] || 'es'; // 'en-US' → 'en'
+                                  usuarios = hardcodedFallbacks[currentLang] || hardcodedFallbacks['es'];
+                                  
+                                  console.log(`🌍 Usando fallback hardcoded para idioma: ${currentLang}`, usuarios);
                                 }
                                 
                                 return usuarios.slice(0, 4).map((usuario, index) => {
@@ -2523,8 +2581,6 @@ const tryDeleteFiles = async (operationId) => {
         onPurchase={handleAIPurchase}
       />
       
-      {/* Debug Logger para desarrollo - solo se muestra si viene de WhatsApp */}
-      {/* <DebugLogger /> */}
     </div>
   );
 }
@@ -2568,7 +2624,6 @@ function App() {
     <div className="app-container">
       <SecurityCaptchaProvider userLanguage={getCurrentLanguage()}>
         <Router>
-          <DebugEnv />
           <AppContent />
         </Router>
       </SecurityCaptchaProvider>
