@@ -201,9 +201,34 @@ function Juegos({
 
   // Función para compartir en WhatsApp (juego de titulares)
   const shareOnWhatsApp = () => {
+    console.log('🚀 shareOnWhatsApp (Headlines) - Iniciando compartir en WhatsApp');
+    
+    // DETECCIÓN DE WEBVIEW ANDROID
+    const isAndroidWebView = /Android.*wv\)|; wv\)/i.test(navigator.userAgent) || 
+                             window.Android !== undefined ||
+                             typeof window.ReactNativeWebView !== 'undefined';
+    
+    console.log('📱 Es Android WebView:', isAndroidWebView);
+    
     const message = t('share.whatsapp_message', '🎯 ¡Juego: ¿Quién es quién?!\n\n¿Puedes adivinar quién corresponde a cada titular polémico?\n\n👇 Juega aquí:\n{{url}}', { url: gameUrl });
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    
+    console.log('📝 URL generada:', whatsappUrl);
+    
+    try {
+      window.open(whatsappUrl, '_blank');
+      console.log('✅ Compartido exitosamente');
+    } catch (error) {
+      console.error('❌ Error al compartir:', error);
+      // Fallback: copiar al portapapeles
+      navigator.clipboard.writeText(`${message}\n\nCompartir: ${whatsappUrl}`)
+        .then(() => {
+          alert(t('messages.copied_to_clipboard', 'Copiado al portapapeles. Pega el mensaje en WhatsApp.'));
+        })
+        .catch(() => {
+          alert(t('messages.error', 'Error al compartir. Intenta copiar manualmente.'));
+        });
+    }
   };
 
   // =================== FUNCIONES PARA JUEGO DE PERSONALIDADES ===================
@@ -392,9 +417,34 @@ function Juegos({
 
   // Función para compartir juego de personalidades en WhatsApp
   const sharePersonalityOnWhatsApp = () => {
+    console.log('🚀 sharePersonalityOnWhatsApp - Iniciando compartir en WhatsApp');
+    
+    // DETECCIÓN DE WEBVIEW ANDROID
+    const isAndroidWebView = /Android.*wv\)|; wv\)/i.test(navigator.userAgent) || 
+                             window.Android !== undefined ||
+                             typeof window.ReactNativeWebView !== 'undefined';
+    
+    console.log('📱 Es Android WebView:', isAndroidWebView);
+    
     const message = t('share.personality_whatsapp_message', '🎭 ¡Juega a adivinar quién es quién en nuestro chat de WhatsApp!\n\n{{url}}\n\n🎮 Juego de adivinar personalidades', { url: personalityGameUrl });
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    
+    console.log('📝 URL generada:', whatsappUrl);
+    
+    try {
+      window.open(whatsappUrl, '_blank');
+      console.log('✅ Compartido exitosamente');
+    } catch (error) {
+      console.error('❌ Error al compartir:', error);
+      // Fallback: copiar al portapapeles
+      navigator.clipboard.writeText(`${message}\n\nCompartir: ${whatsappUrl}`)
+        .then(() => {
+          alert(t('messages.copied_to_clipboard', 'Copiado al portapapeles. Pega el mensaje en WhatsApp.'));
+        })
+        .catch(() => {
+          alert(t('messages.error', 'Error al compartir. Intenta copiar manualmente.'));
+        });
+    }
   };
 
   // =================== RENDERIZADO ===================

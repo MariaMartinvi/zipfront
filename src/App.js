@@ -1965,10 +1965,35 @@ const tryDeleteFiles = async (operationId) => {
   
   // NUEVO: Función para compartir en WhatsApp
   const shareOnWhatsApp = () => {
+    console.log('🚀 shareOnWhatsApp - Iniciando compartir en WhatsApp');
+    
+    // DETECCIÓN DE WEBVIEW ANDROID
+    const isAndroidWebView = /Android.*wv\)|; wv\)/i.test(navigator.userAgent) || 
+                             window.Android !== undefined ||
+                             typeof window.ReactNativeWebView !== 'undefined';
+    
+    console.log('📱 Es Android WebView:', isAndroidWebView);
+    
     // Mensaje con formato mejorado para que el enlace sea clickeable
     const message = `¡Juega a adivinar quién es quién en nuestro chat de WhatsApp!\n\n${gameUrl}\n\n🎮 Juego de adivinar personalidades`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    
+    console.log('📝 URL generada:', whatsappUrl);
+    
+    try {
+      window.open(whatsappUrl, '_blank');
+      console.log('✅ Compartido exitosamente');
+    } catch (error) {
+      console.error('❌ Error al compartir:', error);
+      // Fallback: copiar al portapapeles
+      navigator.clipboard.writeText(`${message}\n\nCompartir: ${whatsappUrl}`)
+        .then(() => {
+          alert('Copiado al portapapeles. Pega el mensaje en WhatsApp.');
+        })
+        .catch(() => {
+          alert('Error al compartir. Intenta copiar manualmente.');
+        });
+    }
   };
 
   // Función para hacer scroll a la sección de carga

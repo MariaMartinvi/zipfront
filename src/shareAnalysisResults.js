@@ -646,8 +646,15 @@ const extractPlainTextFromAnalysis = (htmlContent) => {
 export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es') => {
   console.log('🚀 INICIANDO shareAnalysisResults - navigator.share disponible:', !!navigator.share);
   
+  // DETECCIÓN DE WEBVIEW ANDROID
+  const isAndroidWebView = /Android.*wv\)|; wv\)/i.test(navigator.userAgent) || 
+                           window.Android !== undefined ||
+                           typeof window.ReactNativeWebView !== 'undefined';
+  
+  console.log('📱 Es Android WebView:', isAndroidWebView);
+  
   try {
-    if (navigator.share) {
+    if (navigator.share && !isAndroidWebView) {
       // DETECCIÓN ADAPTATIVA: Desktop vs Móvil (como en shareTopProfiles.js)
       const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
@@ -750,10 +757,55 @@ export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es
         return true;
       }
       
+    } else if (isAndroidWebView) {
+      // FALLBACK PARA ANDROID WEBVIEW: Usar Intent nativo
+      console.log('📱 Usando fallback de Android WebView');
+      
+      const textoAnalisis = extractPlainTextFromAnalysis(htmlContent);
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      
+      const mensajeIntro = t ? 
+        t('hero.share_analysis.enthusiastic_message') :
+        '¡Increíble! Mira el análisis psicológico completo de nuestro chat:';
+      
+      const mensajeCierre = t ?
+        t('hero.share_analysis.closing_cta') :
+        'Analiza tus chats con CHATSALSA.COM';
+      
+      const textoCompleto = `${mensajeIntro}\n\n${textoAnalisis}\n\n${mensajeCierre} ${urlGenerica}`;
+      
+      // Usar Android Intent para compartir
+      const shareUrl = `https://wa.me/?text=${encodeURIComponent(textoCompleto)}`;
+      window.open(shareUrl, '_blank');
+      
+      console.log('✅ Compartido via WhatsApp Web');
+      return true;
     } else {
       console.log('❌ navigator.share no disponible');
-      alert('Tu navegador no soporta compartir');
-      return false;
+      
+      // FALLBACK GENERAL: Copiar al portapapeles
+      const textoAnalisis = extractPlainTextFromAnalysis(htmlContent);
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      
+      const mensajeIntro = t ? 
+        t('hero.share_analysis.enthusiastic_message') :
+        '¡Increíble! Mira el análisis psicológico completo de nuestro chat:';
+      
+      const mensajeCierre = t ?
+        t('hero.share_analysis.closing_cta') :
+        'Analiza tus chats con CHATSALSA.COM';
+      
+      const textoCompleto = `${mensajeIntro}\n\n${textoAnalisis}\n\n${mensajeCierre} ${urlGenerica}`;
+      
+      try {
+        await navigator.clipboard.writeText(textoCompleto);
+        alert(t ? t('messages.copied_to_clipboard', 'Copiado al portapapeles') : 'Copiado al portapapeles');
+        return true;
+      } catch (clipboardError) {
+        console.error('Error copiando al portapapeles:', clipboardError);
+        alert('Tu navegador no soporta compartir');
+        return false;
+      }
     }
     
   } catch (error) {

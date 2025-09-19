@@ -280,8 +280,15 @@ export const generatePromotionalImage = async (datos, t, currentLanguage = 'es')
 export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
   console.log('🚀 INICIANDO shareTopProfiles - navigator.share disponible:', !!navigator.share);
   
+  // DETECCIÓN DE WEBVIEW ANDROID
+  const isAndroidWebView = /Android.*wv\)|; wv\)/i.test(navigator.userAgent) || 
+                           window.Android !== undefined ||
+                           typeof window.ReactNativeWebView !== 'undefined';
+  
+  console.log('📱 Es Android WebView:', isAndroidWebView);
+  
   try {
-    if (navigator.share) {
+    if (navigator.share && !isAndroidWebView) {
       // DETECCIÓN ADAPTATIVA: Desktop vs Móvil
       const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
@@ -316,10 +323,63 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
       
       console.log('✅ Compartido exitosamente');
       return true;
+    } else if (isAndroidWebView) {
+      // FALLBACK PARA ANDROID WEBVIEW: Usar WhatsApp Web con texto
+      console.log('📱 Usando fallback de Android WebView');
+      
+      const mensajeEntusiasta = t ? 
+        t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!') :
+        '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!';
+      
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      
+      // Crear resumen de los datos
+      let resumenDatos = '';
+      if (datos && datos.categorias) {
+        const perfiles = Object.entries(datos.categorias).slice(0, 3); // Top 3
+        resumenDatos = perfiles.map(([categoria, perfil], index) => 
+          `${index + 1}. ${categoria}: ${perfil.nombre}`
+        ).join('\n');
+      }
+      
+      const textoCompleto = `${mensajeEntusiasta}\n\nTop Perfiles:\n${resumenDatos}\n\n${urlGenerica}`;
+      
+      // Usar WhatsApp Web
+      const shareUrl = `https://wa.me/?text=${encodeURIComponent(textoCompleto)}`;
+      window.open(shareUrl, '_blank');
+      
+      console.log('✅ Compartido via WhatsApp Web');
+      return true;
     } else {
       console.log('❌ navigator.share no disponible');
-      alert('Tu navegador no soporta compartir');
-      return false;
+      
+      // FALLBACK GENERAL: Copiar al portapapeles
+      const mensajeEntusiasta = t ? 
+        t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!') :
+        '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!';
+      
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      
+      // Crear resumen de los datos
+      let resumenDatos = '';
+      if (datos && datos.categorias) {
+        const perfiles = Object.entries(datos.categorias).slice(0, 3); // Top 3
+        resumenDatos = perfiles.map(([categoria, perfil], index) => 
+          `${index + 1}. ${categoria}: ${perfil.nombre}`
+        ).join('\n');
+      }
+      
+      const textoCompleto = `${mensajeEntusiasta}\n\nTop Perfiles:\n${resumenDatos}\n\n${urlGenerica}`;
+      
+      try {
+        await navigator.clipboard.writeText(textoCompleto);
+        alert(t ? t('messages.copied_to_clipboard', 'Copiado al portapapeles') : 'Copiado al portapapeles');
+        return true;
+      } catch (clipboardError) {
+        console.error('Error copiando al portapapeles:', clipboardError);
+        alert('Tu navegador no soporta compartir');
+        return false;
+      }
     }
     
   } catch (error) {
