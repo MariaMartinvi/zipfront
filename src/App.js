@@ -1032,6 +1032,21 @@ function AppContent() {
     }
   };
 
+  // Exponer funciones al scope global para Android WebView
+  useEffect(() => {
+    // Exponer handleSharedFile para que sea accesible desde Android
+    window.handleSharedFile = handleSharedFile;
+    window.handleFileUpload = handleFileUpload;
+    
+    console.log('✅ PWA: Funciones expuestas al scope global para Android WebView');
+    
+    return () => {
+      // Cleanup al desmontar
+      delete window.handleSharedFile;
+      delete window.handleFileUpload;
+    };
+  }, [handleSharedFile, handleFileUpload]);
+
   useEffect(() => {
     // Check URL for payment_success parameter
     const urlParams = new URLSearchParams(window.location.search);
