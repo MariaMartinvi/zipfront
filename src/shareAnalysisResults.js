@@ -653,8 +653,11 @@ export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es
   
   console.log('📱 Es Android WebView:', isAndroidWebView);
   
+  console.log('🔍 navigator.userAgent:', navigator.userAgent);
+  console.log('🔍 window.Android:', typeof window.Android);
+  
   try {
-    if (navigator.share && !isAndroidWebView) {
+    if (navigator.share) {
       // DETECCIÓN ADAPTATIVA: Desktop vs Móvil (como en shareTopProfiles.js)
       const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       

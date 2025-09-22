@@ -425,11 +425,14 @@ function Juegos({
                              typeof window.ReactNativeWebView !== 'undefined';
     
     console.log('📱 Es Android WebView:', isAndroidWebView);
+    console.log('🔍 navigator.userAgent:', navigator.userAgent);
+    console.log('🔍 personalityGameUrl:', personalityGameUrl);
     
     const message = t('share.personality_whatsapp_message', '🎭 ¡Juega a adivinar quién es quién en nuestro chat de WhatsApp!\n\n{{url}}\n\n🎮 Juego de adivinar personalidades', { url: personalityGameUrl });
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     
     console.log('📝 URL generada:', whatsappUrl);
+    console.log('📝 Mensaje completo:', message);
     
     try {
       window.open(whatsappUrl, '_blank');

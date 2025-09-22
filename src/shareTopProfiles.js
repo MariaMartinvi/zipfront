@@ -286,9 +286,11 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
                            typeof window.ReactNativeWebView !== 'undefined';
   
   console.log('📱 Es Android WebView:', isAndroidWebView);
+  console.log('🔍 navigator.userAgent:', navigator.userAgent);
+  console.log('🔍 window.Android:', typeof window.Android);
   
   try {
-    if (navigator.share && !isAndroidWebView) {
+    if (navigator.share) {
       // DETECCIÓN ADAPTATIVA: Desktop vs Móvil
       const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       

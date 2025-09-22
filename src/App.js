@@ -1963,6 +1963,12 @@ const tryDeleteFiles = async (operationId) => {
       });
   };
   
+  // TEST: Función simple para verificar que JavaScript funciona
+  const testButton = () => {
+    console.log('🧪 TEST BUTTON CLICKED - JavaScript funciona correctamente');
+    alert('🧪 Test: Botón funciona! JavaScript OK');
+  };
+
   // NUEVO: Función para compartir en WhatsApp
   const shareOnWhatsApp = () => {
     console.log('🚀 shareOnWhatsApp - Iniciando compartir en WhatsApp');
@@ -2560,6 +2566,23 @@ const tryDeleteFiles = async (operationId) => {
               <div className="share-options">
                 <button className="whatsapp-share" onClick={shareOnWhatsApp}>
                   <span>Compartir en WhatsApp</span>
+                </button>
+                
+                {/* BOTÓN DE TEST TEMPORAL */}
+                <button 
+                  onClick={testButton}
+                  style={{
+                    backgroundColor: '#ff4444',
+                    color: 'white',
+                    padding: '10px 20px',
+                    border: 'none',
+                    borderRadius: '5px',
+                    margin: '10px',
+                    fontSize: '16px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  🧪 TEST BUTTON
                 </button>
               </div>
             </div>

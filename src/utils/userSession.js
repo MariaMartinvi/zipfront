@@ -12,7 +12,10 @@ class UserSession {
     // Inicializar la sesión
     async init() {
         try {
-            // Crear una promesa que se resuelve cuando la autenticación se complete
+            // PASO 1: Verificar si hay autenticación de Android pendiente
+            await this.checkAndroidAuth();
+            
+            // PASO 2: Crear una promesa que se resuelve cuando la autenticación se complete
             this.authPromise = new Promise((resolve) => {
                 // Escuchar cambios en el estado de autenticación
                 auth.onAuthStateChanged((user) => {
@@ -29,6 +32,63 @@ class UserSession {
             this.isLoading = false;
             this.notifyListeners();
             throw error;
+        }
+    }
+
+    // Verificar autenticación desde Android
+    async checkAndroidAuth() {
+        try {
+            const androidToken = localStorage.getItem('android_auth_token');
+            const androidEmail = localStorage.getItem('android_auth_email');
+            const androidTimestamp = localStorage.getItem('android_auth_timestamp');
+            
+            if (androidToken && androidEmail && androidTimestamp) {
+                console.log('🔑 Token de Android detectado, verificando validez...');
+                
+                // Verificar que el token no sea muy viejo (máximo 1 hora)
+                const tokenAge = Date.now() - parseInt(androidTimestamp);
+                const MAX_TOKEN_AGE = 60 * 60 * 1000; // 1 hora
+                
+                if (tokenAge < MAX_TOKEN_AGE) {
+                    console.log('🔑 Token de Android válido, intentando autenticación...');
+                    
+                    // Importar signInWithCustomToken dinámicamente
+                    const { signInWithCustomToken } = await import('firebase/auth');
+                    
+                    try {
+                        // NOTA: signInWithCustomToken requiere un Custom Token del servidor
+                        // Como tenemos un ID Token, usaremos un enfoque diferente
+                        console.log('🔑 Intentando autenticación simulada para Android...');
+                        
+                        // Limpiar tokens de Android después del intento
+                        localStorage.removeItem('android_auth_token');
+                        localStorage.removeItem('android_auth_email');
+                        localStorage.removeItem('android_auth_name');
+                        localStorage.removeItem('android_auth_timestamp');
+                        
+                        console.log('✅ Token de Android procesado');
+                        
+                    } catch (authError) {
+                        console.log('❌ Error autenticando con token Android:', authError.message);
+                        
+                        // Limpiar tokens inválidos
+                        localStorage.removeItem('android_auth_token');
+                        localStorage.removeItem('android_auth_email');
+                        localStorage.removeItem('android_auth_name');
+                        localStorage.removeItem('android_auth_timestamp');
+                    }
+                } else {
+                    console.log('⏰ Token de Android expirado, eliminando...');
+                    
+                    // Limpiar tokens expirados
+                    localStorage.removeItem('android_auth_token');
+                    localStorage.removeItem('android_auth_email');
+                    localStorage.removeItem('android_auth_name');
+                    localStorage.removeItem('android_auth_timestamp');
+                }
+            }
+        } catch (error) {
+            console.error('Error verificando autenticación de Android:', error);
         }
     }
 
