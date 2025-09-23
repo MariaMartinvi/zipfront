@@ -333,6 +333,8 @@ export const loginUser = async (email, password) => {
 // Sign out the current user
 export const logoutUser = async () => {
   try {
+    console.log('🚪 logoutUser() llamado desde firebase_auth.js');
+    
     // Limpiar la sesión de Firebase
     await signOut(auth);
     
@@ -367,6 +369,15 @@ export const logoutUser = async () => {
     // Limpiar datos del juego si existen
     if (window.lastAnalysisTopData) {
       delete window.lastAnalysisTopData;
+    }
+    
+    // IMPORTANTE: Llamar a userSession.clear() para logout nativo de Android
+    try {
+      console.log('🔄 Llamando a userSession.clear() desde logoutUser()');
+      const { userSession } = await import('./utils/userSession.js');
+      userSession.clear();
+    } catch (importError) {
+      console.error('❌ Error importando userSession:', importError);
     }
 
     console.log("User signed out successfully and all data cleared");
