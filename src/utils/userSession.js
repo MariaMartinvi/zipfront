@@ -56,24 +56,18 @@ class UserSession {
                     const { signInWithCustomToken } = await import('firebase/auth');
                     
                     try {
-                        // NOTA: Como tenemos ID Token de Google Sign-In nativo, 
-                        // simularemos un usuario autenticado usando signInAnonymously
-                        // y luego actualizaremos el perfil con datos de Google
-                        console.log('🔑 Creando sesión autenticada para usuario de Android...');
+                        // NOTA: Usar signInWithCredential directamente con el token de Google
+                        console.log('🔑 Autenticando directamente con credencial de Google...');
                         
-                        const { signInAnonymously, updateProfile } = await import('firebase/auth');
+                        const { signInWithCredential, GoogleAuthProvider } = await import('firebase/auth');
                         
-                        // Crear usuario anónimo y actualizar con datos de Google
-                        const userCredential = await signInAnonymously(auth);
-                        console.log('✅ Usuario anónimo creado');
+                        // Crear credencial de Google con el token
+                        const credential = GoogleAuthProvider.credential(androidToken);
+                        console.log('✅ Credencial de Google creada');
                         
-                        // Actualizar perfil con datos de Google
-                        await updateProfile(userCredential.user, {
-                            displayName: localStorage.getItem('android_auth_name') || androidEmail.split('@')[0],
-                            email: androidEmail
-                        });
-                        
-                        console.log('✅ Perfil actualizado con datos de Google');
+                        // Autenticar directamente con Firebase
+                        const userCredential = await signInWithCredential(auth, credential);
+                        console.log('✅ Usuario autenticado con Google');
                         
                         // Limpiar tokens de Android después del éxito
                         localStorage.removeItem('android_auth_token');
