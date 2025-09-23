@@ -154,17 +154,22 @@ class UserSession {
     // Limpiar la sesión
     clear() {
         console.log('🚪 Iniciando logout desde PWA...');
+        console.log('🔍 DEBUG: window.Android disponible:', !!window.Android);
+        console.log('🔍 DEBUG: window.Android.signOut disponible:', !!(window.Android && window.Android.signOut));
         
         // Si estamos en Android WebView, usar logout nativo
         if (window.Android && window.Android.signOut) {
             console.log('📱 Usando logout nativo de Android...');
             try {
                 window.Android.signOut();
+                console.log('✅ Logout nativo llamado exitosamente');
                 // El logout nativo manejará la limpieza y recarga
                 return;
             } catch (error) {
                 console.error('❌ Error en logout nativo, usando logout estándar:', error);
             }
+        } else {
+            console.log('❌ window.Android o signOut no disponible, usando logout estándar');
         }
         
         // Logout estándar para navegador web
@@ -177,6 +182,7 @@ class UserSession {
         localStorage.removeItem('android_auth_email');
         localStorage.removeItem('android_auth_name');
         localStorage.removeItem('android_auth_timestamp');
+        console.log('🧹 Tokens de Android limpiados desde PWA');
     }
 }
 
