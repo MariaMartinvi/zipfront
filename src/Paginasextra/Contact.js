@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import emailjs from '@emailjs/browser';
 import '../AppPreview.css';
 import './Pages.css';
 
@@ -11,6 +12,9 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(''); // 'success', 'error', ''
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,16 +24,45 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement actual form submission logic
-    alert(t('contact_page.form.success_alert'));
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
+    setIsLoading(true);
+    setSubmitStatus('');
+
+    try {
+      // Configuración EmailJS - campos coincidentes con tu template
+      const templateParams = {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        time: new Date().toLocaleString(),
+        formData: `Nombre: ${formData.name}\nEmail: ${formData.email}\nAsunto: ${formData.subject}\nMensaje: ${formData.message}`
+      };
+
+      // Enviar email con EmailJS
+      await emailjs.send(
+        'service_ph20a7i',     // Service ID
+        'template_4u9n68s',    // Template ID: Contact Us
+        templateParams,
+        'PVp7BIuaYFb1_QrYP'    // Public Key
+      );
+
+      // Éxito
+      setSubmitStatus('success');
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+
+    } catch (error) {
+      console.error('Error al enviar email:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -269,12 +302,67 @@ const Contact = () => {
                     />
                   </div>
 
+                  {/* Mensajes de estado */}
+                  {submitStatus === 'success' && (
+                    <div style={{
+                      padding: '15px',
+                      marginBottom: '20px',
+                      backgroundColor: '#d4edda',
+                      border: '1px solid #c3e6cb',
+                      borderRadius: '12px',
+                      color: '#155724',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px'
+                    }}>
+                      <span style={{ fontSize: '20px' }}>✅</span>
+                      <span style={{ fontWeight: '500' }}>{t('contact_page.form.success')}</span>
+                    </div>
+                  )}
+
+                  {submitStatus === 'error' && (
+                    <div style={{
+                      padding: '15px',
+                      marginBottom: '20px',
+                      backgroundColor: '#f8d7da',
+                      border: '1px solid #f5c6cb',
+                      borderRadius: '12px',
+                      color: '#721c24',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px'
+                    }}>
+                      <span style={{ fontSize: '20px' }}>❌</span>
+                      <span style={{ fontWeight: '500' }}>{t('contact_page.form.error')}</span>
+                    </div>
+                  )}
+
                   <button 
                     type="submit" 
                     className="process-cta-button"
-                    style={{ width: '100%', margin: '0' }}
+                    disabled={isLoading}
+                    style={{ 
+                      width: '100%', 
+                      margin: '0',
+                      opacity: isLoading ? 0.7 : 1,
+                      cursor: isLoading ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '10px'
+                    }}
                   >
-                    {t('contact_page.form.submit_button')}
+                    {isLoading && (
+                      <div style={{
+                        width: '20px',
+                        height: '20px',
+                        border: '2px solid #ffffff',
+                        borderTop: '2px solid transparent',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                      }}></div>
+                    )}
+                    {isLoading ? t('contact_page.form.sending') : t('contact_page.form.submit_button')}
                   </button>
                 </form>
               </div>
@@ -319,6 +407,13 @@ const Contact = () => {
 
       {/* Security Badge */}
       
+      {/* CSS para la animación del spinner */}
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

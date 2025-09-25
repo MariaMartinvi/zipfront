@@ -1380,7 +1380,10 @@
       "subject_label": "Objet",
       "message_label": "Message",
       "submit_button": "Envoyer le message",
-      "success_alert": "Message envoyé. Merci de nous avoir contacté !"
+      "success_alert": "Message envoyé. Merci de nous avoir contacté !",
+      "sending": "Envoi du message...",
+      "success": "Message envoyé avec succès ! Nous répondrons bientôt.",
+      "error": "Une erreur s'est produite lors de l'envoi du message. Veuillez réessayer."
     },
     "features": {
       "fast_response": {

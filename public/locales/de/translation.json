@@ -1527,7 +1527,10 @@
       "subject_label": "Betreff",
       "message_label": "Nachricht",
       "submit_button": "Nachricht senden",
-      "success_alert": "Nachricht gesendet. Vielen Dank, dass Sie uns kontaktiert haben!"
+      "success_alert": "Nachricht gesendet. Vielen Dank, dass Sie uns kontaktiert haben!",
+      "sending": "Nachricht wird gesendet...",
+      "success": "Nachricht erfolgreich gesendet! Wir werden bald antworten.",
+      "error": "Beim Senden der Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
     },
     "features": {
       "fast_response": {

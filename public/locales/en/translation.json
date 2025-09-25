@@ -1669,7 +1669,10 @@
       "subject_label": "Subject",
       "message_label": "Message",
       "submit_button": "Send Message",
-      "success_alert": "Message sent. Thank you for contacting us!"
+      "success_alert": "Message sent. Thank you for contacting us!",
+      "sending": "Sending message...",
+      "success": "Message sent successfully! We'll respond soon.",
+      "error": "An error occurred while sending the message. Please try again."
     },
     "features": {
       "fast_response": {

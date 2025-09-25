@@ -1487,7 +1487,10 @@
       "subject_label": "Assunto",
       "message_label": "Mensagem",
       "submit_button": "Enviar mensagem",
-      "success_alert": "Mensagem enviada. Obrigado por nos contactar!"
+      "success_alert": "Mensagem enviada. Obrigado por nos contactar!",
+      "sending": "Enviando mensagem...",
+      "success": "Mensagem enviada com sucesso! Responderemos em breve.",
+      "error": "Ocorreu um erro ao enviar a mensagem. Por favor, tente novamente."
     },
     "features": {
       "fast_response": {

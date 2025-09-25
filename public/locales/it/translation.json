@@ -1549,7 +1549,10 @@
       "subject_label": "Oggetto",
       "message_label": "Messaggio",
       "submit_button": "Invia messaggio",
-      "success_alert": "Messaggio inviato. Grazie per averci contattato!"
+      "success_alert": "Messaggio inviato. Grazie per averci contattato!",
+      "sending": "Invio messaggio...",
+      "success": "Messaggio inviato con successo! Risponderemo presto.",
+      "error": "Si è verificato un errore durante l'invio del messaggio. Per favore riprova."
     },
     "features": {
       "fast_response": {
