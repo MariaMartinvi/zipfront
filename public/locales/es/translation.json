@@ -647,7 +647,23 @@
       }
     },
     "david": {
-      "name": "David (29 años)"
+      "name": "David (29 años)",
+      "trait1": {
+        "title": "Hipervigilancia emocional",
+        "description": "Monitorea constantemente el humor de Sofía a través de indicadores textuales (tiempo de respuesta, uso de emojis, longitud de mensajes). Promedio de 34 mensajes por cada 10 de ella."
+      },
+      "trait2": {
+        "title": "Patrón de búsqueda de validación constante",
+        "description": "Reformula mensajes múltiples veces antes de enviar. Usa preguntas de confirmación emocional frecuentes (\"¿Estás bien?\", \"¿Dije algo malo?\")."
+      },
+      "strength": {
+        "title": "Alta sensibilidad emocional",
+        "description": "Capacidad superior para detectar cambios sutiles en el estado emocional de su pareja y responder con empatía."
+      },
+      "improvement": {
+        "title": "Dependencia emocional excesiva",
+        "description": "Necesidad compulsiva de atención y confirmación que puede ser agotador para su pareja."
+      }
     },
     "top_profiles": {
       "title": "Top Perfiles",
