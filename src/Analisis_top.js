@@ -1664,15 +1664,6 @@ const AnalisisTop = ({ operationId, chatData }) => {
 
   // Efecto para exponer los datos para el juego
   useEffect(() => {
-    // SEGURIDAD: Solo exponer datos si hay usuario autenticado
-    if (!user) {
-      // Limpiar datos previos si no hay usuario
-      if (window.lastAnalysisTopData) {
-        delete window.lastAnalysisTopData;
-      }
-      return;
-    }
-
     if (datos && (datos.usuarios || datos.categorias)) {
       // Asegurarnos de que usuarios sea un array
       let usuariosArray = [];
