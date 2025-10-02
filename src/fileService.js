@@ -460,8 +460,41 @@ export const getMistralResponse = async (chatContent, language = 'es') => {
       };
     }
     
+    // IMPORTANTE: Procesar y cortar el contenido como hace getAzureResponse
+    console.log(`Longitud original del contenido: ${chatContent.length} caracteres`);
+    
+    // Procesar los nombres en el contenido completo - PASAR IDIOMA DEL USUARIO
+    const { processedContent, nameMapping } = processContentForAzure(chatContent, language);
+    console.log(`Longitud después de anonimizar: ${processedContent.length} caracteres`);
+    
     console.log('🔄 Usando nuevo sistema unificado ChatGPT + Mistral...');
-    return await unifiedAIService.getResponse(chatContent, language);
+    
+    const result = await unifiedAIService.getResponse(processedContent, language);
+    
+    if (result.success) {
+      let analysisResult = result.response;
+      
+      // Reconstruir los nombres en la respuesta (MANTENER LÓGICA EXISTENTE)
+      analysisResult = reconstructNames(analysisResult, nameMapping);
+      
+      // Guardar el nameMapping globalmente para uso en otros componentes (como el juego)
+      window.lastNameMapping = nameMapping;
+      console.log('nameMapping guardado globalmente:', nameMapping);
+      
+      // Guardar también la respuesta completa para el juego
+      window.lastAIResponse = analysisResult;
+      console.log('Respuesta de IA guardada globalmente para el juego');
+      
+      return {
+        success: true,
+        ready: true,
+        response: analysisResult
+      };
+    } else {
+      throw new Error(result.error || 'Error en el sistema de IA');
+    }
+    
+    return result;
   } catch (error) {
     return {
       success: false,
