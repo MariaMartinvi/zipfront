@@ -262,7 +262,10 @@
     "faq": "FAQ",
     "legal": "Rechtliches",
     "rights": "Alle Rechte vorbehalten",
-    "scroll_top": "Nach oben scrollen"
+    "scroll_top": "Nach oben scrollen",
+    "download_section": "Downloads",
+    "android_app": "Android App",
+    "download_android": "Für Android herunterladen"
   },
   "messages": {
     "loading": "Laden...",
@@ -307,9 +310,9 @@
     "simplified_steps": {
       "android": {
         "install": {
-          "title": "Super einfach! ChatSalsa installieren",
-          "description": "Installieren Sie unsere App, um Dateien von WhatsApp zu teilen",
-          "button": "🚀 App installieren"
+          "title": "Super einfach! ChatSalsa herunterladen",
+          "description": "Laden Sie unsere App vom Google Play Store herunter, um Dateien von WhatsApp zu teilen",
+          "button": "📱 Von Google Play herunterladen"
         },
         "0": {
           "title": "Exportieren Sie Ihren Chat",
@@ -720,9 +723,9 @@
   "simplified_steps": {
     "android": {
       "install": {
-        "title": "Super einfach! ChatSalsa installieren",
-        "description": "Installiere unsere App um Dateien von WhatsApp zu teilen",
-        "button": "🚀 App installieren"
+        "title": "Super einfach! ChatSalsa herunterladen",
+        "description": "Lade unsere App vom Google Play Store herunter um Dateien von WhatsApp zu teilen",
+        "button": "📱 Von Google Play herunterladen"
       },
       "0": {
         "title": "Chat exportieren",
@@ -1686,5 +1689,15 @@
   "fallback": {
     "emergency_users": ["Benutzer 1", "Benutzer 2", "Benutzer 3"],
     "emergency_warning": "⚠️ Notfall-Fallback für Benutzer verwenden"
+  },
+  "android_prompt": {
+    "title": "Lade unsere App herunter!",
+    "description": "Erhalte die beste Erfahrung mit unserer nativen Android-App aus dem Google Play Store.",
+    "feature_fast": "Schneller",
+    "feature_share": "Einfaches Teilen von Dateien",
+    "feature_notifications": "Benachrichtigungen",
+    "download_button": "Von Google Play herunterladen",
+    "continue_web": "Im Web fortfahren",
+    "close": "Schließen"
   }
 } 

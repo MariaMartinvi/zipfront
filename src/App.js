@@ -4,6 +4,7 @@ import './App.css';
 import './fix-font-sizes.css';
 import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
+import AndroidAppPrompt from './AndroidAppPrompt';
 import Chatgptresultados from './Chatgptresultados';
 import WhatsappInstructions from './WhatsappInstructions';
 import AnalisisResumenGeneral from './AnalisisResumenGeneral';
@@ -2529,6 +2530,9 @@ const tryDeleteFiles = async (operationId) => {
         
         {/* Componente de instalación de PWA */}
         <InstallPWA />
+        
+        {/* Popup para Android antes del login */}
+        <AndroidAppPrompt />
         
         
         {/* Reemplazar la advertencia de no refrescar con un indicador de carga más sutil */}

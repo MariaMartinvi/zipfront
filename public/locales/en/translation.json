@@ -265,7 +265,20 @@
     "privacy": "Privacy Policy",
     "contact": "Contact",
     "faq": "FAQ",
-    "cookies": "Cookie Policy"
+    "cookies": "Cookie Policy",
+    "download_section": "Downloads",
+    "android_app": "Android App",
+    "download_android": "Download for Android"
+  },
+  "android_prompt": {
+    "title": "Download our App!",
+    "description": "Get the best experience with our native Android app from Google Play Store.",
+    "feature_fast": "Faster",
+    "feature_share": "Easy file sharing",
+    "feature_notifications": "Notifications",
+    "download_button": "Download from Google Play",
+    "continue_web": "Continue on web",
+    "close": "Close"
   },
   "messages": {
     "loading": "Loading...",
@@ -310,9 +323,9 @@
     "simplified_steps": {
       "android": {
         "install": {
-          "title": "Super easy! Install ChatSalsa",
-          "description": "Install our app to share files from WhatsApp",
-          "button": "🚀 Install App"
+          "title": "Super easy! Download ChatSalsa",
+          "description": "Download our app from Google Play Store to share files from WhatsApp",
+          "button": "📱 Download from Google Play"
         },
         "0": {
           "title": "Export your chat",

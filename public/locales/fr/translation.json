@@ -247,7 +247,10 @@
     "faq": "FAQ",
     "legal": "Mentions légales",
     "rights": "Tous droits réservés",
-    "scroll_top": "Retour en haut"
+    "scroll_top": "Retour en haut",
+    "download_section": "Téléchargements",
+    "android_app": "App Android",
+    "download_android": "Télécharger pour Android"
   },
   "messages": {
     "loading": "Chargement...",
@@ -292,9 +295,9 @@
     "simplified_steps": {
       "android": {
         "install": {
-          "title": "Super facile ! Installez ChatSalsa",
-          "description": "Installez notre app pour partager des fichiers depuis WhatsApp",
-          "button": "🚀 Installer l'App"
+          "title": "Super facile ! Téléchargez ChatSalsa",
+          "description": "Téléchargez notre app depuis Google Play Store pour partager des fichiers depuis WhatsApp",
+          "button": "📱 Télécharger depuis Google Play"
         },
         "0": {
           "title": "Exportez votre chat",
@@ -1539,5 +1542,15 @@
   "fallback": {
     "emergency_users": ["Utilisateur 1", "Utilisateur 2", "Utilisateur 3"],
     "emergency_warning": "⚠️ Utilisation du fallback d'urgence pour les utilisateurs"
+  },
+  "android_prompt": {
+    "title": "Téléchargez notre App !",
+    "description": "Obtenez la meilleure expérience avec notre application Android native depuis Google Play Store.",
+    "feature_fast": "Plus rapide",
+    "feature_share": "Partage de fichiers facile",
+    "feature_notifications": "Notifications",
+    "download_button": "Télécharger depuis Google Play",
+    "continue_web": "Continuer sur le web",
+    "close": "Fermer"
   }
 } 

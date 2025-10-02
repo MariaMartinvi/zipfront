@@ -1,7 +1,7 @@
 import React from 'react';
 import './Footer.css';
 import { useTranslation } from 'react-i18next';
-import { FaArrowUp } from 'react-icons/fa';
+import { FaArrowUp, FaAndroid } from 'react-icons/fa';
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -43,6 +43,22 @@ const Footer = () => {
               </a>
               <a href="/politica-cookies" className="footer-link">
                 <span>{t('footer.cookies')}</span>
+              </a>
+            </div>
+          </div>
+          
+          <div className="footer-section">
+            <h3>{t('footer.download_section', 'Descargas')}</h3>
+            <div className="footer-links">
+              <a 
+                href="https://play.google.com/store/apps/details?id=com.chatsalsa.app" 
+                className="footer-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('footer.download_android', 'Descargar para Android')}
+              >
+                <FaAndroid className="footer-icon" />
+                <span>{t('footer.android_app', 'App Android')}</span>
               </a>
             </div>
           </div>

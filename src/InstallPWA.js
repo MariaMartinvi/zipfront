@@ -9,6 +9,7 @@ const InstallPWA = () => {
   const [isInstalled, setIsInstalled] = useState(false);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
+  const [isNativeAppInstalled, setIsNativeAppInstalled] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -29,6 +30,50 @@ const InstallPWA = () => {
       return /android/i.test(userAgent);
     };
     
+    // Detectar si la app nativa está instalada (solo Android)
+    const checkNativeAppInstalled = async () => {
+      if (!detectAndroid()) return false;
+      
+      try {
+        const appScheme = 'intent://chatsalsa.com#Intent;scheme=https;package=com.chatsalsa.app;end';
+        
+        return new Promise((resolve) => {
+          const timeout = setTimeout(() => resolve(false), 2000);
+
+          const handleVisibilityChange = () => {
+            if (document.hidden) {
+              clearTimeout(timeout);
+              resolve(true);
+            }
+          };
+
+          const handleBlur = () => {
+            clearTimeout(timeout);
+            resolve(true);
+          };
+
+          document.addEventListener('visibilitychange', handleVisibilityChange);
+          window.addEventListener('blur', handleBlur);
+
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = appScheme;
+          document.body.appendChild(iframe);
+
+          setTimeout(() => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('blur', handleBlur);
+            if (iframe.parentNode) {
+              iframe.parentNode.removeChild(iframe);
+            }
+          }, 2500);
+        });
+      } catch (error) {
+        console.log('Error checking native app:', error);
+        return false;
+      }
+    };
+    
     // Verificar autenticación del usuario
     const checkAuthentication = async () => {
       try {
@@ -40,8 +85,19 @@ const InstallPWA = () => {
       }
     };
     
-    setIsAndroid(detectAndroid());
-    checkAuthentication();
+    const initializeComponent = async () => {
+      const androidDetected = detectAndroid();
+      setIsAndroid(androidDetected);
+      
+      if (androidDetected) {
+        const nativeAppInstalled = await checkNativeAppInstalled();
+        setIsNativeAppInstalled(nativeAppInstalled);
+      }
+      
+      checkAuthentication();
+    };
+    
+    initializeComponent();
     
     window.addEventListener('beforeinstallprompt', handler);
 
@@ -77,6 +133,13 @@ const InstallPWA = () => {
   }, []);
 
   const onClick = () => {
+    // Si es Android, redirigir a Google Play Store
+    if (isAndroid) {
+      window.open('https://play.google.com/store/apps/details?id=com.chatsalsa.app', '_blank');
+      return;
+    }
+    
+    // Si NO es Android, comportamiento actual (instalar PWA)
     if (!promptInstall) {
       return;
     }
@@ -97,12 +160,13 @@ const InstallPWA = () => {
     });
   };
 
-  // Solo mostrar el botón si:
-  // 1. Es dispositivo Android
-  // 2. El usuario está autenticado
-  // 3. Soporta PWA
-  // 4. No está ya instalada
-  if (!isAndroid || !isUserAuthenticated || !supportsPWA || isInstalled) {
+  // NO mostrar el botón si:
+  // - Usuario no autenticado
+  // - Android con app nativa instalada
+  // - Otros dispositivos con PWA instalada
+  if (!isUserAuthenticated || 
+      (isAndroid && isNativeAppInstalled) || 
+      (!isAndroid && (!supportsPWA || isInstalled))) {
     return null;
   }
 

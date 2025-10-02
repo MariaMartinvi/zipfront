@@ -277,7 +277,10 @@
     "faq": "FAQ",
     "legal": "Note legali",
     "rights": "Tutti i diritti riservati",
-    "scroll_top": "Torna su"
+    "scroll_top": "Torna su",
+    "download_section": "Download",
+    "android_app": "App Android",
+    "download_android": "Scarica per Android"
   },
   "language": {
     "es": "Spagnolo",
@@ -1058,9 +1061,9 @@
     "simplified_steps": {
       "android": {
         "install": {
-          "title": "Super facile! Installa ChatSalsa",
-          "description": "Installa la nostra app per condividere file da WhatsApp",
-          "button": "🚀 Installa App"
+          "title": "Super facile! Scarica ChatSalsa",
+          "description": "Scarica la nostra app da Google Play Store per condividere file da WhatsApp",
+          "button": "📱 Scarica da Google Play"
         },
         "0": {
           "title": "Esporta la tua chat",
@@ -1725,5 +1728,15 @@
   "fallback": {
     "emergency_users": ["Utente 1", "Utente 2", "Utente 3"],
     "emergency_warning": "⚠️ Utilizzo del fallback di emergenza per gli utenti"
+  },
+  "android_prompt": {
+    "title": "Scarica la nostra App!",
+    "description": "Ottieni la migliore esperienza con la nostra app nativa Android da Google Play Store.",
+    "feature_fast": "Più veloce",
+    "feature_share": "Condivisione file facile",
+    "feature_notifications": "Notifiche",
+    "download_button": "Scarica da Google Play",
+    "continue_web": "Continua sul web",
+    "close": "Chiudi"
   }
 } 

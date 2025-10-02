@@ -290,7 +290,20 @@
     "cookies": "Política de Cookies",
     "rights": "Analizador de Chats - Todos los derechos reservados",
     "scroll_top": "Volver arriba",
-    "navigation": "Navegación"
+    "navigation": "Navegación",
+    "download_section": "Descargas",
+    "android_app": "App Android",
+    "download_android": "Descargar para Android"
+  },
+  "android_prompt": {
+    "title": "¡Descarga nuestra App!",
+    "description": "Obtén la mejor experiencia con nuestra app nativa de Android desde Google Play Store.",
+    "feature_fast": "Más rápida",
+    "feature_share": "Compartir archivos fácil",
+    "feature_notifications": "Notificaciones",
+    "download_button": "Descargar desde Google Play",
+    "continue_web": "Continuar en web",
+    "close": "Cerrar"
   },
   "messages": {
     "loading": "Cargando...",
@@ -349,9 +362,9 @@
     "simplified_steps": {
       "android": {
         "install": {
-          "title": "¡Súper fácil! Instala ChatSalsa",
-          "description": "Instala nuestra app para poder compartir archivos desde WhatsApp",
-          "button": "🚀 Instalar App"
+          "title": "¡Súper fácil! Descarga ChatSalsa",
+          "description": "Descarga nuestra app desde Google Play Store para compartir archivos desde WhatsApp",
+          "button": "📱 Descargar desde Google Play"
         },
         "0": {
           "title": "Exporta tu chat",
