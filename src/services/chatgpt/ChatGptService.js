@@ -5,7 +5,7 @@
  * usando gpt-4o-mini como modelo principal.
  */
 
-import { PROMPTS } from '../azure/constants';
+// Los prompts ahora están en el backend
 
 export class ChatGptService {
   constructor() {
@@ -22,55 +22,43 @@ export class ChatGptService {
    * @returns {Promise<Object>} - Resultado del análisis
    */
   async getResponse(textContent, language = 'es') {
-    const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
-    
-    if (!apiKey) {
-      throw new Error('REACT_APP_OPENAI_API_KEY no está configurada en las variables de entorno');
-    }
-
-    // Usar los mismos prompts que Azure
-    const prompt = PROMPTS[language] || PROMPTS['es'];
-    
     console.log(`🤖 ChatGPT: Procesando texto de ${textContent.length} caracteres en idioma: ${language}`);
 
     try {
-      const response = await fetch(`${this.baseURL}/chat/completions`, {
+      // Obtener token de autenticación
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('Usuario no autenticado');
+      }
+
+      // Llamar al backend seguro
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_URL}/api/openai-analysis`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          model: this.model,
-          messages: [
-            { role: 'system', content: prompt },
-            { role: 'user', content: textContent }
-          ],
-          max_tokens: this.maxTokens,
-          temperature: this.temperature
+          textContent,
+          language
         })
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+        throw new Error(`Backend error: ${response.status} - ${errorData.error || 'Unknown error'}`);
       }
 
       const result = await response.json();
       
-      if (!result.choices || !result.choices[0] || !result.choices[0].message) {
-        throw new Error('Respuesta vacía o malformada de OpenAI API');
+      if (!result.success) {
+        throw new Error('Error en la respuesta del backend');
       }
 
-      console.log(`✅ ChatGPT: Respuesta recibida exitosamente (${result.choices[0].message.content.length} caracteres)`);
+      console.log(`✅ ChatGPT: Respuesta recibida exitosamente desde backend seguro`);
 
-      return {
-        success: true,
-        response: result.choices[0].message.content,
-        provider: 'OpenAI',
-        model: this.model,
-        usage: result.usage
-      };
+      return result;
 
     } catch (error) {
       console.error(`❌ ChatGPT Error:`, error.message);

@@ -96,9 +96,11 @@ export class UnifiedAIService {
    * @returns {Object} - Estado de configuración
    */
   checkConfiguration() {
+    // Ya no necesitamos verificar claves API en el frontend
+    // El backend maneja toda la configuración de forma segura
     const config = {
-      chatgpt: !!process.env.REACT_APP_OPENAI_API_KEY,
-      mistral: !!process.env.REACT_APP_MISTRAL_API_KEY
+      chatgpt: true, // Siempre disponible a través del backend
+      mistral: true  // Siempre disponible a través del backend
     };
 
     return {

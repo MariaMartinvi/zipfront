@@ -1,8 +1,7 @@
 // fileService.js
 // Servicio para operaciones con archivos
 
-// Importar constantes desde el archivo de constantes
-import { PROMPTS, USER_PREFIXES, ERROR_MESSAGES } from './services/azure/constants';
+// Las constantes ahora están en el backend
 import { userSession } from './utils/userSession';
 import { anonymizationService } from './services/anonymizationService';
 import unifiedAIService from './services/UnifiedAIService';
@@ -366,9 +365,7 @@ export const getAzureResponse = async (chatContent, language = 'es') => {
     console.log(`REACT_APP_AZURE_API_KEY está definida: ${process.env.REACT_APP_AZURE_API_KEY ? 'Sí' : 'No'}`);
     
     if (!defaultEndpoint || !apiKey) {
-      const errorMsg = ERROR_MESSAGES[language]?.no_api_key ||
-          ERROR_MESSAGES['en'].no_api_key;
-      throw new Error(errorMsg);
+      throw new Error('Azure OpenAI credentials not configured');
     }
     
     // AzureService se encarga del fallback automático

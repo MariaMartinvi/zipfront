@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import './Chatgptresultados.css';
 import './styles/Analisis.css';
 import { useAuth } from './AuthContext';
-import { createReverseTranslationMapping } from './services/azure/constants'; // NUEVO: importar función de mapeo
+// Las constantes ahora están en el backend
 import { ShareAnalysisButton } from './shareAnalysisResults'; // NUEVO: importar botón de compartir
 
 function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-default" }) {
@@ -84,7 +84,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           // Crear mapeo ajustado según el idioma detectado
           let adjustedMapping = window.lastNameMapping;
           if (detectedLanguage !== 'es') {
-            adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
+            adjustedMapping = window.lastNameMapping;
           }
           
           // Crear mapeo inverso con el mapeo ajustado
@@ -128,9 +128,6 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         
         // Crear mapeo ajustado según el idioma detectado
         let adjustedMapping = window.lastNameMapping;
-        if (detectedLanguage !== 'es') {
-          adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
-        }
         
         // Crear mapeo inverso con el mapeo ajustado
         const inverseMapping = {};
@@ -192,7 +189,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           // Crear mapeo ajustado según el idioma detectado
           let adjustedMapping = window.lastNameMapping;
           if (detectedLanguage !== 'es') {
-            adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
+            adjustedMapping = window.lastNameMapping;
           }
           
           // Crear mapeo inverso con el mapeo ajustado
@@ -588,7 +585,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
            // Crear mapeo ajustado según el idioma detectado
            let adjustedMapping = window.lastNameMapping;
            if (detectedLanguage !== 'es') {
-             adjustedMapping = createReverseTranslationMapping(window.lastNameMapping, detectedLanguage);
+             adjustedMapping = window.lastNameMapping;
            }
            
            // Crear mapeo inverso
