@@ -330,10 +330,8 @@ const reconstructNames = (response, nameMapping) => {
 };
 
 /**
- * Obtiene la respuesta de Azure OpenAI para un chat directamente desde el cliente
- * @param {string} chatContent - Contenido del chat para analizar
- * @param {string} language - Idioma para el análisis (es, en, fr)
- * @returns {Promise<Object>} - Resultado de la operación
+ * DEPRECATED: Esta función ya no se usa - ahora usamos UnifiedAIService
+ * @deprecated Use unifiedAIService.getResponse() instead
  */
 export const getAzureResponse = async (chatContent, language = 'es') => {
   try {
@@ -462,8 +460,8 @@ export const getMistralResponse = async (chatContent, language = 'es') => {
       };
     }
     
-    console.log('Analizando chat con Azure OpenAI');
-    return await getAzureResponse(chatContent, language);
+    console.log('🔄 Usando nuevo sistema unificado ChatGPT + Mistral...');
+    return await unifiedAIService.getResponse(chatContent, language);
   } catch (error) {
     return {
       success: false,

@@ -1191,7 +1191,7 @@ function AppContent() {
     });
     
     try {
-      addDebugMessage('Analizando chat directamente con Azure OpenAI desde el frontend');
+        addDebugMessage('Iniciando análisis con sistema unificado de IA');
       
       // Actualizar mensaje de progreso
       setProgressMessage(`${t('app.generating_analysis')}: ${t('app.progress_phases.processing_data')}`);
@@ -1203,8 +1203,8 @@ function AppContent() {
       // Usar contentToAnalyze en lugar de chatData
       const result = await getMistralResponse(contentToAnalyze, userLanguage);
       
-      if (result.success && result.ready && result.response) {
-        addDebugMessage('Respuesta de Azure recibida con éxito');
+      if (result.success && result.response) {
+        addDebugMessage('Respuesta de IA recibida con éxito');
         setChatGptResponse(result.response);
         setShowChatGptResponse(true);
         
@@ -1289,7 +1289,7 @@ function AppContent() {
         return true;
       } else {
         // Si hay un error, mostrar mensaje
-        addDebugMessage(`Error al obtener respuesta de Azure: ${result.error}`);
+        addDebugMessage(`Error en análisis de IA: ${result.error}`);
         setError(result.error || 'Error al analizar el chat con Azure OpenAI');
         setIsFetchingMistral(false);
         setAiAnalysisProgress('');
