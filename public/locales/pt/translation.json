@@ -1,4 +1,11 @@
 {
+  "ai_analysis": {
+    "starting": "Iniciando análise com sistema de IA unificado",
+    "success": "Resposta de IA recebida com sucesso",
+    "error": "Erro na análise de IA",
+    "chat_error": "Erro ao analisar chat com IA",
+    "general_error": "Erro ao analisar chat"
+  },
   "app": {
     "title": "Analisador de Chat",
     "welcome": "Bem-vindo ao analisador de chat",

@@ -545,6 +545,13 @@
       ]
     }
   },
+  "ai_analysis": {
+    "starting": "Avvio analisi con sistema IA unificato",
+    "success": "Risposta IA ricevuta con successo",
+    "error": "Errore nell'analisi IA",
+    "chat_error": "Errore nell'analizzare la chat con IA",
+    "general_error": "Errore nell'analizzare la chat"
+  },
   "app": {
     "title": "Analizzatore di Chat",
     "welcome": "Benvenuto nell'analizzatore di chat",

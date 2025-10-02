@@ -1,4 +1,11 @@
 {
+  "ai_analysis": {
+    "starting": "Starting analysis with unified AI system",
+    "success": "AI response received successfully",
+    "error": "Error in AI analysis",
+    "chat_error": "Error analyzing chat with AI",
+    "general_error": "Error analyzing chat"
+  },
   "app": {
     "title": "Chat Analyzer",
     "welcome": "Welcome to the chat analyzer",

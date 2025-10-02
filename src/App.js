@@ -1191,7 +1191,7 @@ function AppContent() {
     });
     
     try {
-        addDebugMessage('Iniciando análisis con sistema unificado de IA');
+        addDebugMessage(t('ai_analysis.starting'));
       
       // Actualizar mensaje de progreso
       setProgressMessage(`${t('app.generating_analysis')}: ${t('app.progress_phases.processing_data')}`);
@@ -1204,7 +1204,7 @@ function AppContent() {
       const result = await getMistralResponse(contentToAnalyze, userLanguage);
       
       if (result.success && result.response) {
-        addDebugMessage('Respuesta de IA recibida con éxito');
+        addDebugMessage(t('ai_analysis.success'));
         setChatGptResponse(result.response);
         setShowChatGptResponse(true);
         
@@ -1289,8 +1289,8 @@ function AppContent() {
         return true;
       } else {
         // Si hay un error, mostrar mensaje
-        addDebugMessage(`Error en análisis de IA: ${result.error}`);
-        setError(result.error || 'Error al analizar el chat con Azure OpenAI');
+        addDebugMessage(`${t('ai_analysis.error')}: ${result.error}`);
+        setError(result.error || t('ai_analysis.chat_error'));
         setIsFetchingMistral(false);
         setAiAnalysisProgress('');
         return false;
@@ -1299,7 +1299,7 @@ function AppContent() {
       addDebugMessage(`Error general en fetchMistralResponse: ${error.message}`);
       setIsFetchingMistral(false);
       setAiAnalysisProgress('');
-      setError(`Error al analizar el chat: ${error.message}`);
+      setError(`${t('ai_analysis.general_error')}: ${error.message}`);
       // Guardar que hubo un error para poder recuperarse después
       localStorage.setItem('whatsapp_analyzer_mistral_error', 'true');
       return false;

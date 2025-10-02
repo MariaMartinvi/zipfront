@@ -1,4 +1,11 @@
 {
+  "ai_analysis": {
+    "starting": "Starte Analyse mit einheitlichem KI-System",
+    "success": "KI-Antwort erfolgreich erhalten",
+    "error": "Fehler bei KI-Analyse",
+    "chat_error": "Fehler beim Analysieren des Chats mit KI",
+    "general_error": "Fehler beim Analysieren des Chats"
+  },
   "app": {
     "title": "Chat-Analysator",
     "welcome": "Willkommen beim Chat-Analysator",
