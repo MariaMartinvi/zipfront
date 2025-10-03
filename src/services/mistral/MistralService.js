@@ -23,17 +23,21 @@ export class MistralService {
    */
   async getResponse(textContent, language = 'es') {
     console.log(`🤖 Mistral: Procesando texto de ${textContent.length} caracteres en idioma: ${language}`);
+    console.log(`🤖 Mistral: INICIANDO getResponse - timestamp: ${new Date().toISOString()}`);
 
     try {
       // Obtener token de autenticación
       const token = localStorage.getItem('access_token');
+      console.log(`🤖 Mistral: Token encontrado: ${token ? 'SÍ' : 'NO'}`);
       if (!token) {
+        console.log(`🤖 Mistral: ERROR - No hay token, lanzando excepción`);
         throw new Error('Usuario no autenticado');
       }
 
       // Llamar al backend seguro
       const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
       console.log(`🌐 Mistral: Usando URL: ${API_URL}/api/mistral-analysis`);
+      console.log(`🌐 Mistral: INICIANDO FETCH - timestamp: ${new Date().toISOString()}`);
       const response = await fetch(`${API_URL}/api/mistral-analysis`, {
         method: 'POST',
         headers: {
@@ -45,6 +49,8 @@ export class MistralService {
           language
         })
       });
+
+      console.log(`🌐 Mistral: FETCH COMPLETADO - Status: ${response.status}, timestamp: ${new Date().toISOString()}`);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
