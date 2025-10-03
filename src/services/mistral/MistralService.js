@@ -28,24 +28,32 @@ export class MistralService {
     // DEBUGGING ANDROID: Usar alert para ver si llega aquí
     if (navigator.userAgent.includes('Android')) {
       alert(`🤖 ANDROID DEBUG: Mistral getResponse iniciado - ${textContent.length} chars`);
+      
+      // Verificar todos los tokens en localStorage
+      const allKeys = Object.keys(localStorage);
+      const tokenKeys = allKeys.filter(key => key.includes('token') || key.includes('auth'));
+      alert(`🔑 ANDROID DEBUG: Keys en localStorage: ${tokenKeys.join(', ')}`);
     }
 
     try {
-      // Obtener token de autenticación
-      const token = localStorage.getItem('access_token');
-      console.log(`🤖 Mistral: Token encontrado: ${token ? 'SÍ' : 'NO'}`);
+      // Obtener token de autenticación (IGUAL QUE STRIPE)
+      const { auth } = await import('../firebase_auth');
+      const { getIdToken } = await import('firebase/auth');
+      
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        if (navigator.userAgent.includes('Android')) {
+          alert(`🤖 ANDROID DEBUG: ERROR - No hay usuario Firebase`);
+        }
+        throw new Error('Usuario no autenticado en Firebase');
+      }
+      
+      const token = await getIdToken(currentUser, true);
+      console.log(`🤖 Mistral: Token Firebase encontrado: ${token ? 'SÍ' : 'NO'}`);
       
       // DEBUGGING ANDROID: Verificar token
       if (navigator.userAgent.includes('Android')) {
-        alert(`🤖 ANDROID DEBUG: Token ${token ? 'ENCONTRADO' : 'NO ENCONTRADO'}`);
-      }
-      
-      if (!token) {
-        console.log(`🤖 Mistral: ERROR - No hay token, lanzando excepción`);
-        if (navigator.userAgent.includes('Android')) {
-          alert(`🤖 ANDROID DEBUG: ERROR - Sin token, lanzando excepción`);
-        }
-        throw new Error('Usuario no autenticado');
+        alert(`🤖 ANDROID DEBUG: Token Firebase ${token ? 'ENCONTRADO' : 'NO ENCONTRADO'}`);
       }
 
       // Llamar al backend seguro

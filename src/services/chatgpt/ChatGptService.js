@@ -25,11 +25,16 @@ export class ChatGptService {
     console.log(`🤖 ChatGPT: Procesando texto de ${textContent.length} caracteres en idioma: ${language}`);
 
     try {
-      // Obtener token de autenticación
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        throw new Error('Usuario no autenticado');
+      // Obtener token de autenticación (IGUAL QUE STRIPE)
+      const { auth } = await import('../../firebase_auth');
+      const { getIdToken } = await import('firebase/auth');
+      
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error('Usuario no autenticado en Firebase');
       }
+      
+      const token = await getIdToken(currentUser, true);
 
       // Llamar al backend seguro
       const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
