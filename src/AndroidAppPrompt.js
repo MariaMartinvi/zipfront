@@ -16,57 +16,38 @@ const AndroidAppPrompt = () => {
     return /android/i.test(userAgent);
   };
 
-  // Detectar si la app nativa está instalada
-  const checkNativeAppInstalled = async () => {
+  // Detectar si la app nativa está instalada (IGUAL QUE InstallPWA.js)
+  const checkNativeAppInstalled = () => {
     if (!isAndroid) return false;
     
-    try {
-      // Método 1: Intentar abrir con deep link
-      const appScheme = 'intent://chatsalsa.com#Intent;scheme=https;package=com.chatsalsa.app;end';
-      
-      return new Promise((resolve) => {
-        const startTime = Date.now();
-        const timeout = setTimeout(() => {
-          // Si han pasado más de 2 segundos sin cambio de foco, la app no está instalada
-          resolve(false);
-        }, 2000);
-
-        const handleVisibilityChange = () => {
-          if (document.hidden) {
-            // La app se abrió (el navegador perdió el foco)
-            clearTimeout(timeout);
-            resolve(true);
-          }
-        };
-
-        const handleBlur = () => {
-          // La ventana perdió el foco (posiblemente se abrió la app)
-          clearTimeout(timeout);
-          resolve(true);
-        };
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        window.addEventListener('blur', handleBlur);
-
-        // Intentar abrir la app
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = appScheme;
-        document.body.appendChild(iframe);
-
-        // Limpiar después del timeout
-        setTimeout(() => {
-          document.removeEventListener('visibilitychange', handleVisibilityChange);
-          window.removeEventListener('blur', handleBlur);
-          if (iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
-          }
-        }, 2500);
-      });
-    } catch (error) {
-      console.log('Error checking native app:', error);
-      return false;
-    }
+    // MÉTODO SIMPLE: Solo detectar si estamos DENTRO de la app nativa
+    const userAgent = navigator.userAgent || '';
+    
+    // Indicadores más específicos de WebView dentro de app nativa
+    const isInWebView = 
+      userAgent.includes('; wv)') ||               // WebView específico de Android
+      userAgent.includes('Version/') && userAgent.includes('Chrome/') && userAgent.includes('Mobile Safari') ||
+      window.AndroidInterface ||                   // Si la app expone una interfaz
+      window.ReactNativeWebView ||                 // React Native WebView
+      document.referrer === '' && window.location.hostname !== 'localhost' || // Cargado directamente en app
+      window.location.protocol === 'file:' ||      // Cargado desde archivo local
+      navigator.standalone === true ||             // iOS standalone mode
+      window.matchMedia('(display-mode: standalone)').matches; // PWA standalone
+    
+    console.log('🔍 AndroidAppPrompt - Detección completa:', {
+      userAgent: userAgent.substring(0, 100) + '...',
+      hasWebViewIndicator: userAgent.includes('; wv)'),
+      hasAndroidInterface: !!window.AndroidInterface,
+      hasReactNativeWebView: !!window.ReactNativeWebView,
+      referrer: document.referrer,
+      hostname: window.location.hostname,
+      protocol: window.location.protocol,
+      isStandalone: navigator.standalone,
+      displayMode: window.matchMedia('(display-mode: standalone)').matches,
+      isInWebView: isInWebView
+    });
+    
+    return isInWebView;
   };
 
   useEffect(() => {
@@ -75,8 +56,9 @@ const AndroidAppPrompt = () => {
       setIsAndroid(androidDetected);
 
       if (androidDetected && !isAuthLoading) {
-        const appInstalled = await checkNativeAppInstalled();
+        const appInstalled = checkNativeAppInstalled(); // Ya no es async
         setIsNativeAppInstalled(appInstalled);
+        console.log('📱 AndroidAppPrompt - App nativa detectada:', appInstalled);
         
         // Mostrar prompt solo si:
         // 1. Es Android

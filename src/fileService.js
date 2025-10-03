@@ -292,8 +292,12 @@ const reconstructNames = (response, nameMapping) => {
 
     // 2. Mapear participantes en otros idiomas por número (nuevo método)
     const participantWords = [
-      'Teilnehmer',     // Alemán
+      'Participante',   // Español (añadir por si acaso)
       'Participant',    // Inglés/Francés
+      'Person',         // Inglés alternativo
+      'Individual',     // Inglés alternativo
+      'User',           // Inglés alternativo
+      'Teilnehmer',     // Alemán
       'Partecipante',   // Italiano
       'Partaide',       // Euskera
       'Участник',       // Ruso
