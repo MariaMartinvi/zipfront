@@ -26,7 +26,7 @@ export class MistralService {
 
     try {
       // Obtener token de autenticación (IGUAL QUE STRIPE)
-      const { auth } = await import('../firebase_auth');
+      const { auth } = await import('../../firebase_auth');  // Corregir ruta
       const { getIdToken, onAuthStateChanged } = await import('firebase/auth');
       
       // ESPERAR a que Firebase se inicialice completamente (CRÍTICO para Android)
