@@ -32,7 +32,8 @@ export class ChatGptService {
       }
 
       // Llamar al backend seguro
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
+      console.log(`🌐 ChatGPT: Usando URL: ${API_URL}/api/openai-analysis`);
       const response = await fetch(`${API_URL}/api/openai-analysis`, {
         method: 'POST',
         headers: {

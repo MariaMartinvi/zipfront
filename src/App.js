@@ -362,7 +362,7 @@ function AppContent() {
   const isProcessingRef = useRef(false);
 
   // URL del backend
-  const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+  const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
 
   // Función para el logging (visible en modo desarrollo)
   const addDebugMessage = (message) => {
