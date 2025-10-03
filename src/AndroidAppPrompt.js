@@ -111,8 +111,19 @@ const AndroidAppPrompt = () => {
     setShowPrompt(false);
   };
 
+  const handleAlreadyHaveApp = () => {
+    // Marcar permanentemente que el usuario ya tiene la app
+    localStorage.setItem('user_has_native_app', 'true');
+    sessionStorage.setItem('android_app_prompt_shown', 'true');
+    setShowPrompt(false);
+    console.log('✅ Usuario marcó que ya tiene la app nativa');
+  };
+
+  // Verificar si el usuario ha marcado manualmente que tiene la app
+  const userHasAppManually = localStorage.getItem('user_has_native_app') === 'true';
+  
   // No mostrar si no cumple las condiciones
-  if (!showPrompt || !isAndroid || user || isNativeAppInstalled) {
+  if (!showPrompt || !isAndroid || user || isNativeAppInstalled || userHasAppManually) {
     return null;
   }
 
@@ -157,6 +168,13 @@ const AndroidAppPrompt = () => {
           >
             <span className="download-icon">📱</span>
             {t('android_prompt.download_button', 'Descargar desde Google Play')}
+          </button>
+          
+          <button 
+            className="prompt-already-have-btn"
+            onClick={handleAlreadyHaveApp}
+          >
+            {t('android_prompt.already_have_app', 'Ya tengo la app')}
           </button>
           
           <button 

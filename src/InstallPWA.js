@@ -31,47 +31,29 @@ const InstallPWA = () => {
     };
     
     // Detectar si la app nativa está instalada (solo Android)
-    const checkNativeAppInstalled = async () => {
+    const checkNativeAppInstalled = () => {
       if (!detectAndroid()) return false;
       
-      try {
-        const appScheme = 'intent://chatsalsa.com#Intent;scheme=https;package=com.chatsalsa.app;end';
-        
-        return new Promise((resolve) => {
-          const timeout = setTimeout(() => resolve(false), 2000);
-
-          const handleVisibilityChange = () => {
-            if (document.hidden) {
-              clearTimeout(timeout);
-              resolve(true);
-            }
-          };
-
-          const handleBlur = () => {
-            clearTimeout(timeout);
-            resolve(true);
-          };
-
-          document.addEventListener('visibilitychange', handleVisibilityChange);
-          window.addEventListener('blur', handleBlur);
-
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none';
-          iframe.src = appScheme;
-          document.body.appendChild(iframe);
-
-          setTimeout(() => {
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-            window.removeEventListener('blur', handleBlur);
-            if (iframe.parentNode) {
-              iframe.parentNode.removeChild(iframe);
-            }
-          }, 2500);
-        });
-      } catch (error) {
-        console.log('Error checking native app:', error);
-        return false;
-      }
+      // MÉTODO SIMPLE: Solo detectar si estamos DENTRO de la app nativa
+      const userAgent = navigator.userAgent || '';
+      
+      // Indicadores más específicos de WebView dentro de app nativa
+      const isInWebView = 
+        userAgent.includes('; wv)') ||               // WebView específico de Android
+        userAgent.includes('Version/') && userAgent.includes('Chrome/') && userAgent.includes('Mobile Safari') ||
+        window.AndroidInterface ||                   // Si la app expone una interfaz
+        document.referrer === '' && window.location.hostname !== 'localhost'; // Cargado directamente en app
+      
+      console.log('🔍 Detección simplificada:', {
+        userAgent: userAgent.substring(0, 100) + '...',
+        hasWebViewIndicator: userAgent.includes('; wv)'),
+        hasAndroidInterface: !!window.AndroidInterface,
+        referrer: document.referrer,
+        hostname: window.location.hostname,
+        isInWebView: isInWebView
+      });
+      
+      return isInWebView;
     };
     
     // Verificar autenticación del usuario
@@ -90,8 +72,9 @@ const InstallPWA = () => {
       setIsAndroid(androidDetected);
       
       if (androidDetected) {
-        const nativeAppInstalled = await checkNativeAppInstalled();
+        const nativeAppInstalled = checkNativeAppInstalled(); // Ya no es async
         setIsNativeAppInstalled(nativeAppInstalled);
+        console.log('📱 App nativa instalada:', nativeAppInstalled);
       }
       
       checkAuthentication();
@@ -160,12 +143,17 @@ const InstallPWA = () => {
     });
   };
 
+  // Verificar si el usuario ha marcado manualmente que tiene la app
+  const userHasAppManually = localStorage.getItem('user_has_native_app') === 'true';
+  
   // NO mostrar el botón si:
   // - Usuario no autenticado
-  // - Android con app nativa instalada
+  // - Android con app nativa instalada (detectada automáticamente)
+  // - Usuario marcó manualmente que tiene la app
   // - Otros dispositivos con PWA instalada
   if (!isUserAuthenticated || 
       (isAndroid && isNativeAppInstalled) || 
+      (isAndroid && userHasAppManually) ||
       (!isAndroid && (!supportsPWA || isInstalled))) {
     return null;
   }

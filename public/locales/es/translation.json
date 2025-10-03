@@ -306,9 +306,10 @@
     "title": "¡Descarga nuestra App!",
     "description": "Obtén la mejor experiencia con nuestra app nativa de Android desde Google Play Store.",
     "feature_fast": "Más rápida",
-    "feature_share": "Compartir archivos fácil",
+    "feature_share": "Compartir archivos fácil", 
     "feature_notifications": "Notificaciones",
     "download_button": "Descargar desde Google Play",
+    "already_have_app": "Ya tengo la app",
     "continue_web": "Continuar en web",
     "close": "Cerrar"
   },
