@@ -27,9 +27,28 @@ export class MistralService {
     try {
       // Obtener token de autenticación (IGUAL QUE STRIPE)
       const { auth } = await import('../firebase_auth');
-      const { getIdToken } = await import('firebase/auth');
+      const { getIdToken, onAuthStateChanged } = await import('firebase/auth');
       
-      const currentUser = auth.currentUser;
+      // ESPERAR a que Firebase se inicialice completamente (CRÍTICO para Android)
+      const currentUser = await new Promise((resolve) => {
+        if (auth.currentUser) {
+          // Usuario ya disponible
+          resolve(auth.currentUser);
+        } else {
+          // Esperar a que se restaure la sesión
+          const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe();
+            resolve(user);
+          });
+          
+          // Timeout de seguridad (5 segundos)
+          setTimeout(() => {
+            unsubscribe();
+            resolve(null);
+          }, 5000);
+        }
+      });
+      
       if (!currentUser) {
         throw new Error('Usuario no autenticado en Firebase');
       }
