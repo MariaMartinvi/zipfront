@@ -23,17 +23,6 @@ export class MistralService {
    */
   async getResponse(textContent, language = 'es') {
     console.log(`🤖 Mistral: Procesando texto de ${textContent.length} caracteres en idioma: ${language}`);
-    console.log(`🤖 Mistral: INICIANDO getResponse - timestamp: ${new Date().toISOString()}`);
-    
-    // DEBUGGING ANDROID: Usar alert para ver si llega aquí
-    if (navigator.userAgent.includes('Android')) {
-      alert(`🤖 ANDROID DEBUG: Mistral getResponse iniciado - ${textContent.length} chars`);
-      
-      // Verificar todos los tokens en localStorage
-      const allKeys = Object.keys(localStorage);
-      const tokenKeys = allKeys.filter(key => key.includes('token') || key.includes('auth'));
-      alert(`🔑 ANDROID DEBUG: Keys en localStorage: ${tokenKeys.join(', ')}`);
-    }
 
     try {
       // Obtener token de autenticación (IGUAL QUE STRIPE)
@@ -42,29 +31,15 @@ export class MistralService {
       
       const currentUser = auth.currentUser;
       if (!currentUser) {
-        if (navigator.userAgent.includes('Android')) {
-          alert(`🤖 ANDROID DEBUG: ERROR - No hay usuario Firebase`);
-        }
         throw new Error('Usuario no autenticado en Firebase');
       }
       
       const token = await getIdToken(currentUser, true);
-      console.log(`🤖 Mistral: Token Firebase encontrado: ${token ? 'SÍ' : 'NO'}`);
-      
-      // DEBUGGING ANDROID: Verificar token
-      if (navigator.userAgent.includes('Android')) {
-        alert(`🤖 ANDROID DEBUG: Token Firebase ${token ? 'ENCONTRADO' : 'NO ENCONTRADO'}`);
-      }
+      console.log(`🤖 Mistral: Token Firebase obtenido correctamente`);
 
       // Llamar al backend seguro
       const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
-      console.log(`🌐 Mistral: Usando URL: ${API_URL}/api/mistral-analysis`);
-      console.log(`🌐 Mistral: INICIANDO FETCH - timestamp: ${new Date().toISOString()}`);
-      
-      // DEBUGGING ANDROID: Verificar URL y fetch
-      if (navigator.userAgent.includes('Android')) {
-        alert(`🌐 ANDROID DEBUG: Iniciando fetch a ${API_URL}/api/mistral-analysis`);
-      }
+      console.log(`🌐 Mistral: Enviando petición a ${API_URL}/api/mistral-analysis`);
       
       const response = await fetch(`${API_URL}/api/mistral-analysis`, {
         method: 'POST',
@@ -78,7 +53,7 @@ export class MistralService {
         })
       });
 
-      console.log(`🌐 Mistral: FETCH COMPLETADO - Status: ${response.status}, timestamp: ${new Date().toISOString()}`);
+      console.log(`🌐 Mistral: Respuesta recibida - Status: ${response.status}`);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
