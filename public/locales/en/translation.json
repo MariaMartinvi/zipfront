@@ -529,8 +529,8 @@
       "strengthen_bonds": "Strengthen bonds:",
       "communication_text": "Practical and actionable advice to optimize group dynamics...",
       "bonds_text": "Specific recommendation aimed at creating greater harmony among participants...",
-      "unlock_button": "🔓 Unlock AI Analysis - 10 analysis pack for 5€",
-      "unlock_note": "Only 0.50€ per complete analysis",
+      "unlock_button": "🔓 Unlock AI Analysis - 100 analysis pack for 5€",
+      "unlock_note": "Only 0.05€ per complete analysis",
       "view_analysis_of": "View analysis of",
       "tooltips": {
         "personality": "Detailed analysis of personality traits, strengths and development areas",
@@ -542,8 +542,8 @@
     "ai_purchase": {
       "title": "🤖 Unlock the COMPLETE AI analysis of this chat",
       "modal_title": "Unlock the COMPLETE AI analysis of this chat",
-      "price": "💰 Pack of 10 AI analyses: ~~€10~~ €5",
-      "pack_description": "Pack of 10 AI analyses",
+      "price": "💰 Pack of 100 AI analyses: ~~€10~~ €5",
+      "pack_description": "Pack of 100 AI analyses",
       "discount_notice": "🔥 Special offer -50%! Limited time only",
       "full_chat_notice": "✨ Includes complete analysis: personalities + dynamics + recommendations",
       "question": "Want to take advantage of this offer?",
@@ -920,7 +920,7 @@
       "discount_percentage": "-50%",
       "limited_time": "Limited time only!",
       "full_analysis_note": "✨ Unlock the COMPLETE AI analysis for this chat",
-      "analyses": "10 analyses",
+      "analyses": "100 analyses",
       "features": {
         "psychological": "Complete psychological analysis",
         "personalities": "Personality of each participant",

@@ -517,7 +517,7 @@
       "discount_percentage": "-50%",
       "limited_time": "Pour un temps limité seulement!",
       "full_analysis_note": "✨ Débloquez l'analyse IA COMPLÈTE pour ce chat",
-      "analyses": "10 analyses",
+      "analyses": "100 analyses",
       "features": {
         "psychological": "Analyse psychologique complète",
         "personalities": "Personnalités de chaque participant",
@@ -848,15 +848,15 @@
       "strengthen_bonds": "Renforcer les liens :",
       "communication_text": "Conseil pratique et réalisable pour optimiser la dynamique de groupe...",
       "bonds_text": "Recommandation spécifique visant à créer plus d'harmonie entre participants...",
-      "unlock_button": "🔓 Débloquer Analyse IA - Pack 10 analyses pour 5€",
-      "unlock_note": "Seulement 0,50€ par analyse complète",
+      "unlock_button": "🔓 Débloquer Analyse IA - Pack 100 analyses pour 5€",
+      "unlock_note": "Seulement 0,05€ par analyse complète",
       "view_analysis_of": "Voir l'analyse de"
     },
     "ai_purchase": {
       "title": "🤖 Débloquez l'analyse IA COMPLÈTE de ce chat",
       "modal_title": "Débloquez l'analyse IA COMPLÈTE de ce chat",
-      "price": "💰 Pack de 10 analyses IA : ~~10€~~ 5€",
-      "pack_description": "Pack de 10 analyses IA",
+      "price": "💰 Pack de 100 analyses IA : ~~10€~~ 5€",
+      "pack_description": "Pack de 100 analyses IA",
       "discount_notice": "🔥 Offre spéciale -50% ! Pour un temps limité seulement",
       "full_chat_notice": "✨ Inclut l'analyse complète : personnalités + dynamiques + recommandations",
       "question": "Voulez-vous profiter de cette offre?",
