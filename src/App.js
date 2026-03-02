@@ -37,6 +37,7 @@ import { SecurityCaptchaProvider } from './components/SecurityCaptcha';
 import TopProfilesViewer from './components/TopProfilesViewer';
 import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
+import BlogFrame from './BlogFrame';
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
@@ -2511,6 +2512,12 @@ const tryDeleteFiles = async (operationId) => {
               <SimplePaymentSuccess />
             </ProtectedRoute>
           } />
+
+        {/* Blog integrado (mismo header/footer) */}
+        <Route path="/blog" element={<BlogFrame />} />
+        <Route path="/blog/:slug" element={<BlogFrame />} />
+        <Route path="/en/blog" element={<BlogFrame />} />
+        <Route path="/en/blog/:slug" element={<BlogFrame />} />
 
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQ />} />

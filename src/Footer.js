@@ -23,6 +23,9 @@ const Footer = () => {
               <a href="/" className="footer-link">
                 <span>{t('header.home')}</span>
               </a>
+              <a href="/blog" className="footer-link">
+                <span>{t('footer.blog', 'Blog')}</span>
+              </a>
               <a href="/faq" className="footer-link">
                 <span>{t('footer.faq')}</span>
               </a>

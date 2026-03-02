@@ -50,6 +50,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:render": "CI=false SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true NODE_OPTIONS=--max-old-space-size=4096 react-scripts build",
+    "build:site": "npm run build:render && cd blog && npm run build && cd .. && node scripts/build-site.js",
+    "serve:site": "npx serve site-dist -l 3000",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -68,6 +70,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "proxy": "http://localhost:5000"
+  }
 }

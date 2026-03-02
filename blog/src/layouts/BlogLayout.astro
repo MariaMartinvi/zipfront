@@ -1,0 +1,141 @@
+---
+import '../styles/chatsalsa.css';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: 'es' | 'en';
+  basePath: '' | '/en';
+  canonical: string;
+  image?: string;
+}
+
+const { title, description, lang, basePath, canonical, image } = Astro.props;
+const site = 'https://chatsalsa.com';
+const homeUrl = basePath || '/';
+const blogUrl = basePath ? `${basePath}/blog` : '/blog';
+const plansUrl = basePath ? `${basePath}/plans` : '/plans';
+const faqUrl = basePath ? `${basePath}/faq` : '/faq';
+const contactUrl = basePath ? `${basePath}/contact` : '/contact';
+const termsUrl = basePath ? `${basePath}/terms` : '/terms';
+const privacyUrl = basePath ? `${basePath}/privacy` : '/privacy';
+const cookiesUrl = basePath ? `${basePath}/politica-cookies` : '/politica-cookies';
+const ogImage = image ? (image.startsWith('http') ? image : `${site}${image}`) : `${site}/logo-chat.png`;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <script is:inline>
+      (function(){if(/[?&]embed=1/.test(window.location.search))document.documentElement.classList.add('blog-embed');})();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="ChatSalsa" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <style is:inline>
+      html.blog-embed .app-header,
+      html.blog-embed .app-footer,
+      html.blog-embed [data-embed-remove] { display: none !important; visibility: hidden !important; }
+      html.blog-embed .blog-main { padding-top: 0.5rem; }
+    </style>
+  </head>
+  <body>
+    <header class="app-header" data-embed-remove>
+      <div class="header-container">
+        <a href={homeUrl} class="logo">
+          <div class="logo-container">
+            <div class="logo-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" class="logo-clipboard-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+              </svg>
+            </div>
+            <span class="logo-chatsalsa">ChatSalsa</span>
+          </div>
+        </a>
+        <nav class="desktop-nav">
+          <a href={homeUrl} class="nav-link">{lang === 'es' ? 'Inicio' : 'Home'}</a>
+          <a href={blogUrl} class="nav-link">{lang === 'es' ? 'Blog' : 'Blog'}</a>
+          <a href={plansUrl} class="nav-link">{lang === 'es' ? 'Precios' : 'Pricing'}</a>
+          <a href={basePath ? '/login' : '/login'} class="nav-link">{lang === 'es' ? 'Iniciar sesión' : 'Log in'}</a>
+          <a href={basePath ? '/register' : '/register'} class="nav-link sign-up">{lang === 'es' ? 'Prueba gratis' : 'Free trial'}</a>
+          {basePath === '/en' ? (
+            <a href="/blog" class="nav-link">ES</a>
+          ) : (
+            <a href="/en/blog" class="nav-link">EN</a>
+          )}
+        </nav>
+      </div>
+    </header>
+
+    <main class="blog-main">
+      <slot />
+    </main>
+
+    <footer class="app-footer" data-embed-remove>
+      <div class="footer-content">
+        <div class="footer-grid">
+          <div class="footer-section">
+            <h3>{lang === 'es' ? 'Navegación' : 'Navigation'}</h3>
+            <div class="footer-links">
+              <a href={homeUrl} class="footer-link">{lang === 'es' ? 'Inicio' : 'Home'}</a>
+              <a href={blogUrl} class="footer-link">Blog</a>
+              <a href={faqUrl} class="footer-link">{lang === 'es' ? 'FAQ' : 'FAQ'}</a>
+              <a href={contactUrl} class="footer-link">{lang === 'es' ? 'Contacto' : 'Contact'}</a>
+            </div>
+          </div>
+          <div class="footer-section">
+            <h3>{lang === 'es' ? 'Legal' : 'Legal'}</h3>
+            <div class="footer-links">
+              <a href={termsUrl} class="footer-link">{lang === 'es' ? 'Términos' : 'Terms'}</a>
+              <a href={privacyUrl} class="footer-link">{lang === 'es' ? 'Privacidad' : 'Privacy'}</a>
+              <a href={cookiesUrl} class="footer-link">{lang === 'es' ? 'Cookies' : 'Cookies'}</a>
+            </div>
+          </div>
+          <div class="footer-section">
+            <h3>{lang === 'es' ? 'Descargas' : 'Downloads'}</h3>
+            <div class="footer-links">
+              <a href="https://play.google.com/store/apps/details?id=com.chatsalsa.app" class="footer-link" target="_blank" rel="noopener noreferrer">{lang === 'es' ? 'App Android' : 'Android App'}</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; {new Date().getFullYear()} ChatSalsa - {lang === 'es' ? 'Todos los derechos reservados' : 'All rights reserved'}</p>
+        </div>
+      </div>
+    </footer>
+    <script is:inline>
+      (function () {
+        var isEmbed = window.location.search.indexOf('embed=1') !== -1;
+        if (!isEmbed) return;
+        function run() {
+          document.querySelectorAll('[data-embed-remove]').forEach(function (el) { el.remove(); });
+          document.querySelectorAll('a[href^="/blog"], a[href^="/en/blog"]').forEach(function (a) {
+            try {
+              var href = a.getAttribute('href');
+              if (!href || href.indexOf('embed=1') !== -1) return;
+              var url = new URL(href, window.location.origin);
+              url.searchParams.set('embed', '1');
+              a.setAttribute('href', url.pathname + url.search + (url.hash || ''));
+            } catch (e) {}
+          });
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', run);
+        } else {
+          run();
+        }
+      })();
+    </script>
+  </body>
+</html>

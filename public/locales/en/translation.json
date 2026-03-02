@@ -268,11 +268,16 @@
     "view": "View analysis"
   },
   "footer": {
+    "navigation": "Navigation",
+    "blog": "Blog",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact",
     "faq": "FAQ",
     "cookies": "Cookie Policy",
+    "legal": "Legal",
+    "rights": "All rights reserved",
+    "scroll_top": "Back to top",
     "download_section": "Downloads",
     "android_app": "Android App",
     "download_android": "Download for Android"

@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import BlogLayout from '../../layouts/BlogLayout.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('blog');
+  const es = all.filter((e) => e.id.startsWith('es/') && !e.data.draft);
+  return es.map((entry) => {
+    const parts = entry.id.split('/');
+    const name = parts[parts.length - 1] ?? entry.id;
+    const slug = name.replace(/\.(mdx?|md)$/i, '');
+    return { params: { slug }, props: { entry } };
+  });
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+function slugFromId(id: string) {
+  const parts = id.split('/');
+  const name = parts[parts.length - 1] ?? id;
+  return name.replace(/\.(mdx?|md)$/i, '');
+}
+
+const words = entry.body ? entry.body.split(/\s+/).length : 0;
+const readingMinutes = Math.max(1, Math.round(words / 220));
+
+const allEs = (await getCollection('blog'))
+  .filter((e) => e.id.startsWith('es/') && !e.data.draft && e.id !== entry.id)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const sameCategory = entry.data.category
+  ? allEs.filter((e) => e.data.category === entry.data.category)
+  : [];
+const others = allEs.filter((e) => !entry.data.category || e.data.category !== entry.data.category);
+const recommended = [...sameCategory.slice(0, 2), ...others].slice(0, 4);
+
+const currentSlug = slugFromId(entry.id);
+---
+
+<BlogLayout
+  title={`${entry.data.title} | ChatSalsa`}
+  description={entry.data.description}
+  lang="es"
+  basePath=""
+  canonical={`https://chatsalsa.com/blog/${currentSlug}`}
+  image={entry.data.featuredImage ?? entry.data.image}
+>
+  <nav class="post-back">
+    <a href="/blog" class="post-back-link">← Volver al blog</a>
+  </nav>
+
+  <article class="post-article">
+    {entry.data.featuredImage && (
+      <div class="post-hero">
+        <img src={entry.data.featuredImage} alt={entry.data.title} loading="lazy" />
+      </div>
+    )}
+
+    <header class="post-header">
+      {entry.data.category && <span class="post-category">{entry.data.category}</span>}
+      <h1 class="post-title">{entry.data.title}</h1>
+      <div class="post-meta">
+        <time datetime={entry.data.date.toISOString()}>
+          {entry.data.date.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}
+        </time>
+        <span>· {readingMinutes} min</span>
+      </div>
+      {entry.data.excerpt && <p class="post-excerpt">{entry.data.excerpt}</p>}
+      {entry.data.tags && entry.data.tags.length > 0 && (
+        <div class="post-tags">
+          {entry.data.tags.map((tag) => (
+            <span class="blog-tag">{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="post-body">
+      <Content />
+    </div>
+  </article>
+
+  {recommended.length > 0 && (
+    <section class="post-recommended">
+      <h2 class="post-recommended-title">Artículos recomendados</h2>
+      <ul class="post-recommended-list">
+        {recommended.map((other) => {
+          const slug = slugFromId(other.id);
+          return (
+            <li>
+              <a href={`/blog/${slug}`} class="post-recommended-link">
+                {other.data.title}
+              </a>
+              {other.data.excerpt && <p class="post-recommended-excerpt">{other.data.excerpt}</p>}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )}
+</BlogLayout>

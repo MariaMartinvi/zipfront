@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BlogLayout from '../../../layouts/BlogLayout.astro';
+
+const all = await getCollection('blog');
+const posts = all
+  .filter((e) => e.id.startsWith('en/') && !e.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+function slugFromId(id: string) {
+  const parts = id.split('/');
+  const name = parts[parts.length - 1] ?? id;
+  return name.replace(/\.(mdx?|md)$/i, '');
+}
+function urlSlug(entry: { id: string; data: { urlSlug?: string } }) {
+  return entry.data.urlSlug ?? slugFromId(entry.id);
+}
+
+const categories = Array.from(
+  new Set(posts.map((p) => p.data.category).filter(Boolean) as string[]),
+).sort((a, b) => a.localeCompare(b, 'en'));
+
+const recentPosts: CollectionEntry<'blog'>[] = posts.slice(0, 4);
+---
+
+<BlogLayout
+  title="Blog | ChatSalsa"
+  description="Articles about digital wellbeing, communication psychology and understanding your chats better."
+  lang="en"
+  basePath="/en"
+  canonical="https://chatsalsa.com/en/blog"
+>
+  <section class="blog-page">
+    <header class="blog-page-header">
+      <p class="blog-kicker">Blog</p>
+      <h1>New ways to understand your conversations</h1>
+      <p class="blog-subtitle">
+        Tips, ideas and reflections on digital communication, emotional wellbeing and chat analysis.
+      </p>
+    </header>
+
+    <div class="blog-layout">
+      <div class="blog-main-column">
+        <div class="blog-list">
+          {posts.map((entry) => {
+            const slug = urlSlug(entry);
+            const hasImage = !!entry.data.featuredImage;
+            return (
+              <article class="blog-card">
+                {hasImage && (
+                  <a href={`/en/blog/${slug}`} class="blog-card-image-link">
+                    <img
+                      src={entry.data.featuredImage!}
+                      alt={entry.data.title}
+                      loading="lazy"
+                      class="blog-card-image"
+                    />
+                  </a>
+                )}
+                <div class="blog-card-content">
+                  <div class="blog-card-meta">
+                    {entry.data.category && <span class="blog-card-category">{entry.data.category}</span>}
+                    <span class="blog-card-date">
+                      {entry.data.date.toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })}
+                    </span>
+                  </div>
+                  <a href={`/en/blog/${slug}`} class="blog-card-title-link">
+                    <h2 class="blog-card-title">{entry.data.title}</h2>
+                  </a>
+                  {entry.data.excerpt && <p class="blog-card-excerpt">{entry.data.excerpt}</p>}
+                  {entry.data.tags && entry.data.tags.length > 0 && (
+                    <div class="blog-card-tags">
+                      {entry.data.tags.map((tag) => (
+                        <span class="blog-tag">{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+
+      <aside class="blog-sidebar">
+        <section class="blog-sidebar-section">
+          <h3>Search</h3>
+          <input
+            type="search"
+            class="blog-search-input"
+            placeholder="Search in the blog..."
+            aria-label="Search in the blog"
+          />
+          <p class="blog-search-hint">Coming soon: search by topics and keywords.</p>
+        </section>
+
+        {categories.length > 0 && (
+          <section class="blog-sidebar-section">
+            <h3>Categories</h3>
+            <ul class="blog-category-list">
+              {categories.map((cat) => (
+                <li>
+                  <span class="blog-category-pill">{cat}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {recentPosts.length > 0 && (
+          <section class="blog-sidebar-section">
+            <h3>Recent</h3>
+            <ul class="blog-recent-list">
+              {recentPosts.map((entry) => {
+                const slug = urlSlug(entry);
+                return (
+                  <li>
+                    <a href={`/en/blog/${slug}`} class="blog-recent-link">
+                      {entry.data.title}
+                    </a>
+                    <span class="blog-recent-date">
+                      {entry.data.date.toLocaleDateString('en-US', { day: '2-digit', month: 'short' })}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+      </aside>
+    </div>
+  </section>
+</BlogLayout>
