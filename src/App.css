@@ -1943,29 +1943,19 @@ li {
 
 /* Sección de carga de archivos - Estilo moderno consistente */
 
-/* Layout global: el scroll vive en .app-container, no en body.
-   Esto evita bloqueos raros de scroll con wheel/touch en algunos navegadores/PWA. */
+/* Reset global de scroll: comportamiento estándar del navegador.
+   Solo bloqueamos el scroll horizontal para evitar desbordes. */
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;      /* Sin scroll directo en body; lo maneja .app-container */
+  height: auto;
+  overflow-x: hidden;  /* Prevenir scroll horizontal */
+  overflow-y: auto;    /* Scroll vertical normal */
 }
 
 .app-container {
-  overscroll-behavior: auto;
-  overscroll-behavior-y: auto;
-  overflow-x: hidden;      /* Prevenir scroll horizontal */
-  overflow-y: auto;        /* Scroll vertical principal de la app */
   width: 100%;
   max-width: 100vw;
-  height: 100%;
-  -webkit-overflow-scrolling: touch; /* Scroll fluido en mobile */
-}
-
-/* Asegurar que ningún elemento se extienda más allá del viewport */
-* {
-  box-sizing: border-box;
 }
 
 /* Media query adicional para móviles muy pequeños */
