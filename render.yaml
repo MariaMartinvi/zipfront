@@ -2,10 +2,11 @@ services:
   - type: web
     name: zip-extractor-pwa
     env: node
-    buildCommand: npm install --legacy-peer-deps && npm run build
-    startCommand: npm start
+    # Build unificado: CRA + blog Astro → site-dist. Servir site-dist para que /blog devuelva HTML estático.
+    buildCommand: npm install --legacy-peer-deps && npm run build:site
+    startCommand: npx serve site-dist -s -l 10000
     healthCheckPath: /
-    staticPublishPath: build
+    staticPublishPath: site-dist
     routes:
       - type: rewrite
         source: /*
