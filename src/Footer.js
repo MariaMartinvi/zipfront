@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Footer.css';
 import { useTranslation } from 'react-i18next';
 import { FaArrowUp, FaAndroid } from 'react-icons/fa';
@@ -20,18 +21,18 @@ const Footer = () => {
           <div className="footer-section">
             <h3>{t('footer.navigation', 'Navegación')}</h3>
             <div className="footer-links">
-              <a href="/" className="footer-link">
+              <Link to="/" className="footer-link">
                 <span>{t('header.home')}</span>
-              </a>
-              <a href="/blog" className="footer-link">
+              </Link>
+              <Link to="/blog" className="footer-link">
                 <span>{t('footer.blog', 'Blog')}</span>
-              </a>
-              <a href="/faq" className="footer-link">
+              </Link>
+              <Link to="/faq" className="footer-link">
                 <span>{t('footer.faq')}</span>
-              </a>
-              <a href="/contact" className="footer-link">
+              </Link>
+              <Link to="/contact" className="footer-link">
                 <span>{t('footer.contact')}</span>
-              </a>
+              </Link>
             </div>
           </div>
           

@@ -9,6 +9,9 @@
   position: relative;
   overflow: hidden;
   width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .app-footer::before {
@@ -23,33 +26,38 @@
 }
 
 .footer-content {
-  /* max-width: 1200px; */ /* Comentado para ocupar todo el ancho */
-  width: 100%; /* Asegurar que ocupe todo el ancho */
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   position: relative;
   z-index: 1;
-  padding: 0 2rem; /* Aumentado padding lateral para mejor espaciado en pantallas anchas */
+  padding: 0 2rem;
+  box-sizing: border-box;
 }
 
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
-  gap: 3rem; /* Mayor separación entre columnas */
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* minmax(0,1fr) para que las columnas se reduzcan */
+  gap: 3rem;
   margin-bottom: 2rem;
   align-items: flex-start;
-  justify-items: center; /* Centrar contenido de cada columna */
+  justify-items: center;
+  width: 100%;
+  max-width: 100%;
 }
 
 .footer-section {
   padding: 1.5rem;
   border-radius: 8px;
   transition: transform 0.3s ease;
-  text-align: center; /* Centrar contenido */
-  min-width: 200px; /* Ancho mínimo para consistencia */
-  width: 100%; /* Ocupar todo el ancho disponible */
+  text-align: center;
+  min-width: 0; /* Permitir que se reduzca con el viewport */
+  width: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centrar elementos verticalmente */
+  align-items: center;
+  box-sizing: border-box;
 }
 
 .footer-section:hover {

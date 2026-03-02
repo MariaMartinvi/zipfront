@@ -27,6 +27,11 @@
   color: #333;
   background-color: white;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .App-header {
@@ -51,6 +56,9 @@
   display: flex;
   flex-direction: column;
   gap: 0;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
 }
 
 /* Estilo simple y único para todos los h2 */

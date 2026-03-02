@@ -4,10 +4,17 @@ services:
     env: node
     # Build unificado: CRA + blog Astro → site-dist. Servir site-dist para que /blog devuelva HTML estático.
     buildCommand: npm install --legacy-peer-deps && npm run build:site
-    startCommand: npx serve site-dist -s -l 10000
+    startCommand: npm run start:prod
     healthCheckPath: /
     staticPublishPath: site-dist
     routes:
+      # Con barra final Render sirve blog/index.html; sin ella aplica el rewrite y devuelve CRA (3 cabeceras)
+      - type: redirect
+        source: /blog
+        destination: /blog/
+      - type: redirect
+        source: /en/blog
+        destination: /en/blog/
       - type: rewrite
         source: /*
         destination: /index.html

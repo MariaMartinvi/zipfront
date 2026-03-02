@@ -53,6 +53,7 @@
     "build:render": "CI=false SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true NODE_OPTIONS=--max-old-space-size=4096 react-scripts build",
     "build:site": "npm run build:render && cd blog && npm install && npm run build && cd .. && node scripts/build-site.js",
     "serve:site": "npx serve site-dist -l 3000",
+    "start:prod": "serve site-dist -s -l ${PORT:-10000}",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
