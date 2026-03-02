@@ -1,5 +1,6 @@
 ---
 import '../styles/chatsalsa.css';
+import '../styles/header-footer.css';
 
 interface Props {
   title: string;
@@ -105,35 +106,73 @@ const ogImage = image ? (image.startsWith('http') ? image : `${site}${image}`) :
           <div class="footer-section">
             <h3>{lang === 'es' ? 'Descargas' : 'Downloads'}</h3>
             <div class="footer-links">
-              <a href="https://play.google.com/store/apps/details?id=com.chatsalsa.app" class="footer-link" target="_blank" rel="noopener noreferrer">{lang === 'es' ? 'App Android' : 'Android App'}</a>
+              <a
+                href="https://play.google.com/store/apps/details?id=com.chatsalsa.app"
+                class="footer-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={lang === 'es' ? 'Descargar para Android' : 'Download for Android'}
+              >
+                <svg
+                  class="footer-icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M17.6 9.48l1.42-2.46a.5.5 0 0 0-.87-.5l-1.45 2.5A7.07 7.07 0 0 0 12 8a7.07 7.07 0 0 0-4.7 1.02L5.85 6.52a.5.5 0 1 0-.87.5l1.42 2.46A6.98 6.98 0 0 0 5 13v4.5A1.5 1.5 0 0 0 6.5 19h.75V22a1 1 0 0 0 1 1H10a1 1 0 0 0 1-1v-3h2v3a1 1 0 0 0 1 1h1.75a1 1 0 0 0 1-1v-3h.75A1.5 1.5 0 0 0 19 17.5V13a6.98 6.98 0 0 0-1.4-3.52zM9 6.25A1.25 1.25 0 1 1 7.75 5 1.25 1.25 0 0 1 9 6.25zm6 0A1.25 1.25 0 1 1 13.75 5 1.25 1.25 0 0 1 15 6.25z"
+                  />
+                </svg>
+                <span>{lang === 'es' ? 'App Android' : 'Android App'}</span>
+              </a>
             </div>
           </div>
         </div>
         <div class="footer-bottom">
           <p>&copy; {new Date().getFullYear()} ChatSalsa - {lang === 'es' ? 'Todos los derechos reservados' : 'All rights reserved'}</p>
+          <button class="scroll-top" type="button" aria-label={lang === 'es' ? 'Volver arriba' : 'Back to top'}>
+            &#8593;
+          </button>
         </div>
       </div>
     </footer>
     <script is:inline>
       (function () {
+        // Modo embed: ocultar header/footer y ajustar enlaces internos
         var isEmbed = window.location.search.indexOf('embed=1') !== -1;
-        if (!isEmbed) return;
-        function run() {
-          document.querySelectorAll('[data-embed-remove]').forEach(function (el) { el.remove(); });
-          document.querySelectorAll('a[href^="/blog"], a[href^="/en/blog"]').forEach(function (a) {
-            try {
-              var href = a.getAttribute('href');
-              if (!href || href.indexOf('embed=1') !== -1) return;
-              var url = new URL(href, window.location.origin);
-              url.searchParams.set('embed', '1');
-              a.setAttribute('href', url.pathname + url.search + (url.hash || ''));
-            } catch (e) {}
+        if (isEmbed) {
+          function runEmbed() {
+            document.querySelectorAll('[data-embed-remove]').forEach(function (el) { el.remove(); });
+            document.querySelectorAll('a[href^="/blog"], a[href^="/en/blog"]').forEach(function (a) {
+              try {
+                var href = a.getAttribute('href');
+                if (!href || href.indexOf('embed=1') !== -1) return;
+                var url = new URL(href, window.location.origin);
+                url.searchParams.set('embed', '1');
+                a.setAttribute('href', url.pathname + url.search + (url.hash || ''));
+              } catch (e) {}
+            });
+          }
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', runEmbed);
+          } else {
+            runEmbed();
+          }
+        }
+
+        // Botón "volver arriba" del footer (igual comportamiento que en la web principal)
+        function bindScrollTop() {
+          var btn = document.querySelector('.scroll-top');
+          if (!btn) return;
+          btn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           });
         }
+
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', run);
+          document.addEventListener('DOMContentLoaded', bindScrollTop);
         } else {
-          run();
+          bindScrollTop();
         }
       })();
     </script>
