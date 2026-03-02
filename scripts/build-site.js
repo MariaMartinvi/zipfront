@@ -60,6 +60,22 @@ function main() {
     copyRecursive(enSrc, path.join(SITE_DIST, 'en'));
   }
 
+  // blog/dist/_astro → site-dist/_astro (CSS/JS del blog se referencian como /_astro/... en el HTML)
+  const astroSrc = path.join(BLOG_DIST, '_astro');
+  if (fs.existsSync(astroSrc)) {
+    console.log('Copying blog/dist/_astro → site-dist/_astro/');
+    copyRecursive(astroSrc, path.join(SITE_DIST, '_astro'));
+  }
+
+  // blog/dist/images → site-dist/images (si el blog usa /images/...)
+  const blogImagesSrc = path.join(BLOG_DIST, 'images');
+  if (fs.existsSync(blogImagesSrc)) {
+    const siteImages = path.join(SITE_DIST, 'images');
+    if (!fs.existsSync(siteImages)) fs.mkdirSync(siteImages, { recursive: true });
+    console.log('Copying blog/dist/images → site-dist/images/');
+    copyRecursive(blogImagesSrc, siteImages);
+  }
+
   // Ensure /blog and /en/blog are not rewritten to SPA index.html (Render: static files take precedence)
   const redirectsPath = path.join(SITE_DIST, '_redirects');
   const redirects = `# SPA fallback for CRA; /blog and /en are served as static files
