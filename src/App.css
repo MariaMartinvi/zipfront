@@ -1943,11 +1943,12 @@ li {
 
 /* Sección de carga de archivos - Estilo moderno consistente */
 
-/* Bloquear pull-to-refresh en PWA */
+/* Bloquear pull-to-refresh en PWA, pero manteniendo scroll vertical normal */
 html, body {
   overscroll-behavior: none;
   overscroll-behavior-y: none;
   overflow-x: hidden; /* Prevenir scroll horizontal */
+  overflow-y: auto;   /* Permitir scroll vertical en toda la página */
 }
 
 .app-container {
