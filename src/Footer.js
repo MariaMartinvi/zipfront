@@ -14,6 +14,8 @@ const Footer = () => {
     });
   };
 
+  const isDev = process.env.NODE_ENV === 'development';
+
   return (
     <footer className="app-footer">
       <div className="footer-content">
@@ -24,9 +26,15 @@ const Footer = () => {
               <Link to="/" className="footer-link">
                 <span>{t('header.home')}</span>
               </Link>
-              <Link to="/blog" className="footer-link">
-                <span>{t('footer.blog', 'Blog')}</span>
-              </Link>
+              {isDev ? (
+                <Link to="/blog" className="footer-link">
+                  <span>{t('footer.blog', 'Blog')}</span>
+                </Link>
+              ) : (
+                <a href="/blog" className="footer-link">
+                  <span>{t('footer.blog', 'Blog')}</span>
+                </a>
+              )}
               <Link to="/faq" className="footer-link">
                 <span>{t('footer.faq')}</span>
               </Link>

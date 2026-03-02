@@ -2513,11 +2513,15 @@ const tryDeleteFiles = async (operationId) => {
             </ProtectedRoute>
           } />
 
-        {/* Blog integrado (mismo header/footer) */}
-        <Route path="/blog" element={<BlogFrame />} />
-        <Route path="/blog/:slug" element={<BlogFrame />} />
-        <Route path="/en/blog" element={<BlogFrame />} />
-        <Route path="/en/blog/:slug" element={<BlogFrame />} />
+        {/* Blog integrado solo en desarrollo (iframe apuntando a Astro dev). */}
+        {process.env.NODE_ENV === 'development' && (
+          <>
+            <Route path="/blog" element={<BlogFrame />} />
+            <Route path="/blog/:slug" element={<BlogFrame />} />
+            <Route path="/en/blog" element={<BlogFrame />} />
+            <Route path="/en/blog/:slug" element={<BlogFrame />} />
+          </>
+        )}
 
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQ />} />
