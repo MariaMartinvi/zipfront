@@ -46,7 +46,7 @@ const recentPosts: CollectionEntry<'blog'>[] = posts.slice(0, 4);
             return (
               <article class="blog-card">
                 {hasImage && (
-                  <a href={`/blog/${slug}`} class="blog-card-image-link">
+                  <a href={`/blog/${slug}/`} class="blog-card-image-link">
                     <img
                       src={entry.data.featuredImage!}
                       alt={entry.data.title}
@@ -62,7 +62,7 @@ const recentPosts: CollectionEntry<'blog'>[] = posts.slice(0, 4);
                       {entry.data.date.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}
                     </span>
                   </div>
-                  <a href={`/blog/${slug}`} class="blog-card-title-link">
+                  <a href={`/blog/${slug}/`} class="blog-card-title-link">
                     <h2 class="blog-card-title">{entry.data.title}</h2>
                   </a>
                   {entry.data.excerpt && <p class="blog-card-excerpt">{entry.data.excerpt}</p>}
@@ -113,7 +113,7 @@ const recentPosts: CollectionEntry<'blog'>[] = posts.slice(0, 4);
                 const slug = slugFromId(entry.id);
                 return (
                   <li>
-                    <a href={`/blog/${slug}`} class="blog-recent-link">
+                    <a href={`/blog/${slug}/`} class="blog-recent-link">
                       {entry.data.title}
                     </a>
                     <span class="blog-recent-date">

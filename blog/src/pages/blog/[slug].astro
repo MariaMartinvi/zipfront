@@ -42,7 +42,7 @@ const currentSlug = slugFromId(entry.id);
   description={entry.data.description}
   lang="es"
   basePath=""
-  canonical={`https://chatsalsa.com/blog/${currentSlug}`}
+  canonical={`https://chatsalsa.com/blog/${currentSlug}/`}
   image={entry.data.featuredImage ?? entry.data.image}
 >
   <nav class="post-back">
@@ -88,7 +88,7 @@ const currentSlug = slugFromId(entry.id);
           const slug = slugFromId(other.id);
           return (
             <li>
-              <a href={`/blog/${slug}`} class="post-recommended-link">
+              <a href={`/blog/${slug}/`} class="post-recommended-link">
                 {other.data.title}
               </a>
               {other.data.excerpt && <p class="post-recommended-excerpt">{other.data.excerpt}</p>}

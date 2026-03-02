@@ -43,7 +43,7 @@ const recommended = [...sameCategory.slice(0, 2), ...others].slice(0, 4);
   description={entry.data.description}
   lang="en"
   basePath="/en"
-  canonical={`https://chatsalsa.com/en/blog/${getUrlSlug(entry)}`}
+  canonical={`https://chatsalsa.com/en/blog/${getUrlSlug(entry)}/`}
   image={entry.data.featuredImage ?? entry.data.image}
 >
   <nav class="post-back">
@@ -89,7 +89,7 @@ const recommended = [...sameCategory.slice(0, 2), ...others].slice(0, 4);
           const slug = getUrlSlug(other);
           return (
             <li>
-              <a href={`/en/blog/${slug}`} class="post-recommended-link">
+              <a href={`/en/blog/${slug}/`} class="post-recommended-link">
                 {other.data.title}
               </a>
               {other.data.excerpt && <p class="post-recommended-excerpt">{other.data.excerpt}</p>}
