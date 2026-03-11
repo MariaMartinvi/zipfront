@@ -157,35 +157,84 @@ declare module 'astro:content' {
   slug: "en/rutina-cuentos-dormir-en";
   body: string;
   collection: "blog";
-  data: any
+  data: InferEntrySchema<"blog">
 } & { render(): Render[".md"] };
 "en/welcome-to-the-blog.mdx": {
 	id: "en/welcome-to-the-blog.mdx";
   slug: "en/welcome-to-the-blog";
   body: string;
   collection: "blog";
-  data: any
+  data: InferEntrySchema<"blog">
 } & { render(): Render[".mdx"] };
 "es/bienvenida-al-blog.mdx": {
 	id: "es/bienvenida-al-blog.mdx";
   slug: "es/bienvenida-al-blog";
   body: string;
   collection: "blog";
-  data: any
+  data: InferEntrySchema<"blog">
 } & { render(): Render[".mdx"] };
 "es/como-analizar-chats-whatsapp.md": {
 	id: "es/como-analizar-chats-whatsapp.md";
   slug: "es/como-analizar-chats-whatsapp";
   body: string;
   collection: "blog";
-  data: any
+  data: InferEntrySchema<"blog">
+} & { render(): Render[".md"] };
+"es/comunicacion.md": {
+	id: "es/comunicacion.md";
+  slug: "es/comunicacion";
+  body: string;
+  collection: "blog";
+  data: InferEntrySchema<"blog">
+} & { render(): Render[".md"] };
+"es/conducta.md": {
+	id: "es/conducta.md";
+  slug: "es/conducta";
+  body: string;
+  collection: "blog";
+  data: InferEntrySchema<"blog">
+} & { render(): Render[".md"] };
+"es/emojis.md": {
+	id: "es/emojis.md";
+  slug: "es/emojis";
+  body: string;
+  collection: "blog";
+  data: InferEntrySchema<"blog">
+} & { render(): Render[".md"] };
+"es/juegos.md": {
+	id: "es/juegos.md";
+  slug: "es/juegos";
+  body: string;
+  collection: "blog";
+  data: InferEntrySchema<"blog">
+} & { render(): Render[".md"] };
+"es/populares.md": {
+	id: "es/populares.md";
+  slug: "es/populares";
+  body: string;
+  collection: "blog";
+  data: InferEntrySchema<"blog">
+} & { render(): Render[".md"] };
+"es/privacidad.md": {
+	id: "es/privacidad.md";
+  slug: "es/privacidad";
+  body: string;
+  collection: "blog";
+  data: InferEntrySchema<"blog">
+} & { render(): Render[".md"] };
+"es/proteger.md": {
+	id: "es/proteger.md";
+  slug: "es/proteger";
+  body: string;
+  collection: "blog";
+  data: InferEntrySchema<"blog">
 } & { render(): Render[".md"] };
 "es/psicologia-grupos-whatsapp.md": {
 	id: "es/psicologia-grupos-whatsapp.md";
   slug: "psicologia-grupos-whatsapp";
   body: string;
   collection: "blog";
-  data: any
+  data: InferEntrySchema<"blog">
 } & { render(): Render[".md"] };
 };
 
@@ -197,5 +246,5 @@ declare module 'astro:content' {
 
 	type AnyEntryMap = ContentEntryMap & DataEntryMap;
 
-	export type ContentConfig = never;
+	export type ContentConfig = typeof import("./../../src/content/config.js");
 }
