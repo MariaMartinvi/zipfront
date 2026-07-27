@@ -127,6 +127,15 @@ pantalla en blanco. En Android, Chrome se actualiza solo y lo soporta.
 - Capturas desktop (1440px) y móvil (390px) de la home completa y del blog.
 - Claves i18n nuevas (`pricing_home`) verificadas en los 6 idiomas.
 
+### Post-deploy (27/07/2026)
+- Deploy 1 (`fd716f5`): rediseño + fixes. Verificado en producción: bundle
+  ES2020 servido y **el iPhone de Maria ya carga la web** ✓. El análisis de
+  chats iOS también funciona ✓.
+- Deploy 2 (`c05b253`): rediseño de /demo + fallback ES5 en index.html que
+  muestra el error técnico si la app no monta (adiós pantallas en blanco mudas).
+- Rediseño de instrucciones de exportación (sin carrusel) y fix GAME_DATA
+  incluidos en los deploys.
+
 ### Pendiente antes de desplegar
 - [ ] Security Gate (sección 8 de CLAUDE.md): npm audit / gitleaks / headers.
 - [ ] **Rotar la SECRET_KEY expuesta en `render.yaml`** y moverla a variables
