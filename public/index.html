@@ -149,6 +149,27 @@
   <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
   <div id="root"></div>
   <script>
+    // Red de seguridad (ES5 a propósito): si la app no monta en 8s,
+    // mostrar el error en pantalla en vez de dejarla en blanco.
+    (function () {
+      var primerError = null;
+      window.addEventListener('error', function (e) {
+        if (!primerError) primerError = (e && e.message) || 'Error desconocido';
+      });
+      window.setTimeout(function () {
+        var root = document.getElementById('root');
+        if (root && root.children.length === 0) {
+          var aviso = document.createElement('div');
+          aviso.style.cssText = 'padding:24px;font-family:-apple-system,Arial,sans-serif;max-width:520px;margin:40px auto;text-align:center;color:#0e1318;';
+          aviso.innerHTML = '<h2 style="margin:0 0 12px">No se ha podido cargar ChatSalsa</h2>' +
+            '<p style="color:#656b73">Prueba a recargar la página o a actualizar tu navegador/iOS.</p>' +
+            (primerError ? '<p style="font-size:12px;color:#9ca3af;word-break:break-word">Detalle técnico: ' + String(primerError).replace(/</g, '&lt;') + '</p>' : '');
+          root.appendChild(aviso);
+        }
+      }, 8000);
+    })();
+  </script>
+  <script>
     // Registrar el Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
