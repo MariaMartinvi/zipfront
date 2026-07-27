@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { limpiarLineaChat, PATRON_IOS, PATRON_ANDROID, PATRON_INICIO_MENSAJE } from './formatDetector';
 import { useTranslation } from 'react-i18next';
 import './styles/Analisis.css';
 import './Analisis_top.css';
@@ -1316,20 +1317,19 @@ const extraerMensajes = (lineas, formato) => {
 
 // Función para analizar un mensaje individual
 const analizarMensaje = (linea, formato, mensajeAnterior = null) => {
-  linea = linea.trim();
+  linea = limpiarLineaChat(linea).trim();
   
   // Si es una continuación de mensaje anterior
   if (mensajeAnterior && 
-      !(linea.startsWith('[') || 
-        (formato === "android" && /^\d{1,2}\/\d{1,2}\/\d{2}/.test(linea)))) {
+      !PATRON_INICIO_MENSAJE.test(linea)) {
     mensajeAnterior.mensaje += `\n${linea}`;
     mensajeAnterior.esMultilinea = true;
     return mensajeAnterior;
   }
   
   // Patrones para extraer componentes según el formato
-  const patronIOS = /^\[(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2}(?::\d{2})?)\]\s*([^:]+):\s*(.*)/;
-  const patronAndroid = /^(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2})\s*-\s*([^:]+):\s*(.+)/;
+  const patronIOS = PATRON_IOS;
+  const patronAndroid = PATRON_ANDROID;
   
   let match;
   if (formato === "ios") {

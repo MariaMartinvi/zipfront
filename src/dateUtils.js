@@ -11,9 +11,9 @@
  */
 export const parseDateTime = (fechaStr, horaStr, formato) => {
   try {
-    // Formatear la entrada para crear un objeto Date válido
-    const partesFecha = fechaStr.split('/');
-    
+    // WhatsApp usa / . o - como separador de fecha según el idioma del móvil
+    const partesFecha = fechaStr.split(/[/.-]/);
+
     if (partesFecha.length !== 3) {
       console.error(`Formato de fecha inválido: ${fechaStr}`);
       return new Date(); // Fecha inválida, devolver fecha actual
@@ -34,14 +34,23 @@ export const parseDateTime = (fechaStr, horaStr, formato) => {
       anio += 2000; // Asumimos años 2000+
     }
     
-    // Parsear la hora
-    const partesHora = horaStr.split(':');
+    // Parsear la hora; puede venir en 12h con sufijo "a. m."/"p. m." (con o sin puntos/espacios)
+    const matchAmPm = horaStr.match(/([ap])\.?\s*m\.?\s*$/i);
+    const horaLimpia = matchAmPm ? horaStr.slice(0, matchAmPm.index).trim() : horaStr.trim();
+    const partesHora = horaLimpia.split(':');
     let hora = parseInt(partesHora[0], 10) || 0;
     let minutos = parseInt(partesHora[1], 10) || 0;
     let segundos = 0;
-    
+
     if (partesHora.length > 2) {
       segundos = parseInt(partesHora[2], 10) || 0;
+    }
+
+    // Convertir 12h → 24h ("12 a. m." = 00h, "12 p. m." = 12h)
+    if (matchAmPm) {
+      const esPM = matchAmPm[1].toLowerCase() === 'p';
+      if (esPM && hora < 12) hora += 12;
+      if (!esPM && hora === 12) hora = 0;
     }
     
     const ahora = new Date();

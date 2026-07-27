@@ -10,7 +10,6 @@
     "title": "Analizador de Chats",
     "welcome": "Bienvenido al analizador de chats",
     "description": "Sube tu archivo ZIP de WhatsApp para analizarlo",
-   
     "upload": {
       "title": "Analiza tu chat",
       "button": "Sube un archivo ZIP",
@@ -201,7 +200,7 @@
       "generating": "Generando análisis con IA: Procesando datos..."
     },
     "loading": "Cargando...",
-    "loading_status": "Analizando datos...",
+    "loading_status": "Procesando datos...",
     "error": "Error",
     "success": "Éxito",
     "cancel": "Cancelar",
@@ -241,7 +240,6 @@
       "analysis_failed": "Error al analizar los datos",
       "no_data": "No hay datos disponibles"
     },
-    "loading_status": "Procesando datos...",
     "privacy": {
       "no_ai_analysis": "Omitir análisis psicológico. Todos los análisis se deben realizar en mi dispositivo.",
       "no_data_sharing_message": "El usuario ha elegido no compartir datos del chat con la IA para el análisis psicológico. Para obtener el perfil psicológico, vuelve a subir el archivo y desmarca la opción correspondiente. Si tienes dudas consulta nuestra política de privacidad."
@@ -249,7 +247,7 @@
     "stats_labels": {
       "vice_mentions": "Menciones de vicios",
       "vice_percentage": "% mensajes con vicios",
-      "profanity_mentions": "Menciones de palabrotas", 
+      "profanity_mentions": "Menciones de palabrotas",
       "profanity_percentage": "% mensajes con palabrotas",
       "questions_asked": "Preguntas realizadas",
       "questions_percentage": "% de mensajes con preguntas",
@@ -299,7 +297,6 @@
     "cookies": "Política de Cookies",
     "rights": "Analizador de Chats - Todos los derechos reservados",
     "scroll_top": "Volver arriba",
-    "navigation": "Navegación",
     "download_section": "Descargas",
     "android_app": "App Android",
     "download_android": "Descargar para Android"
@@ -308,20 +305,14 @@
     "title": "¡Descarga nuestra App!",
     "description": "Obtén la mejor experiencia con nuestra app nativa de Android desde Google Play Store.",
     "feature_fast": "Más rápida",
-    "feature_share": "Compartir archivos fácil", 
+    "feature_share": "Compartir archivos fácil",
     "feature_notifications": "Notificaciones",
     "download_button": "Descargar desde Google Play",
     "already_have_app": "Ya tengo la app",
     "continue_web": "Continuar en web",
     "close": "Cerrar"
   },
-  "messages": {
-    "loading": "Cargando...",
-    "processing": "Procesando archivo...",
-    "success": "El archivo se ha procesado correctamente",
-    "error": "Ha ocurrido un error",
-    "delete_confirmation": "¿Estás seguro de que deseas eliminar?"
-  },
+  "messages": "Mensajes",
   "error": {
     "file_type": "El archivo debe ser un ZIP",
     "file_size": "El archivo es demasiado grande",
@@ -350,7 +341,6 @@
     "saturday": "Sábado",
     "sunday": "Domingo"
   },
-  "messages": "Mensajes",
   "whatsapp": {
     "title": "Cómo compartir un chat desde WhatsApp",
     "step_by_step": "Paso a paso",
@@ -371,11 +361,6 @@
     },
     "simplified_steps": {
       "android": {
-        "install": {
-          "title": "¡Súper fácil! Descarga ChatSalsa",
-          "description": "Descarga nuestra app desde Google Play Store para compartir archivos desde WhatsApp",
-          "button": "📱 Descargar desde Google Play"
-        },
         "0": {
           "title": "Exporta tu chat",
           "description": "En tu chat de WhatsApp: Toca los 3 puntos → Más → Exportar chat → Sin medios"
@@ -383,6 +368,11 @@
         "1": {
           "title": "¡Listo! Comparte con ChatSalsa",
           "description": "Toca ChatSalsa para subir tu archivo. Si no aparece, instala la app desde chatsalsa.com"
+        },
+        "install": {
+          "title": "¡Súper fácil! Descarga ChatSalsa",
+          "description": "Descarga nuestra app desde Google Play Store para compartir archivos desde WhatsApp",
+          "button": "📱 Descargar desde Google Play"
         }
       },
       "ios": [
@@ -640,87 +630,86 @@
       "image_cta": "🚀 Analiza tus chats GRATIS con",
       "brand_name": "CHATSALSA.COM"
     },
-
-  "couple_demo": {
-    "title": "Análisis Psicológico Completo",
-    "subtitle": "Chat de pareja: Sofía & David",
-    "psychology": {
-      "title": "Análisis de personalidades",
-      "main_traits": "Rasgos principales",
-      "strengths": "Fortalezas",
-      "improvement_areas": "Áreas de mejora"
-    },
-    "sofia": {
-      "name": "Sofía (27 años)",
-      "trait1": {
-        "title": "Personalidad independiente dominante",
-        "description": "Mantiene el control natural de la relación sin esfuerzo aparente. Sus respuestas son directas y eficientes, estableciendo el ritmo y tono de las conversaciones. No busca validación constante de su pareja."
+    "couple_demo": {
+      "title": "Análisis Psicológico Completo",
+      "subtitle": "Chat de pareja: Sofía & David",
+      "psychology": {
+        "title": "Análisis de personalidades",
+        "main_traits": "Rasgos principales",
+        "strengths": "Fortalezas",
+        "improvement_areas": "Áreas de mejora"
       },
-      "trait2": {
-        "title": "Orientación hacia objetivos personales",
-        "description": "Prioriza claramente sus proyectos profesionales y sociales. Las conversaciones sobre la relación ocupan solo el 23% de sus mensajes, comparado con el 67% de David."
+      "sofia": {
+        "name": "Sofía (27 años)",
+        "trait1": {
+          "title": "Personalidad independiente dominante",
+          "description": "Mantiene el control natural de la relación sin esfuerzo aparente. Sus respuestas son directas y eficientes, estableciendo el ritmo y tono de las conversaciones. No busca validación constante de su pareja."
+        },
+        "trait2": {
+          "title": "Orientación hacia objetivos personales",
+          "description": "Prioriza claramente sus proyectos profesionales y sociales. Las conversaciones sobre la relación ocupan solo el 23% de sus mensajes, comparado con el 67% de David."
+        },
+        "strength": {
+          "title": "Claridad comunicativa excepcional",
+          "description": "Expresa sus necesidades y límites de manera directa y sin ambigüedad. Evita dramas innecesarios y mantiene conversaciones productivas."
+        },
+        "improvement": {
+          "title": "Desconexión emocional gradual",
+          "description": "Tendencia a tratar la relación como un aspecto secundario de su vida, lo que puede generar desequilibrios emocionales a largo plazo."
+        }
       },
-      "strength": {
-        "title": "Claridad comunicativa excepcional",
-        "description": "Expresa sus necesidades y límites de manera directa y sin ambigüedad. Evita dramas innecesarios y mantiene conversaciones productivas."
+      "david": {
+        "name": "David (29 años)",
+        "trait1": {
+          "title": "Hipervigilancia emocional",
+          "description": "Monitorea constantemente el humor de Sofía a través de indicadores textuales (tiempo de respuesta, uso de emojis, longitud de mensajes). Promedio de 34 mensajes por cada 10 de ella."
+        },
+        "trait2": {
+          "title": "Patrón de búsqueda de validación constante",
+          "description": "Reformula mensajes múltiples veces antes de enviar. Usa preguntas de confirmación emocional frecuentes (\"¿Estás bien?\", \"¿Dije algo malo?\")."
+        },
+        "strength": {
+          "title": "Alta sensibilidad emocional",
+          "description": "Capacidad superior para detectar cambios sutiles en el estado emocional de su pareja y responder con empatía."
+        },
+        "improvement": {
+          "title": "Dependencia emocional excesiva",
+          "description": "Necesidad compulsiva de atención y confirmación que puede ser agotador para su pareja."
+        }
       },
-      "improvement": {
-        "title": "Desconexión emocional gradual",
-        "description": "Tendencia a tratar la relación como un aspecto secundario de su vida, lo que puede generar desequilibrios emocionales a largo plazo."
+      "top_profiles": {
+        "title": "Top Perfiles",
+        "most_messages": {
+          "title": "Más mensajes",
+          "description": "Domina el volumen de conversación con casi el 70% de los mensajes. Indica una alta inversión comunicativa."
+        },
+        "most_direct": {
+          "title": "Más directo",
+          "description": "Comunicación eficiente y directa. Promedio de 50% menos palabras para expresar ideas similares."
+        },
+        "most_questions": {
+          "title": "Más preguntas",
+          "description": "Realiza el 89% de todas las preguntas, especialmente de confirmación emocional y validación."
+        },
+        "most_nocturnal": {
+          "title": "Más nocturno",
+          "description": "67% de sus mensajes después de las 22h. Posible ansiedad o sobrepensamiento nocturno."
+        },
+        "most_focused": {
+          "title": "Más enfocado",
+          "description": "Mantiene conversaciones orientadas hacia objetivos concretos. Evita digresiones emocionales."
+        },
+        "most_romantic": {
+          "title": "Más emojis románticos",
+          "description": "Usa 340% más emojis de corazón y relacionados con el amor. Expresión emocional constante."
+        }
+      },
+      "cta": {
+        "title": "¿Quieres analizar TU chat?",
+        "description": "Descubre los secretos psicológicos de tus conversaciones",
+        "button": "Analizar mi chat GRATIS"
       }
     },
-    "david": {
-      "name": "David (29 años)",
-      "trait1": {
-        "title": "Hipervigilancia emocional",
-        "description": "Monitorea constantemente el humor de Sofía a través de indicadores textuales (tiempo de respuesta, uso de emojis, longitud de mensajes). Promedio de 34 mensajes por cada 10 de ella."
-      },
-      "trait2": {
-        "title": "Patrón de búsqueda de validación constante",
-        "description": "Reformula mensajes múltiples veces antes de enviar. Usa preguntas de confirmación emocional frecuentes (\"¿Estás bien?\", \"¿Dije algo malo?\")."
-      },
-      "strength": {
-        "title": "Alta sensibilidad emocional",
-        "description": "Capacidad superior para detectar cambios sutiles en el estado emocional de su pareja y responder con empatía."
-      },
-      "improvement": {
-        "title": "Dependencia emocional excesiva",
-        "description": "Necesidad compulsiva de atención y confirmación que puede ser agotador para su pareja."
-      }
-    },
-    "top_profiles": {
-      "title": "Top Perfiles",
-      "most_messages": {
-        "title": "Más mensajes",
-        "description": "Domina el volumen de conversación con casi el 70% de los mensajes. Indica una alta inversión comunicativa."
-      },
-      "most_direct": {
-        "title": "Más directo",
-        "description": "Comunicación eficiente y directa. Promedio de 50% menos palabras para expresar ideas similares."
-      },
-      "most_questions": {
-        "title": "Más preguntas",
-        "description": "Realiza el 89% de todas las preguntas, especialmente de confirmación emocional y validación."
-      },
-      "most_nocturnal": {
-        "title": "Más nocturno",
-        "description": "67% de sus mensajes después de las 22h. Posible ansiedad o sobrepensamiento nocturno."
-      },
-      "most_focused": {
-        "title": "Más enfocado",
-        "description": "Mantiene conversaciones orientadas hacia objetivos concretos. Evita digresiones emocionales."
-      },
-      "most_romantic": {
-        "title": "Más emojis románticos",
-        "description": "Usa 340% más emojis de corazón y relacionados con el amor. Expresión emocional constante."
-      }
-    },
-    "cta": {
-      "title": "¿Quieres analizar TU chat?",
-      "description": "Descubre los secretos psicológicos de tus conversaciones",
-      "button": "Analizar mi chat GRATIS"
-    }
-  },
     "share_description": "Comparte una imagen promocional y un HTML interactivo con los resultados",
     "security": {
       "title": "100% Privado y Seguro",
@@ -893,7 +882,7 @@
       "analyses": "100 análisis",
       "features": {
         "psychological": "Análisis psicológico completo",
-        "personalities": "Personalidades de cada participante", 
+        "personalities": "Personalidades de cada participante",
         "group_dynamics": "Dinámicas de grupo detalladas",
         "no_subscription": "Sin suscripción - Pago único"
       },
@@ -908,7 +897,7 @@
         "description": "Sube tu chat y obtén estadísticas completas sin límites"
       },
       "step2": {
-        "title": "2. IA Opcional", 
+        "title": "2. IA Opcional",
         "description": "Compra créditos solo cuando quieras análisis psicológico profundo"
       },
       "step3": {
@@ -926,7 +915,7 @@
     "urgency": {
       "countdown_label": "⏰ Oferta válida por:",
       "hours": "h",
-      "minutes": "m", 
+      "minutes": "m",
       "seconds": "s",
       "stock_limited": "🔥 Solo quedan {{count}} packs disponibles hoy",
       "recent_purchases": "👥 {{count}} personas compraron en la última hora"
@@ -1622,7 +1611,7 @@
       "description": "Análisis psicológico de los patrones de comunicación de los miembros del grupo. Red flags y consejos."
     },
     "statistics": {
-      "title": "Estadísticas detalladas", 
+      "title": "Estadísticas detalladas",
       "description": "Estadísticas completas sobre quién domina las conversaciones, horarios activos y temas frecuentes."
     },
     "emotional": {
@@ -1668,7 +1657,7 @@
   },
   "demo": {
     "badge": "Demostración",
-    "title": "Mira lo que Chatsalsa puede hacer", 
+    "title": "Mira lo que Chatsalsa puede hacer",
     "description": "Descubre el tipo de información que puedes obtener de tus conversaciones de WhatsApp.",
     "stats": {
       "title": "Estadísticas del grupo \"Familia WhatsApp\"",
@@ -1681,17 +1670,25 @@
     },
     "users": {
       "eva": "Eva",
-      "miguel": "Miguel", 
+      "miguel": "Miguel",
       "ana": "Ana"
     },
     "user_profiles": {
       "ana": {
         "description": "Comunicativa y organizadora. Siempre está al tanto de todo lo que pasa en la familia.",
-        "traits": ["Comunicativa", "Organizadora", "Sociable"]
+        "traits": [
+          "Comunicativa",
+          "Organizadora",
+          "Sociable"
+        ]
       },
       "miguel": {
         "description": "Reflexivo y cuidadoso. Prefiere mensajes directos y va al grano en sus conversaciones.",
-        "traits": ["Reflexivo", "Directo", "Práctico"]
+        "traits": [
+          "Reflexivo",
+          "Directo",
+          "Práctico"
+        ]
       }
     },
     "red_flags": {
@@ -1700,7 +1697,10 @@
         "passive_aggressive": {
           "title": "Comunicación pasivo-agresiva",
           "description": "Se detectan patrones de mensajes con doble sentido y respuestas evasivas.",
-          "tags": ["Evasión", "Pasivo-agresivo"]
+          "tags": [
+            "Evasión",
+            "Pasivo-agresivo"
+          ]
         }
       }
     }
@@ -1801,8 +1801,18 @@
       }
     },
     "fallback": {
-      "emergency_users": ["Usuario 1", "Usuario 2", "Usuario 3"],
+      "emergency_users": [
+        "Usuario 1",
+        "Usuario 2",
+        "Usuario 3"
+      ],
       "emergency_warning": "⚠️ Usando fallback de emergencia para usuarios"
     }
+  },
+  "pricing_home": {
+    "badge": "PRECIOS",
+    "title": "Gratis para siempre, IA opcional",
+    "ai_cta": "Ver Pack IA",
+    "final_title": "Descubre lo que esconde tu grupo"
   }
-} 
+}

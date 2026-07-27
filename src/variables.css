@@ -1,3 +1,5 @@
+/* Tipografía Inter: @font-face en public/fonts/inter.css (enlazada desde index.html) */
+
 :root {
   /* ========== SISTEMA DE DISEÑO CANVA INTEGRADO ========== */
   
@@ -10,6 +12,38 @@
   
   /* Variables de escalado responsive */
   ----lgQg: 0.1rem;
+
+  /* ========== TOKENS UNIFICADOS DE COMPONENTES ==========
+     Única fuente de verdad para los nombres que antes duplicaban
+     Header.css y HeroSection.css en sus propios :root. */
+  --primary-green: #25D366;
+  --primary-green-dark: #128C7E;
+  --accent-purple: #8B5CF6;
+  --canva-purple: #7d2ae8;
+  --canva-purple-dark: #6c1fc7;
+  --canva-purple-bright: #8e3bef;
+  --accent-pink: #E91E63;
+  --accent-orange: #FF6B35;
+  --background-light: #f8f9fa;
+  --background-white: #ffffff;
+  --background-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --text-primary: #0e1318;
+  --text-secondary: #656b73;
+  --border-light: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+
+  /* Gradiente del hero (rediseño 2026) */
+  --hero-gradient: radial-gradient(ellipse 80% 60% at 70% 20%, rgba(139, 92, 246, 0.55) 0%, transparent 55%),
+                   radial-gradient(ellipse 70% 60% at 15% 85%, rgba(37, 211, 102, 0.22) 0%, transparent 50%),
+                   linear-gradient(150deg, #3b1470 0%, #5b21a8 55%, #6d28d9 100%);
   
   /* ========== COLORES PRINCIPALES (WhatsApp + Canva) ========== */
   --color-primary: #25D366; /* Verde WhatsApp mantenido */
@@ -98,7 +132,7 @@
   --JF44pw: 0px 0px 0px 0.5px #40576d12, 0px 8px 16px 0px #182c5923, 0px 24px 24px 0px #182c5912;
   
   /* ========== TIPOGRAFÍA RESPONSIVE CANVA ========== */
-  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   
   /* ========== TAMAÑOS DE FUENTE ESTÁNDAR ========== */
   --font-size-xs: 0.75rem;    /* 12px */

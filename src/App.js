@@ -194,7 +194,13 @@ const anonimizarChat = (contenido) => {
         /\d{1,2}\/\d{1,2}\/\d{2,4},\s*\d{1,2}:\d{1,2}:\d{1,2}/g,      // DD/MM/YY, HH:MM:SS
         /\d{1,2}\/\d{1,2}\/\d{2,4},\s*\d{1,2}:\d{1,2}/g,              // DD/MM/YY, HH:MM
         /\d{1,2}-\d{1,2}-\d{2,4},\s*\d{1,2}:\d{1,2}:\d{1,2}/g,        // DD-MM-YY, HH:MM:SS
-        /\d{1,2}-\d{1,2}-\d{2,4},\s*\d{1,2}:\d{1,2}/g                 // DD-MM-YY, HH:MM
+        /\d{1,2}-\d{1,2}-\d{2,4},\s*\d{1,2}:\d{1,2}/g,                // DD-MM-YY, HH:MM
+
+        // Timestamps SIN coma entre fecha y hora (export de iOS: "[30/1/26 13:56:06]").
+        // Sin esta protección, "26 13" se detecta como número de teléfono y el
+        // timestamp queda corrupto ("26XX"), rompiendo el análisis del chat.
+        /\d{1,2}\/\d{1,2}\/\d{2,4}\s+\d{1,2}:\d{1,2}(?::\d{1,2})?/g,  // DD/MM/YY HH:MM(:SS)
+        /\d{1,2}[.-]\d{1,2}[.-]\d{2,4}\s+\d{1,2}:\d{1,2}(?::\d{1,2})?/g // DD.MM.YY HH:MM(:SS)
       ];
       
       // Crear un conjunto de todas las fechas encontradas para protegerlas
@@ -2447,7 +2453,7 @@ const tryDeleteFiles = async (operationId) => {
                       </div>
                     ) : (
                       <>
-                        <h2>{showAnalysis ? t('app.upload.another') : t('app.upload.title') + " "}<span className="whatsapp-text">WhatsApp</span></h2>
+                        <h2>{showAnalysis ? t('app.upload.another') : (<>{t('app.upload.title')} <span className="whatsapp-text">WhatsApp</span></>)}</h2>
                         
                         {/* Carrusel de instrucciones de WhatsApp separado del botón */}
                         <WhatsappInstructions />

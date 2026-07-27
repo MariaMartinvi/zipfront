@@ -4,6 +4,7 @@
   --primary-green: #25D366;
   --primary-green-dark: #128C7E;
   --accent-purple: #8B5CF6;
+  --canva-purple: #7d2ae8;
   --accent-pink: #E91E63;
   --accent-orange: #FF6B35;
   --background-light: #f8f9fa;
@@ -23,13 +24,13 @@
 
 /* HEADER (basado en src/Header.css, pero sin sticky para que no quede fijo en el blog) */
 .app-header {
-  background: var(--background-white);
+  background: rgba(255, 255, 255, 0.85);
   border-bottom: 1px solid var(--border-light);
   position: relative; /* antes sticky en la web principal */
   top: 0;
   z-index: 100;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-sm);
 }
 
 .header-container {
@@ -173,20 +174,20 @@ span.logo-chatsalsa,
 a.nav-link,
 .desktop-nav .nav-link,
 nav.desktop-nav a.nav-link {
-  color: var(--text-secondary) !important;
+  color: var(--text-primary) !important;
   text-decoration: none !important;
-  font-weight: 500 !important;
-  font-size: 18px !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
   transition: color 0.2s ease !important;
   position: relative !important;
 }
 
 .nav-link:hover {
-  color: var(--primary-green);
+  color: var(--primary-green) !important;
 }
 
 .nav-link:first-of-type {
-  color: var(--primary-green);
+  color: var(--primary-green) !important;
 }
 
 .nav-link:first-of-type::after {
@@ -205,60 +206,58 @@ nav.desktop-nav a.nav-link {
 a.nav-link.sign-up,
 .desktop-nav .nav-link.sign-up,
 nav.desktop-nav a.nav-link.sign-up {
-  background: linear-gradient(to right, #25D366, #8A2BE2) !important;
+  background: linear-gradient(135deg, var(--accent-purple), var(--primary-green)) !important;
   color: white !important;
   border: none !important;
-  padding: 0.6rem 1.8rem !important;
+  padding: 0.6rem 1.6rem !important;
   border-radius: 9999px !important;
-  font-size: 18px !important;
-  font-weight: 500 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   text-decoration: none !important;
   display: inline-block !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.25) !important;
 }
 
 .nav-link.sign-up:hover,
 a.nav-link.sign-up:hover,
 .desktop-nav .nav-link.sign-up:hover,
 nav.desktop-nav a.nav-link.sign-up:hover {
-  background: linear-gradient(to right, #128C7E, #7B2CBF) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+  background: linear-gradient(135deg, var(--canva-purple), var(--primary-green-dark)) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35) !important;
   color: white !important;
 }
 
 /* Botón CTA principal (por si se usa dentro del header) */
 .cta-button {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background: linear-gradient(135deg, var(--accent-purple), var(--primary-green));
   color: white;
   border: none;
-  padding: 0.6rem 1.8rem;
+  padding: 0.6rem 1.6rem;
   border-radius: 9999px;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
   display: inline-block;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.25);
 }
 
 .cta-button:hover {
-  background: linear-gradient(to right, #128C7E, #7B2CBF);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, var(--canva-purple), var(--primary-green-dark));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
   color: white;
 }
 
 /* FOOTER (basado en src/Footer.css) */
 .app-footer {
-  background: url("data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='main_gradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234285f4'/%3E%3Cstop offset='50%25' style='stop-color:%2325D366'/%3E%3Cstop offset='100%25' style='stop-color:%23f0ede2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' fill='url(%23main_gradient)'/%3E%3C/svg%3E");
-  background-size: cover;
-  background-position: center;
-  color: #000000;
-  padding: 2rem 0;
+  background: #0e1318;
+  color: #e5e7eb;
+  padding: 3rem 0 2rem;
   margin-top: auto;
   position: relative;
   overflow: hidden;
@@ -275,8 +274,7 @@ nav.desktop-nav a.nav-link.sign-up:hover {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, #f0ede2, #25D366, #567268);
-  opacity: 0.3;
+  background: linear-gradient(90deg, transparent, rgba(37, 211, 102, 0.45), transparent);
 }
 
 .footer-content {
@@ -319,7 +317,7 @@ nav.desktop-nav a.nav-link.sign-up:hover {
 }
 
 .footer-section h3 {
-  color: #000000;
+  color: #ffffff;
   font-size: 18px;
   margin-bottom: 0.8rem;
   position: relative;
@@ -357,7 +355,7 @@ nav.desktop-nav a.nav-link.sign-up:hover {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  color: #000000;
+  color: #e5e7eb;
   text-decoration: none;
   padding: 0.6rem;
   border-radius: 6px;
@@ -371,14 +369,17 @@ nav.desktop-nav a.nav-link.sign-up:hover {
 }
 
 .footer-link:hover {
-  color: #000000;
+  color: #25D366;
   transform: translateX(5px);
   animation: pulse 0.5s ease;
 }
 
 .footer-icon {
   font-size: 18px;
+  width: 20px;
+  height: 20px;
   color: #25D366;
+  fill: currentColor;
   transition: transform 0.3s ease;
   flex-shrink: 0;
 }
@@ -396,23 +397,23 @@ nav.desktop-nav a.nav-link.sign-up:hover {
   text-align: center;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(240, 237, 226, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
 }
 
 .footer-bottom p {
   margin: 0;
   font-size: 16px;
-  color: #000000;
+  color: #9ca3af;
 }
 
 .scroll-top {
   position: absolute;
   right: 20px;
   bottom: 20px;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(37, 211, 102, 0.15);
   border: none;
-  color: #000000;
+  color: #25D366;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -424,8 +425,8 @@ nav.desktop-nav a.nav-link.sign-up:hover {
 }
 
 .scroll-top:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: #000000;
+  background: #25D366;
+  color: #ffffff;
   transform: translateY(-3px);
 }
 

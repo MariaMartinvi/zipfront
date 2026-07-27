@@ -18,7 +18,7 @@
     "jspdf": "^3.0.1",
     "jszip": "^3.10.1",
     "lz-string": "^1.5.0",
-    "marked": "^15.0.7",
+    "marked": "^4.2.12",
     "openai": "^4.98.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -45,12 +45,14 @@
     "workbox-streams": "^6.5.4"
   },
   "devDependencies": {
+    "es-check": "^9.6.4",
     "typescript": "4.9.5"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "build:render": "CI=false SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true NODE_OPTIONS=--max-old-space-size=4096 react-scripts build",
+    "build": "react-scripts build && npm run verify:es",
+    "build:render": "CI=false SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true NODE_OPTIONS=--max-old-space-size=4096 react-scripts build && npm run verify:es",
+    "verify:es": "es-check es2020 'build/static/js/main.*.js'",
     "build:site": "npm run build:render && cd blog && npm install && npm run build && cd .. && node scripts/build-site.js",
     "serve:site": "npx serve site-dist -l 3000",
     "start:prod": "serve site-dist -s -l ${PORT:-10000}",

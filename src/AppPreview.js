@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './AppPreview.css';
 import HeroSection from './components/HeroSection';
+import PricingPreview from './components/PricingPreview';
 
 const AppPreview = () => {
   const { t } = useTranslation();
@@ -365,6 +366,9 @@ const AppPreview = () => {
           </div>
         </div>
       </section>
+
+      {/* Pricing resumido + CTA final */}
+      <PricingPreview onAnalyzeClick={scrollToUpload} />
 
       {/* Security Badge */}
       <section className="security-section">

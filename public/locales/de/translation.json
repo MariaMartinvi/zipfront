@@ -59,7 +59,6 @@
     "top_profiles": {
       "title": "Hervorgehobene Chat-Profile",
       "badge": "HERVORGEHOBENE PROFILE",
-      "badge": "HERVORGEHOBENE PROFILE",
       "group_average": "Die anderen",
       "professor": {
         "title": "Der Professor",
@@ -233,7 +232,7 @@
     "stats_labels": {
       "vice_mentions": "Laster-Erwähnungen",
       "vice_percentage": "% Nachrichten mit Lastern",
-      "profanity_mentions": "Schimpfwort-Erwähnungen", 
+      "profanity_mentions": "Schimpfwort-Erwähnungen",
       "profanity_percentage": "% Nachrichten mit Schimpfwörtern",
       "questions_asked": "Gestellte Fragen",
       "questions_percentage": "% der Nachrichten mit Fragen",
@@ -274,13 +273,7 @@
     "android_app": "Android App",
     "download_android": "Für Android herunterladen"
   },
-  "messages": {
-    "loading": "Laden...",
-    "processing": "Datei wird verarbeitet...",
-    "success": "Die Datei wurde erfolgreich verarbeitet",
-    "error": "Ein Fehler ist aufgetreten",
-    "delete_confirmation": "Sind Sie sicher, dass Sie löschen möchten?"
-  },
+  "messages": "Nachrichten",
   "error": {
     "file_type": "Die Datei muss eine ZIP-Datei sein",
     "file_size": "Die Datei ist zu groß",
@@ -316,11 +309,6 @@
     },
     "simplified_steps": {
       "android": {
-        "install": {
-          "title": "Super einfach! ChatSalsa herunterladen",
-          "description": "Laden Sie unsere App vom Google Play Store herunter, um Dateien von WhatsApp zu teilen",
-          "button": "📱 Von Google Play herunterladen"
-        },
         "0": {
           "title": "Exportieren Sie Ihren Chat",
           "description": "In Ihrem WhatsApp-Chat: Tippen Sie auf die 3 Punkte → Mehr → Chat exportieren → Ohne Medien"
@@ -328,6 +316,11 @@
         "1": {
           "title": "Fertig! Mit ChatSalsa teilen",
           "description": "Tippen Sie auf ChatSalsa, um Ihre Datei hochzuladen. Wenn es nicht erscheint, installieren Sie die App von chatsalsa.com"
+        },
+        "install": {
+          "title": "Super einfach! ChatSalsa herunterladen",
+          "description": "Laden Sie unsere App vom Google Play Store herunter, um Dateien von WhatsApp zu teilen",
+          "button": "📱 Von Google Play herunterladen"
         }
       },
       "ios": [
@@ -729,11 +722,6 @@
   },
   "simplified_steps": {
     "android": {
-      "install": {
-        "title": "Super einfach! ChatSalsa herunterladen",
-        "description": "Lade unsere App vom Google Play Store herunter um Dateien von WhatsApp zu teilen",
-        "button": "📱 Von Google Play herunterladen"
-      },
       "0": {
         "title": "Chat exportieren",
         "description": "In deinem WhatsApp Chat: Tippe die 3 Punkte → Mehr → Chat exportieren → Ohne Medien"
@@ -741,6 +729,11 @@
       "1": {
         "title": "Fertig! Mit ChatSalsa teilen",
         "description": "Tippe auf ChatSalsa, um deine Datei hochzuladen. Falls es nicht erscheint, installiere die App von chatsalsa.com"
+      },
+      "install": {
+        "title": "Super einfach! ChatSalsa herunterladen",
+        "description": "Lade unsere App vom Google Play Store herunter um Dateien von WhatsApp zu teilen",
+        "button": "📱 Von Google Play herunterladen"
       }
     },
     "ios": [
@@ -1002,7 +995,6 @@
     "saturday": "Samstag",
     "sunday": "Sonntag"
   },
-  "messages": "Nachrichten",
   "pages": {
     "faq": {
       "title": "Häufig gestellte Fragen",
@@ -1378,7 +1370,7 @@
       "description": "Psychologische Analyse der Kommunikationsmuster der Gruppenmitglieder. Warnsignale und Ratschläge."
     },
     "statistics": {
-      "title": "Detaillierte Statistiken", 
+      "title": "Detaillierte Statistiken",
       "description": "Vollständige Statistiken darüber, wer Gespräche dominiert, aktive Zeiten und häufige Themen."
     },
     "emotional": {
@@ -1437,17 +1429,25 @@
     },
     "users": {
       "eva": "Eva",
-      "miguel": "Miguel", 
+      "miguel": "Miguel",
       "ana": "Ana"
     },
     "user_profiles": {
       "ana": {
         "description": "Kommunikativ und organisiert. Immer über alles informiert, was in der Familie passiert.",
-        "traits": ["Kommunikativ", "Organisiert", "Gesellig"]
+        "traits": [
+          "Kommunikativ",
+          "Organisiert",
+          "Gesellig"
+        ]
       },
       "miguel": {
         "description": "Nachdenklich und vorsichtig. Bevorzugt direkte Nachrichten und kommt in Gesprächen auf den Punkt.",
-        "traits": ["Nachdenklich", "Direkt", "Praktisch"]
+        "traits": [
+          "Nachdenklich",
+          "Direkt",
+          "Praktisch"
+        ]
       }
     },
     "red_flags": {
@@ -1456,7 +1456,10 @@
         "passive_aggressive": {
           "title": "Passiv-aggressive Kommunikation",
           "description": "Muster von Nachrichten mit Doppeldeutigkeit und ausweichenden Antworten erkannt.",
-          "tags": ["Ausweichung", "Passiv-aggressiv"]
+          "tags": [
+            "Ausweichung",
+            "Passiv-aggressiv"
+          ]
         }
       }
     }
@@ -1694,7 +1697,11 @@
     "security_badge": "Transparente Cookies"
   },
   "fallback": {
-    "emergency_users": ["Benutzer 1", "Benutzer 2", "Benutzer 3"],
+    "emergency_users": [
+      "Benutzer 1",
+      "Benutzer 2",
+      "Benutzer 3"
+    ],
     "emergency_warning": "⚠️ Notfall-Fallback für Benutzer verwenden"
   },
   "android_prompt": {
@@ -1706,5 +1713,11 @@
     "download_button": "Von Google Play herunterladen",
     "continue_web": "Im Web fortfahren",
     "close": "Schließen"
+  },
+  "pricing_home": {
+    "badge": "PREISE",
+    "title": "Für immer kostenlos, KI optional",
+    "ai_cta": "KI-Paket ansehen",
+    "final_title": "Finde heraus, was deine Gruppe verbirgt"
   }
-} 
+}

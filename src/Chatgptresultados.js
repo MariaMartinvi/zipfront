@@ -7,6 +7,7 @@ import './styles/Analisis.css';
 import { useAuth } from './AuthContext';
 // Las constantes ahora están en el backend
 import { ShareAnalysisButton } from './shareAnalysisResults'; // NUEVO: importar botón de compartir
+import { eliminarGameDataDelTexto } from './gameDataUtils';
 
 function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-default" }) {
   // TODOS los hooks deben ir ANTES de cualquier return condicional
@@ -120,7 +121,8 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
       }
 
       // Procesar la respuesta una sola vez
-      let processedResponse = chatGptResponse;
+      // (quitando primero el bloque GAME_DATA, que es solo para el juego)
+      let processedResponse = eliminarGameDataDelTexto(chatGptResponse);
 
       // NUEVO: Aplicar mapeo de nombres a toda la respuesta antes del procesamiento
       if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {

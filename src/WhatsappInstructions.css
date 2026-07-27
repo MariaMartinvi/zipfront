@@ -1,967 +1,224 @@
-/* WhatsappInstructions.css - Estilo moderno consistente con la aplicación */
+/* WhatsappInstructions — instrucciones de exportación (tokens en variables.css) */
+
 .whatsapp-instructions {
-  max-width: 900px;
-  margin: 0 auto 40px;
-  padding: 80px 40px 40px;
-  border-radius: 20px;
-  background: white;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: visible;
-}
-
-.whatsapp-instructions::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(113, 34, 172, 0.05), rgba(37, 211, 102, 0.05));
-  pointer-events: none;
-}
-
-.whatsapp-instructions > * {
-  position: relative;
-  z-index: 1;
-}
-
-.whatsapp-instructions h2 {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 8px;
   text-align: center;
-  margin-bottom: 40px;
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #7122AC, #25D366);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
-/* Selector de plataforma */
+/* Encabezado */
+.instructions-header h2 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.instructions-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+}
+
+/* Selector de plataforma: control segmentado */
 .platform-selector {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 40px;
-  gap: 16px;
-  flex-wrap: wrap;
+  display: inline-flex;
+  background: var(--background-light);
+  border: 1px solid var(--border-light);
+  border-radius: 9999px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 16px;
 }
 
 .platform-button {
-  background: white;
-  color: #4a4a4a;
-  border: 2px solid transparent;
-  border-radius: 16px;
-  padding: 16px 32px;
-  font-size: 16px;
+  border: none;
+  background: transparent;
+  padding: 8px 22px;
+  border-radius: 9999px;
+  font-size: 15px;
   font-weight: 600;
+  font-family: var(--font-family-base);
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 120px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.platform-button:hover {
+  color: var(--text-primary);
 }
 
 .platform-button.active {
-  background: white;
-  color: #25D366;
-  border: 3px solid #25D366;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
-  font-weight: 700;
+  background: #ffffff;
+  color: var(--primary-green-dark);
+  box-shadow: var(--shadow-sm);
 }
 
-.platform-button:hover:not(.active) {
-  background-color: #f8f9fa;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.platform-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.3);
-}
-
-/* Pestañas de instrucciones */
+/* Pestañas paso a paso / vídeo */
 .instruction-tabs {
   display: flex;
   justify-content: center;
-  margin-bottom: 0px;
-  gap: 8px;
-  background: #f8f9fa;
-  padding: 8px;
-  border-radius: 16px;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
+  gap: 24px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .tab-button {
-  flex: 1;
-  background: white;
-  color: #6b7280;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  padding: 16px 24px;
-  font-size: 16px;
+  border: none;
+  background: transparent;
+  padding: 10px 4px 12px;
+  font-size: 15px;
   font-weight: 600;
+  font-family: var(--font-family-base);
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-height: 48px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  color: var(--text-primary);
 }
 
 .tab-button.active {
-  background: white;
-  color: #25D366;
-  border: 3px solid #25D366;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-  font-weight: 700;
+  color: var(--primary-green-dark);
+  border-bottom-color: var(--primary-green);
 }
 
-.tab-button:hover:not(.active) {
-  background: white;
-  color: #374151;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* Pasos: todos visibles a la vez */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  text-align: left;
 }
 
-/* Estilos del carrusel */
-.instruction-carousel {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 30px;
-  overflow: visible;
-}
-
-.carousel-container {
-  width: 100%;
-  max-width: 700px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
-  min-height: 400px;
-  overflow: visible;
-  padding-top: 40px;
-}
-
-.carousel-slides {
-  width: 100%;
-  position: relative;
-  overflow: visible;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-  min-height: 300px;
-  margin: 0 auto;
-  border: 2px solid rgba(37, 211, 102, 0.1);
-}
-
-.carousel-slide {
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  text-align: center;
-  animation: fadeIn 0.5s ease-in-out;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-  box-sizing: border-box;
-  overflow: visible;
-}
-
-.carousel-slide:hover {
-  transform: scale(1.02);
-}
-
-.carousel-slide:active {
-  transform: scale(0.98);
-}
-
-/* Animación para entrada del slide */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Animación para salida del slide */
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-}
-
-.carousel-slide.active {
-  display: flex;
-}
-
-.carousel-slide.exiting {
-  animation: fadeOut 0.3s ease-in forwards;
-}
-
-/* Contenido del slide */
-.slide-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 600px;
-}
-
-.slide-icon {
-  font-size: 4rem;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 120px;
-  height: 120px;
-  background: linear-gradient(135deg, #25D366, #7122AC);
-  border-radius: 50%;
-  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
-  color: white;
-}
-
-/* Estilos para el contenedor process-icon en el carousel */
-.slide-content .process-icon {
-  width: 120px;
-  height: 120px;
-  background: transparent;
-  border: 3px solid #25D366;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-  box-shadow: none;
-  transition: all 0.3s ease;
-}
-
-.slide-content .process-icon:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
-}
-
-/* Estilos para iconos con colores alternados */
-.slide-content .process-icon.green-border {
-  border-color: #25D366;
-}
-
-.slide-content .process-icon.purple-border {
-  border-color: rgb(138, 43, 226);
-}
-
-.slide-content .process-icon.green-border:hover {
-  box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
-}
-
-.slide-content .process-icon.purple-border:hover {
-  box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
-}
-
-/* SVG icons en el carousel */
-.slide-content .process-svg {
-  height: 4rem;
-  width: 4rem;
-  stroke-width: 2;
-}
-
-/* Emoji icons en el carousel */
-.slide-content .emoji-icon {
-  font-size: 4.5rem;
-  display: block;
-  line-height: 1;
-}
-
-.slide-text {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.slide-title {
-  margin: 0 0 16px 0;
-  color: #1a1a1a;
-  font-size: 24px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.slide-description {
-  margin: 0 auto;
-  color: #4a5568;
-  font-size: 18px;
-  line-height: 1.6;
-  max-width: 90%;
-  text-align: center;
-}
-
-/* Botones de navegación */
-.carousel-button {
-  background: linear-gradient(135deg, #25D366, #7122AC);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin: 0 15px;
-  z-index: 10;
-  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-  transition: all 0.3s ease;
-}
-
-.carousel-button:hover {
-  background: linear-gradient(135deg, #128C7E, #5A1A87);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-}
-
-.carousel-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.3);
-}
-
-/* Indicadores del carrusel */
-.carousel-indicators {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 30px;
-}
-
-.indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: none;
-  background: #d1d5db;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.indicator.active {
-  background: linear-gradient(135deg, #25D366, #7122AC);
-  transform: scale(1.3);
-  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.4);
-}
-
-.indicator:hover {
-  background: #9ca3af;
-  transform: scale(1.1);
-}
-
-.indicator:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.3);
-}
-
-/* Video tutorial */
-.instruction-video {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+.step-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
   padding: 20px;
-  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-  border-radius: 20px;
-  border: 2px solid rgba(37, 211, 102, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.step-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.step-badge {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2EE06F, #1DB954);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.step-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0 0 14px;
+  flex: 1;
+}
+
+.step-image-container {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--background-light);
+}
+
+.step-image {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+}
+
+/* Paso con botón de instalación (Android) */
+.step-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Dentro de la tarjeta, el botón PWA no debe flotar */
+.step-button-container .install-pwa-container {
+  position: static;
+  animation: none;
+}
+
+.step-hint {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 13px;
+  font-family: var(--font-family-base);
+  color: var(--primary-green-dark);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Vídeo */
+.instruction-video {
+  display: flex;
+  justify-content: center;
 }
 
 .tutorial-video {
   width: 100%;
-  height: auto;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .whatsapp-instructions {
-    margin: 0 auto 30px;
-    padding: 30px 20px;
+/* Responsive */
+@media (max-width: 860px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto;
   }
 
-  .whatsapp-instructions h2 {
-    font-size: 2.2rem;
-    margin-bottom: 30px;
-  }
-
-  .platform-selector {
-    gap: 12px;
-    margin-bottom: 30px;
-  }
-
-  .platform-button {
-    padding: 14px 24px;
-    font-size: 15px;
-    min-width: 100px;
-    height: 52px;
-  }
-
-  .instruction-tabs {
-    margin-bottom: 30px;
-  }
-
-  .tab-button {
-    padding: 14px 20px;
-    font-size: 15px;
-    min-height: 44px;
-  }
-
-  .carousel-slides {
-    min-height: 280px;
-  }
-
-  .carousel-slide {
-    padding: 30px 15px;
-  }
-
-  .slide-icon {
-    width: 100px;
-    height: 100px;
-    font-size: 3.5rem;
-    margin-bottom: 20px;
-  }
-
-  /* Estilos responsive para process-icon en móvil */
-  .slide-content .process-icon {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 20px;
-  }
-
-  .slide-content .process-svg {
-    height: 4rem;
-    width: 4rem;
-  }
-
-  .slide-content .emoji-icon {
-    font-size: 3.5rem;
-  }
-
-  .slide-title {
+  .instructions-header h2 {
     font-size: 22px;
-    margin-bottom: 14px;
   }
 
-  .slide-description {
-    font-size: 17px;
-  }
-
-  .carousel-button {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
-  }
-
-  .instruction-video {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .whatsapp-instructions {
-    margin: 0 auto 20px;
-    padding: 20px 15px;
-  }
-
-  .whatsapp-instructions h2 {
-    font-size: 2rem;
-    margin-bottom: 25px;
-  }
-
-  .platform-selector {
-    gap: 8px;
-    margin-bottom: 25px;
+  .instructions-subtitle {
+    font-size: 15px;
   }
 
   .platform-button {
-    padding: 12px 20px;
+    padding: 8px 14px;
     font-size: 14px;
-    min-width: 90px;
-    height: 48px;
   }
-
-  .instruction-tabs {
-    margin-bottom: 25px;
-    padding: 6px;
-  }
-
-  .tab-button {
-    padding: 12px 16px;
-    font-size: 14px;
-    min-height: 40px;
-  }
-
-  .carousel-container {
-    min-height: 260px;
-  }
-
-  .carousel-slides {
-    min-height: 260px;
-  }
-
-  .carousel-slide {
-    padding: 25px 12px;
-  }
-
-  .slide-icon {
-    width: 80px;
-    height: 80px;
-    font-size: 3rem;
-    margin-bottom: 16px;
-  }
-
-  /* Estilos responsive para process-icon en móvil pequeño */
-  .slide-content .process-icon {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 16px;
-  }
-
-  .slide-content .process-svg {
-    height: 3.5rem;
-    width: 3.5rem;
-  }
-
-  .slide-content .emoji-icon {
-    font-size: 3rem;
-  }
-
-  .slide-title {
-    font-size: 20px;
-    margin-bottom: 12px;
-  }
-
-  .slide-description {
-    font-size: 16px;
-  }
-
-  .carousel-button {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
-    margin: 0 10px;
-  }
-
-  .carousel-indicators {
-    gap: 8px;
-    margin-top: 20px;
-  }
-
-  .indicator {
-    width: 10px;
-    height: 10px;
-  }
-
-  .instruction-video {
-    padding: 12px;
-  }
-}
-
-/* Contenido adicional */
-.instructions-content {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.carousel-wrapper {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-}
-
-.video-tutorial-container {
-  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-  border-radius: 20px;
-  padding: 30px;
-  border: 2px solid rgba(37, 211, 102, 0.1);
-}
-
-.video-caption {
-  text-align: center;
-  color: #6b7280;
-  font-size: 16px;
-  margin-top: 16px;
-  font-style: italic;
-}
-
-.desktop-only {
-  display: block;
-}
-
-.desktop-instructions-note {
-  background: linear-gradient(135deg, #fff7ed, #fed7aa);
-  border: 1px solid #fb923c;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 20px 0;
-  color: #ea580c;
-  font-size: 16px;
-  text-align: center;
-}
-
-.hidden-content {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .instructions-content {
-    gap: 20px;
-  }
-
-  .carousel-wrapper {
-    padding: 20px;
-  }
-
-  .video-tutorial-container {
-    padding: 20px;
-  }
-
-  .desktop-instructions-note {
-    padding: 16px;
-    font-size: 15px;
-  }
-}
-
-@media (min-width: 769px) {
-  .instruction-carousel {
-    display: block;
-  }
-
-  .carousel-container {
-    max-width: 800px;
-  }
-}
-
-/* ===== ESTILOS PARA ANDROID SIMPLIFICADO ===== */
-
-/* Hero section para Android */
-.android-hero {
-  text-align: center;
-  margin-bottom: 40px;
-  padding: 30px 20px;
-  background: linear-gradient(135deg, #25D366, #128C7E);
-  border-radius: 20px;
-  color: white;
-  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
-}
-
-/* Hero section para iOS */
-.ios-hero {
-  text-align: center;
-  margin-bottom: 40px;
-  padding: 30px 20px;
-  background: linear-gradient(135deg, #007AFF, #5AC8FA);
-  border-radius: 20px;
-  color: white;
-  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.3);
-}
-
-.android-hero h2,
-.ios-hero h2 {
-  margin: 0 0 10px 0;
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: white !important;
-  background: none !important;
-  -webkit-text-fill-color: white !important;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.android-hero .subtitle,
-.ios-hero .subtitle {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 500;
-  opacity: 0.95;
-  color: white;
-}
-
-/* Layout simplificado para slides de Android */
-.carousel-slide.simplified-slide {
-  min-height: 400px;
-  overflow: visible;
-}
-
-.simplified-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 70px 30px 15px;
-  width: 100%;
-  max-width: 600px;
-  position: relative;
-}
-
-.step-number {
-  background: linear-gradient(135deg, #25D366, #128C7E);
-  color: white;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-}
-
-.big-number {
-  font-size: 2.5rem;
-  font-weight: 900;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.step-info {
-  text-align: center;
-  max-width: 500px;
-  margin: 0;
-}
-
-.simple-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 8px 0;
-  line-height: 1.2;
-}
-
-.simple-description {
-  font-size: 1.2rem;
-  color: #4b5563;
-  margin: 0 0 5px 0;
-  line-height: 1.3;
-  font-weight: 500;
-}
-
-.step-image-container {
-  width: 100%;
-  max-width: 450px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  border: 3px solid #25D366;
-  position: relative;
-  margin: 10px 0;
-}
-
-.step-image {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: transform 0.3s ease;
-}
-
-.step-image:hover {
-  transform: scale(1.02);
-}
-
-/* Footer motivacional para Android */
-.android-footer {
-  text-align: center;
-  margin-top: 30px;
-  padding: 25px;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  border-radius: 20px;
-  border: 2px solid #f59e0b;
-}
-
-.encouragement {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #92400e;
-  margin: 0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* ===== FIN ESTILOS ANDROID SIMPLIFICADO ===== */
-
-/* ===== RESPONSIVE PARA ANDROID MÓVIL ===== */
-@media (max-width: 768px) {
-  /* Android Hero responsive */
-  .android-hero {
-    padding: 25px 15px;
-    margin-bottom: 30px;
-  }
-
-  .android-hero h2 {
-    font-size: 1.8rem !important;
-  }
-
-  .android-hero .subtitle {
-    font-size: 1rem;
-  }
-
-  /* Layout simplificado responsive */
-  .simplified-layout {
-    padding: 30px 20px;
-    gap: 20px;
-  }
-
-  .step-number {
-    width: 70px;
-    height: 70px;
-  }
-
-  .big-number {
-    font-size: 2rem;
-  }
-
-  .simple-title {
-    font-size: 1.5rem;
-  }
-
-  .simple-description {
-    font-size: 1.1rem;
-  }
-
-  .step-image-container {
-    max-width: 350px;
-    border-width: 2px;
-  }
-
-  .android-footer {
-    padding: 20px;
-    margin-top: 25px;
-  }
-
-  .encouragement {
-    font-size: 1.1rem;
-  }
-
-  .carousel-slide.simplified-slide {
-    min-height: 350px;
-    margin-bottom: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  /* Android Hero para móviles muy pequeños */
-  .android-hero {
-    padding: 20px 12px;
-    margin-bottom: 25px;
-  }
-
-  .android-hero h2 {
-    font-size: 1.6rem !important;
-  }
-
-  .android-hero .subtitle {
-    font-size: 0.95rem;
-  }
-
-  /* Layout simplificado para móviles pequeños */
-  .simplified-layout {
-    padding: 25px 15px;
-    gap: 18px;
-  }
-
-  .step-number {
-    width: 60px;
-    height: 60px;
-  }
-
-  .big-number {
-    font-size: 1.8rem;
-  }
-
-  .simple-title {
-    font-size: 1.3rem;
-  }
-
-  .simple-description {
-    font-size: 1rem;
-  }
-
-  .step-image-container {
-    max-width: 300px;
-    border-width: 2px;
-  }
-
-  .android-footer {
-    padding: 15px;
-    margin-top: 20px;
-  }
-
-  .encouragement {
-    font-size: 1rem;
-  }
-
-  .carousel-slide.simplified-slide {
-    min-height: 300px;
-    margin-bottom: 12px;
-  }
-}
-/* ===== FIN RESPONSIVE ANDROID ===== */
-
-/* Los títulos hero ahora se muestran en móviles */
-
-.step-button-container {
-  width: 100%;
-  max-width: 450px;
-  display: flex;
-  justify-content: center;
-  margin: 10px 0;
-}
-
-.install-app-button {
-  background: linear-gradient(135deg, #25D366, #128C7E);
-  color: white;
-  border: none;
-  border-radius: 16px;
-  padding: 20px 40px;
-  font-size: 1.3rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60px;
-}
-
-.install-app-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(37, 211, 102, 0.5);
-  background: linear-gradient(135deg, #128C7E, #25D366);
-}
-
-.install-app-button:active {
-  transform: translateY(0);
-  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
 }

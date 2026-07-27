@@ -196,22 +196,7 @@
       }
     }
   },
-  "features": {
-    "title": "Caratteristiche Principali",
-    "subtitle": "Tutto ciò di cui hai bisogno per analizzare le tue conversazioni WhatsApp",
-    "feature1": {
-      "title": "Analisi Avanzata",
-      "description": "Analisi dettagliata delle conversazioni con AI"
-    },
-    "feature2": {
-      "title": "Report Personalizzati",
-      "description": "Genera report personalizzati per il tuo business"
-    },
-    "feature3": {
-      "title": "Integrazione WhatsApp",
-      "description": "Integrazione diretta con WhatsApp Business"
-    }
-  },
+  "features": "Caratteristiche",
   "pricing": {
     "title": "Piani e Prezzi",
     "subtitle": "Scegli il piano perfetto per il tuo business",
@@ -569,7 +554,7 @@
       "preparing_statistical": "Preparazione dell'analisi statistica della conversazione...",
       "preparing_psychological": "Preparazione dell'analisi psicologica della conversazione..."
     },
-    "generating_analysis": "Generazione analisi: Analizzando modelli di comunicazione...",
+    "generating_analysis": "Generazione dell'analisi",
     "upgrade_modal": {
       "title": "Limite di analisi raggiunto",
       "message": "Hai raggiunto il limite di analisi delle conversazioni per il tuo piano attuale",
@@ -725,7 +710,6 @@
     "back": "Indietro",
     "next": "Avanti",
     "prev": "Precedente",
-    "generating_analysis": "Generazione dell'analisi",
     "generating_ai_analysis": "Generazione dell'analisi psicologica con IA...",
     "refresh_confirmation": {
       "title": "Sei sicuro?",
@@ -766,7 +750,7 @@
     "stats_labels": {
       "vice_mentions": "Menzioni di vizi",
       "vice_percentage": "% messaggi con vizi",
-      "profanity_mentions": "Menzioni di parolacce", 
+      "profanity_mentions": "Menzioni di parolacce",
       "profanity_percentage": "% messaggi con parolacce",
       "questions_asked": "Domande fatte",
       "questions_percentage": "% di messaggi con domande",
@@ -1067,11 +1051,6 @@
     },
     "simplified_steps": {
       "android": {
-        "install": {
-          "title": "Super facile! Scarica ChatSalsa",
-          "description": "Scarica la nostra app da Google Play Store per condividere file da WhatsApp",
-          "button": "📱 Scarica da Google Play"
-        },
         "0": {
           "title": "Esporta la tua chat",
           "description": "Nella tua chat WhatsApp: Tocca i 3 punti → Altro → Esporta chat → Senza media"
@@ -1079,6 +1058,11 @@
         "1": {
           "title": "Fatto! Condividi con ChatSalsa",
           "description": "Tocca ChatSalsa per caricare il tuo file. Se non appare, installa l'app da chatsalsa.com"
+        },
+        "install": {
+          "title": "Super facile! Scarica ChatSalsa",
+          "description": "Scarica la nostra app da Google Play Store per condividere file da WhatsApp",
+          "button": "📱 Scarica da Google Play"
         }
       },
       "ios": [
@@ -1404,7 +1388,7 @@
       "description": "Analisi psicologica dei modelli di comunicazione dei membri del gruppo. Segnali di allarme e consigli."
     },
     "statistics": {
-      "title": "Statistiche dettagliate", 
+      "title": "Statistiche dettagliate",
       "description": "Statistiche complete su chi domina le conversazioni, orari attivi e argomenti frequenti."
     },
     "emotional": {
@@ -1463,17 +1447,25 @@
     },
     "users": {
       "eva": "Eva",
-      "miguel": "Miguel", 
+      "miguel": "Miguel",
       "ana": "Ana"
     },
     "user_profiles": {
       "ana": {
         "description": "Comunicativa e organizzata. Sempre al corrente di tutto quello che succede in famiglia.",
-        "traits": ["Comunicativa", "Organizzata", "Socievole"]
+        "traits": [
+          "Comunicativa",
+          "Organizzata",
+          "Socievole"
+        ]
       },
       "miguel": {
         "description": "Riflessivo e attento. Preferisce messaggi diretti e va dritto al punto nelle conversazioni.",
-        "traits": ["Riflessivo", "Diretto", "Pratico"]
+        "traits": [
+          "Riflessivo",
+          "Diretto",
+          "Pratico"
+        ]
       }
     },
     "red_flags": {
@@ -1482,7 +1474,10 @@
         "passive_aggressive": {
           "title": "Comunicazione passivo-aggressiva",
           "description": "Rilevati modelli di messaggi con doppio senso e risposte evasive.",
-          "tags": ["Evasione", "Passivo-aggressivo"]
+          "tags": [
+            "Evasione",
+            "Passivo-aggressivo"
+          ]
         }
       }
     }
@@ -1532,7 +1527,6 @@
       "personality_error": "Errore nella generazione dell'URL del gioco di personalità"
     }
   },
-  "features": "Caratteristiche",
   "contact_page": {
     "hero": {
       "title": "Contattaci",
@@ -1717,11 +1711,6 @@
   },
   "simplified_steps": {
     "android": {
-      "install": {
-        "title": "Facilissimo! Installa ChatSalsa",
-        "description": "Installa la nostra app per condividere file da WhatsApp",
-        "button": "🚀 Installa App"
-      },
       "0": {
         "title": "Esporta la tua chat",
         "description": "Nella tua chat WhatsApp: Tocca i 3 punti → Altro → Esporta chat → Senza file multimediali"
@@ -1729,11 +1718,20 @@
       "1": {
         "title": "Fatto! Condividi con ChatSalsa",
         "description": "Tocca ChatSalsa per caricare il tuo file. Se non appare, installa l'app da chatsalsa.com"
+      },
+      "install": {
+        "title": "Facilissimo! Installa ChatSalsa",
+        "description": "Installa la nostra app per condividere file da WhatsApp",
+        "button": "🚀 Installa App"
       }
     }
   },
   "fallback": {
-    "emergency_users": ["Utente 1", "Utente 2", "Utente 3"],
+    "emergency_users": [
+      "Utente 1",
+      "Utente 2",
+      "Utente 3"
+    ],
     "emergency_warning": "⚠️ Utilizzo del fallback di emergenza per gli utenti"
   },
   "android_prompt": {
@@ -1745,5 +1743,11 @@
     "download_button": "Scarica da Google Play",
     "continue_web": "Continua sul web",
     "close": "Chiudi"
+  },
+  "pricing_home": {
+    "badge": "PREZZI",
+    "title": "Gratis per sempre, IA opzionale",
+    "ai_cta": "Vedi il Pacchetto IA",
+    "final_title": "Scopri cosa nasconde il tuo gruppo"
   }
-} 
+}

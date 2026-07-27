@@ -172,7 +172,7 @@
 
 /* Features Section */
 .features-section {
-  background: #f8f9fa;
+  background: var(--background-light);
   padding: 100px 20px;
 }
 
@@ -183,7 +183,7 @@
 }
 
 .features-badge {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background: linear-gradient(to right, var(--primary-green), var(--accent-purple));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -197,16 +197,17 @@
 
 .features-title {
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1.2;
   margin-bottom: 20px;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .features-description {
   font-size: 22px !important;
   line-height: 1.6;
-  color: #666;
+  color: var(--text-secondary);
   max-width: 800px;
   margin: 0 auto 60px;
 }
@@ -214,17 +215,18 @@
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 40px;
+  gap: 32px;
   margin-top: 60px;
 }
 
 .feature-card {
   background: white;
-  border-radius: 20px;
+  border-radius: var(--radius-xl);
   padding: 40px 30px;
   text-align: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-md);
+  transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
 }
@@ -236,7 +238,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(106, 76, 147, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.08), transparent);
   transition: left 0.5s ease;
 }
 
@@ -245,8 +247,8 @@
 }
 
 .feature-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Nuevos estilos para los iconos con gradiente */
@@ -262,7 +264,7 @@
 }
 
 .gradient-bg {
-  background: linear-gradient(to bottom right, #25D366, #8A2BE2); /* equivalente a bg-gradient-to-br from-[#25D366] to-[#8A2BE2] */
+  background: linear-gradient(to bottom right, var(--primary-green), var(--accent-purple));
 }
 
 .rotate-left {
@@ -298,22 +300,22 @@
 
 .feature-card h3 {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 12px;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .feature-card p {
   font-size: 18px;
   line-height: 1.6;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 /* Security Section */
 .security-section {
-  background: white;
-  padding: 60px 20px;
+  background: linear-gradient(180deg, #ffffff, #faf5ff);
+  padding: 80px 20px;
   text-align: center;
 }
 
@@ -321,13 +323,13 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: linear-gradient(135deg, #8B5FBF, #6A4C93);
+  background: linear-gradient(135deg, var(--accent-purple), var(--canva-purple));
   color: white;
   padding: 16px 32px;
-  border-radius: 50px;
+  border-radius: 9999px;
   font-size: 18px;
   font-weight: 600;
-  box-shadow: 0 8px 30px rgba(106, 76, 147, 0.3);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.3);
   animation: pulse 2s infinite;
 }
 
@@ -721,7 +723,7 @@
   
   .features-grid {
     grid-template-columns: 1fr;
-    gap: 25px;
+    gap: 24px;
   }
 
   .feature-card h3 {
@@ -836,7 +838,7 @@
 
   .testimonials-grid {
     grid-template-columns: 1fr;
-    gap: 25px;
+    gap: 24px;
   }
 
   .testimonial-quote p {
@@ -1127,7 +1129,7 @@
 }
 
 .process-badge {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background: linear-gradient(to right, var(--primary-green), var(--accent-purple));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1141,17 +1143,18 @@
 
 .process-title {
   font-size: 3.325rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1.2;
   margin-bottom: 20px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   text-align: center;
 }
 
 .process-description {
   font-size: 22px !important;
   line-height: 1.6;
-  color: #666;
+  color: var(--text-secondary);
   max-width: 800px;
   margin: 0 auto 60px;
   text-align: center;
@@ -1160,14 +1163,15 @@
 .process-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 40px;
+  gap: 32px;
   margin-bottom: 80px;
 }
 
 .process-card {
   background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-xl);
+  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-md);
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -1176,12 +1180,12 @@
   width: 100%;
   position: relative;
   margin: 0 auto;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .process-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .process-number {
@@ -1191,7 +1195,7 @@
   transform: translateX(-50%);
   width: 56px;
   height: 56px;
-  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-purple));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1214,21 +1218,21 @@
 .process-svg {
   height: 5rem;
   width: 5rem;
-  color: rgb(138, 43, 226);
+  color: var(--accent-purple);
   stroke-width: 2;
 }
 
 .process-card h3 {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 12px;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .process-card p {
   font-size: 18px;
   line-height: 1.6;
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
   margin: 0;
 }
@@ -1240,32 +1244,32 @@
 .process-cta-text {
   font-size: 21px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 20px;
 }
 
 .process-cta-button {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background: linear-gradient(135deg, #2EE06F, #25D366 45%, #1DB954);
   color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: 9999px;
   padding: 18px 36px;
   font-size: 19px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
 }
 
 .process-cta-button:hover {
-  background: linear-gradient(to right, #128C7E, #7B2CBF);
+  background: linear-gradient(135deg, #25D366, #1DB954 60%, #128C7E);
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
 }
 
 /* Demo Section */
 .demo-section {
-  background: #f8f9fa;
+  background: var(--background-light);
   padding: 100px 20px;
 }
 
@@ -1276,7 +1280,7 @@
 }
 
 .demo-badge {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background: linear-gradient(to right, var(--primary-green), var(--accent-purple));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1290,17 +1294,18 @@
 
 .demo-title {
   font-size: 3.325rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1.2;
   margin-bottom: 20px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   text-align: center;
 }
 
 .demo-description {
   font-size: 22px !important;
   line-height: 1.6;
-  color: #666;
+  color: var(--text-secondary);
   max-width: 800px;
   margin: 0 auto 60px;
   text-align: center;
@@ -1309,23 +1314,30 @@
 .demo-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  gap: 32px;
   margin-bottom: 60px;
 }
 
 .demo-card {
   background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-xl);
+  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-md);
   padding: 2rem;
   text-align: left;
+  transition: all 0.25s ease;
+}
+
+.demo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .demo-card h3 {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 20px;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .stats-section {
@@ -1598,22 +1610,22 @@
 }
 
 .demo-cta-button {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background: linear-gradient(135deg, #2EE06F, #25D366 45%, #1DB954);
   color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: 9999px;
   padding: 18px 36px;
   font-size: 19px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
 }
 
 .demo-cta-button:hover {
-  background: linear-gradient(to right, #128C7E, #7B2CBF);
+  background: linear-gradient(135deg, #25D366, #1DB954 60%, #128C7E);
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
 }
 
 /* Testimonials Section */
@@ -1629,7 +1641,7 @@
 }
 
 .testimonials-badge {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background: linear-gradient(to right, var(--primary-green), var(--accent-purple));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1643,17 +1655,18 @@
 
 .testimonials-title {
   font-size: 3.325rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1.2;
   margin-bottom: 20px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   text-align: center;
 }
 
 .testimonials-description {
   font-size: 22px !important;
   line-height: 1.6;
-  color: #666;
+  color: var(--text-secondary);
   max-width: 800px;
   margin: 0 auto 60px;
   text-align: center;
@@ -1662,24 +1675,24 @@
 .testimonials-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 32px;
   margin-top: 60px;
 }
 
 .testimonial-card {
   background: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
   padding: 2rem;
   text-align: left;
   position: relative;
-  transition: all 0.3s ease;
-  border: 1px solid #f3f4f6;
+  transition: all 0.25s ease;
+  border: 1px solid #e5e7eb;
 }
 
 .testimonial-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .testimonial-quote {
@@ -1692,7 +1705,7 @@
   top: -10px;
   left: 0;
   font-size: 2.5rem;
-  color: #8A2BE2;
+  color: var(--accent-purple);
   opacity: 0.3;
   font-family: Georgia, serif;
   line-height: 1;
@@ -1701,7 +1714,7 @@
 .testimonial-quote p {
   font-size: 18px;
   line-height: 1.6;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 20px;
   font-style: italic;
 }
@@ -1717,7 +1730,7 @@
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #25D366, #8A2BE2);
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-purple));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1735,7 +1748,7 @@
 .author-name {
   font-size: 16px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .testimonial-rating {
@@ -1776,7 +1789,7 @@
 
   .testimonials-grid {
     grid-template-columns: 1fr;
-    gap: 25px;
+    gap: 24px;
   }
 
   .testimonial-card {
@@ -1976,193 +1989,6 @@
   color: #25D366;
 }
 
-/* Cookie Banner Styles - Compacto */
-.cookie-banner {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
-  background: white;
-  border-radius: 16px;
-  padding: 20px 24px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  z-index: 999;
-  animation: slideUp 0.4s ease;
-  border-top: 3px solid transparent;
-  background-image: linear-gradient(white, white), linear-gradient(to right, #25D366, #8A2BE2);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.cookie-banner-content {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.cookie-banner-text {
-  flex: 1;
-  min-width: 250px;
-}
-
-.cookie-banner-text h4 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 8px 0;
-  line-height: 1.3;
-}
-
-.cookie-banner-text p {
-  font-size: 1.15rem;
-  color: #555;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.cookie-banner-buttons {
-  display: flex;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-.cookie-accept-button {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 12px 24px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(37, 211, 102, 0.2);
-  white-space: nowrap;
-}
-
-.cookie-accept-button:hover {
-  background: linear-gradient(to right, #128C7E, #7B2CBF);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-}
-
-.cookie-decline-button {
-  background: transparent;
-  color: #666;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 25px;
-  padding: 11px 22px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-}
-
-.cookie-decline-button:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
-  color: #1a1a1a;
-  transform: translateY(-1px);
-}
-
-.cookie-settings-button {
-  background: transparent;
-  color: #8A2BE2;
-  border: none;
-  padding: 12px 16px;
-  font-size: 1.05rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: underline;
-  white-space: nowrap;
-}
-
-.cookie-settings-button:hover {
-  color: #6A4C93;
-  opacity: 0.8;
-}
-
-/* Versión más compacta para móviles */
-@media (max-width: 768px) {
-  .cookie-banner {
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    padding: 18px 20px;
-  }
-  
-  .cookie-banner-content {
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
-  }
-  
-  .cookie-banner-text {
-    min-width: auto;
-  }
-  
-  .cookie-banner-text h4 {
-    font-size: 1.2rem;
-    margin-bottom: 6px;
-  }
-  
-  .cookie-banner-text p {
-    font-size: 1.05rem;
-  }
-  
-  .cookie-banner-buttons {
-    width: 100%;
-    justify-content: center;
-    gap: 12px;
-  }
-  
-  .cookie-accept-button,
-  .cookie-decline-button {
-    flex: 1;
-    padding: 14px 18px;
-    font-size: 1.05rem;
-  }
-  
-  .cookie-settings-button {
-    padding: 10px 0;
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .cookie-banner {
-    padding: 16px 18px;
-  }
-  
-  .cookie-banner-text h4 {
-    font-size: 1.1rem;
-  }
-  
-  .cookie-banner-text p {
-    font-size: 1rem;
-  }
-  
-  .cookie-banner-buttons {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .cookie-accept-button,
-  .cookie-decline-button {
-    width: 100%;
-    padding: 14px 24px;
-    font-size: 1rem;
-  }
-  
-  .cookie-settings-button {
-    font-size: 0.95rem;
-  }
-}
 
 /* Animación de entrada */
 @keyframes slideUp {
@@ -2221,28 +2047,26 @@
 }
 
 .install-pwa-button {
-  background: linear-gradient(to right, #25D366, #8A2BE2);
+  background: linear-gradient(135deg, #2EE06F 0%, #25D366 45%, #1DB954 100%);
   color: white;
   border: none;
-  border-radius: 50px;
-  padding: 22px 32px;
-  font-size: 2rem;
+  border-radius: 9999px;
+  padding: 12px 22px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 8px;
   position: relative;
   overflow: hidden;
-  border: 2px solid transparent;
 }
 
 .install-pwa-button:hover {
-  background: linear-gradient(to right, #128C7E, #7B2CBF);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
 }
 
 .install-pwa-button:active {

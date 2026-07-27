@@ -23,7 +23,7 @@
       "preparing_statistical": "Preparando análise estatística da conversa...",
       "preparing_psychological": "Preparando análise psicológica da conversa..."
     },
-    "generating_analysis": "Gerando análise: Analisando padrões de comunicação...",
+    "generating_analysis": "Gerando análise",
     "generating_ai_analysis": "Gerando análise psicológica com IA...",
     "primer_chat": {
       "title": "Análise do Início e Atividade do Chat",
@@ -205,7 +205,6 @@
     "back": "Voltar",
     "next": "Próximo",
     "prev": "Anterior",
-    "generating_analysis": "Gerando análise",
     "refresh_confirmation": {
       "title": "Tem certeza?",
       "message": "Todos os dados da análise atual serão perdidos. Deseja continuar?",
@@ -239,7 +238,7 @@
     "stats_labels": {
       "vice_mentions": "Menções de vícios",
       "vice_percentage": "% mensagens com vícios",
-      "profanity_mentions": "Menções de palavrões", 
+      "profanity_mentions": "Menções de palavrões",
       "profanity_percentage": "% mensagens com palavrões",
       "questions_asked": "Perguntas feitas",
       "questions_percentage": "% de mensagens com perguntas",
@@ -277,13 +276,7 @@
     "android_app": "App Android",
     "download_android": "Baixar para Android"
   },
-  "messages": {
-    "loading": "Carregando...",
-    "processing": "Processando arquivo...",
-    "success": "O arquivo foi processado com sucesso",
-    "error": "Ocorreu um erro",
-    "delete_confirmation": "Tem certeza de que deseja excluir?"
-  },
+  "messages": "Mensagens",
   "error": {
     "file_type": "O arquivo deve ser um ZIP",
     "file_size": "O arquivo é muito grande",
@@ -308,7 +301,6 @@
     "saturday": "Sábado",
     "sunday": "Domingo"
   },
-  "messages": "Mensagens",
   "whatsapp": {
     "title": "Como compartilhar um chat do WhatsApp",
     "step_by_step": "Passo a passo",
@@ -329,48 +321,20 @@
     },
     "simplified_steps": {
       "android": {
-        "install": {
-          "title": "Super fácil! Baixe o ChatSalsa",
-          "description": "Baixe nosso app da Google Play Store para compartilhar arquivos do WhatsApp",
-          "button": "📱 Baixar do Google Play"
-        },
         "0": {
           "title": "Exporte seu chat",
           "description": "No seu chat do WhatsApp: Toque nos 3 pontos → Mais → Exportar conversa → Sem mídia"
         },
         "1": {
           "title": "Pronto! Compartilhe com ChatSalsa",
-          "description": "Toque em ChatSalsa para enviar seu arquivo. Se não aparecer, instale o app em chatsalsa.com"
+          "description": "Toque em ChatSalsa para fazer upload do seu arquivo. Se não aparecer, instale o app em chatsalsa.com"
+        },
+        "install": {
+          "title": "Super fácil! Instale ChatSalsa",
+          "description": "Instale nosso app para compartilhar arquivos do WhatsApp",
+          "button": "🚀 Instalar App"
         }
-      },
-      "ios": [
-        {
-          "title": "Super fácil! Exporte seu chat",
-          "description": "No seu chat do WhatsApp: Vá para Info do grupo → Exportar conversa → Sem mídia"
-        },
-        {
-          "title": "Salve no seu iPhone",
-          "description": "Toque em 'Salvar em Arquivos' → 'No meu iPhone' → Salvar"
-        },
-        {
-          "title": "Pronto! Envie para ChatSalsa",
-          "description": "No ChatSalsa toque em 'Selecionar arquivo' e você tem sua análise!"
-        }
-      ],
-      "desktop": [
-        {
-          "title": "Super fácil! Exporte do seu telefone",
-          "description": "No seu chat do WhatsApp: Toque nos 3 pontos → Mais → Exportar conversa → Sem mídia"
-        },
-        {
-          "title": "Envie por email",
-          "description": "Compartilhe o arquivo → Gmail → Envie o arquivo para você mesmo"
-        },
-        {
-          "title": "Pronto! Envie do seu PC",
-          "description": "Abra o email no seu PC, baixe o arquivo e envie para ChatSalsa"
-        }
-      ]
+      }
     },
     "footer_message": "É assim tão simples! 🎉",
     "platforms": {
@@ -488,24 +452,7 @@
         "description": "Clique em 'Fazer upload do arquivo' e selecione o arquivo de chat .zip baixado",
         "icon": "📁"
       }
-    ],
-    "simplified_steps": {
-      "android": {
-        "install": {
-          "title": "Super fácil! Instale ChatSalsa",
-          "description": "Instale nosso app para compartilhar arquivos do WhatsApp",
-          "button": "🚀 Instalar App"
-        },
-        "0": {
-          "title": "Exporte seu chat",
-          "description": "No seu chat do WhatsApp: Toque nos 3 pontos → Mais → Exportar conversa → Sem mídia"
-        },
-        "1": {
-          "title": "Pronto! Compartilhe com ChatSalsa",
-          "description": "Toque em ChatSalsa para fazer upload do seu arquivo. Se não aparecer, instale o app em chatsalsa.com"
-        }
-      }
-    }
+    ]
   },
   "preview": {
     "title": "Descubra os segredos das suas conversas do",
@@ -1339,7 +1286,7 @@
       "description": "Análise psicológica dos padrões de comunicação dos membros do grupo. Sinais de alerta e conselhos."
     },
     "statistics": {
-      "title": "Estatísticas detalhadas", 
+      "title": "Estatísticas detalhadas",
       "description": "Estatísticas completas sobre quem domina as conversas, horários ativos e tópicos frequentes."
     },
     "emotional": {
@@ -1398,17 +1345,25 @@
     },
     "users": {
       "eva": "Eva",
-      "miguel": "Miguel", 
+      "miguel": "Miguel",
       "ana": "Ana"
     },
     "user_profiles": {
       "ana": {
         "description": "Comunicativa e organizadora. Sempre a par de tudo o que acontece na família.",
-        "traits": ["Comunicativa", "Organizadora", "Sociável"]
+        "traits": [
+          "Comunicativa",
+          "Organizadora",
+          "Sociável"
+        ]
       },
       "miguel": {
         "description": "Reflexivo e cuidadoso. Prefere mensagens diretas e vai direto ao ponto nas conversas.",
-        "traits": ["Reflexivo", "Direto", "Prático"]
+        "traits": [
+          "Reflexivo",
+          "Direto",
+          "Prático"
+        ]
       }
     },
     "red_flags": {
@@ -1417,7 +1372,10 @@
         "passive_aggressive": {
           "title": "Comunicação passivo-agressiva",
           "description": "Detetados padrões de mensagens com duplo sentido e respostas evasivas.",
-          "tags": ["Evasão", "Passivo-agressivo"]
+          "tags": [
+            "Evasão",
+            "Passivo-agressivo"
+          ]
         }
       }
     }
@@ -1518,7 +1476,11 @@
     }
   },
   "fallback": {
-    "emergency_users": ["Usuário 1", "Usuário 2", "Usuário 3"],
+    "emergency_users": [
+      "Usuário 1",
+      "Usuário 2",
+      "Usuário 3"
+    ],
     "emergency_warning": "⚠️ Usando fallback de emergência para usuários"
   },
   "android_prompt": {
@@ -1530,5 +1492,11 @@
     "download_button": "Baixar do Google Play",
     "continue_web": "Continuar na web",
     "close": "Fechar"
+  },
+  "pricing_home": {
+    "badge": "PREÇOS",
+    "title": "Grátis para sempre, IA opcional",
+    "ai_cta": "Ver Pacote de IA",
+    "final_title": "Descubra o que o seu grupo esconde"
   }
-} 
+}

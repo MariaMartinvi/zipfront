@@ -238,7 +238,7 @@
     "stats_labels": {
       "vice_mentions": "Vice mentions",
       "vice_percentage": "% messages with vices",
-      "profanity_mentions": "Profanity mentions", 
+      "profanity_mentions": "Profanity mentions",
       "profanity_percentage": "% messages with profanity",
       "questions_asked": "Questions asked",
       "questions_percentage": "% of messages with questions",
@@ -292,13 +292,7 @@
     "continue_web": "Continue on web",
     "close": "Close"
   },
-  "messages": {
-    "loading": "Loading...",
-    "processing": "Processing file...",
-    "success": "The file has been processed successfully",
-    "error": "An error has occurred",
-    "delete_confirmation": "Are you sure you want to delete?"
-  },
+  "messages": "Messages",
   "error": {
     "file_type": "The file must be a ZIP",
     "file_size": "The file is too large",
@@ -334,11 +328,6 @@
     },
     "simplified_steps": {
       "android": {
-        "install": {
-          "title": "Super easy! Download ChatSalsa",
-          "description": "Download our app from Google Play Store to share files from WhatsApp",
-          "button": "📱 Download from Google Play"
-        },
         "0": {
           "title": "Export your chat",
           "description": "In your WhatsApp chat: Tap the 3 dots → More → Export chat → Without media"
@@ -346,6 +335,11 @@
         "1": {
           "title": "Done! Share with ChatSalsa",
           "description": "Tap ChatSalsa to upload your file. If it doesn't appear, install the app from chatsalsa.com"
+        },
+        "install": {
+          "title": "Super easy! Download ChatSalsa",
+          "description": "Download our app from Google Play Store to share files from WhatsApp",
+          "button": "📱 Download from Google Play"
         }
       },
       "ios": [
@@ -962,7 +956,7 @@
       "countdown_label": "⏰ Offer valid for:",
       "hours": "h",
       "minutes": "m",
-      "seconds": "s", 
+      "seconds": "s",
       "stock_limited": "🔥 Only {{count}} packs left today",
       "recent_purchases": "👥 {{count}} people bought in the last hour"
     },
@@ -988,7 +982,6 @@
     "saturday": "Saturday",
     "sunday": "Sunday"
   },
-  "messages": "Messages",
   "errors": {
     "auth": {
       "invalid-credential": "Invalid credentials. Please verify your email and password.",
@@ -1535,7 +1528,7 @@
       "description": "Psychological analysis of group members' communication patterns. Red flags and advice."
     },
     "statistics": {
-      "title": "Detailed Statistics", 
+      "title": "Detailed Statistics",
       "description": "Complete statistics about who dominates conversations, active hours and frequent topics."
     },
     "emotional": {
@@ -1594,17 +1587,25 @@
     },
     "users": {
       "eva": "Eva",
-      "miguel": "Miguel", 
+      "miguel": "Miguel",
       "ana": "Ana"
     },
     "user_profiles": {
       "ana": {
         "description": "Communicative and organized. Always stays on top of everything happening in the family.",
-        "traits": ["Communicative", "Organized", "Social"]
+        "traits": [
+          "Communicative",
+          "Organized",
+          "Social"
+        ]
       },
       "miguel": {
         "description": "Thoughtful and careful. Prefers direct messages and gets straight to the point in conversations.",
-        "traits": ["Thoughtful", "Direct", "Practical"]
+        "traits": [
+          "Thoughtful",
+          "Direct",
+          "Practical"
+        ]
       }
     },
     "red_flags": {
@@ -1613,7 +1614,10 @@
         "passive_aggressive": {
           "title": "Passive-aggressive communication",
           "description": "Patterns of messages with double meaning and evasive responses detected.",
-          "tags": ["Evasion", "Passive-aggressive"]
+          "tags": [
+            "Evasion",
+            "Passive-aggressive"
+          ]
         }
       }
     }
@@ -1851,7 +1855,17 @@
     "security_badge": "Transparent Cookies"
   },
   "fallback": {
-    "emergency_users": ["User 1", "User 2", "User 3"],
+    "emergency_users": [
+      "User 1",
+      "User 2",
+      "User 3"
+    ],
     "emergency_warning": "⚠️ Using emergency fallback for users"
+  },
+  "pricing_home": {
+    "badge": "PRICING",
+    "title": "Free forever, optional AI",
+    "ai_cta": "See AI Pack",
+    "final_title": "Find out what your group is hiding"
   }
-} 
+}

@@ -6,35 +6,60 @@
  */
 
 /**
+ * Limpia una línea de chat de caracteres invisibles que añade WhatsApp:
+ * marcas de dirección de texto (U+200E/U+200F, U+202A-U+202E, U+2066-U+2069),
+ * BOM (U+FEFF) al inicio, y espacios especiales (U+202F estrecho, U+00A0)
+ * que iOS usa antes de "a. m."/"p. m.".
+ *
+ * @param {string} linea - Línea original del archivo
+ * @returns {string} - Línea limpia y comparable con los patrones
+ */
+export const limpiarLineaChat = (linea) =>
+  linea
+    .replace(/^[\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]+/, '')
+    .replace(/[\u202f\u00a0]/g, ' ');
+
+/**
+ * Patrones compartidos por el detector y los analizadores.
+ * Aceptan las variantes reales de los exports de WhatsApp:
+ * año de 2 o 4 dígitos, separadores / . -, segundos opcionales,
+ * y hora en formato 12h con "a. m."/"p. m." (queda dentro del grupo de hora;
+ * parseDateTime de dateUtils.js la convierte a 24h).
+ * Grupos: 1=fecha, 2=hora, 3=nombre, 4=mensaje.
+ */
+export const PATRON_IOS = /^\[(\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}),?\s*(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[ap]\.?\s*m\.?)?)\]\s*([^:]+):\s*(.*)$/i;
+export const PATRON_ANDROID = /^(\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}),?\s*(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[ap]\.?\s*m\.?)?)\s*-\s*([^:]+):\s*(.+)/i;
+
+/** Detecta si una línea (ya limpia) empieza como un mensaje nuevo (fecha con o sin corchete). */
+export const PATRON_INICIO_MENSAJE = /^\[?\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}/;
+
+/**
  * Detecta el formato de un archivo de chat basado en sus primeras líneas
- * 
+ *
  * @param {string[]} lines - Líneas del archivo para analizar
  * @param {boolean} debug - Si debe mostrar mensajes de depuración en consola
  * @returns {string} - Formato detectado ('ios', 'android', o 'desconocido')
  */
 export const detectarFormatoChat = (lines, debug = false) => {
   if (debug) console.log('Detectando formato de chat...');
-  
+
   if (!lines || lines.length === 0) {
     if (debug) console.log('No hay líneas para analizar');
     return 'desconocido';
   }
-  
-  // Patrones para diferentes formatos de chat
-  const patronIOS = /^\[(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2}(?::\d{2})?)\]\s*([^:]+):\s*(.*)$/;
-  const patronAndroid = /^(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2})\s*-\s*([^:]+):\s*(.+)/;
-  
+
   let matchesIOS = 0;
   let matchesAndroid = 0;
   let matchesDesconocido = 0;
-  
+
   // Analizar solo las primeras 20 líneas no vacías
   const linesToCheck = lines.filter(line => line.trim() !== '').slice(0, 20);
-  
-  for (const line of linesToCheck) {
-    if (patronIOS.test(line)) {
+
+  for (const rawLine of linesToCheck) {
+    const line = limpiarLineaChat(rawLine);
+    if (PATRON_IOS.test(line)) {
       matchesIOS++;
-    } else if (patronAndroid.test(line)) {
+    } else if (PATRON_ANDROID.test(line)) {
       matchesAndroid++;
     } else {
       matchesDesconocido++;

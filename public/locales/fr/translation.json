@@ -23,7 +23,7 @@
       "preparing_statistical": "Préparation de l'analyse statistique de la conversation...",
       "preparing_psychological": "Préparation de l'analyse psychologique de la conversation..."
     },
-    "generating_analysis": "Génération de l'analyse : Analyse des modèles de communication...",
+    "generating_analysis": "Génération de l'analyse",
     "generating_ai_analysis": "Génération de l'analyse psychologique avec l'IA...",
     "primer_chat": {
       "title": "Analyse du Début et de l'Activité du Chat",
@@ -187,7 +187,7 @@
       "generating": "Génération de l'analyse IA : Traitement des données..."
     },
     "loading": "Chargement...",
-    "loading_status": "Analyse des données...",
+    "loading_status": "Traitement des données...",
     "error": "Erreur",
     "success": "Succès",
     "cancel": "Annuler",
@@ -199,8 +199,6 @@
     "back": "Retour",
     "next": "Suivant",
     "prev": "Précédent",
-    "generating_analysis": "Génération de l'analyse",
-    "generating_ai_analysis": "Génération de l'analyse psychologique avec l'IA...",
     "refresh_confirmation": {
       "title": "Êtes-vous sûr ?",
       "message": "Si vous continuez, toutes les données d'analyse actuelles (statistiques et psychologiques) seront perdues. Voulez-vous continuer ?",
@@ -227,9 +225,8 @@
       "analysis_failed": "Échec de l'analyse des données",
       "no_data": "Aucune donnée disponible"
     },
-    "loading_status": "Traitement des données...",
-          "analysis_title": "Analyse de Chat WhatsApp"
-    },
+    "analysis_title": "Analyse de Chat WhatsApp"
+  },
   "header": {
     "home": "Accueil",
     "about": "À propos",
@@ -259,13 +256,7 @@
     "android_app": "App Android",
     "download_android": "Télécharger pour Android"
   },
-  "messages": {
-    "loading": "Chargement...",
-    "processing": "Traitement du fichier...",
-    "success": "Le fichier a été traité avec succès",
-    "error": "Une erreur s'est produite",
-    "delete_confirmation": "Êtes-vous sûr de vouloir supprimer ?"
-  },
+  "messages": "Messages",
   "error": {
     "file_type": "Le fichier doit être un ZIP",
     "file_size": "Le fichier est trop volumineux",
@@ -301,11 +292,6 @@
     },
     "simplified_steps": {
       "android": {
-        "install": {
-          "title": "Super facile ! Téléchargez ChatSalsa",
-          "description": "Téléchargez notre app depuis Google Play Store pour partager des fichiers depuis WhatsApp",
-          "button": "📱 Télécharger depuis Google Play"
-        },
         "0": {
           "title": "Exportez votre chat",
           "description": "Dans votre chat WhatsApp : Touchez les 3 points → Plus → Exporter le chat → Sans médias"
@@ -313,6 +299,11 @@
         "1": {
           "title": "Terminé ! Partagez avec ChatSalsa",
           "description": "Touchez ChatSalsa pour télécharger votre fichier. S'il n'apparaît pas, installez l'app depuis chatsalsa.com"
+        },
+        "install": {
+          "title": "Super facile ! Téléchargez ChatSalsa",
+          "description": "Téléchargez notre app depuis Google Play Store pour partager des fichiers depuis WhatsApp",
+          "button": "📱 Télécharger depuis Google Play"
         }
       },
       "ios": [
@@ -553,7 +544,6 @@
     "saturday": "Samedi",
     "sunday": "Dimanche"
   },
-  "messages": "Messages",
   "errors": {
     "auth": {
       "invalid-credential": "Identifiants invalides. Veuillez vérifier votre email et mot de passe.",
@@ -1217,7 +1207,7 @@
       "description": "Analyse psychologique des modèles de communication des membres du groupe. Signaux d'alarme et conseils."
     },
     "statistics": {
-      "title": "Statistiques détaillées", 
+      "title": "Statistiques détaillées",
       "description": "Statistiques complètes sur qui domine les conversations, heures actives et sujets fréquents."
     },
     "emotional": {
@@ -1276,17 +1266,25 @@
     },
     "users": {
       "eva": "Eva",
-      "miguel": "Miguel", 
+      "miguel": "Miguel",
       "ana": "Ana"
     },
     "user_profiles": {
       "ana": {
         "description": "Communicative et organisée. Toujours au courant de tout ce qui se passe dans la famille.",
-        "traits": ["Communicative", "Organisée", "Sociable"]
+        "traits": [
+          "Communicative",
+          "Organisée",
+          "Sociable"
+        ]
       },
       "miguel": {
         "description": "Réfléchi et prudent. Préfère les messages directs et va droit au but dans ses conversations.",
-        "traits": ["Réfléchi", "Direct", "Pratique"]
+        "traits": [
+          "Réfléchi",
+          "Direct",
+          "Pratique"
+        ]
       }
     },
     "red_flags": {
@@ -1295,7 +1293,10 @@
         "passive_aggressive": {
           "title": "Communication passive-agressive",
           "description": "Détection de modèles de messages à double sens et de réponses évasives.",
-          "tags": ["Évasion", "Passif-agressif"]
+          "tags": [
+            "Évasion",
+            "Passif-agressif"
+          ]
         }
       }
     }
@@ -1349,7 +1350,7 @@
   "stats_labels": {
     "vice_mentions": "Mentions de vices",
     "vice_percentage": "% messages avec vices",
-    "profanity_mentions": "Mentions de gros mots", 
+    "profanity_mentions": "Mentions de gros mots",
     "profanity_percentage": "% messages avec gros mots",
     "questions_asked": "Questions posées",
     "questions_percentage": "% de messages avec questions",
@@ -1547,7 +1548,11 @@
     "security_badge": "Cookies Transparents"
   },
   "fallback": {
-    "emergency_users": ["Utilisateur 1", "Utilisateur 2", "Utilisateur 3"],
+    "emergency_users": [
+      "Utilisateur 1",
+      "Utilisateur 2",
+      "Utilisateur 3"
+    ],
     "emergency_warning": "⚠️ Utilisation du fallback d'urgence pour les utilisateurs"
   },
   "android_prompt": {
@@ -1559,5 +1564,11 @@
     "download_button": "Télécharger depuis Google Play",
     "continue_web": "Continuer sur le web",
     "close": "Fermer"
+  },
+  "pricing_home": {
+    "badge": "TARIFS",
+    "title": "Gratuit pour toujours, IA en option",
+    "ai_cta": "Voir le Pack IA",
+    "final_title": "Découvrez ce que cache votre groupe"
   }
-} 
+}

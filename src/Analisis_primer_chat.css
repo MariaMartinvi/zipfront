@@ -1,11 +1,7 @@
 /* Modern Analysis Styles - Aligned with AppPreview */
 
+/* Tokens base compartidos en src/variables.css; aquí solo los propios */
 :root {
-  --primary-green: #25D366;
-  --primary-green-dark: #128C7E;
-  --accent-purple: #8B5CF6;
-  --accent-pink: #E91E63;
-  --accent-orange: #FF6B35;
   --purple-variant: #7C3AED;
   --pink-variant: #F472B6;
   --orange-variant: #FB923C;
