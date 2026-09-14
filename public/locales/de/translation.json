@@ -565,8 +565,8 @@
     "ai_purchase": {
       "title": "🤖 Sie benötigen KI-Credits für diese Analyse.",
       "modal_title": "Schalten Sie die VOLLSTÄNDIGE KI-Analyse dieses Chats frei",
-      "price": "💰 Paket von 5 KI-Analysen: 5€",
-      "pack_description": "Paket von 5 KI-Analysen",
+      "price": "💰 Paket von 10 KI-Analysen: 5€",
+      "pack_description": "Paket von 10 KI-Analysen",
       "discount_notice": "🔥 Sonderangebot -50%! Nur für begrenzte Zeit",
       "full_chat_notice": "✨ Enthält vollständige Analyse: Persönlichkeiten + Dynamiken + Empfehlungen",
       "question": "Möchten Sie jetzt kaufen?",
@@ -901,7 +901,7 @@
       "discount_percentage": "-50%",
       "limited_time": "Nur für begrenzte Zeit!",
       "full_analysis_note": "✨ Entsperren Sie die VOLLSTÄNDIGE KI-Analyse für diesen Chat",
-      "analyses": "5 Analysen",
+      "analyses": "10 Analysen",
       "features": {
         "psychological": "Vollständige psychologische Analyse",
         "personalities": "Persönlichkeiten jedes Teilnehmers",

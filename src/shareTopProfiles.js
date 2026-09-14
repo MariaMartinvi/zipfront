@@ -157,7 +157,7 @@ export const generateStandaloneHTML = (datos, t, currentLanguage = 'es') => {
     <div class="footer">
       <h3>${t('hero.share_top_profiles.footer_title', '¿Quieres analizar tu propio chat?')}</h3>
       <p>${t('hero.share_top_profiles.footer_description', 'Descubre estadísticas fascinantes de tus conversaciones')}</p>
-      <a href="https://chatsalsa.com?lang=${currentLanguage}" class="cta">${t('hero.share_top_profiles.footer_cta', '🚀 Analizar Nuevo Chat Gratis')}</a>
+      <a href="https://chatsalsa.com?lang=${currentLanguage}&utm_source=share&utm_medium=social" class="cta">${t('hero.share_top_profiles.footer_cta', '🚀 Analizar Nuevo Chat Gratis')}</a>
     </div>
   </div>
 </body>
@@ -301,7 +301,7 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
         t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!') :
         '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!';
       
-      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}&utm_source=share&utm_medium=social`;
       
       const imageBlob = await generatePromotionalImage(datos, t, currentLanguage);
       const file = new File([imageBlob], 'chatsalsa-top-profiles.png', { type: 'image/png' });
@@ -333,7 +333,7 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
         t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!') :
         '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!';
       
-      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}&utm_source=share&utm_medium=social`;
       
       // Crear resumen de los datos
       let resumenDatos = '';
@@ -360,7 +360,7 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
         t('hero.share_top_profiles.enthusiastic_message', '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!') :
         '¡Esto es increíble! Mira los resultados del análisis de mi chat con ChatSalsa, están buenísimos!';
       
-      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}&utm_source=share&utm_medium=social`;
       
       // Crear resumen de los datos
       let resumenDatos = '';

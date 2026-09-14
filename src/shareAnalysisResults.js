@@ -666,7 +666,7 @@ export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es
       
       // ESTRATEGIA 1: TEXTO COMPLETO + URL (SIN IMAGEN)
       const textoAnalisis = extractPlainTextFromAnalysis(htmlContent);
-      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}&utm_source=share&utm_medium=social`;
       
        // DEBUG: Verificar función t y idioma actual
        console.log('🔍 DEBUG - Función t disponible:', !!t);
@@ -765,7 +765,7 @@ export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es
       console.log('📱 Usando fallback de Android WebView');
       
       const textoAnalisis = extractPlainTextFromAnalysis(htmlContent);
-      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}&utm_source=share&utm_medium=social`;
       
       const mensajeIntro = t ? 
         t('hero.share_analysis.enthusiastic_message') :
@@ -788,7 +788,7 @@ export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es
       
       // FALLBACK GENERAL: Copiar al portapapeles
       const textoAnalisis = extractPlainTextFromAnalysis(htmlContent);
-      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}`;
+      const urlGenerica = `https://chatsalsa.com?lang=${currentLanguage}&utm_source=share&utm_medium=social`;
       
       const mensajeIntro = t ? 
         t('hero.share_analysis.enthusiastic_message') :

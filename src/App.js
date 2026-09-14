@@ -39,6 +39,13 @@ import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
 import BlogFrame from './BlogFrame';
 
+// Evento de embudo para GA4 (vía GTM). Mismo patrón que sign_up en firebase_auth.js.
+const trackEvent = (name) => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: name });
+  if (window.gtag) window.gtag('event', name);
+};
+
 // LoginPage component with useNavigate hook
 function LoginPage() {
   const navigate = useNavigate();
@@ -1055,6 +1062,14 @@ function AppContent() {
     };
   }, [handleSharedFile, handleFileUpload]);
 
+  // Embudo de pago: el usuario ha llegado a ver la sección IA bloqueada
+  useEffect(() => {
+    if (operationId && chatData && userCredits && !userCredits.canUse) {
+      trackEvent('paywall_visto');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [operationId, chatData, userCredits?.canUse]);
+
   useEffect(() => {
     // Check URL for payment_success parameter
     const urlParams = new URLSearchParams(window.location.search);
@@ -1337,6 +1352,7 @@ function AppContent() {
         console.log('❌ Usuario sin créditos de IA:', aiPermission.message);
         
         // Mostrar modal de compra de créditos IA
+        trackEvent('paywall_click');
         setShowAIPurchaseModal(true);
         return false;
       }
@@ -1383,6 +1399,7 @@ function AppContent() {
       }
       
       setShowAIPurchaseModal(false);
+      trackEvent('checkout_iniciado');
       await purchaseAICredits(currentUser.uid);
       // Se redirigirá a Stripe automáticamente
     } catch (error) {
