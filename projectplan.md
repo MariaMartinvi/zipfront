@@ -14,6 +14,8 @@ En 2 semanas poder responder: ¿el 98,7% se pierde **antes de mirar** el paywall
 
 | Evento | Dónde | Cuándo |
 |---|---|---|
+| `chat_subido` | `App.js` — `processZipFile`, al generar `operationId` | Empieza a procesarse un archivo (cubre botón, compartir Android y archivo corregido) |
+| `analisis_devuelto` | `App.js` — `processZipFile`, tras `setChatData` | El chat se ha extraído y se muestra el análisis estadístico |
 | `paywall_visto` | `App.js` — bloque `ai-analysis-locked` (~2224) | Se renderiza la sección IA borrosa. **Una vez por análisis** (keyed a `operationId`). |
 | `paywall_click` | `App.js:1340` — `startAIAnalysis` sin créditos | Se abre el modal de compra |
 | `checkout_iniciado` | `App.js` — `handleAIPurchase` | Pulsa "Comprar", justo antes de ir a Stripe |
@@ -35,11 +37,15 @@ Sin backend, sin Firestore, sin dependencias nuevas.
       `shareAnalysisResults.js:669,768,791` y `shareTopProfiles.js:160,304,336,363`
       → `?lang=..&utm_source=share&utm_medium=social`.
       → verificar: `grep` no deja ninguna URL sin utm; compartir en local genera la URL correcta.
+- [x] 3b. (añadido por María tras ver el primer evento en GA4) `chat_subido` y `analisis_devuelto`.
+      → verificado: build OK; ambos en `dataLayer` al subir un chat. Requiere ampliar la regex del
+      trigger de GTM. Nota: `handleZipExtraction` (App.js ~1088) también hace `setChatData` pero
+      nadie la llama — código muerto, no tocado.
 - [ ] 4. `npm run build` OK (incluye guardia `verify:es`), merge a `main`, push → Render despliega.
       → verificar en producción: el modal dice "10 análisis"; GA4 → Realtime muestra
       `paywall_visto` al hacer un análisis con una cuenta sin créditos.
 - [ ] 5. Nota en `DIAGNOSTICO-2026-09-14.md` §8: pack de 10 desplegado + cómo leer el
-      embudo en GA4 (Explorar → Embudo: `paywall_visto` → `paywall_click` →
+      embudo en GA4 (Explorar → Embudo: `chat_subido` → `analisis_devuelto` → `paywall_visto` → `paywall_click` →
       `checkout_iniciado` → `conversion`). Fecha de revisión: **28 sept 2026**.
 
 ## Cambio sobre la marcha

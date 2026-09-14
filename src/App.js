@@ -577,6 +577,7 @@ function AppContent() {
       // Generar un ID de operación único para esta sesión
       const newOperationId = `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       setOperationId(newOperationId);
+      trackEvent('chat_subido');
       
       // Intentar leer el archivo ZIP
       const JSZip = (await import('jszip')).default;
@@ -591,6 +592,7 @@ function AppContent() {
         if (extractedContent && extractedContent.chat) {
           // Guardamos el contenido del chat en el estado para usarlo en todos los análisis
           setChatData(extractedContent.chat);
+          trackEvent('analisis_devuelto');
           
           // Mostrar inmediatamente la sección de análisis estadístico sin esperar al análisis psicológico
           setShowAnalysis(true);
