@@ -536,7 +536,7 @@
       "strengthen_bonds": "Fortalecer laços:",
       "communication_text": "Conselho prático e acionável para otimizar a dinâmica do grupo...",
       "bonds_text": "Recomendação específica voltada para criar maior harmonia entre participantes...",
-      "unlock_button": "🔓 Desbloquear Análise IA - Pacote 100 análises por 5€",
+      "unlock_button": "🔓 Desbloquear Análise IA - Pacote 5 análises por 5€",
       "unlock_note": "Apenas 0,05€ por análise completa",
       "view_analysis_of": "Ver análise de",
       "tooltips": {
@@ -549,8 +549,8 @@
     "ai_purchase": {
       "title": "🤖 Desbloqueie a análise IA COMPLETA desta conversa",
       "modal_title": "Desbloqueie a análise IA COMPLETA desta conversa",
-      "price": "💰 Pacote de 100 análises IA: ~~10€~~ 5€",
-      "pack_description": "Pacote de 100 análises IA",
+      "price": "💰 Pacote de 5 análises IA: ~~10€~~ 5€",
+      "pack_description": "Pacote de 5 análises IA",
       "discount_notice": "🔥 Oferta especial -50%! Apenas por tempo limitado",
       "full_chat_notice": "✨ Inclui análise completa: personalidades + dinâmicas + recomendações",
       "question": "Quer aproveitar esta oferta?",
@@ -812,7 +812,7 @@
       "discount_percentage": "-50%",
       "limited_time": "Apenas por tempo limitado!",
       "full_analysis_note": "✨ Desbloqueie a análise IA COMPLETA para este chat",
-      "analyses": "100 análises",
+      "analyses": "5 análises",
       "features": {
         "psychological": "Análise psicológica completa",
         "personalities": "Personalidades de cada participante",
