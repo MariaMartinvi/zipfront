@@ -1,3 +1,5 @@
+> NOTA (2026-09-16): el servicio de Render es un **Static Site** (publica `site-dist`), así que no hay Start Command. El blog en español (`/blog`) lo sirve RankCoworker mediante una regla Rewrite en Render (`/blog/*` → `https://chatsalsa-5.rankcoworker.com/__pub/chatsalsa.com/blog/*`); Astro solo genera `/en/blog`.
+
 # Importante: Start Command en Render
 
 Para que el blog se vea bien (1 cabecera, 1 footer) y no 3 cabeceras, el servicio del front **debe** usar este **Start Command**:

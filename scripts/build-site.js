@@ -2,7 +2,7 @@
  * Build script for Render Static Site: CRA + Astro blog → site-dist/
  * 1. CRA build → build/
  * 2. Astro build → blog/dist/
- * 3. Merge: build/* → site-dist/, blog/dist/blog → site-dist/blog, blog/dist/en → site-dist/en
+ * 3. Merge: build/* → site-dist/, blog/dist/en → site-dist/en (el /blog ES lo sirve RankCoworker)
  */
 
 const fs = require('fs');
@@ -46,12 +46,9 @@ function main() {
   console.log('Copying build/ → site-dist/');
   copyRecursive(BUILD, SITE_DIST);
 
-  // blog/dist/blog → site-dist/blog
-  const blogSrc = path.join(BLOG_DIST, 'blog');
-  if (fs.existsSync(blogSrc)) {
-    console.log('Copying blog/dist/blog → site-dist/blog/');
-    copyRecursive(blogSrc, path.join(SITE_DIST, 'blog'));
-  }
+  // /blog (ES) ya NO se publica desde Astro: lo sirve RankCoworker mediante la regla
+  // de rewrite de Render (/blog/* → chatsalsa-5.rankcoworker.com/__pub/chatsalsa.com/blog/*).
+  // Si existiera site-dist/blog/index.html ganaría a la regla, así que no se copia.
 
   // blog/dist/en → site-dist/en
   const enSrc = path.join(BLOG_DIST, 'en');

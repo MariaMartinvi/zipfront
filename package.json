@@ -10,10 +10,8 @@
     "compromise": "^14.14.4",
     "dompurify": "^3.2.4",
     "dotenv": "^17.2.2",
-    "express": "^4.22.3",
     "firebase": "^11.6.1",
     "html2canvas": "^1.4.1",
-    "http-proxy-middleware": "^3.0.7",
     "i18next": "^23.7.11",
     "i18next-browser-languagedetector": "^8.1.0",
     "i18next-http-backend": "^3.0.2",
@@ -57,7 +55,7 @@
     "verify:es": "es-check es2020 'build/static/js/main.*.js'",
     "build:site": "npm run build:render && cd blog && npm install && npm run build && cd .. && node scripts/build-site.js",
     "serve:site": "npx serve site-dist -l 3000",
-    "start:prod": "node server.js",
+    "start:prod": "serve site-dist -s -l ${PORT:-10000}",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
