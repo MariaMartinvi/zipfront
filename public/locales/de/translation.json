@@ -552,8 +552,8 @@
       "strengthen_bonds": "Bindungen stärken:",
       "communication_text": "Praktischer und umsetzbarer Rat zur Optimierung der Gruppendynamik...",
       "bonds_text": "Spezifische Empfehlung zur Schaffung größerer Harmonie zwischen Teilnehmern...",
-      "unlock_button": "🔓 KI-Analyse freischalten - 10er Pack für 5€",
-      "unlock_note": "Nur 0,50€ pro vollständiger Analyse",
+      "unlock_button": "🔓 KI-Analyse freischalten - 10er Pack für {{price}}",
+      "unlock_note": "Nur {{perAnalysis}} pro vollständiger Analyse",
       "view_analysis_of": "Analyse anzeigen von",
       "tooltips": {
         "personality": "Detaillierte Analyse von Persönlichkeitsmerkmalen, Stärken und Entwicklungsbereichen",
@@ -896,8 +896,8 @@
     "admin_badge": "🔧 ADMINISTRATOR-KONTO - VOLLZUGRIFF",
     "ai_pack": {
       "title": "🤖 KI-Analyse-Paket",
-      "price": "5€",
-      "original_price": "10€",
+      "price": "{{price}}",
+      "original_price": "{{original}}",
       "discount_badge": "🔥 SONDERANGEBOT",
       "discount_percentage": "-50%",
       "limited_time": "Nur für begrenzte Zeit!",

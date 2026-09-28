@@ -159,3 +159,25 @@ Verificar: analizar el chat de Eva Pan → exactamente 2 participantes.
 - Evento de compra GA4 arreglado: `trackPurchase` en PaymentSuccess.js (sin depender de window.gtag, sin email, valor 5 €)
   + backend success_url con `?session_id={CHECKOUT_SESSION_ID}` (antes nunca llegaba). Tests en ambos lados.
 - ⚠️ Pendiente de decisión: la página de planes muestra cifras inventadas (15.8xx compradores, 4.8/5, contador y stock falsos).
+
+# Plan: precio reducido para Latinoamérica (2026-09-28)
+
+Decidido con Maria: 1,99 € (pago único, EUR) para LatAm hispanohablante + Brasil. Resto: 5 €.
+Adaptive Pricing (activo) convierte 1,99 € a moneda local donde puede (MX, CO, PE, CL, BR...).
+VE y AR ven 1,99 € (PayPal disponible). EE. UU., Canadá y Puerto Rico: 5 €.
+
+Región por zona horaria del navegador (lista cerrada, no "America/*"). Riesgo de falseo asumido.
+El precio lo elige el BACKEND según la región; deja de aceptar priceId del cliente.
+
+## TODOs
+- [x] 1. Backend `pricing.py`: PLANS (normal + latam, ambos 10 créditos) y `select_price_id(region)`.
+      Latam inactivo hasta tener price ID (cae al normal). → tests unitarios.
+- [x] 2. Backend `create_checkout_session` usa `select_price_id(data.region)`, ignora priceId del cliente.
+      Webhook reconoce ambos precios (ya itera PLANS). → test AST + tests pricing.
+- [x] 3. Front `src/utils/pricing.js`: región por zona horaria + precios a mostrar; flag LATAM_PRICE_ACTIVE.
+      → tests (Caracas/Bogotá/São Paulo → latam; Nueva York/Madrid/Puerto Rico → default; flag off → 5 €).
+- [x] 4. Front: textos de precio con {{price}}/{{original}}/{{perAnalysis}} en 6 idiomas; modal, planes,
+      portada y botones de desbloqueo leen de pricing.js; `purchaseAICredits` envía la región.
+      Corrige "0,05 €/análisis" → valor real. → tests + build.
+- [ ] 5. Maria crea el precio 1,99 € en Stripe y pasa el price ID → activar en backend y front.
+- [ ] 6. Verificación: Stripe con email `+location_VE` / `+location_MX`; zona horaria simulada en Chrome.

@@ -38,6 +38,7 @@ import TopProfilesViewer from './components/TopProfilesViewer';
 import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
 import BlogFrame from './BlogFrame';
+import { getAiPackPricing } from './utils/pricing';
 
 // Evento de embudo para GA4 (vía GTM). Mismo patrón que sign_up en firebase_auth.js.
 const trackEvent = (name) => {
@@ -2364,9 +2365,9 @@ const tryDeleteFiles = async (operationId) => {
                                 onClick={startAIAnalysis}
                                 disabled={isLoading}
                               >
-                                {t('hero.ai_preview.unlock_button')}
+                                {t('hero.ai_preview.unlock_button', getAiPackPricing())}
                               </button>
-                              <p className="unlock-note">{t('hero.ai_preview.unlock_note')}</p>
+                              <p className="unlock-note">{t('hero.ai_preview.unlock_note', getAiPackPricing())}</p>
                             </div>
                           </div>
 
@@ -2384,9 +2385,9 @@ const tryDeleteFiles = async (operationId) => {
                                 onClick={startAIAnalysis}
                                 disabled={isLoading}
                               >
-                                {t('hero.ai_preview.unlock_button')}
+                                {t('hero.ai_preview.unlock_button', getAiPackPricing())}
                               </button>
-                              <p className="unlock-note">{t('hero.ai_preview.unlock_note')}</p>
+                              <p className="unlock-note">{t('hero.ai_preview.unlock_note', getAiPackPricing())}</p>
                             </div>
                           </div>
 
@@ -2406,9 +2407,9 @@ const tryDeleteFiles = async (operationId) => {
                                 onClick={startAIAnalysis}
                                 disabled={isLoading}
                               >
-                                {t('hero.ai_preview.unlock_button')}
+                                {t('hero.ai_preview.unlock_button', getAiPackPricing())}
                               </button>
-                              <p className="unlock-note">{t('hero.ai_preview.unlock_note')}</p>
+                              <p className="unlock-note">{t('hero.ai_preview.unlock_note', getAiPackPricing())}</p>
                             </div>
                           </div>
 
@@ -2427,9 +2428,9 @@ const tryDeleteFiles = async (operationId) => {
                               onClick={startAIAnalysis}
                               disabled={isLoading}
                             >
-                                {t('hero.ai_preview.unlock_button')}
+                                {t('hero.ai_preview.unlock_button', getAiPackPricing())}
                             </button>
-                              <p className="unlock-note">{t('hero.ai_preview.unlock_note')}</p>
+                              <p className="unlock-note">{t('hero.ai_preview.unlock_note', getAiPackPricing())}</p>
                             </div>
                           </div>
                         </div>

@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './AIPurchaseModal.css';
+import { getAiPackPricing } from './utils/pricing';
 
 const AIPurchaseModal = ({ isOpen, onClose, onPurchase }) => {
   const { t } = useTranslation();
+  const pricing = getAiPackPricing();
 
   if (!isOpen) return null;
 
@@ -27,8 +29,8 @@ const AIPurchaseModal = ({ isOpen, onClose, onPurchase }) => {
             
             <div className="ai-price-section">
               <div className="ai-price-comparison">
-                <span className="ai-original-price">10€</span>
-                <span className="ai-current-price">5€</span>
+                <span className="ai-original-price">{pricing.original}</span>
+                <span className="ai-current-price">{pricing.price}</span>
               </div>
               <p className="ai-price-description">{t('hero.ai_purchase.pack_description')}</p>
             </div>

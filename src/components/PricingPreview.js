@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import './PricingPreview.css';
+import { getAiPackPricing } from '../utils/pricing';
 
 const PricingPreview = ({ onAnalyzeClick }) => {
   const { t } = useTranslation();
@@ -28,8 +29,8 @@ const PricingPreview = ({ onAnalyzeClick }) => {
           <div className="pricing-home-card pricing-home-card-featured">
             <h3>{t('freemium.ai_pack.title')}</h3>
             <div className="pricing-home-price-row">
-              <span className="pricing-home-original">{t('freemium.ai_pack.original_price')}</span>
-              <span className="pricing-home-price">{t('freemium.ai_pack.price')}</span>
+              <span className="pricing-home-original">{t('freemium.ai_pack.original_price', getAiPackPricing())}</span>
+              <span className="pricing-home-price">{t('freemium.ai_pack.price', getAiPackPricing())}</span>
               <span className="pricing-home-period">{t('freemium.ai_pack.analyses')}</span>
             </div>
             <ul className="pricing-home-features">

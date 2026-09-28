@@ -5,6 +5,7 @@ import { purchaseAICredits } from './firebase_auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './firebase_auth';
 import './SubscriptionPlans.css';
+import { getAiPackPricing } from './utils/pricing';
 
 const FreemiumPlans = ({ userId }) => {
   const { t } = useTranslation();
@@ -203,7 +204,7 @@ const FreemiumPlans = ({ userId }) => {
             className="ai-purchase-button"
             onClick={handlePurchaseAI}
           >
-            {t('freemium.public.register_and_buy')}
+            {t('freemium.public.register_and_buy', getAiPackPricing())}
           </button>
         ) : isAdmin ? (
           <button className="ai-purchase-button admin" disabled>
@@ -303,8 +304,8 @@ const FreemiumPlans = ({ userId }) => {
             <h2>{t('freemium.ai_pack.title')}</h2>
             <div className="ai-pack-price">
               <div className="price-comparison">
-                <span className="original-price">{t('freemium.ai_pack.original_price')}</span>
-                <span className="current-price">{t('freemium.ai_pack.price')}</span>
+                <span className="original-price">{t('freemium.ai_pack.original_price', getAiPackPricing())}</span>
+                <span className="current-price">{t('freemium.ai_pack.price', getAiPackPricing())}</span>
               </div>
               <span className="price-period">{t('freemium.ai_pack.analyses')}</span>
               <div className="limited-time-notice">

@@ -528,8 +528,8 @@
       "strengthen_bonds": "Strengthen bonds:",
       "communication_text": "Practical and actionable advice to optimize group dynamics...",
       "bonds_text": "Specific recommendation aimed at creating greater harmony among participants...",
-      "unlock_button": "🔓 Unlock AI Analysis - 10 analysis pack for 5€",
-      "unlock_note": "Only 0.05€ per complete analysis",
+      "unlock_button": "🔓 Unlock AI Analysis - 10 analysis pack for {{price}}",
+      "unlock_note": "Only {{perAnalysis}} per complete analysis",
       "view_analysis_of": "View analysis of",
       "tooltips": {
         "personality": "Detailed analysis of personality traits, strengths and development areas",
@@ -914,8 +914,8 @@
     "admin_badge": "🔧 ADMINISTRATOR ACCOUNT - FULL ACCESS",
     "ai_pack": {
       "title": "🤖 AI Analysis Pack",
-      "price": "5€",
-      "original_price": "10€",
+      "price": "{{price}}",
+      "original_price": "{{original}}",
       "discount_badge": "🔥 SPECIAL OFFER",
       "discount_percentage": "-50%",
       "limited_time": "Limited time only!",
@@ -952,7 +952,7 @@
       "cta_title": "Sign up free and start analyzing!",
       "cta_description": "Create your account in seconds and get unlimited statistical analysis",
       "register_button": "📝 Create free account",
-      "register_and_buy": "📝 Sign up and Buy (€5)"
+      "register_and_buy": "📝 Sign up and Buy ({{price}})"
     },
     "urgency": {
       "countdown_label": "⏰ Offer valid for:",

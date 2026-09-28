@@ -502,8 +502,8 @@
     "admin_badge": "🔧 COMPTE ADMINISTRATEUR - ACCÈS COMPLET",
     "ai_pack": {
       "title": "🤖 Pack Analyse IA",
-      "price": "5€",
-      "original_price": "10€",
+      "price": "{{price}}",
+      "original_price": "{{original}}",
       "discount_badge": "🔥 OFFRE SPÉCIALE",
       "discount_percentage": "-50%",
       "limited_time": "Pour un temps limité seulement!",
@@ -839,8 +839,8 @@
       "strengthen_bonds": "Renforcer les liens :",
       "communication_text": "Conseil pratique et réalisable pour optimiser la dynamique de groupe...",
       "bonds_text": "Recommandation spécifique visant à créer plus d'harmonie entre participants...",
-      "unlock_button": "🔓 Débloquer Analyse IA - Pack 10 analyses pour 5€",
-      "unlock_note": "Seulement 0,05€ par analyse complète",
+      "unlock_button": "🔓 Débloquer Analyse IA - Pack 10 analyses pour {{price}}",
+      "unlock_note": "Seulement {{perAnalysis}} par analyse complète",
       "view_analysis_of": "Voir l'analyse de"
     },
     "ai_purchase": {

@@ -576,8 +576,8 @@
       "strengthen_bonds": "Fortalece vínculos:",
       "communication_text": "Consejo práctico y accionable para optimizar la dinámica del grupo...",
       "bonds_text": "Recomendación específica orientada a crear mayor armonía entre participantes...",
-      "unlock_button": "🔓 Desbloquear Análisis IA - Pack 10 análisis por 5€",
-      "unlock_note": "Solo 0.05€ por análisis completo",
+      "unlock_button": "🔓 Desbloquear Análisis IA - Pack 10 análisis por {{price}}",
+      "unlock_note": "Solo {{perAnalysis}} por análisis completo",
       "view_analysis_of": "Ver análisis de",
       "tooltips": {
         "personality": "Análisis detallado de rasgos de personalidad, fortalezas y áreas de desarrollo",
@@ -874,8 +874,8 @@
     "admin_badge": "🔧 CUENTA ADMINISTRADOR - ACCESO COMPLETO",
     "ai_pack": {
       "title": "🤖 Pack Análisis IA",
-      "price": "5€",
-      "original_price": "10€",
+      "price": "{{price}}",
+      "original_price": "{{original}}",
       "discount_badge": "🔥 OFERTA ESPECIAL",
       "discount_percentage": "-50%",
       "limited_time": "¡Solo por tiempo limitado!",
@@ -912,7 +912,7 @@
       "cta_title": "¡Regístrate gratis y empieza a analizar!",
       "cta_description": "Crea tu cuenta en segundos y obtén análisis estadísticos ilimitados",
       "register_button": "📝 Crear cuenta gratis",
-      "register_and_buy": "📝 Registrarse y Comprar (5€)"
+      "register_and_buy": "📝 Registrarse y Comprar ({{price}})"
     },
     "urgency": {
       "countdown_label": "⏰ Oferta válida por:",

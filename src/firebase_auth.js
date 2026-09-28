@@ -1,5 +1,6 @@
 // Updated firebase_auth.js with persistence
 import { initializeApp } from 'firebase/app';
+import { getAiPackPricing } from './utils/pricing';
 import { 
   getAuth, 
   createUserWithEmailAndPassword, 
@@ -732,7 +733,9 @@ export const purchaseAICredits = async (userId) => {
       },
       body: JSON.stringify({
         priceId: process.env.REACT_APP_STRIPE_PRICE_ID_FLAT || 'price_1S5Sk8F4OlRGsz64GAn5xcSv',
-        userId: userId
+        userId: userId,
+        // El backend elige el precio según la región (el priceId se ignora)
+        region: getAiPackPricing().region
       })
     });
 

@@ -46,8 +46,8 @@
       "strengthen_bonds": "Rafforza i legami:",
       "communication_text": "Consiglio pratico e attuabile per ottimizzare la dinamica di gruppo...",
       "bonds_text": "Raccomandazione specifica volta a creare maggiore armonia tra i partecipanti...",
-      "unlock_button": "🔓 Sblocca Analisi IA - Pacchetto 10 analisi per 5€",
-      "unlock_note": "Solo 0,05€ per analisi completa",
+      "unlock_button": "🔓 Sblocca Analisi IA - Pacchetto 10 analisi per {{price}}",
+      "unlock_note": "Solo {{perAnalysis}} per analisi completa",
       "view_analysis_of": "Visualizza analisi di"
     },
     "ai_purchase": {
@@ -446,8 +446,8 @@
     "admin_badge": "🔧 ACCOUNT AMMINISTRATORE - ACCESSO COMPLETO",
     "ai_pack": {
       "title": "🤖 Pacchetto Analisi IA",
-      "price": "5€",
-      "original_price": "10€",
+      "price": "{{price}}",
+      "original_price": "{{original}}",
       "discount_badge": "🔥 OFFERTA SPECIALE",
       "discount_percentage": "-50%",
       "limited_time": "Solo per tempo limitato!",
@@ -484,7 +484,7 @@
       "cta_title": "Registrati gratis e inizia ad analizzare!",
       "cta_description": "Crea il tuo account in pochi secondi e ottieni analisi statistiche illimitate",
       "register_button": "📝 Crea account gratuito",
-      "register_and_buy": "📝 Registrati e Compra (5€)"
+      "register_and_buy": "📝 Registrati e Compra ({{price}})"
     }
   },
   "preview": {
