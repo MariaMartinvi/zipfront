@@ -459,6 +459,11 @@
   margin-bottom: 30px;
 }
 
+/* El resumen va dentro de su tarjeta: sin margen extra que cree un segundo borde */
+.analysis-container > .analysis-module {
+  margin-bottom: 0;
+}
+
 .analysis-module {
   margin-bottom: 20px;
   padding: 15px;

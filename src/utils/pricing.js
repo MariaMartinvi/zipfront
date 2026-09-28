@@ -2,8 +2,8 @@
 // La región sale de la zona horaria del navegador (lista cerrada: EE. UU., Canadá
 // y Puerto Rico NO están). El backend decide el precio real con la misma región.
 
-// Activar solo cuando el backend tenga el price ID de Latinoamérica configurado.
-export const LATAM_PRICE_ACTIVE = false;
+// Requiere que el backend tenga el price ID de Latinoamérica (pricing.py en zipback).
+export const LATAM_PRICE_ACTIVE = true;
 
 const LATAM_TIMEZONES = new Set([
   // Venezuela

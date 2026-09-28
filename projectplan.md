@@ -179,5 +179,5 @@ El precio lo elige el BACKEND según la región; deja de aceptar priceId del cli
 - [x] 4. Front: textos de precio con {{price}}/{{original}}/{{perAnalysis}} en 6 idiomas; modal, planes,
       portada y botones de desbloqueo leen de pricing.js; `purchaseAICredits` envía la región.
       Corrige "0,05 €/análisis" → valor real. → tests + build.
-- [ ] 5. Maria crea el precio 1,99 € en Stripe y pasa el price ID → activar en backend y front.
+- [x] 5. Maria crea el precio 1,99 € en Stripe y pasa el price ID → activar en backend y front.
 - [ ] 6. Verificación: Stripe con email `+location_VE` / `+location_MX`; zona horaria simulada en Chrome.
