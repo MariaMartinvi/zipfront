@@ -470,9 +470,21 @@ export const getMistralResponse = async (chatContent, language = 'es') => {
     // Procesar los nombres en el contenido completo - PASAR IDIOMA DEL USUARIO
     const { processedContent, nameMapping } = processContentForAzure(chatContent, language);
     console.log(`Longitud después de anonimizar: ${processedContent.length} caracteres`);
-    
+
+    // GUARDIA DE PRIVACIDAD: si no se reconoció el formato del chat, el texto aún
+    // contiene nombres reales. No se envía nada a la IA.
+    const algunParticipanteAnonimizado = Object.values(nameMapping)
+      .some(participantId => processedContent.includes(`${participantId}:`));
+    if (!algunParticipanteAnonimizado) {
+      console.error('🛑 Ningún participante anonimizado en el texto final. No se envía a la IA.');
+      return {
+        success: false,
+        error: 'No se ha reconocido el formato del chat, así que no se ha enviado a la IA para proteger tu privacidad. Vuelve a exportar el chat desde WhatsApp e inténtalo de nuevo.'
+      };
+    }
+
     console.log('🔄 Usando nuevo sistema unificado ChatGPT + Mistral...');
-    
+
     const result = await unifiedAIService.getResponse(processedContent, language);
     
     if (result.success) {

@@ -4,6 +4,9 @@
  * Soporta: todos los idiomas principales del mundo
  */
 
+// require (no import): este fichero exporta con module.exports y mezclar ambos rompe el bundle
+const { PATRON_IOS, PATRON_ANDROID } = require('../formatDetector');
+
 // Importación dinámica de Transformer.js para evitar problemas de bundle
 let pipeline = null;
 
@@ -416,40 +419,35 @@ class AnonymizationService {
     console.log(`📝 Usando palabra "${participantWord}" para participantes`);
     
     const lines = content.split('\n');
-    const processedLines = lines.map(line => {
-      // Patrón para iOS: [DD/MM/YY, HH:mm:ss] Nombre: Mensaje
-      const iosPattern = /\[(\d{1,2}\/\d{1,2}\/\d{2}), \d{1,2}:\d{1,2}:\d{1,2}\] ([^:]+):/;
-      // Patrón para Android: MM/DD/YY, HH:mm - Nombre: Mensaje
-      const androidPattern = /(\d{1,2}\/\d{1,2}\/\d{2}), \d{1,2}:\d{2} - ([^:]+):/;
-      
-      const iosMatch = line.match(iosPattern);
-      const androidMatch = line.match(androidPattern);
-      
+    const processedLines = lines.map(rawLine => {
+      // WhatsApp antepone marcas invisibles (U+200E/U+200F) a algunas líneas (imágenes omitidas)
+      const line = rawLine.replace(/^[‎‏]+/, '');
+
+      // Mismos patrones que el análisis estadístico (formatDetector.js):
+      // coma opcional, año de 2 o 4 cifras, segundos opcionales, AM/PM.
+      // Grupos: 1=fecha, 2=hora, 3=nombre, 4=mensaje.
+      const iosMatch = line.match(PATRON_IOS);
+      const androidMatch = iosMatch ? null : line.match(PATRON_ANDROID);
+
       if (iosMatch || androidMatch) {
-        const participant = (iosMatch ? iosMatch[2] : androidMatch[2]).trim();
-        
-        // Si ya procesamos este participante, usar el mismo ID
-        if (this.participantMapping.has(participant)) {
-          const participantId = this.participantMapping.get(participant);
-          if (iosMatch) {
-            return line.replace(iosMatch[0], `[${iosMatch[1]}] ${participantId}:`);
-          } else {
-            return line.replace(androidMatch[0], `${androidMatch[1]} - ${participantId}:`);
-          }
+        const match = iosMatch || androidMatch;
+        const [, date, , participantRaw, message] = match;
+        const participant = participantRaw.trim();
+
+        // Si ya procesamos este participante, usar el mismo ID; si no, crear uno nuevo
+        if (!this.participantMapping.has(participant)) {
+          const newId = `${participantWord} ${this.participantCounter++}`;
+          this.participantMapping.set(participant, newId);
+          console.log(`👤 Nuevo participante: "${participant}" → "${newId}"`);
         }
-        
-        // Crear nuevo ID para el participante usando la palabra correcta según el idioma
-        const participantId = `${participantWord} ${this.participantCounter++}`;
-        this.participantMapping.set(participant, participantId);
-        console.log(`👤 Nuevo participante: "${participant}" → "${participantId}"`);
-        
-        if (iosMatch) {
-          return line.replace(iosMatch[0], `[${iosMatch[1]}] ${participantId}:`);
-        } else {
-          return line.replace(androidMatch[0], `${androidMatch[1]} - ${participantId}:`);
-        }
+        const participantId = this.participantMapping.get(participant);
+
+        // Reconstruir la línea sin la hora (igual que antes) y con el nombre anonimizado
+        return iosMatch
+          ? `[${date}] ${participantId}: ${message}`
+          : `${date} - ${participantId}: ${message}`;
       }
-      
+
       return line;
     });
 
