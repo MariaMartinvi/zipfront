@@ -1475,9 +1475,11 @@
       "subtitle": "Adivina qué persona del chat corresponde a cada categoría"
     },
     "loading": "Cargando juego...",
+    "share": { "text": "¡He acertado {{score}} de {{total}} en el juego de nuestro chat! ¿Cuántas aciertas tú? 👀" },
     "button": {
       "backToHome": "Volver al inicio",
       "playAgainResults": "Volver a jugar",
+      "shareResult": "📤 Compartir resultado",
       "playAgainBottom": "Jugar otra vez",
       "viewResults": "Ver resultados"
     },

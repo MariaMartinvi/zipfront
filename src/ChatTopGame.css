@@ -322,6 +322,15 @@
   z-index: 1;
 }
 
+.score-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
 .score-card button:hover {
   background: transparent;
   color: white;

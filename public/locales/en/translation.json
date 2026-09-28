@@ -1388,9 +1388,11 @@
       "subtitle": "Guess which person in the chat corresponds to each category"
     },
     "loading": "Loading game...",
+    "share": { "text": "I got {{score}} out of {{total}} in our chat game! How many can you get? 👀" },
     "button": {
       "backToHome": "Back to home",
       "playAgainResults": "Play again",
+      "shareResult": "📤 Share result",
       "playAgainBottom": "Play again",
       "viewResults": "View results"
     },

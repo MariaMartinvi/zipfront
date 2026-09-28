@@ -119,6 +119,24 @@ const CATEGORY_TRANSLATIONS = {
   }
 };
 
+/**
+ * Comparte el resultado con el enlace al mismo juego, para que otros jueguen.
+ * Móvil: hoja nativa de compartir. Si no existe: WhatsApp.
+ */
+export const shareGameResult = async (text, url) => {
+  if (navigator.share) {
+    try {
+      await navigator.share({ text, url });
+      return 'native';
+    } catch (error) {
+      if (error && error.name === 'AbortError') return 'cancelled';
+      // Otro fallo de la hoja nativa: seguimos con WhatsApp
+    }
+  }
+  window.open(`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`, '_blank');
+  return 'whatsapp';
+};
+
 const ChatTopGame = () => {
   const location = useLocation();
   const { t } = useTranslation();
@@ -381,9 +399,19 @@ const ChatTopGame = () => {
                 t('chatTopGame.results.goodJob', '¡Buen trabajo! Conoces bastante a tus amigos.') :
                 t('chatTopGame.results.tryAgain', '¡Inténtalo de nuevo! Parece que no los conoces tanto como pensabas.')}
             </p>
-            <button onClick={() => setSubmitted(false)}>
-              {t('chatTopGame.button.playAgainResults', 'Volver a jugar')}
-            </button>
+            <div className="score-actions">
+              <button onClick={() => setSubmitted(false)}>
+                {t('chatTopGame.button.playAgainResults', 'Volver a jugar')}
+              </button>
+              <button
+                onClick={() => shareGameResult(
+                  t('chatTopGame.share.text', { score, total: answeredQuestionsCount }),
+                  window.location.href
+                )}
+              >
+                {t('chatTopGame.button.shareResult')}
+              </button>
+            </div>
           </div>
           
           <h3>{t('chatTopGame.answers.title', 'Respuestas:')}</h3>
