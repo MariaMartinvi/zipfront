@@ -517,6 +517,7 @@
       },
       "admin_button": "Accès Administrateur",
       "purchase_button": "🔓 Acheter Pack IA (Paiement sécurisé avec Stripe)",
+      "new_payment_methods": "✨ Vous pouvez désormais aussi payer avec PayPal",
       "processing": "⏳ Traitement..."
     },
     "how_it_works": {
@@ -854,6 +855,7 @@
       "cancel_button": "Annuler",
       "no_credits": "Aucun crédit IA disponible. Achetez un pack pour continuer.",
       "error_purchase": "Erreur lors du démarrage de l'achat. Veuillez réessayer.",
+      "payment_methods": "Payez par carte, PayPal, Apple Pay ou Google Pay",
       "unlock_button": "🔓 Acheter avec Réduction (5€)"
     },
     "security": {

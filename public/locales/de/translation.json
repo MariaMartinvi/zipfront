@@ -574,6 +574,7 @@
       "cancel_button": "Abbrechen",
       "no_credits": "Keine KI-Credits verfügbar. Kaufen Sie ein Paket zum Fortfahren.",
       "error_purchase": "Fehler beim Starten des Kaufs. Bitte versuchen Sie es erneut.",
+      "payment_methods": "Bezahlen mit Karte, PayPal, Apple Pay oder Google Pay",
       "unlock_button": "🔓 KI-Analyse freischalten (5€)"
     },
     "security": {
@@ -910,6 +911,7 @@
       },
       "admin_button": "Administrator-Zugang",
       "purchase_button": "🔓 KI-Paket kaufen (Sichere Zahlung mit Stripe)",
+      "new_payment_methods": "✨ Jetzt auch mit PayPal bezahlen",
       "processing": "⏳ Wird verarbeitet..."
     },
     "how_it_works": {

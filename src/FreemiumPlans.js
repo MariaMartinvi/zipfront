@@ -196,6 +196,31 @@ const FreemiumPlans = ({ userId }) => {
 
       {error && <div className="subscription-error">{error}</div>}
 
+      {/* Botón de compra arriba del todo */}
+      <div className="ai-pack-action ai-pack-action-top">
+        {!userId ? (
+          <button
+            className="ai-purchase-button"
+            onClick={handlePurchaseAI}
+          >
+            {t('freemium.public.register_and_buy')}
+          </button>
+        ) : isAdmin ? (
+          <button className="ai-purchase-button admin" disabled>
+            {t('freemium.ai_pack.admin_button')}
+          </button>
+        ) : (
+          <button
+            className="ai-purchase-button"
+            onClick={handlePurchaseAI}
+            disabled={isPurchasing}
+          >
+            {isPurchasing ? t('freemium.ai_pack.processing') : t('freemium.ai_pack.purchase_button')}
+          </button>
+        )}
+        <p className="payment-methods-note">{t('freemium.ai_pack.new_payment_methods')}</p>
+      </div>
+
       {/* Estado actual del usuario o promoción para no logueados */}
       <div className="current-plan-info freemium-status">
         <div className="freemium-stats">
@@ -325,29 +350,6 @@ const FreemiumPlans = ({ userId }) => {
               <span className="feature-check">💎</span>
               <span>{t('freemium.ai_pack.features.no_subscription')}</span>
             </div>
-          </div>
-          
-          <div className="ai-pack-action">
-            {!userId ? (
-              <button 
-                className="ai-purchase-button"
-                onClick={handlePurchaseAI}
-              >
-                {t('freemium.public.register_and_buy')}
-              </button>
-            ) : isAdmin ? (
-              <button className="ai-purchase-button admin" disabled>
-                {t('freemium.ai_pack.admin_button')}
-              </button>
-            ) : (
-              <button 
-                className="ai-purchase-button"
-                onClick={handlePurchaseAI}
-                disabled={isPurchasing}
-              >
-                {isPurchasing ? t('freemium.ai_pack.processing') : t('freemium.ai_pack.purchase_button')}
-              </button>
-            )}
           </div>
         </div>
       </div>

@@ -49,6 +49,7 @@ const AIPurchaseModal = ({ isOpen, onClose, onPurchase }) => {
               <span className="ai-button-icon">🔒</span>
               {t('hero.ai_purchase.buy_button')}
             </button>
+            <p className="ai-payment-methods">{t('hero.ai_purchase.payment_methods')}</p>
             <button className="ai-cancel-button" onClick={onClose}>
               {t('hero.ai_purchase.cancel_button')}
             </button>

@@ -5,6 +5,45 @@ import { auth } from './firebase_auth'; // Adjust path if needed
 import { getUserPlan } from './stripe_integration';
 import { useTranslation } from 'react-i18next';
 
+// Precio del pack de IA (5 €). Valor de la conversión para GA4 / Google Ads.
+const PURCHASE_VALUE_EUR = 5;
+
+/**
+ * Envía la compra a GTM (evento purchase_completed) una sola vez por sesión de Stripe.
+ * Sin datos personales: GA4 prohíbe recibir emails.
+ */
+export const trackPurchase = (sessionId, userId) => {
+  if (!sessionId) return false;
+  const purchaseKey = `purchase_tracked_${sessionId}`;
+  try {
+    if (localStorage.getItem(purchaseKey)) return false;
+  } catch (e) { /* almacenamiento bloqueado: seguimos */ }
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'purchase_completed',
+    user_id: userId,
+    value: PURCHASE_VALUE_EUR,
+    currency: 'EUR',
+    transaction_id: sessionId
+  });
+
+  // Respaldo directo a Google Ads si la página tiene gtag cargado
+  if (window.gtag) {
+    window.gtag('event', 'conversion', {
+      send_to: 'AW-17125098813/CuhGCMf20d0aEL2K8eU_',
+      value: PURCHASE_VALUE_EUR,
+      currency: 'EUR',
+      transaction_id: sessionId
+    });
+  }
+
+  try {
+    localStorage.setItem(purchaseKey, 'true');
+  } catch (e) { /* ignorar */ }
+  return true;
+};
+
 const SimplePaymentSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,66 +58,16 @@ const SimplePaymentSuccess = () => {
           // Obtener parámetros de la URL para verificar el pago
           const urlParams = new URLSearchParams(location.search);
           const sessionId = urlParams.get('session_id');
-          
+
+          // 🎯 Evento de compra (antes de nada, para que un fallo posterior no lo impida)
+          if (trackPurchase(sessionId, user.uid)) {
+            console.log('✅ Evento purchase_completed enviado');
+          }
+
           // Actualizar el plan del usuario
           const userPlan = await getUserPlan(user.uid);
           console.log('Plan actualizado:', userPlan);
-          
-          // 🎯 ENVIAR EVENTO DE CONVERSIÓN DE COMPRA A GOOGLE ADS
-          // Solo si tenemos session_id (confirmación de pago exitoso)
-          if (sessionId && window.gtag) {
-            // Verificar si ya enviamos este evento para evitar duplicados
-            const purchaseKey = `purchase_tracked_${sessionId}`;
-            const alreadyTracked = localStorage.getItem(purchaseKey);
-            
-            if (!alreadyTracked) {
-              console.log('📊 Enviando evento de compra a Google Ads via GTM...');
-              
-              // Obtener información del plan para el valor de conversión
-              const planValues = {
-                'basic': 4,
-                'standard': 8, 
-                'premium': 10,
-                'free': 0
-              };
-              
-              const conversionValue = planValues[userPlan] || 0;
-              
-              // Enviar evento al dataLayer para GTM
-              window.dataLayer = window.dataLayer || [];
-              window.dataLayer.push({
-                'event': 'purchase_completed',
-                'user_id': user.uid,
-                'email': user.email,
-                'plan': userPlan,
-                'value': conversionValue,
-                'currency': 'EUR',
-                'transaction_id': sessionId,
-                'timestamp': new Date().toISOString(),
-                'conversion_id': user.uid,
-                'conversion_label': 'purchase',
-                'conversion_value': conversionValue
-              });
-              
-                             // También enviar directamente a gtag como respaldo
-               window.gtag('event', 'conversion', {
-                 'send_to': 'AW-17125098813/CuhGCMf20d0aEL2K8eU_',
-                 'value': conversionValue,
-                 'currency': 'EUR',
-                 'transaction_id': sessionId,
-                 'user_id': user.uid,
-                 'custom_parameter_1': userPlan
-               });
-              
-              // Marcar como enviado para evitar duplicados
-              localStorage.setItem(purchaseKey, 'true');
-              
-              console.log(`✅ Evento de compra enviado - Plan: ${userPlan}, Valor: €${conversionValue}`);
-            } else {
-              console.log('⚠️ Evento de compra ya fue enviado anteriormente para esta sesión');
-            }
-          }
-          
+
           // User is signed in, redirect to plans page with success flag
           console.log('User is authenticated, redirecting to plans page');
           setTimeout(() => {

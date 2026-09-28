@@ -144,3 +144,18 @@ Verificar: analizar el chat de Eva Pan → exactamente 2 participantes.
 - Pendiente: verificación manual con el chat de Eva Pan tras desplegar (exactamente 2 participantes).
 - ⚠️ Seguridad: `service-account.json` (credenciales admin de Firebase) está commiteado en zipback.
   Rotar clave y sacarlo del repo. Fuera del alcance de hoy.
+
+## Cierre 2026-09-28
+
+- Desplegado front (anonimización + guardia) y backend (prompt 6 idiomas, gpt-4.1, temp 0.3, pack 10 créditos). Maria hizo los push.
+- Hotfix extra desplegado: `App.js` rompía en iPhone cuando `navigator.serviceWorker` no existe
+  (navegación privada / navegadores in-app). Bug desde mayo 2025. Verificado por Maria en iPhone.
+- Botones de compartir: funcionan en iPhone y Android (hoja nativa). En escritorio solo salen las
+  apps del sistema; no es un fallo. Sin cambios.
+- Pendiente: rotar y sacar `service-account.json` del repo zipback; rotar SECRET_KEY de render.yaml.
+- Modal de compra: línea "Paga con tarjeta, Bizum, PayPal, Apple Pay o Google Pay" bajo el botón (Bizum solo en ES).
+  Test `AIPurchaseModal.test.js`. Subir SOLO cuando Bizum aparezca de verdad en el checkout de Stripe.
+- Página de planes: botón de compra movido arriba del todo + "Ahora también puedes pagar con PayPal o Bizum" (6 idiomas).
+- Evento de compra GA4 arreglado: `trackPurchase` en PaymentSuccess.js (sin depender de window.gtag, sin email, valor 5 €)
+  + backend success_url con `?session_id={CHECKOUT_SESSION_ID}` (antes nunca llegaba). Tests en ambos lados.
+- ⚠️ Pendiente de decisión: la página de planes muestra cifras inventadas (15.8xx compradores, 4.8/5, contador y stock falsos).

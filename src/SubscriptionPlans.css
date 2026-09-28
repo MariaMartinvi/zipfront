@@ -1213,6 +1213,23 @@
   box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
 }
 
+.ai-pack-action-top {
+  max-width: 720px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.ai-pack-action-top .ai-purchase-button {
+  width: 100%;
+}
+
+.payment-methods-note {
+  margin: 12px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #475569;
+}
+
 .freemium-info {
   background: linear-gradient(135deg, #F0F9FF, #E0F2FE);
   border: 2px solid #0EA5E9;

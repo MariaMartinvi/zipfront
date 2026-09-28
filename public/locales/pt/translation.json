@@ -558,6 +558,7 @@
       "cancel_button": "Cancelar",
       "no_credits": "Nenhum crédito de IA disponível. Compre um pacote para continuar.",
       "error_purchase": "Erro ao iniciar a compra. Tente novamente.",
+      "payment_methods": "Pague com cartão, PayPal, Apple Pay ou Google Pay",
       "unlock_button": "🔓 Comprar com Desconto (5€)"
     },
     "security": {
@@ -821,6 +822,7 @@
       },
       "admin_button": "Acesso Administrador",
       "purchase_button": "🔓 Comprar Pacote IA (Pagamento seguro com Stripe)",
+      "new_payment_methods": "✨ Agora também pode pagar com PayPal",
       "processing": "⏳ Processando..."
     },
     "how_it_works": {
