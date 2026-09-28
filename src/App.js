@@ -1586,8 +1586,13 @@ const tryDeleteFiles = async (operationId) => {
     };
     
     // Registrar el listener para mensajes del Service Worker
+    // (navigator.serviceWorker no existe en navegación privada de iOS ni en navegadores
+    // integrados en apps; sin esta comprobación la app entera se rompía al cargar)
+    if (!('serviceWorker' in navigator)) {
+      return undefined;
+    }
     navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
-    
+
     return () => {
       navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
     };
@@ -1636,7 +1641,7 @@ const tryDeleteFiles = async (operationId) => {
       isProcessingRef.current = true;
       
       // Solicitar el archivo compartido si tenemos un ID y el Service Worker está activo
-      if (navigator.serviceWorker.controller) {
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         addDebugMessage('Solicitando archivo compartido al Service Worker');
         navigator.serviceWorker.controller.postMessage({
           type: 'GET_SHARED_FILE',
