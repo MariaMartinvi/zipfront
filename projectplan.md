@@ -180,4 +180,24 @@ El precio lo elige el BACKEND según la región; deja de aceptar priceId del cli
       portada y botones de desbloqueo leen de pricing.js; `purchaseAICredits` envía la región.
       Corrige "0,05 €/análisis" → valor real. → tests + build.
 - [x] 5. Maria crea el precio 1,99 € en Stripe y pasa el price ID → activar en backend y front.
-- [ ] 6. Verificación: Stripe con email `+location_VE` / `+location_MX`; zona horaria simulada en Chrome.
+- [x] 6. Verificación: Stripe con email `+location_VE` / `+location_MX`; zona horaria simulada en Chrome.
+
+## Review (precio Latinoamérica, 2026-09-28)
+
+Hecho y verificado por Maria en producción (zona horaria simulada + VPN Brasil):
+- LatAm ve 1,99 € (Stripe ofrece moneda local o EUR; PayPal aparece pagando en EUR). España sigue en 5 €.
+- El servidor elige el precio por región; ya no acepta priceId del cliente (hueco cerrado).
+- Corregido texto falso "0,05 € por análisis" → 0,50 € (0,20 € en LatAm).
+
+Aprendizajes:
+- Stripe decide moneda y métodos por la IP del cliente; nuestra web decide el precio por zona horaria.
+- PayPal vía Stripe no admite BRL/MXN/COP/CLP/PEN: solo aparece si el cliente elige EUR.
+- En el JS minificado el "€" va escapado: buscar "1,99" sin símbolo al verificar el bundle.
+- Orden de despliegue: backend antes que front cuando el front depende de él.
+
+Pendientes:
+- Stripe (Maria): renombrar producto "Basic Plan" y nombre público "ChatSalsa" en vez de "Comartinvi".
+- Decidir qué hacer con las cifras inventadas de la página de planes (15.8xx compradores, 4,8/5, contador, stock).
+- Seguridad: rotar y sacar service-account.json de zipback; SECRET_KEY de render.yaml.
+- Confirmar purchase_completed en GA4 con la próxima venta real.
+- Botón compartir resultado también en el juego de titulares (si se quiere).
