@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import lzString from 'lz-string';
 import './Chatgptresultados.css'; // Reutilizamos los estilos existentes
+import { trackEvent } from './utils/analytics';
 
 function Juegos({ 
   headlinesGameData = null,     // Datos del juego de titulares (viene de ChatGPT response)
@@ -25,6 +26,7 @@ function Juegos({
   
   // Función para ver el juego de titulares directamente
   const viewHeadlinesGame = () => {
+    trackEvent('juego_ver_titulares');
     try {
       if (!headlinesGameData) {
         alert(t('games.alerts.no_game_data'));
@@ -110,6 +112,7 @@ function Juegos({
 
   // Función para generar URL del juego de titulares
   const generateHeadlinesGameUrl = () => {
+    trackEvent('juego_compartir_titulares');
     try {
       if (!headlinesGameData) {
         alert(t('games.alerts.no_game_data'));
@@ -235,6 +238,7 @@ function Juegos({
   
   // Función para ver el juego de personalidades directamente
   const viewPersonalityGame = () => {
+    trackEvent('juego_ver_personalidad');
     try {
       // Usar topData pasado como prop o fallback a la variable global
       const data = topData || window.lastAnalysisTopData;
@@ -326,6 +330,7 @@ function Juegos({
   
   // Función para generar URL del juego de personalidades
   const generatePersonalityGameUrl = () => {
+    trackEvent('juego_compartir_personalidad');
     try {
       // Usar topData pasado como prop o fallback a la variable global
       const data = topData || window.lastAnalysisTopData;

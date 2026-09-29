@@ -11,7 +11,9 @@ test('en móvil usa la hoja nativa de compartir con texto y enlace', async () =>
   navigator.share = jest.fn().mockResolvedValue();
   const open = jest.spyOn(window, 'open').mockImplementation(() => {});
 
+  window.dataLayer = [];
   expect(await shareGameResult('He acertado 2 de 7', URL_JUEGO)).toBe('native');
+  expect(window.dataLayer).toContainEqual({ event: 'juego_resultado_compartir' });
   expect(navigator.share).toHaveBeenCalledWith({ text: 'He acertado 2 de 7', url: URL_JUEGO });
   expect(open).not.toHaveBeenCalled();
 });

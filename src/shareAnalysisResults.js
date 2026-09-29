@@ -1,4 +1,5 @@
 import React from 'react';
+import { trackEvent } from './utils/analytics';
 
 // NUEVA FUNCIÓN: Filtrar datos del juego del HTML
 const removeGameDataFromHTML = (htmlContent) => {
@@ -825,6 +826,7 @@ export const shareAnalysisResults = async (htmlContent, t, currentLanguage = 'es
 // Componente de botón para React
 export const ShareAnalysisButton = ({ htmlContent, t, currentLanguage = 'es', className = '' }) => {
   const handleShare = () => {
+    trackEvent('compartir_analisis_ia');
     shareAnalysisResults(htmlContent, t, currentLanguage);
   };
 

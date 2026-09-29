@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './ChatHeadlinesGame.css';
+import { trackEvent } from './utils/analytics';
 import lzString from 'lz-string';
 
 const ChatHeadlinesGame = () => {
@@ -234,6 +235,7 @@ const ChatHeadlinesGame = () => {
 
     setScore(correctAnswers);
     setSubmitted(true);
+    trackEvent('juego_jugado');
   };
 
   const resetGame = () => {

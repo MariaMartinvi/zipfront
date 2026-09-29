@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './ChatTopGame.css';
+import { trackEvent } from './utils/analytics';
 import lzString from 'lz-string'; // Importar lz-string para descomprimir los datos
 
 // Categorías específicas que queremos mostrar en el juego
@@ -124,6 +125,7 @@ const CATEGORY_TRANSLATIONS = {
  * Móvil: hoja nativa de compartir. Si no existe: WhatsApp.
  */
 export const shareGameResult = async (text, url) => {
+  trackEvent('juego_resultado_compartir');
   if (navigator.share) {
     try {
       await navigator.share({ text, url });
@@ -340,6 +342,7 @@ const ChatTopGame = () => {
     setScore(correctAnswers);
     setAnsweredQuestionsCount(answeredQuestions);
     setSubmitted(true);
+    trackEvent('juego_jugado');
     
     // Hacer scroll hacia arriba para ver los resultados
     window.scrollTo({ top: 0, behavior: 'smooth' });

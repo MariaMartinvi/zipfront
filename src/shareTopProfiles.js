@@ -1,4 +1,5 @@
 import React from 'react';
+import { trackEvent } from './utils/analytics';
 
 // Orden de prioridad para mostrar las categorías
 const ORDEN_PRIORIDAD = ['mala_influencia', 'amoroso', 'comico', 'narcicista', 'chismoso'];
@@ -397,6 +398,7 @@ export const shareTopProfiles = async (datos, t, currentLanguage = 'es') => {
 
 export const ShareButton = ({ datos, t, currentLanguage = 'es', className = '' }) => {
   const handleShare = () => {
+    trackEvent('compartir_top_perfiles');
     shareTopProfiles(datos, t, currentLanguage);
   };
 

@@ -39,13 +39,8 @@ import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
+import { trackEvent } from './utils/analytics';
 
-// Evento de embudo para GA4 (vía GTM). Mismo patrón que sign_up en firebase_auth.js.
-const trackEvent = (name) => {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event: name });
-  if (window.gtag) window.gtag('event', name);
-};
 
 // LoginPage component with useNavigate hook
 function LoginPage() {
