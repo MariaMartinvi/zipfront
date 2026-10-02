@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.chatsalsa.app",
+      "sha256_cert_fingerprints": [
+        "31:D5:D6:B0:64:70:45:E1:30:EC:62:65:3D:F8:4A:C6:5E:DA:78:D1:89:B7:D5:5D:22:4B:C2:FB:22:4F:E3:B4"
+      ]
+    }
+  }
+]
