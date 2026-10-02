@@ -4,6 +4,11 @@
 
 // Requiere que el backend tenga el price ID de Latinoamérica (pricing.py en zipback).
 export const LATAM_PRICE_ACTIVE = true;
+// Requiere que el backend tenga el price ID de España (STRIPE_PRICE_ID_ES en Render).
+export const ES_PRICE_ACTIVE = true;
+
+const SPAIN_TIMEZONES = new Set(['Europe/Madrid', 'Atlantic/Canary', 'Africa/Ceuta']);
+export const isSpainTimeZone = (timeZone) => SPAIN_TIMEZONES.has(timeZone);
 
 const LATAM_TIMEZONES = new Set([
   // Venezuela
@@ -43,7 +48,18 @@ const getUserTimeZone = () => {
 
 const DEFAULT_PRICING = { region: 'default', price: '5€', original: '10€', perAnalysis: '0,50€' };
 const LATAM_PRICING = { region: 'latam', price: '1,99€', original: '5€', perAnalysis: '0,20€' };
+const ES_PRICING = { region: 'es', price: '2,99€', original: '5€', perAnalysis: '0,30€' };
 
 /** Precios a mostrar y región a enviar al backend. */
-export const getAiPackPricing = (timeZone = getUserTimeZone(), latamActive = LATAM_PRICE_ACTIVE) =>
-  latamActive && isLatamTimeZone(timeZone) ? LATAM_PRICING : DEFAULT_PRICING;
+export const getAiPackPricing = (
+  timeZone = getUserTimeZone(),
+  latamActive = LATAM_PRICE_ACTIVE,
+  esActive = ES_PRICE_ACTIVE
+) => {
+  if (latamActive && isLatamTimeZone(timeZone)) return LATAM_PRICING;
+  if (esActive && isSpainTimeZone(timeZone)) return ES_PRICING;
+  return DEFAULT_PRICING;
+};
+
+/** Bizum solo funciona para clientes en España: mostrarlo solo a ellos. */
+export const isSpainUser = () => isSpainTimeZone(getUserTimeZone());

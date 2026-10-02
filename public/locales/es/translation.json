@@ -548,6 +548,7 @@
       "no_credits": "Sin créditos de IA disponibles. Compra un pack para continuar.",
       "error_purchase": "Error iniciando la compra. Inténtalo de nuevo.",
       "payment_methods": "Paga con tarjeta, Bizum, PayPal, Apple Pay o Google Pay",
+      "bizum_badge": "✅ En España puedes pagar con Bizum",
       "unlock_button": "🔓 Comprar con Descuento (5€)"
     },
     "ai_preview": {

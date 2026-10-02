@@ -201,3 +201,31 @@ Pendientes:
 - Seguridad: rotar y sacar service-account.json de zipback; SECRET_KEY de render.yaml.
 - Confirmar purchase_completed en GA4 con la próxima venta real.
 - Botón compartir resultado también en el juego de titulares (si se quiere).
+
+# Plan: 2,99 € para España + Bizum más visible (2026-10-02)
+
+Mismo patrón que Latam: el backend elige el precio por región; el front muestra el precio
+y envía la región. Región 'es' = zona horaria Europe/Madrid, Atlantic/Canary o Africa/Ceuta.
+El 2,99 € solo se activa cuando exista el price ID en Stripe (hasta entonces, 5 €).
+
+## TODOs
+- [x] 1. Backend `pricing.py`: pack `ai_pack_10_es` (2,99 €, 10 créditos, env `STRIPE_PRICE_ID_ES`,
+      vacío = inactivo) y `select_price_id('es')`. → tests unitarios.
+- [x] 2. Front `pricing.js`: región 'es' (2,99 €, 5 € tachado, 0,30 €/análisis) tras flag
+      `ES_PRICE_ACTIVE` (activado: price ID `price_1UM7JLF4OlRGsz647pAGLKHy`); `isSpainTimeZone`. → tests.
+- [x] 3. Front: aviso Bizum destacado solo para usuarios en España (modal de compra y página
+      de planes). → test del modal + build.
+- [x] 4. Maria crea el precio 2,99 € en Stripe y pasa el price ID → activar backend y front.
+
+## Review (2,99 € España + Bizum, 2026-10-02)
+
+- Backend: pack `ai_pack_10_es` 2,99 € (10 créditos), `STRIPE_PRICE_ID_ES` con el price ID por defecto;
+  vaciar la variable en Render desactiva el precio. `select_price_id` acepta 'latam', 'es' o normal.
+- Front: Madrid/Canarias/Ceuta → región 'es' (2,99 €, 5 € tachado, 0,30 €/análisis). Resto Europa/EE. UU.: 5 €.
+- Bizum: aviso verde "En España puedes pagar con Bizum" en el modal de compra (encima del botón) y en la
+  página de planes, solo para usuarios con zona horaria de España (antes dependía del idioma, y los
+  latinoamericanos en español veían Bizum aunque no les funciona).
+- Tests: backend 14 OK; front 84 OK; build + es-check OK.
+
+Verificar en producción (Maria): desde España, modal muestra 2,99 € y el aviso de Bizum; Stripe cobra 2,99 €
+y el pack suma 10 créditos. Desde fuera de España (zona horaria simulada en Chrome): 5 € y sin aviso Bizum.

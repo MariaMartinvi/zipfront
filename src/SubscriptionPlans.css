@@ -1230,6 +1230,17 @@
   color: #475569;
 }
 
+.bizum-note {
+  display: inline-block;
+  margin: 10px 0 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: #e8f8ee;
+  color: #1b7a3d;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .freemium-info {
   background: linear-gradient(135deg, #F0F9FF, #E0F2FE);
   border: 2px solid #0EA5E9;

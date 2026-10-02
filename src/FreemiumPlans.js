@@ -5,7 +5,7 @@ import { purchaseAICredits } from './firebase_auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './firebase_auth';
 import './SubscriptionPlans.css';
-import { getAiPackPricing } from './utils/pricing';
+import { getAiPackPricing, isSpainUser } from './utils/pricing';
 
 const FreemiumPlans = ({ userId }) => {
   const { t } = useTranslation();
@@ -220,6 +220,7 @@ const FreemiumPlans = ({ userId }) => {
           </button>
         )}
         <p className="payment-methods-note">{t('freemium.ai_pack.new_payment_methods')}</p>
+        {isSpainUser() && <p className="bizum-note">{t('hero.ai_purchase.bizum_badge')}</p>}
       </div>
 
       {/* Estado actual del usuario o promoción para no logueados */}

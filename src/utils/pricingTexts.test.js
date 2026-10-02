@@ -24,7 +24,7 @@ const crear = async (lng) => {
 describe.each(IDIOMAS)('textos de precio en %s', (lng) => {
   test('precio normal: 5 €, 10 € tachado y 0,50 € por análisis', async () => {
     const i18n = await crear(lng);
-    const p = getAiPackPricing('Europe/Madrid', true);
+    const p = getAiPackPricing('Europe/Paris', true);
     const textos = CLAVES.map((k) => i18n.t(k, p));
     textos.forEach((txt) => expect(txt).not.toMatch(/\{\{|\}\}/));
     expect(i18n.t('freemium.ai_pack.price', p)).toBe('5€');
@@ -40,5 +40,13 @@ describe.each(IDIOMAS)('textos de precio en %s', (lng) => {
     expect(i18n.t('hero.ai_preview.unlock_button', p)).toContain('1,99€');
     expect(i18n.t('freemium.public.register_and_buy', p)).toContain('1,99€');
     expect(i18n.t('hero.ai_preview.unlock_note', p)).toContain('0,20€');
+  });
+
+  test('precio España: 2,99 €', async () => {
+    const i18n = await crear(lng);
+    const p = getAiPackPricing('Europe/Madrid', true, true);
+    expect(i18n.t('hero.ai_preview.unlock_button', p)).toContain('2,99€');
+    expect(i18n.t('freemium.ai_pack.original_price', p)).toBe('5€');
+    expect(i18n.t('hero.ai_preview.unlock_note', p)).toContain('0,30€');
   });
 });
