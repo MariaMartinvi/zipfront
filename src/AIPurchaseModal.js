@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './AIPurchaseModal.css';
-import { getAiPackPricing, isSpainUser } from './utils/pricing';
+import { getAiPackPricing, getPaymentHighlightKey } from './utils/pricing';
 
 const AIPurchaseModal = ({ isOpen, onClose, onPurchase }) => {
   const { t } = useTranslation();
   const pricing = getAiPackPricing();
+  const paymentHighlight = getPaymentHighlightKey();
 
   if (!isOpen) return null;
 
@@ -47,8 +48,8 @@ const AIPurchaseModal = ({ isOpen, onClose, onPurchase }) => {
           </div>
           
           <div className="ai-modal-actions">
-            {isSpainUser() && (
-              <p className="ai-bizum-badge">{t('hero.ai_purchase.bizum_badge')}</p>
+            {paymentHighlight && (
+              <p className="ai-payment-badge">{t(paymentHighlight)}</p>
             )}
             <button className="ai-purchase-button" onClick={onPurchase}>
               <span className="ai-button-icon">🔒</span>

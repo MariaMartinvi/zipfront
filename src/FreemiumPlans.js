@@ -5,7 +5,7 @@ import { purchaseAICredits } from './firebase_auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './firebase_auth';
 import './SubscriptionPlans.css';
-import { getAiPackPricing, isSpainUser } from './utils/pricing';
+import { getAiPackPricing, getPaymentHighlightKey } from './utils/pricing';
 
 const FreemiumPlans = ({ userId }) => {
   const { t } = useTranslation();
@@ -186,6 +186,28 @@ const FreemiumPlans = ({ userId }) => {
   const aiCredits = userProfile?.aiCredits || 0;
   const isAdmin = userProfile?.is_admin || false;
 
+  const renderPurchaseButton = () => {
+    if (!userId) {
+      return (
+        <button className="ai-purchase-button" onClick={handlePurchaseAI}>
+          {t('freemium.public.register_and_buy', getAiPackPricing())}
+        </button>
+      );
+    }
+    if (isAdmin) {
+      return (
+        <button className="ai-purchase-button admin" disabled>
+          {t('freemium.ai_pack.admin_button')}
+        </button>
+      );
+    }
+    return (
+      <button className="ai-purchase-button" onClick={handlePurchaseAI} disabled={isPurchasing}>
+        {isPurchasing ? t('freemium.ai_pack.processing') : t('freemium.ai_pack.purchase_button')}
+      </button>
+    );
+  };
+
   return (
     <div className="subscription-container">
       <div className="freemium-header">
@@ -197,30 +219,11 @@ const FreemiumPlans = ({ userId }) => {
 
       {error && <div className="subscription-error">{error}</div>}
 
-      {/* Botón de compra arriba del todo */}
+      {/* Botón de compra arriba del todo (se repite debajo del precio) */}
       <div className="ai-pack-action ai-pack-action-top">
-        {!userId ? (
-          <button
-            className="ai-purchase-button"
-            onClick={handlePurchaseAI}
-          >
-            {t('freemium.public.register_and_buy', getAiPackPricing())}
-          </button>
-        ) : isAdmin ? (
-          <button className="ai-purchase-button admin" disabled>
-            {t('freemium.ai_pack.admin_button')}
-          </button>
-        ) : (
-          <button
-            className="ai-purchase-button"
-            onClick={handlePurchaseAI}
-            disabled={isPurchasing}
-          >
-            {isPurchasing ? t('freemium.ai_pack.processing') : t('freemium.ai_pack.purchase_button')}
-          </button>
-        )}
+        {renderPurchaseButton()}
         <p className="payment-methods-note">{t('freemium.ai_pack.new_payment_methods')}</p>
-        {isSpainUser() && <p className="bizum-note">{t('hero.ai_purchase.bizum_badge')}</p>}
+        {getPaymentHighlightKey() && <p className="payment-badge">{t(getPaymentHighlightKey())}</p>}
       </div>
 
       {/* Estado actual del usuario o promoción para no logueados */}
@@ -312,6 +315,9 @@ const FreemiumPlans = ({ userId }) => {
               <div className="limited-time-notice">
                 {t('freemium.ai_pack.limited_time')}
               </div>
+            </div>
+            <div className="ai-pack-action ai-pack-action-price">
+              {renderPurchaseButton()}
             </div>
             
             {/* 🔥 URGENCIA: Countdown y escasez */}

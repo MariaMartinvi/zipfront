@@ -34,12 +34,12 @@ describe.each(IDIOMAS)('textos de precio en %s', (lng) => {
     expect(textos.join(' ')).not.toMatch(/0[.,]05/);
   });
 
-  test('precio Latinoamérica: 1,99 €', async () => {
+  test('precio Latinoamérica: 1,99 US$', async () => {
     const i18n = await crear(lng);
     const p = getAiPackPricing('America/Caracas', true);
-    expect(i18n.t('hero.ai_preview.unlock_button', p)).toContain('1,99€');
-    expect(i18n.t('freemium.public.register_and_buy', p)).toContain('1,99€');
-    expect(i18n.t('hero.ai_preview.unlock_note', p)).toContain('0,20€');
+    expect(i18n.t('hero.ai_preview.unlock_button', p)).toContain('1,99 US$');
+    expect(i18n.t('freemium.public.register_and_buy', p)).toContain('1,99 US$');
+    expect(i18n.t('hero.ai_preview.unlock_note', p)).toContain('0,20 US$');
   });
 
   test('precio España: 2,99 €', async () => {

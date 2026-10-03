@@ -11,10 +11,10 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-let mockEnEspana = true;
+let mockAviso = null;
 jest.mock('./utils/pricing', () => ({
   ...jest.requireActual('./utils/pricing'),
-  isSpainUser: () => mockEnEspana,
+  getPaymentHighlightKey: () => mockAviso,
 }));
 
 // eslint-disable-next-line import/first
@@ -25,7 +25,7 @@ const pintar = () =>
 
 test('en español el modal anuncia Bizum junto al botón de compra', () => {
   mockTextos = es;
-  mockEnEspana = false;
+  mockAviso = null;
   const html = pintar();
   expect(html).toContain('Paga con tarjeta, Bizum, PayPal, Apple Pay o Google Pay');
   // aparece después del botón de comprar
@@ -41,15 +41,22 @@ test('en otros idiomas no se anuncia Bizum (solo funciona para clientes en Espa�
 
 test('a un usuario en España se le destaca Bizum antes del botón de compra', () => {
   mockTextos = es;
-  mockEnEspana = true;
+  mockAviso = 'hero.ai_purchase.bizum_badge';
   const html = pintar();
   expect(html).toContain('En España puedes pagar con Bizum');
-  expect(html.indexOf('ai-bizum-badge')).toBeLessThan(html.indexOf('ai-purchase-button'));
+  expect(html.indexOf('ai-payment-badge')).toBeLessThan(html.indexOf('ai-purchase-button'));
 });
 
 test('fuera de España no se destaca Bizum aunque el idioma sea español', () => {
   mockTextos = es;
-  mockEnEspana = false;
+  mockAviso = null;
   const html = pintar();
-  expect(html).not.toContain('ai-bizum-badge');
+  expect(html).not.toContain('ai-payment-badge');
+});
+
+test('a un usuario de Latinoamérica se le destaca PayPal', () => {
+  mockTextos = es;
+  mockAviso = 'hero.ai_purchase.paypal_badge';
+  const html = pintar();
+  expect(html).toContain('<p class="ai-payment-badge">✅ Puedes pagar con PayPal</p>');
 });

@@ -1223,6 +1223,11 @@
   width: 100%;
 }
 
+.ai-pack-action-price {
+  margin: 16px 0 24px;
+  text-align: center;
+}
+
 .payment-methods-note {
   margin: 12px 0 0;
   font-size: 1rem;
@@ -1230,7 +1235,7 @@
   color: #475569;
 }
 
-.bizum-note {
+.payment-badge {
   display: inline-block;
   margin: 10px 0 0;
   padding: 8px 16px;

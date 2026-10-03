@@ -229,3 +229,26 @@ El 2,99 € solo se activa cuando exista el price ID en Stripe (hasta entonces, 
 
 Verificar en producción (Maria): desde España, modal muestra 2,99 € y el aviso de Bizum; Stripe cobra 2,99 €
 y el pack suma 10 créditos. Desde fuera de España (zona horaria simulada en Chrome): 5 € y sin aviso Bizum.
+
+# Plan: Latam en dólares + aviso PayPal (2026-10-03)
+
+Decidido con Maria: Latam pasa de 1,99 € a 1,99 US$ (price ID `price_1UMOBqF4OlRGsz64Bx0gSkxY`),
+y la web muestra "US$" (no "$", que en Latam significa pesos). Aviso destacado de PayPal para Latam,
+como el de Bizum en España.
+
+## TODOs
+- [x] 1. Backend `pricing.py`: pack Latam usa el price ID en USD. → tests.
+- [x] 2. Front `pricing.js`: Latam muestra 1,99 US$ / 5 US$ tachado / 0,20 US$ por análisis. → tests.
+- [x] 3. Front: aviso de pago por región (`getPaymentHighlightKey`): Bizum en España, PayPal en Latam,
+      nada en el resto. Modal y página de planes. Textos es/en/pt. → test del modal + build.
+
+## Review (Latam en dólares + PayPal, 2026-10-03)
+
+- Latam se cobra en 1,99 US$ (Maria eligió la cifra redonda frente a 2,29 US$ ≈ 1,99 €). Stripe sigue
+  convirtiendo a moneda local donde puede; en VE/AR verán dólares, que allí es moneda habitual.
+- La web muestra "1,99 US$", "5 US$" tachado y "0,20 US$ por análisis" en los 6 idiomas (interpolación).
+- Aviso de pago destacado unificado en `getPaymentHighlightKey()`: Bizum (España) / PayPal (Latam) / nada.
+- Pendiente menor: la línea pequeña "Paga con tarjeta, Bizum, PayPal..." del español la ven también los
+  latinoamericanos; Bizum no les funciona. Cambiarla por región si molesta.
+- Página de planes: segundo botón de compra debajo del precio (el de arriba se mantiene); `renderPurchaseButton()`.
+- Tests: backend 14 OK; front 86 OK; build + es-check OK.

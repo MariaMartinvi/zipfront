@@ -47,7 +47,8 @@ const getUserTimeZone = () => {
 };
 
 const DEFAULT_PRICING = { region: 'default', price: '5€', original: '10€', perAnalysis: '0,50€' };
-const LATAM_PRICING = { region: 'latam', price: '1,99€', original: '5€', perAnalysis: '0,20€' };
+// Latam se cobra en dólares; "US$" y no "$", que en Latam significa pesos.
+const LATAM_PRICING = { region: 'latam', price: '1,99 US$', original: '5 US$', perAnalysis: '0,20 US$' };
 const ES_PRICING = { region: 'es', price: '2,99€', original: '5€', perAnalysis: '0,30€' };
 
 /** Precios a mostrar y región a enviar al backend. */
@@ -61,5 +62,9 @@ export const getAiPackPricing = (
   return DEFAULT_PRICING;
 };
 
-/** Bizum solo funciona para clientes en España: mostrarlo solo a ellos. */
-export const isSpainUser = () => isSpainTimeZone(getUserTimeZone());
+/** Clave del aviso de pago destacado según región: Bizum en España, PayPal en Latam, nada en el resto. */
+export const getPaymentHighlightKey = (timeZone = getUserTimeZone()) => {
+  if (isSpainTimeZone(timeZone)) return 'hero.ai_purchase.bizum_badge';
+  if (isLatamTimeZone(timeZone)) return 'hero.ai_purchase.paypal_badge';
+  return null;
+};
