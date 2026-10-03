@@ -7,6 +7,10 @@ const AIPurchaseModal = ({ isOpen, onClose, onPurchase }) => {
   const { t } = useTranslation();
   const pricing = getAiPackPricing();
   const paymentHighlight = getPaymentHighlightKey();
+  // Bizum solo se nombra a usuarios en España
+  const paymentMethodsKey = paymentHighlight === 'hero.ai_purchase.bizum_badge'
+    ? 'hero.ai_purchase.payment_methods_bizum'
+    : 'hero.ai_purchase.payment_methods';
 
   if (!isOpen) return null;
 
@@ -55,7 +59,7 @@ const AIPurchaseModal = ({ isOpen, onClose, onPurchase }) => {
               <span className="ai-button-icon">🔒</span>
               {t('hero.ai_purchase.buy_button')}
             </button>
-            <p className="ai-payment-methods">{t('hero.ai_purchase.payment_methods')}</p>
+            <p className="ai-payment-methods">{t(paymentMethodsKey)}</p>
             <button className="ai-cancel-button" onClick={onClose}>
               {t('hero.ai_purchase.cancel_button')}
             </button>

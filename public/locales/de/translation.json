@@ -575,6 +575,7 @@
       "no_credits": "Keine KI-Credits verfügbar. Kaufen Sie ein Paket zum Fortfahren.",
       "error_purchase": "Fehler beim Starten des Kaufs. Bitte versuchen Sie es erneut.",
       "payment_methods": "Bezahlen mit Karte, PayPal, Apple Pay oder Google Pay",
+      "payment_methods_bizum": "Bezahlen mit Karte, Bizum, PayPal, Apple Pay oder Google Pay",
       "unlock_button": "🔓 KI-Analyse freischalten (5€)"
     },
     "security": {

@@ -63,6 +63,7 @@
       "no_credits": "Nessun credito IA disponibile. Compra un pacchetto per continuare.",
       "error_purchase": "Errore nell'avviare l'acquisto. Prova di nuovo.",
       "payment_methods": "Paga con carta, PayPal, Apple Pay o Google Pay",
+      "payment_methods_bizum": "Paga con carta, Bizum, PayPal, Apple Pay o Google Pay",
       "unlock_button": "🔓 Compra con Sconto (5€)"
     },
     "security": {

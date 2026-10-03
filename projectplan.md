@@ -248,7 +248,6 @@ como el de Bizum en España.
   convirtiendo a moneda local donde puede; en VE/AR verán dólares, que allí es moneda habitual.
 - La web muestra "1,99 US$", "5 US$" tachado y "0,20 US$ por análisis" en los 6 idiomas (interpolación).
 - Aviso de pago destacado unificado en `getPaymentHighlightKey()`: Bizum (España) / PayPal (Latam) / nada.
-- Pendiente menor: la línea pequeña "Paga con tarjeta, Bizum, PayPal..." del español la ven también los
-  latinoamericanos; Bizum no les funciona. Cambiarla por región si molesta.
+- Línea pequeña de métodos de pago por región: `payment_methods_bizum` (6 idiomas) solo en España; el resto sin Bizum.
 - Página de planes: segundo botón de compra debajo del precio (el de arriba se mantiene); `renderPurchaseButton()`.
 - Tests: backend 14 OK; front 86 OK; build + es-check OK.

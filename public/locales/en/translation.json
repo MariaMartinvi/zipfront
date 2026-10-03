@@ -551,6 +551,7 @@
       "no_credits": "No AI credits available. Buy a pack to continue.",
       "error_purchase": "Error starting purchase. Please try again.",
       "payment_methods": "Pay by card, PayPal, Apple Pay or Google Pay",
+      "payment_methods_bizum": "Pay by card, Bizum, PayPal, Apple Pay or Google Pay",
       "paypal_badge": "✅ You can pay with PayPal",
       "unlock_button": "🔓 Buy with Discount (€5)"
     },
