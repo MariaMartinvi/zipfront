@@ -170,7 +170,7 @@ function WhatsappInstructions() {
 
       {activeTab === 'video' && (
         <div className="instruction-video">
-          <video src={tutorialVideo} controls className="tutorial-video">
+          <video src={tutorialVideo} controls preload="none" className="tutorial-video">
             {t('messages_status.error')}
           </video>
         </div>

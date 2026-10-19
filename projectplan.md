@@ -251,3 +251,30 @@ como el de Bizum en España.
 - Línea pequeña de métodos de pago por región: `payment_methods_bizum` (6 idiomas) solo en España; el resto sin Bizum.
 - Página de planes: segundo botón de compra debajo del precio (el de arriba se mantiene); `renderPurchaseButton()`.
 - Tests: backend 14 OK; front 86 OK; build + es-check OK.
+
+# Plan: reducir ancho de banda en Render (2026-10-19)
+
+Render (plan con 5 GB/mes incluidos) iba a 4,14 GB el día 19 → proyección ~6,5–7 GB. ~55 % lo gasta este
+static site. Causa: 3 vídeos tutoriales en `public/` (83 MB: iOS 43,5 MB, desktop 21,3 MB, Android 18,1 MB);
+los picos de 43–68 MB/h en Render coinciden con reproducciones del vídeo de iOS.
+
+## TODOs
+- [x] 1. Comprimir los 3 vídeos con ffmpeg (H.264, máx. 720p, sin audio si no lo tiene útil, faststart).
+      → verificar: tamaño total < 12 MB, duración igual a la original, se reproducen en el navegador.
+- [x] 2. `preload="none"` en el `<video>` de `WhatsappInstructions.js` (no descarga nada hasta pulsar play).
+      → verificar: test del componente + build.
+
+## Review (ancho de banda Render, 2026-10-19)
+
+- Vídeos: 83 MB → 2,8 MB (desktop 21,3→0,6; iOS 43,5→1,6; Android 18,1→0,55). 720×1280, H.264 CRF 28,
+  faststart. Se quitó la pista de audio: era silencio (-91 dB). Duraciones idénticas; fotograma comparado a ojo:
+  el texto se lee igual.
+- `preload="none"` en el `<video>`: no se descarga nada hasta pulsar play. Test nuevo
+  `WhatsappInstructions.test.js` (falla sin el cambio, pasa con él).
+- Tests: front 88 OK; build + es-check OK.
+- Aprendizaje: Render solo factura lo que sale (respuestas), no lo que suben los usuarios. Un único fichero
+  estático pesado multiplicado por visitas pesa más que toda la app.
+- Pendiente (no hecho): source maps públicos (12,6 MB, exponen el código) → `GENERATE_SOURCEMAP=false`.
+
+Verificar en producción (Maria): tras el deploy, abrir Instrucciones → Vídeo en móvil y escritorio y ver que se
+reproduce; en unos días, en Render → Metrics de zip-extractor-fronend no deberían aparecer picos de 40–60 MB/h.
