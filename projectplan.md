@@ -280,3 +280,78 @@ los picos de 43–68 MB/h en Render coinciden con reproducciones del vídeo de i
 Verificar en producción (Maria): tras el deploy, abrir Instrucciones → Vídeo en móvil y escritorio y ver que se
 reproduce; en unos días, en Render → Metrics de zip-extractor-fronend no deberían aparecer picos de 40–60 MB/h.
 - Source maps desactivados en `build:render`: build sin ningún `.map` (de ~24 MB a 11 MB); tests 88 OK; es-check OK.
+
+# Plan: paywall IA más arriba + mensaje "desbloquear todo" (2026-10-19)
+
+## Contexto
+
+Embudo actual (datos de otra sesión, dados por Maria): ~224 usuarios llegan al paywall al mes, 8 ventas. Orden de
+pantalla en `App.js` (líneas ~2180-2440): Resumen general → Perfiles destacados (~20 tarjetas con nombres reales) →
+Juegos → Análisis psicológico (IA, bloqueado sin créditos) → resto de estadística. El usuario llega al paywall
+tras un scroll enorme y ya saciado.
+
+Decisiones de Maria:
+- **Toda la estadística sigue gratis**, perfiles destacados incluidos. No se tapan nombres.
+- **No** se pone marca de agua ni se bloquea el compartir.
+- Sí: subir el bloque IA y vender "desbloquear todo", no "créditos".
+- Medición: antes/después 14 días con el embudo que ya existe. Sin A/B.
+
+## Suposiciones
+
+- "Un solo desbloqueo" es un cambio de **mensaje**, no de producto: el pack de Stripe ya es una compra única
+  (10 análisis). No se toca backend ni precios.
+- `paywall_visto` se deja **tal cual** para que el antes/después sea comparable. Para medir "en pantalla" de verdad
+  se añade un evento nuevo. Las ratios a comparar se calculan sobre `chat_subido`, que no cambia.
+- Textos en los 6 idiomas (`public/locales/{es,en,fr,de,it,pt}`).
+- No hay test de render de `App.js` (Firebase, etc.); el cambio de orden se verifica a mano.
+
+## TODOs
+
+- [x] 1. Mover el bloque "Análisis psicológico" (`chat-analysis-section`) justo después de `AnalisisTop`, antes de
+      `Juegos`. Solo cambia la posición del JSX, nada dentro.
+      → verificar: `npm test` y `npm run build` OK; a mano, con un usuario sin créditos, el bloque IA bloqueado
+      aparece justo debajo de la última tarjeta de perfil y los juegos debajo; con créditos/admin el flujo de
+      análisis IA sigue igual.
+- [x] 2. Evento nuevo `paywall_en_pantalla`: hook `useTrackOnceVisible(ref, evento, clave)` en `src/utils/`
+      con `IntersectionObserver`; dispara una vez por `operationId` cuando el bloque bloqueado entra en pantalla.
+      Sin `IntersectionObserver` (navegadores in-app viejos) no hace nada. Añadirlo al regex de
+      `analytics.test.js`. **Maria: añadirlo al activador de GTM `GTM-P4PTW3CH`.**
+      → verificar: test del hook (dispara una vez, no repite al re-entrar, vuelve a disparar con otra clave);
+      `analytics.test.js` pasa.
+- [x] 3. Mensaje "desbloquear todo" en los 6 idiomas. Propuesta (es):
+      - `ai_preview.unlock_button`: "🔓 Desbloquear todo el análisis IA de este chat · {{price}}"
+      - `ai_preview.unlock_note`: "Pack de 10 análisis · solo {{perAnalysis}} cada uno"
+      - `ai_purchase.modal_title` / `title`: "Desbloquea todo lo que la IA ha visto en este chat"
+      - `ai_purchase.full_chat_notice`: "✨ Personalidad de cada persona + señales de alerta + nota de la
+        relación + consejos"
+      - `ai_purchase.buy_button`: "Desbloquear ahora (pago seguro con Stripe)"
+      Se mantiene "Pack de 10 análisis" visible: es lo que se vende y no hay que prometer otra cosa.
+      → verificar: `AIPurchaseModal.test.js` y `pricingTexts.test.js` pasan (ajustar los textos esperados).
+- [ ] 4. Anotar aquí la fecha del deploy y la línea base de los 14 días anteriores (`chat_subido`,
+      `paywall_click`, `checkout_iniciado`, ventas en Stripe). A los 14 días, comparar `paywall_click/chat_subido`
+      y `checkout_iniciado/chat_subido`, y ventas.
+
+Fuera de alcance: tapar perfiles, marca de agua al compartir, A/B, backend/precios.
+
+Riesgo a vigilar: los juegos bajan de posición → `juego_jugado` y los `juego_compartir_*` pueden bajar.
+
+## Review (paywall IA más arriba, 2026-10-19)
+
+- Orden nuevo: Resumen → Perfiles destacados → **Análisis IA** → Juegos → resto de estadística. Solo cambió de sitio
+  el bloque de Juegos (12 líneas); nada dentro de los bloques.
+- Evento nuevo `paywall_en_pantalla` (hook `useTrackOnceVisible`, `IntersectionObserver`, una vez por `operationId`).
+  `paywall_visto` se mantiene igual para no romper la comparación antes/después. 5 tests nuevos.
+- Textos "desbloquear todo" en es/en/fr/de/it/pt (6 claves por idioma). `ai_purchase.title`, `ai_purchase.price` y
+  `ai_purchase.unlock_button` no se usan en el código (traducciones muertas); `title` se cambió por coherencia.
+- Tests: front 93 OK (12 suites); `npm run build` + es-check OK. Las advertencias de lint del build son previas.
+- Aprendizaje: un desbloqueo ya cubre el chat entero (1 crédito = 1 análisis con todas las personas), así que
+  "todo el análisis IA de este chat" es literal; el pack de 10 es el extra para más chats.
+
+Pendiente de Maria (TODO 4):
+- Añadir `paywall_en_pantalla` al activador de GTM `GTM-P4PTW3CH` (regex de "Nombre del evento").
+- Comprobar en local/producción con un usuario sin créditos: bloque IA bloqueado justo bajo los perfiles, juegos
+  debajo; con créditos el análisis IA sigue funcionando.
+- Anotar aquí fecha de deploy y línea base de los 14 días previos: `chat_subido`, `paywall_click`,
+  `checkout_iniciado`, ventas Stripe. A los 14 días: `paywall_click/chat_subido`, `checkout_iniciado/chat_subido`,
+  ventas, y vigilar `juego_jugado`.
+

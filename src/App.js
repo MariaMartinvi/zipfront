@@ -40,6 +40,7 @@ import DemoExample from './components/DemoExample';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
 import { trackEvent } from './utils/analytics';
+import { useTrackOnceVisible } from './utils/useTrackOnceVisible';
 
 
 // LoginPage component with useNavigate hook
@@ -346,6 +347,7 @@ function AppContent() {
   const [aiAnalysisProgress, setAiAnalysisProgress] = useState('');
   // Referencias para secciones de análisis - usadas para scroll automático
   const analysisRef = useRef(null);
+  const aiLockedRef = useRef(null);
   // Get user-related state from AuthContext instead of managing locally
   const { user, userProfile, setUserProfile, isAuthLoading, setUser } = useAuth();
   
@@ -1067,6 +1069,14 @@ function AppContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [operationId, chatData, userCredits?.canUse]);
+
+  // Embudo de pago: el bloque IA bloqueado ha entrado en pantalla de verdad (una vez por chat)
+  useTrackOnceVisible(
+    aiLockedRef,
+    'paywall_en_pantalla',
+    operationId,
+    !!(chatData && userCredits && !userCredits.canUse && !chatGptResponse && !isFetchingMistral)
+  );
 
   useEffect(() => {
     // Check URL for payment_success parameter
@@ -2206,18 +2216,6 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
-                {/* JUEGOS - Tercera parte */}
-                {operationId && user && chatData && (
-                  <div className="games-section">
-                    <Juegos 
-                      headlinesGameData={headlinesGameData}
-                      topData={window.lastAnalysisTopData}
-                      showHeadlinesGame={!!headlinesGameData && !!chatGptResponse}
-                      showTopGame={!!window.lastAnalysisTopData}
-                    />
-                  </div>
-                )}
-
                 {/* Análisis psicológico de Azure */}
                 {operationId && user && (
                   <div className="chat-analysis-section">
@@ -2241,7 +2239,7 @@ const tryDeleteFiles = async (operationId) => {
                       />
                     ) : chatData && userCredits && !userCredits.canUse ? (
                       // Mostrar preview bloqueado SOLO cuando hay datos pero el usuario NO tiene créditos
-                      <div className="ai-analysis-locked">
+                      <div className="ai-analysis-locked" ref={aiLockedRef}>
                         <div className="locked-preview">
                           <h3>{t('hero.ai_preview.title')}</h3>
                           
@@ -2431,6 +2429,18 @@ const tryDeleteFiles = async (operationId) => {
                         </div>
                       </div>
                     ) : null}
+                  </div>
+                )}
+
+                {/* JUEGOS - Tercera parte (tras el análisis IA) */}
+                {operationId && user && chatData && (
+                  <div className="games-section">
+                    <Juegos 
+                      headlinesGameData={headlinesGameData}
+                      topData={window.lastAnalysisTopData}
+                      showHeadlinesGame={!!headlinesGameData && !!chatGptResponse}
+                      showTopGame={!!window.lastAnalysisTopData}
+                    />
                   </div>
                 )}
 

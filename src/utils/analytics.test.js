@@ -4,7 +4,7 @@ import { trackEvent } from './analytics';
 
 // Debe coincidir con el "Nombre del evento" (regex) del activador de GTM GTM-P4PTW3CH.
 const GTM_ACTIVADOR =
-  'chat_subido|analisis_devuelto|paywall_visto|paywall_click|checkout_iniciado|' +
+  'chat_subido|analisis_devuelto|paywall_visto|paywall_click|paywall_en_pantalla|checkout_iniciado|' +
   'juego_ver_titulares|juego_ver_personalidad|juego_compartir_titulares|juego_compartir_personalidad|' +
   'juego_jugado|juego_resultado_compartir|compartir_top_perfiles|compartir_analisis_ia';
 
