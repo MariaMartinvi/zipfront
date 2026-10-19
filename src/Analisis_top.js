@@ -1733,10 +1733,18 @@ const AnalisisTop = ({ operationId, chatData }) => {
       }
       
       // Exponer los datos para que App.js pueda usarlos en el juego SOLO SI HAY USUARIO
+      // Mensajes por usuario (para "La Porra del Grupo": ¿quién escribe más?)
+      const mensajesPorUsuario = {};
+      if (datos.usuarios && !Array.isArray(datos.usuarios)) {
+        Object.entries(datos.usuarios).forEach(([nombre, stats]) => {
+          mensajesPorUsuario[nombre] = stats?.mensajes || 0;
+        });
+      }
       window.lastAnalysisTopData = {
         categorias: categoriasMapeadas,
         usuarios: usuariosMapeados,
-        totales: datos.totales || {}
+        totales: datos.totales || {},
+        mensajes_por_usuario: mensajesPorUsuario
       };
       
       console.log('Datos de análisis disponibles para el juego:', {

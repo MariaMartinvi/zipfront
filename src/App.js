@@ -41,6 +41,8 @@ import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
 import { trackEvent } from './utils/analytics';
 import { useTrackOnceVisible } from './utils/useTrackOnceVisible';
+import PorraSection from './PorraSection';
+import PorraPage from './PorraPage';
 
 
 // LoginPage component with useNavigate hook
@@ -2444,6 +2446,11 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
+                {/* LA PORRA DEL GRUPO - juego de Navidad (solo castellano) */}
+                {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
+                  <PorraSection user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} />
+                )}
+
                 {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
                 {operationId && user && chatData && (
                   <div className="statistical-analysis-section">
@@ -2573,6 +2580,7 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/analysis" element={<AnalysisViewer />} />
         {/* DEMO ANALYSIS */}
         <Route path="/demo" element={<DemoExample />} />
+        <Route path="/porra-navidad" element={<PorraPage />} />
         </Routes>
         
         {/* Componente de instalación de PWA */}

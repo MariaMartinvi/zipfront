@@ -46,3 +46,15 @@ test('aviso de pago destacado: Bizum en España, PayPal en Latam, nada en el res
   expect(getPaymentHighlightKey('Europe/Paris')).toBeNull();
   expect(getPaymentHighlightKey('America/New_York')).toBeNull();
 });
+
+describe('precio de La Porra del Grupo', () => {
+  const { getPorraPricing } = require('./pricing');
+  test('España y resto pagan 2,99 €', () => {
+    expect(getPorraPricing('Europe/Madrid', true)).toEqual({ region: 'es', price: '2,99€' });
+    expect(getPorraPricing('Europe/Paris', true)).toEqual({ region: 'default', price: '2,99€' });
+  });
+  test('Latam paga 2,99 US$ y cae a euros si Latam está desactivado', () => {
+    expect(getPorraPricing('America/Bogota', true)).toEqual({ region: 'latam', price: '2,99 US$' });
+    expect(getPorraPricing('America/Bogota', false)).toEqual({ region: 'default', price: '2,99€' });
+  });
+});

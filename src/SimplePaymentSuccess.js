@@ -9,8 +9,11 @@ const SimplePaymentSuccess = () => {
   
   useEffect(() => {
     // Just redirect to plans after a short delay
+    // La porra se compra desde los resultados: volver ahí (el chat sigue en localStorage)
+    const product = new URLSearchParams(window.location.search).get('product');
+    const destino = product === 'porra' ? '/?payment_success=true&product=porra' : '/plans?payment_success=true';
     setTimeout(() => {
-      navigate('/plans?payment_success=true', { replace: true });
+      navigate(destino, { replace: true });
     }, 1500);
   }, [navigate]);
   

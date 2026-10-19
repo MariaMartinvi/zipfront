@@ -6,7 +6,8 @@ import { trackEvent } from './analytics';
 const GTM_ACTIVADOR =
   'chat_subido|analisis_devuelto|paywall_visto|paywall_click|paywall_en_pantalla|checkout_iniciado|' +
   'juego_ver_titulares|juego_ver_personalidad|juego_compartir_titulares|juego_compartir_personalidad|' +
-  'juego_jugado|juego_resultado_compartir|compartir_top_perfiles|compartir_analisis_ia';
+  'juego_jugado|juego_resultado_compartir|compartir_top_perfiles|compartir_analisis_ia|' +
+  'porra_click|porra_descargada|porra_pagina_cta';
 
 const eventosEnElCodigo = () => {
   const src = path.join(__dirname, '..');
@@ -37,6 +38,6 @@ test('envía el evento al dataLayer de GTM', () => {
 test('todos los eventos del código están en el activador de GTM', () => {
   const permitidos = new Set(GTM_ACTIVADOR.split('|'));
   const usados = eventosEnElCodigo();
-  expect(usados.size).toBe(13);
+  expect(usados.size).toBe(16);
   [...usados].forEach((nombre) => expect(permitidos.has(nombre)).toBe(true));
 });

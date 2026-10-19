@@ -7,7 +7,8 @@ import LanguageSwitcher from './LanguageSwitcher';
 import './Header.css';
 
 const Header = ({ user }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const esCastellano = (i18n.language || 'es').startsWith('es');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   const handleLogout = async () => {
@@ -42,6 +43,7 @@ const Header = ({ user }) => {
           <nav className="desktop-nav">
             <Link to="/" className="nav-link">{t('header.home')}</Link>
             <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
+            {esCastellano && <Link to="/porra-navidad" className="nav-link">🎄 Juego de Navidad</Link>}
             {user ? (
               <>
                 <LanguageSwitcher />
@@ -89,6 +91,7 @@ const Header = ({ user }) => {
         <div className="mobile-menu">
           <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>{t('header.home')}</Link>
           <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
+          {esCastellano && <Link to="/porra-navidad" className="mobile-nav-link" onClick={toggleMenu}>🎄 Juego de Navidad</Link>}
           {user ? (
             <>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

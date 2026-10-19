@@ -1,0 +1,18 @@
+.porra-section { margin: 32px auto; max-width: 900px; padding: 0 16px; }
+.porra-card { background: #fff; border-radius: 16px; padding: 28px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  border: 2px solid transparent; background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #25D366, #8A2BE2);
+  background-origin: border-box; background-clip: padding-box, border-box; }
+.porra-badge { display: inline-block; background: #e9f9ef; color: #128C7E; font-weight: 600; font-size: 0.85rem;
+  padding: 4px 10px; border-radius: 999px; margin-bottom: 10px; }
+.porra-head h3 { margin: 0 0 8px; font-size: 1.6rem; }
+.porra-head p { margin: 0 0 12px; color: #4a5568; line-height: 1.5; }
+.porra-lista { list-style: none; padding: 0; margin: 0 0 20px; color: #2d3748; line-height: 1.8; }
+.porra-cta { text-align: center; }
+.porra-nota { color: #718096; font-size: 0.9rem; margin: 0; }
+.porra-ok { color: #128C7E; font-weight: 600; }
+.porra-label { display: block; font-weight: 600; margin-bottom: 6px; color: #2d3748; }
+.porra-input { width: 100%; max-width: 360px; padding: 10px 12px; border: 1px solid #cbd5e0; border-radius: 8px;
+  font-size: 1rem; margin-bottom: 14px; }
+.porra-link { background: none; border: none; color: #8A2BE2; text-decoration: underline; cursor: pointer; font-size: 0.95rem; }
+.porra-error { color: #c53030; margin: 12px 0 0; text-align: center; }
+@media (max-width: 600px) { .porra-card { padding: 20px 16px; } .porra-head h3 { font-size: 1.3rem; } }

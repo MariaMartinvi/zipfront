@@ -1,6 +1,6 @@
 // Updated firebase_auth.js with persistence
 import { initializeApp } from 'firebase/app';
-import { getAiPackPricing } from './utils/pricing';
+import { getAiPackPricing, getPorraPricing } from './utils/pricing';
 import { 
   getAuth, 
   createUserWithEmailAndPassword, 
@@ -1295,3 +1295,46 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
 }
 
 export { db };
+
+// ===== "La Porra del Grupo" (juego para la cena de Navidad): una compra = un chat =====
+
+export const canUsePorra = async (userId) => {
+  try {
+    if (!userId) throw new Error('ID de usuario requerido');
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    if (!userDoc.exists()) return { canUse: false, porraCredits: 0 };
+    const perfil = userDoc.data();
+    if (perfil.is_admin) return { canUse: true, porraCredits: 'unlimited' };
+    const porraCredits = perfil.porraCredits || 0;
+    return { canUse: porraCredits > 0, porraCredits };
+  } catch (error) {
+    return { canUse: false, porraCredits: 0 };
+  }
+};
+
+export const decrementPorraCredit = async (userId) => {
+  if (!userId) throw new Error('ID de usuario requerido');
+  const userRef = doc(db, 'users', userId);
+  const userDoc = await getDoc(userRef);
+  if (!userDoc.exists()) throw new Error('Usuario no encontrado');
+  const perfil = userDoc.data();
+  if (perfil.is_admin) return { success: true, creditsRemaining: 'unlimited' };
+  const actuales = perfil.porraCredits || 0;
+  if (actuales <= 0) throw new Error('Sin juegos disponibles');
+  await updateDoc(userRef, { porraCredits: actuales - 1, lastPorraUsage: new Date() });
+  return { success: true, creditsRemaining: actuales - 1 };
+};
+
+export const purchasePorra = async (userId) => {
+  const idToken = await auth.currentUser.getIdToken();
+  const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/create-checkout-session`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+    // El backend elige el precio según región y producto
+    body: JSON.stringify({ userId, product: 'porra', region: getPorraPricing().region })
+  });
+  if (!response.ok) throw new Error('Error creating checkout session');
+  const data = await response.json();
+  if (!data.url) throw new Error('No checkout URL received');
+  window.location.href = data.url;
+};

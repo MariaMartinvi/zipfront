@@ -355,3 +355,101 @@ Pendiente de Maria (TODO 4):
   `checkout_iniciado`, ventas Stripe. A los 14 días: `paywall_click/chat_subido`, `checkout_iniciado/chat_subido`,
   ventas, y vigilar `juego_jugado`.
 
+
+# Plan: "La Porra del Grupo", juego para las cenas de Navidad (2026-10-19)
+
+## Decisiones de Maria
+
+1. Producto **separado** del pack de IA: 2,99 € el juego. Los dos precios actuales de la IA no cambian.
+2. Al pagar se descargan **dos PDFs**: el de preguntas (hoja de jugador) y el de respuestas contestadas (acta
+   del moderador rellena), con respuestas creativas y graciosas.
+3. Promoción: vídeo de gente jugando y preguntas/respuestas sueltas en la landing.
+4. Entrada propia en el menú y guiño en la landing.
+5. **Solo en castellano**: el producto y su enlace existen solo cuando el idioma es `es`.
+6. Mismo chat, mismo proceso y misma privacidad que el análisis actual.
+7. Objetivo: en producción el 1 de diciembre.
+
+## Lo que ya existe y se reutiliza (sin cambios)
+
+- Privacidad: anonimización en el navegador (`anonimizarChat`), nombres sustituidos antes de la IA y restaurados
+  al pintar (`lastNameMapping`), opción del usuario de no enviar a la IA (`skipAIPsychologicalAnalysis`),
+  borrado de ficheros tras el análisis (`tryDeleteFiles`), chat guardado en localStorage (sobrevive a Stripe).
+- Pago: checkout por región (`select_price_id`), webhook que reconoce el `price_id` y escribe créditos en
+  Firestore (`stripe_handler.py:380-410`), `canUseAI` / `decrementAICredits` en `firebase_auth.js`.
+- Ronda 1: 9 de 10 preguntas salen de perfiles ya calculados (`lastAnalysisTopData`). Pregunta 10
+  ("palabrotas") pasa a "¿Quién llena el chat de emojis?" (Happy Flower).
+- `jspdf` y `html2canvas` ya están en `package.json`.
+
+## Suposiciones (corregir si no)
+
+- **Una compra = un chat** (`porraCredits` en el perfil, igual que `aiCredits`). Latam: 2,99 US$.
+- La Ronda 2 la responde la IA con una llamada propia (prompt de vacile, con cita del chat como prueba). Si el
+  usuario rechazó enviar el chat a la IA, el juego se vende igual pero **solo con la Ronda 1** (10 preguntas de
+  estadísticas); los PDFs salen sin Ronda 2 y se avisa antes de comprar.
+- Los PDFs se generan en el navegador desde dos plantillas HTML con el diseño del PDF que ya tienes
+  (`html2canvas` + `jspdf`, A4). No pasan por el servidor ni se guardan.
+- Los textos graciosos de la Ronda 1 son plantillas mías con el dato real ("Marta: 2.341 mensajes. El grupo es
+  su podcast").
+
+## TODOs
+
+### B. Backend (zipback)
+- [x] B1. `pricing.py`: plan `porra` (2,99 €, `STRIPE_PRICE_ID_PORRA`, y Latam `STRIPE_PRICE_ID_PORRA_LATAM`)
+      con `porra_credits: 1`. Checkout acepta `product: 'porra'`. Webhook suma `porraCredits` en vez de `aiCredits`.
+      → verificar: `tests/test_pricing.py` y test del webhook con un evento de ejemplo.
+      **Maria: crear los dos precios en Stripe y las variables en Render.**
+- [x] B2. Endpoint `/api/porra-analysis`: misma auth, mismo rate limit y misma entrada anonimizada que
+      `/api/mistral-analysis`; prompt que devuelve JSON con las 10 respuestas de la Ronda 2 (nombre, frase
+      graciosa, cita). No guarda nada.
+      → verificar: test con respuesta de Mistral simulada; prueba real con un chat.
+
+### F. Front
+- [x] F1. `pricing.js`: precio del juego por región; `firebase_auth.js`: `canUsePorra`, `decrementPorraCredit`,
+      `purchasePorra`. → verificar: tests de pricing.
+- [x] F2. `src/utils/porra.js`: preguntas de las dos rondas y función pura que rellena la Ronda 1 desde los datos
+      de perfiles con frases graciosas. → verificar: tests unitarios.
+- [x] F3. `src/utils/porraPdf.js`: genera los dos PDFs (A4) desde plantillas HTML; restaura nombres reales con
+      `lastNameMapping`. → verificar: test de que el HTML contiene las 20 preguntas y los nombres; descarga a mano.
+- [x] F4. Bloque en resultados (solo `es`, con chat subido): "La Porra del Grupo · 2,99 €" → checkout. Con
+      `porraCredits`: botón "Generar mi Porra" → llama a B2, descuenta el crédito y descarga los dos PDFs.
+      Eventos `porra_click`, `porra_checkout`, `porra_descargada` (regex de `analytics.test.js` + GTM).
+      → verificar: tests del bloque (sin crédito / con crédito); flujo completo en Stripe modo test.
+- [x] F5. Página `/porra-navidad`: vídeo, cómo se juega, preguntas de muestra, botón "Sube tu chat". Entrada en
+      `Header.js` y guiño en la landing (`HeroSection.js`), ambos solo en `es`.
+      → verificar: tests de render; a mano en móvil.
+
+### Después (Maria)
+- [ ] Vídeo de promoción. Activador GTM con los 3 eventos nuevos. Línea base y métricas: `porra_click`,
+      `porra_checkout`, pagos del juego en Stripe.
+
+Fuera de alcance: otros idiomas, cambios en el pack de IA o en la parte gratis, modo fiesta en pantalla.
+
+## Review (La Porra del Grupo, 2026-10-19)
+
+Hecho esta tarde, todo en local y con tests; **nada desplegado** (ni zipback ni front):
+
+- **Backend (zipback, commits cd0d25b y e3961e0):** producto `porra` con precio propio por región, checkout con
+  `product: 'porra'`, webhook que suma `porraCredits`, endpoint `/api/porra-analysis` (misma auth y misma entrada
+  anonimizada que la IA; prompt de vacile en castellano; JSON validado). 31 tests OK.
+- **Front:** `pricing.js` (2,99 € / 2,99 US$), `firebase_auth.js` (`canUsePorra`, `decrementPorraCredit`,
+  `purchasePorra`), `fileService.getPorraResponse` (mismo camino de privacidad que `getMistralResponse`),
+  `utils/porra.js` (20 preguntas + Ronda 1 con frases graciosas desde las estadísticas), `utils/porraPdf.js`
+  (dos PDFs A4 en el navegador con la paleta de la web), `PorraSection` en resultados (solo `es`, tras los
+  juegos; sin crédito → compra; con crédito → nombre del grupo + generar y descargar), página `/porra-navidad`
+  con hueco para el vídeo, enlace "🎄 Juego de Navidad" en el menú y guiño en la landing (solo `es`).
+  105 tests OK (15 suites); `npm run build` + es-check OK.
+- **Cambio mínimo en lo existente:** `Analisis_top.js` expone `mensajes_por_usuario` (6 líneas);
+  `SimplePaymentSuccess` vuelve a `/` cuando `product=porra`; el resto de la web no se toca.
+- Sin pagar no se ve nada del juego salvo el bloque de venta (sin preguntas) y la página.
+
+Pendiente de Maria antes de lanzar:
+1. **Stripe:** dos precios de pago único, 2,99 € y 2,99 US$. **Render (zipback):** `STRIPE_PRICE_ID_PORRA` y
+   `STRIPE_PRICE_ID_PORRA_LATAM`. Sin ellas el botón de compra responde "Producto no disponible".
+2. **Deploy de zipback** (commits ya hechos) y push del front.
+3. **Vídeo:** subir a `public/videos/porra.mp4` (la página lo oculta sola si no existe).
+4. **GTM:** añadir `porra_click`, `porra_descargada` y `porra_pagina_cta` al activador.
+5. **Prueba real:** chat de prueba → comprar en modo test → generar → abrir los dos PDFs en móvil.
+
+Aprendizajes: el chat sobrevive a Stripe por localStorage, así que la compra puede hacerse desde los
+resultados sin volver a subir nada; la Ronda 1 sale gratis de las estadísticas, la única llamada de pago es la
+Ronda 2.

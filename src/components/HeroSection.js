@@ -3,7 +3,8 @@ import './HeroSection.css';
 import { useTranslation } from 'react-i18next';
 
 const HeroSection = ({ onAnalyzeClick, onLearnMoreClick, onViewAnalysisClick }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const esCastellano = (i18n.language || 'es').startsWith('es');
 
   return (
     <section className="hero-section">
@@ -26,6 +27,11 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick, onViewAnalysisClick }) 
               {t('hero.buttons.how_it_works', 'Cómo funciona')}
             </button>
           </div>
+          {esCastellano && (
+            <a href="/porra-navidad" className="hero-porra-link">
+              🎄 Nuevo: <strong>La Porra del Grupo</strong>, el juego para la cena de Navidad →
+            </a>
+          )}
           <div className="security-badge">
             <div className="security-icons">
               <div className="security-icon-circle security-icon-green">🔒</div>

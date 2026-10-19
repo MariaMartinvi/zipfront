@@ -520,6 +520,52 @@ export const getMistralResponse = async (chatContent, language = 'es') => {
 };
 
 /**
+ * Ronda 2 de "La Porra del Grupo". Mismo tratamiento de privacidad que getMistralResponse:
+ * anonimiza participantes y datos, no envía nada si no reconoce el formato, y restaura los
+ * nombres reales en el navegador. Devuelve { success, respuestas: [{ id, nombre, frase, cita }] }.
+ */
+export const getPorraResponse = async (chatContent) => {
+  try {
+    if (!chatContent) return { success: false, error: 'No hay chat que analizar' };
+
+    const { processedContent, nameMapping } = processContentForAzure(chatContent, 'es');
+    const algunParticipanteAnonimizado = Object.values(nameMapping)
+      .some((participantId) => processedContent.includes(`${participantId}:`));
+    if (!algunParticipanteAnonimizado) {
+      return {
+        success: false,
+        error: 'No se ha reconocido el formato del chat, así que no se ha enviado a la IA para proteger tu privacidad.'
+      };
+    }
+
+    const { auth } = await import('./firebase_auth');
+    const token = await auth.currentUser.getIdToken();
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const response = await fetch(`${API_URL}/api/porra-analysis`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ textContent: processedContent })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || `Error del servidor (${response.status})`);
+    }
+
+    const inverso = {};
+    Object.entries(nameMapping).forEach(([nombre, participantId]) => { inverso[participantId] = nombre; });
+    const respuestas = data.respuestas.map((r) => ({
+      id: r.id,
+      nombre: inverso[r.participante] || r.participante,
+      frase: r.frase,
+      cita: reconstructNames(r.cita || '', nameMapping)
+    }));
+    return { success: true, respuestas };
+  } catch (error) {
+    return { success: false, error: error.message || 'Error generando la porra' };
+  }
+};
+
+/**
  * Función para registro de depuración, compatible con el sistema de debug de la App
  * @param {Function} addDebugMessage - Función para añadir mensajes de debug
  * @param {string} message - Mensaje a registrar
