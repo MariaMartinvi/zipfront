@@ -274,7 +274,9 @@ los picos de 43–68 MB/h en Render coinciden con reproducciones del vídeo de i
 - Tests: front 88 OK; build + es-check OK.
 - Aprendizaje: Render solo factura lo que sale (respuestas), no lo que suben los usuarios. Un único fichero
   estático pesado multiplicado por visitas pesa más que toda la app.
-- Pendiente (no hecho): source maps públicos (12,6 MB, exponen el código) → `GENERATE_SOURCEMAP=false`.
+- [x] 3. Source maps públicos (12,6 MB, exponen el código fuente): `GENERATE_SOURCEMAP=false` en `build:render`.
+      → verificar: `npm run build:render` no genera ningún `.map` ni `sourceMappingURL`; tests y es-check OK.
 
 Verificar en producción (Maria): tras el deploy, abrir Instrucciones → Vídeo en móvil y escritorio y ver que se
 reproduce; en unos días, en Render → Metrics de zip-extractor-fronend no deberían aparecer picos de 40–60 MB/h.
+- Source maps desactivados en `build:render`: build sin ningún `.map` (de ~24 MB a 11 MB); tests 88 OK; es-check OK.
