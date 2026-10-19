@@ -530,7 +530,7 @@
       "bonds_text": "Specific recommendation aimed at creating greater harmony among participants...",
       "unlock_button": "🔓 Unlock the full AI analysis of this chat · {{price}}",
       "unlock_note": "10-analysis pack · only {{perAnalysis}} each",
-      "view_analysis_of": "View analysis of",
+      "view_analysis_of": "View analysis of {{name}} and the rest - {{price}} full chat",
       "tooltips": {
         "personality": "Detailed analysis of personality traits, strengths and development areas",
         "alerts": "Identification of problematic patterns and warning signs in communication",

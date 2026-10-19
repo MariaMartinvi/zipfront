@@ -554,7 +554,7 @@
       "bonds_text": "Spezifische Empfehlung zur Schaffung größerer Harmonie zwischen Teilnehmern...",
       "unlock_button": "🔓 Die ganze KI-Analyse dieses Chats freischalten · {{price}}",
       "unlock_note": "10er-Pack · nur {{perAnalysis}} pro Analyse",
-      "view_analysis_of": "Analyse anzeigen von",
+      "view_analysis_of": "Analyse von {{name}} und den anderen - {{price}} ganzer Chat",
       "tooltips": {
         "personality": "Detaillierte Analyse von Persönlichkeitsmerkmalen, Stärken und Entwicklungsbereichen",
         "alerts": "Identifikation problematischer Muster und Warnsignale in der Kommunikation",

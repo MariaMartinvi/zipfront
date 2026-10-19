@@ -841,7 +841,7 @@
       "bonds_text": "Recommandation spécifique visant à créer plus d'harmonie entre participants...",
       "unlock_button": "🔓 Débloquer toute l'analyse IA de ce chat · {{price}}",
       "unlock_note": "Pack de 10 analyses · seulement {{perAnalysis}} chacune",
-      "view_analysis_of": "Voir l'analyse de"
+      "view_analysis_of": "Voir l'analyse de {{name}} et des autres - {{price}} chat complet"
     },
     "ai_purchase": {
       "title": "🤖 Débloquez tout ce que l'IA a vu dans ce chat",

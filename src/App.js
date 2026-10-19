@@ -2344,7 +2344,7 @@ const tryDeleteFiles = async (operationId) => {
                                           onClick={startAIAnalysis}
                                           disabled={isLoading}
                                         >
-                                          🔓 {t('hero.ai_preview.view_analysis_of', 'Ver análisis de')} {usuario}
+                                          🔓 {t('hero.ai_preview.view_analysis_of', { name: usuario, ...getAiPackPricing() })}
                                         </button>
                                       </div>
                                     </div>

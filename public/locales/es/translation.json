@@ -581,7 +581,7 @@
       "bonds_text": "Recomendación específica orientada a crear mayor armonía entre participantes...",
       "unlock_button": "🔓 Desbloquear todo el análisis IA de este chat · {{price}}",
       "unlock_note": "Pack de 10 análisis · solo {{perAnalysis}} cada uno",
-      "view_analysis_of": "Ver análisis de",
+      "view_analysis_of": "Ver análisis de {{name}} y resto - {{price}} chat completo",
       "tooltips": {
         "personality": "Análisis detallado de rasgos de personalidad, fortalezas y áreas de desarrollo",
         "alerts": "Identificación de patrones problemáticos y señales de advertencia en la comunicación",

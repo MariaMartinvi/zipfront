@@ -48,7 +48,7 @@
       "bonds_text": "Raccomandazione specifica volta a creare maggiore armonia tra i partecipanti...",
       "unlock_button": "🔓 Sblocca tutta l'analisi IA di questa chat · {{price}}",
       "unlock_note": "Pacchetto da 10 analisi · solo {{perAnalysis}} ciascuna",
-      "view_analysis_of": "Visualizza analisi di"
+      "view_analysis_of": "Vedi l'analisi di {{name}} e degli altri - {{price}} chat completa"
     },
     "ai_purchase": {
       "title": "🤖 Sblocca tutto ciò che l'IA ha visto in questa chat",
