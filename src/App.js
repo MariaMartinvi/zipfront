@@ -1106,6 +1106,8 @@ function AppContent() {
     let pendiente = null;
     try { pendiente = localStorage.getItem('porra_pendiente'); localStorage.removeItem('porra_pendiente'); } catch (e) { /* sin localStorage */ }
     if (pendiente === 'halloween' || pendiente === 'navidad') {
+      // El botón atrás del navegador desde Stripe vuelve a la landing del juego, no a la portada
+      window.history.replaceState({}, document.title, `/porra-${pendiente}`);
       trackEvent('porra_click');
       purchasePorra(user.uid, pendiente).catch(() => {});
     }
