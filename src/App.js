@@ -2446,9 +2446,12 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
-                {/* LA PORRA DEL GRUPO - juego de Navidad (solo castellano) */}
+                {/* LA PORRA DEL GRUPO - juegos de Halloween y Navidad (solo castellano) */}
                 {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
-                  <PorraSection user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} />
+                  <>
+                    <PorraSection user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} tema="halloween" />
+                    <PorraSection user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} tema="navidad" />
+                  </>
                 )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
@@ -2580,7 +2583,8 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/analysis" element={<AnalysisViewer />} />
         {/* DEMO ANALYSIS */}
         <Route path="/demo" element={<DemoExample />} />
-        <Route path="/porra-navidad" element={<PorraPage />} />
+        <Route path="/porra-halloween" element={<PorraPage tema="halloween" />} />
+        <Route path="/porra-navidad" element={<PorraPage tema="navidad" />} />
         </Routes>
         
         {/* Componente de instalación de PWA */}

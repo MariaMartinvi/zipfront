@@ -1,74 +1,111 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getPorraPricing } from './utils/pricing';
-import { PREGUNTAS_RONDA_1, PREGUNTAS_RONDA_2 } from './utils/porra';
+import { TEMAS, temaValido, PREGUNTAS_RONDA_1 } from './utils/porra';
 import { trackEvent } from './utils/analytics';
 import './PorraPage.css';
 
-// Página de "La Porra del Grupo" (solo castellano). El vídeo lo sube Maria a public/videos/porra.mp4.
-const VIDEO_URL = '/videos/porra.mp4';
+// Landings de los dos juegos (solo castellano). Los vídeos los sube Maria a public/videos/.
+const CONTENIDO = {
+  halloween: {
+    video: '/videos/porra-halloween.mp4',
+    titulo: 'La Porra de Halloween',
+    gancho: 'Tu grupo de WhatsApp esconde cosas. Esta noche salen todas.',
+    intro:
+      'Veinte preguntas de miedo sobre vuestro grupo. Cada uno apuesta quién es el fantasma, quién moriría el primero ' +
+      'en la peli, quién es el vampiro emocional. Luego el acta del moderador revela la verdad, con pruebas sacadas del chat.',
+    decor: ['🎃', '👻', '🦇', '🕸️', '💀'],
+    pasos: [
+      ['Imprime', 'una hoja de preguntas por víctima y el acta del moderador, solo una. Luz baja, velas opcionales.'],
+      ['Apostad', 'cada uno escribe quién cree que es la respuesta. Sin mirar el chat. Sin piedad.'],
+      ['Revelad', 'el moderador lee las respuestas reales una a una, con la prueba del chat. Un punto por acierto. Quien más acierte sobrevive.'],
+    ],
+    cierre: 'Lo que el grupo lleva años callando, resuelto en una noche.',
+    ctaTexto: 'Crear la Porra de Halloween',
+  },
+  navidad: {
+    video: '/videos/porra-navidad.mp4',
+    titulo: 'La Porra de Navidad',
+    gancho: 'La familia reunida. El cuñao calentando. La abuela con un consejo. Y el chat del grupo, que lo sabe todo.',
+    intro:
+      'Veinte preguntas sobre vuestro grupo de WhatsApp para poner sobre la mesa entre el entrante y el turrón. Cada uno ' +
+      'apuesta quién es quién, y el acta del moderador revela las respuestas reales con el dato que lo demuestra. ' +
+      'Se discute, se niega, se enseña el chat. Y se ríe.',
+    decor: ['🎄', '🍗', '🎁', '🥂', '🧑‍🎄'],
+    pasos: [
+      ['Imprime', 'una hoja de preguntas por comensal y el acta del moderador, solo una. Que la guarde quien no haga trampas.'],
+      ['Apostad', 'entre plato y plato, cada uno escribe quién cree que es la respuesta. Sin mirar el chat. Sin consultar a la cuñada.'],
+      ['Revelad', 'en el postre, el moderador lee las respuestas reales con su dato. Un punto por acierto. Quien más acierte elige la peli.'],
+    ],
+    cierre: 'Las peleas de siempre, pero con pruebas.',
+    ctaTexto: 'Crear la Porra de Navidad',
+  },
+};
 
-const PorraPage = () => {
+const PorraPage = ({ tema = 'navidad' }) => {
+  const t = TEMAS[temaValido(tema)];
+  const c = CONTENIDO[t.id];
   const [hayVideo, setHayVideo] = useState(true);
+  const { price } = getPorraPricing();
+  const muestra = [...PREGUNTAS_RONDA_1.slice(0, 2), ...t.preguntasRonda2.slice(0, 4)];
+
   useEffect(() => {
     const anterior = document.title;
-    document.title = 'La Porra del Grupo · El juego de Navidad de tu grupo de WhatsApp | ChatSalsa';
+    document.title = `${c.titulo} · El juego de tu grupo de WhatsApp | ChatSalsa`;
     return () => { document.title = anterior; };
-  }, []);
-  const { price } = getPorraPricing();
-  const muestra = [...PREGUNTAS_RONDA_1.slice(0, 3), ...PREGUNTAS_RONDA_2.slice(0, 3)];
+  }, [c.titulo]);
+
+  const cta = (texto) => (
+    <Link to="/" className="porra-cta-btn" onClick={() => trackEvent('porra_pagina_cta')}>
+      {t.emoji} {texto} · {price}
+    </Link>
+  );
 
   return (
-    <div className="porra-page">
+    <div className={`porra-page tema-${t.id}`}>
+      <div className="porra-decor" aria-hidden="true">{c.decor.map((e, i) => <span key={i}>{e}</span>)}</div>
 
       <header className="porra-hero">
-        <span className="porra-badge">🎄 Para la cena de Navidad</span>
-        <h1>La Porra del Grupo</h1>
-        <p className="porra-sub">
-          20 preguntas sobre vuestro grupo de WhatsApp. Cada uno apuesta quién es quién.
-          Luego se leen las respuestas reales del chat, con su dato. Risas garantizadas.
-        </p>
-        <Link to="/" className="unlock-ai-button porra-cta-btn" onClick={() => trackEvent('porra_pagina_cta')}>
-          🎲 Crear la Porra de mi grupo · {price}
-        </Link>
-        <p className="porra-nota">Sube el chat, se analiza en tu navegador y te descargas los dos PDFs. Pago único por chat.</p>
+        <span className="porra-page-badge">{t.emoji} {t.badge}</span>
+        <h1>{c.titulo}</h1>
+        <p className="porra-gancho">{c.gancho}</p>
+        <p className="porra-intro">{c.intro}</p>
+        {cta(c.ctaTexto)}
+        <p className="porra-page-nota">Sube el chat, se analiza en tu navegador y te descargas los dos PDFs. Pago único por chat.</p>
       </header>
 
       {hayVideo && (
         <section className="porra-video">
-          <video controls playsInline preload="metadata" src={VIDEO_URL} onError={() => setHayVideo(false)}>
+          <video controls playsInline preload="metadata" src={c.video} onError={() => setHayVideo(false)}>
             <track kind="captions" />
           </video>
         </section>
       )}
 
-      <section className="porra-como">
+      <section className="porra-bloque">
         <h2>Cómo se juega</h2>
-        <ol>
-          <li><strong>Imprime</strong> una hoja de preguntas por persona y el acta del moderador (solo una).</li>
-          <li><strong>Apostad.</strong> Cada uno escribe en su hoja quién cree que es la respuesta. Sin mirar el chat.</li>
-          <li><strong>Revelad.</strong> El moderador lee las respuestas reales una a una, con el dato que lo demuestra. Un punto por acierto. Quien más acierte se lleva el bote.</li>
+        <ol className="porra-pasos">
+          {c.pasos.map(([titulo, texto]) => (
+            <li key={titulo}><strong>{titulo}.</strong> {texto}</li>
+          ))}
         </ol>
       </section>
 
-      <section className="porra-muestra">
+      <section className="porra-bloque">
         <h2>Algunas de las preguntas</h2>
-        <ul>
+        <ul className="porra-preguntas">
           {muestra.map((p) => <li key={p.id}>{p.texto}</li>)}
-          <li>… y 14 más. Las 10 de la Ronda 1 las responden los números del chat; las 10 de la Ronda 2, la IA de ChatSalsa.</li>
+          <li className="porra-mas">… y {20 - muestra.length} más. La Ronda 1 la responden los números del chat; la Ronda 2, «{t.ronda2.toLowerCase()}», la IA de ChatSalsa.</li>
         </ul>
       </section>
 
-      <section className="porra-privacidad">
-        <h2>Tu chat, como siempre</h2>
+      <section className="porra-bloque porra-final">
+        <h2>{c.cierre}</h2>
         <p>
-          Mismo proceso que el análisis de ChatSalsa: los teléfonos, correos y enlaces se anonimizan en tu navegador,
-          los nombres se sustituyen antes de enviar nada a la IA y los ficheros se borran al terminar.
-          Los PDFs se generan en tu dispositivo.
+          Mismo proceso que el análisis de ChatSalsa: teléfonos, correos y enlaces se anonimizan en tu navegador, los nombres
+          se sustituyen antes de enviar nada a la IA y los ficheros se borran al terminar. Los PDFs se generan en tu dispositivo.
         </p>
-        <Link to="/" className="unlock-ai-button porra-cta-btn" onClick={() => trackEvent('porra_pagina_cta')}>
-          Empezar · {price}
-        </Link>
+        {cta('Empezar')}
       </section>
     </div>
   );

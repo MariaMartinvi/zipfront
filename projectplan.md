@@ -453,3 +453,15 @@ Pendiente de Maria antes de lanzar:
 Aprendizajes: el chat sobrevive a Stripe por localStorage, así que la compra puede hacerse desde los
 resultados sin volver a subir nada; la Ronda 1 sale gratis de las estadísticas, la única llamada de pago es la
 Ronda 2.
+
+### Cambio del 20-oct: dos juegos independientes
+- "La Porra de Halloween" (Ronda 2 tenebrosa) y "La Porra de Navidad" (Ronda 2 de familia), **los dos activos a la
+  vez**, cada uno 2,99 € y con su propio crédito (`porraHalloweenCredits` / `porraNavidadCredits`). Ronda 1 común.
+- Dos tarjetas en resultados, dos landings (`/porra-halloween` oscura y tenebrosa; `/porra-navidad` cena familiar),
+  dos enlaces en el menú y dos guiños en la landing. Vídeos: `public/videos/porra-halloween.mp4` y
+  `public/videos/porra-navidad.mp4`.
+- Backend (zipback fa5e193, ab475c4): productos `porra_halloween` / `porra_navidad`, prompt y preguntas por tema.
+- **Stripe (Maria):** dos productos, cada uno con 2,99 € y 2,99 US$. **Render (zipback):**
+  `STRIPE_PRICE_ID_PORRA_HALLOWEEN`, `STRIPE_PRICE_ID_PORRA_HALLOWEEN_LATAM`, `STRIPE_PRICE_ID_PORRA_NAVIDAD`,
+  `STRIPE_PRICE_ID_PORRA_NAVIDAD_LATAM`. (Las variables `STRIPE_PRICE_ID_PORRA*` sin tema ya no existen.)
+- Tests: backend 34 OK; front 108 OK; build + es-check OK.

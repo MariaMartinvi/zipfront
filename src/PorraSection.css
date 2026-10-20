@@ -16,3 +16,5 @@
 .porra-link { background: none; border: none; color: #8A2BE2; text-decoration: underline; cursor: pointer; font-size: 0.95rem; }
 .porra-error { color: #c53030; margin: 12px 0 0; text-align: center; }
 @media (max-width: 600px) { .porra-card { padding: 20px 16px; } .porra-head h3 { font-size: 1.3rem; } }
+.porra-halloween .porra-card { background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, #ff7a00, #8A2BE2); }
+.porra-halloween .porra-badge { background: #fff1e6; color: #c2410c; }

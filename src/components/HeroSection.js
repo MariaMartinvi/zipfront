@@ -28,9 +28,10 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick, onViewAnalysisClick }) 
             </button>
           </div>
           {esCastellano && (
-            <a href="/porra-navidad" className="hero-porra-link">
-              🎄 Nuevo: <strong>La Porra del Grupo</strong>, el juego para la cena de Navidad →
-            </a>
+            <div className="hero-porra-links">
+              <a href="/porra-halloween" className="hero-porra-link">🎃 Nuevo: <strong>La Porra de Halloween</strong> →</a>
+              <a href="/porra-navidad" className="hero-porra-link">🎄 Nuevo: <strong>La Porra de Navidad</strong> →</a>
+            </div>
           )}
           <div className="security-badge">
             <div className="security-icons">

@@ -14,18 +14,61 @@ export const PREGUNTAS_RONDA_1 = [
   { id: 10, texto: '¿Quién llena el chat de emojis?' },
 ];
 
-export const PREGUNTAS_RONDA_2 = [
-  { id: 11, texto: '¿Quién suelta más frases de cuñao?' },
-  { id: 12, texto: '¿Quién sería RRHH del grupo?' },
-  { id: 13, texto: '¿Quién dice "voy" y luego no viene?' },
-  { id: 14, texto: '¿Quién vive en modo stand-by, sin decir ni sí ni no?' },
-  { id: 15, texto: '¿Quién cambia de tema sin avisar?' },
-  { id: 16, texto: '¿Quién lo organiza todo y luego se queja?' },
-  { id: 17, texto: '¿Quién es el más dramático?' },
-  { id: 18, texto: '¿Quién pregunta lo que ya se dijo tres mensajes arriba?' },
-  { id: 19, texto: '¿Quién sobreviviría menos en una isla desierta?' },
-  { id: 20, texto: '¿Quién es el alma del grupo?' },
-];
+// Temas del juego. Los dos están activos a la vez: el usuario elige. Ronda 1 es común.
+export const TEMAS = {
+  halloween: {
+    id: 'halloween',
+    emoji: '🎃',
+    nombre: 'La Porra de Halloween',
+    badge: 'Noche de Halloween',
+    ocasion: 'la noche de Halloween',
+    subtitulo: 'El juego de miedo de tu grupo de WhatsApp',
+    ronda2: 'LA TENEBROSA',
+    colores: ['#ff7a00', '#8A2BE2'],
+    preguntasRonda2: [
+      { id: 11, texto: '¿Quién moriría el primero en una película de terror?' },
+      { id: 12, texto: '¿Quién es el fantasma del grupo: aparece, asusta y desaparece?' },
+      { id: 13, texto: '¿Quién tiene más secretos enterrados en el chat?' },
+      { id: 14, texto: '¿Quién da más miedo cuando se enfada?' },
+      { id: 15, texto: '¿Quién sobreviviría a un apocalipsis zombi solo con labia?' },
+      { id: 16, texto: '¿Quién es el vampiro emocional: todo gira en torno a sus dramas?' },
+      { id: 17, texto: '¿Quién resucita conversaciones muertas a las 3 de la mañana?' },
+      { id: 18, texto: '¿Quién lanza las indirectas más maléficas?' },
+      { id: 19, texto: '¿Quién es la bruja o el brujo: lo sabe todo antes que nadie?' },
+      { id: 20, texto: '¿Quién sería el villano de la película?' },
+    ],
+  },
+  navidad: {
+    id: 'navidad',
+    emoji: '🎄',
+    nombre: 'La Porra de Navidad',
+    badge: 'Cena de Navidad',
+    ocasion: 'la cena de Navidad',
+    subtitulo: 'El juego de mesa de tu grupo de WhatsApp',
+    ronda2: 'LA FAMILIAR',
+    colores: ['#25D366', '#8A2BE2'],
+    preguntasRonda2: [
+      { id: 11, texto: '¿Quién sería el cuñao oficial de la cena?' },
+      { id: 12, texto: '¿Quién lo organiza todo y luego se queja?' },
+      { id: 13, texto: '¿Quién dice "voy" y luego no viene?' },
+      { id: 14, texto: '¿Quién es el abuelo o la abuela del grupo: tiene consejo para todo?' },
+      { id: 15, texto: '¿Quién es el niño pequeño: se enfada y se le pasa en dos mensajes?' },
+      { id: 16, texto: '¿Quién saca el tema que nadie quiere sacar en la cena?' },
+      { id: 17, texto: '¿Quién es el más dramático?' },
+      { id: 18, texto: '¿Quién pregunta lo que ya se dijo tres mensajes arriba?' },
+      { id: 19, texto: '¿Quién acabaría cantando villancicos el primero?' },
+      { id: 20, texto: '¿Quién es el alma del grupo?' },
+    ],
+  },
+};
+
+export const temaValido = (tema) => (TEMAS[tema] ? tema : 'navidad');
+export const preguntasRonda2 = (tema) => TEMAS[temaValido(tema)].preguntasRonda2;
+/** Tema que se preselecciona: Halloween hasta el 2 de noviembre, después Navidad. */
+export const temaSugerido = (fecha = new Date()) => {
+  const m = fecha.getMonth() + 1; const d = fecha.getDate();
+  return (m === 10 || (m === 11 && d <= 2)) ? 'halloween' : 'navidad';
+};
 
 const SIN_DATOS = new Set(['', '--', 'Sin datos']);
 const numero = (n) => new Intl.NumberFormat('es-ES').format(Math.round(n || 0));
@@ -98,8 +141,8 @@ export const respuestasRonda1 = (datos) =>
 
 /** Respuestas de la Ronda 2 que devuelve la IA, con los nombres reales ya restaurados.
  *  Si no hay IA (usuario que no comparte el chat), devuelve las preguntas sin respuesta. */
-export const respuestasRonda2 = (respuestasIA) =>
-  PREGUNTAS_RONDA_2.map(({ id, texto }) => {
+export const respuestasRonda2 = (respuestasIA, tema = 'navidad') =>
+  preguntasRonda2(tema).map(({ id, texto }) => {
     const r = (respuestasIA || []).find((x) => x.id === id);
     return {
       id,

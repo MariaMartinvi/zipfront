@@ -524,7 +524,7 @@ export const getMistralResponse = async (chatContent, language = 'es') => {
  * anonimiza participantes y datos, no envía nada si no reconoce el formato, y restaura los
  * nombres reales en el navegador. Devuelve { success, respuestas: [{ id, nombre, frase, cita }] }.
  */
-export const getPorraResponse = async (chatContent) => {
+export const getPorraResponse = async (chatContent, tema = 'navidad') => {
   try {
     if (!chatContent) return { success: false, error: 'No hay chat que analizar' };
 
@@ -544,7 +544,7 @@ export const getPorraResponse = async (chatContent) => {
     const response = await fetch(`${API_URL}/api/porra-analysis`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ textContent: processedContent })
+      body: JSON.stringify({ textContent: processedContent, tema })
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.success) {

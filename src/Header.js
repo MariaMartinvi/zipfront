@@ -43,6 +43,7 @@ const Header = ({ user }) => {
           <nav className="desktop-nav">
             <Link to="/" className="nav-link">{t('header.home')}</Link>
             <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
+            {esCastellano && <Link to="/porra-halloween" className="nav-link">🎃 Juego de Halloween</Link>}
             {esCastellano && <Link to="/porra-navidad" className="nav-link">🎄 Juego de Navidad</Link>}
             {user ? (
               <>
@@ -91,6 +92,7 @@ const Header = ({ user }) => {
         <div className="mobile-menu">
           <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>{t('header.home')}</Link>
           <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
+          {esCastellano && <Link to="/porra-halloween" className="mobile-nav-link" onClick={toggleMenu}>🎃 Juego de Halloween</Link>}
           {esCastellano && <Link to="/porra-navidad" className="mobile-nav-link" onClick={toggleMenu}>🎄 Juego de Navidad</Link>}
           {user ? (
             <>

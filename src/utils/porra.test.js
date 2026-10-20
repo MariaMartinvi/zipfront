@@ -1,4 +1,4 @@
-import { PREGUNTAS_RONDA_1, PREGUNTAS_RONDA_2, respuestasRonda1, respuestasRonda2 } from './porra';
+import { PREGUNTAS_RONDA_1, TEMAS, preguntasRonda2, temaValido, temaSugerido, respuestasRonda1, respuestasRonda2 } from './porra';
 
 const datos = {
   mensajes_por_usuario: { Marta: 2341, Luis: 900, Eva: 15 },
@@ -15,9 +15,22 @@ const datos = {
   },
 };
 
-test('hay 10 preguntas por ronda con ids 1-20', () => {
+test('hay 10 preguntas de datos y 10 de Ronda 2 por tema, con ids 1-20 y preguntas distintas', () => {
   expect(PREGUNTAS_RONDA_1.map((p) => p.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-  expect(PREGUNTAS_RONDA_2.map((p) => p.id)).toEqual([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+  expect(Object.keys(TEMAS).sort()).toEqual(['halloween', 'navidad']);
+  Object.keys(TEMAS).forEach((tema) => {
+    expect(preguntasRonda2(tema).map((p) => p.id)).toEqual([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+  });
+  expect(preguntasRonda2('halloween')[0].texto).not.toBe(preguntasRonda2('navidad')[0].texto);
+});
+
+test('tema desconocido cae a navidad; sugerido: halloween hasta el 2 de noviembre', () => {
+  expect(temaValido('pascua')).toBe('navidad');
+  expect(preguntasRonda2('x')).toBe(preguntasRonda2('navidad'));
+  expect(temaSugerido(new Date(2026, 9, 20))).toBe('halloween');
+  expect(temaSugerido(new Date(2026, 10, 2))).toBe('halloween');
+  expect(temaSugerido(new Date(2026, 10, 3))).toBe('navidad');
+  expect(temaSugerido(new Date(2026, 11, 24))).toBe('navidad');
 });
 
 test('Ronda 1: nombre y dato real con gracia para cada pregunta', () => {
@@ -44,9 +57,10 @@ test('Ronda 1: categoría sin datos o datos vacíos → guion, sin romper', () =
 
 test('Ronda 2: junta frase y cita, y sin IA deja las preguntas sin responder', () => {
   const ia = [{ id: 11, nombre: 'Eva', frase: 'Cuñao nivel experto.', cita: 'eso lo arreglo yo' }, { id: 20, nombre: 'Luis', frase: 'El alma.', cita: '' }];
-  const r = respuestasRonda2(ia);
+  const r = respuestasRonda2(ia, 'navidad');
   expect(r).toHaveLength(10);
-  expect(r[0]).toMatchObject({ id: 11, nombre: 'Eva', dato: 'Cuñao nivel experto. «eso lo arreglo yo»' });
+  expect(r[0]).toMatchObject({ id: 11, nombre: 'Eva', dato: 'Cuñao nivel experto. «eso lo arreglo yo»', pregunta: preguntasRonda2('navidad')[0].texto });
+  expect(respuestasRonda2(ia, 'halloween')[0].pregunta).toBe(preguntasRonda2('halloween')[0].texto);
   expect(r[9]).toMatchObject({ id: 20, nombre: 'Luis', dato: 'El alma.' });
   expect(r[1]).toMatchObject({ id: 12, nombre: '—' });
   expect(respuestasRonda2(null).every((x) => x.nombre === '—')).toBe(true);

@@ -17,11 +17,15 @@ import PorraSection from './PorraSection';
 const pintar = (props = {}) =>
   renderToStaticMarkup(<PorraSection user={{ uid: 'u1' }} chatData="chat" {...props} />);
 
-test('presenta el juego sin enseñar preguntas ni respuestas', () => {
-  const html = pintar();
-  expect(html).toContain('La Porra del Grupo');
-  expect(html).toContain('Hoja de jugador');
-  expect(html).not.toContain('¿Quién');
+test('presenta cada juego con su nombre, sin enseñar preguntas ni respuestas', () => {
+  const navidad = pintar({ tema: 'navidad' });
+  expect(navidad).toContain('La Porra de Navidad');
+  expect(navidad).toContain('Hoja de jugador');
+  expect(navidad).not.toContain('¿Quién');
+  const halloween = pintar({ tema: 'halloween' });
+  expect(halloween).toContain('La Porra de Halloween');
+  expect(halloween).toContain('porra-halloween');
+  expect(halloween).not.toContain('¿Quién');
 });
 
 test('sin IA avisa de que solo habrá Ronda 1', () => {
