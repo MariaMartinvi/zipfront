@@ -89,7 +89,8 @@ const filasRespuestas = (respuestas) => respuestas.map((r) => `
 /** Acta del moderador con las respuestas reales. `ronda2` puede ir sin IA (nombres '—'). */
 export const htmlRespuestas = (grupo, ronda1, ronda2, conIA = true, tema = 'navidad') => {
   const t = TEMAS[temaValido(tema)];
-  return `
+  // Dos páginas independientes para que ninguna fila quede partida entre hojas
+  const pagina1 = `
   <style>${ESTILOS(t)}</style>
   <div class="hoja">
     ${cabecera(t, 'Acta del moderador · No la enseñes hasta el final')}
@@ -98,6 +99,13 @@ export const htmlRespuestas = (grupo, ronda1, ronda2, conIA = true, tema = 'navi
       <p class="nota">Lee cada respuesta en voz alta, con su dato. En caso de empate gana quien más acertó en la Ronda 2.</p>
       <div class="ronda r1"><span>RONDA 1 · LOS DATOS</span><small>Respuesta real · El dato</small></div>
       ${filasRespuestas(ronda1)}
+      <p class="pie">${esc(t.nombre)} · un juego de ChatSalsa · chatsalsa.com · Sigue en la página 2</p>
+    </div>
+  </div>`;
+  const pagina2 = `
+  <style>${ESTILOS(t)}</style>
+  <div class="hoja">
+    <div class="cuerpo" style="padding-top:36px">
       <div class="ronda r2"><span>RONDA 2 · ${t.ronda2}</span><small>${conIA ? 'Respuesta real · La prueba' : 'Sin análisis de IA en este chat: decidid vosotros'}</small></div>
       ${filasRespuestas(ronda2)}
       <div class="marcador">
@@ -107,6 +115,7 @@ export const htmlRespuestas = (grupo, ronda1, ronda2, conIA = true, tema = 'navi
       <p class="pie">${esc(t.nombre)} · un juego de ChatSalsa · chatsalsa.com</p>
     </div>
   </div>`;
+  return [pagina1, pagina2];
 };
 
 /** Pinta un HTML fuera de pantalla y lo guarda como PDF A4 (una o varias páginas). */
@@ -127,27 +136,27 @@ const cargarFuente = async (t) => {
 export const descargarPdf = async (html, nombreFichero, tema = 'navidad') => {
   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import('html2canvas'), import('jspdf')]);
   await cargarFuente(TEMAS[temaValido(tema)]);
-  const cont = document.createElement('div');
-  cont.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;background:#fff';
-  cont.innerHTML = html;
-  document.body.appendChild(cont);
-  try {
-    const canvas = await html2canvas(cont, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-    const anchoMm = 210;
-    const altoPaginaMm = 297;
-    const altoMm = (canvas.height * anchoMm) / canvas.width;
-    const img = canvas.toDataURL('image/jpeg', 0.92);
-    let restante = altoMm;
-    let offset = 0;
-    while (restante > 0) {
-      if (offset > 0) pdf.addPage();
-      pdf.addImage(img, 'JPEG', 0, -offset, anchoMm, altoMm);
-      offset += altoPaginaMm;
-      restante -= altoPaginaMm;
+  const paginas = Array.isArray(html) ? html : [html];
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  const A4_ANCHO = 210;
+  const A4_ALTO = 297;
+  for (let i = 0; i < paginas.length; i += 1) {
+    const cont = document.createElement('div');
+    cont.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;background:#fff';
+    cont.innerHTML = paginas[i];
+    document.body.appendChild(cont);
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const canvas = await html2canvas(cont, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+      const altoMm = (canvas.height * A4_ANCHO) / canvas.width;
+      // Si la página se pasa de un A4, se reduce entera en vez de cortarla
+      const factor = altoMm > A4_ALTO ? A4_ALTO / altoMm : 1;
+      const ancho = A4_ANCHO * factor;
+      if (i > 0) pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', (A4_ANCHO - ancho) / 2, 0, ancho, altoMm * factor);
+    } finally {
+      document.body.removeChild(cont);
     }
-    pdf.save(nombreFichero);
-  } finally {
-    document.body.removeChild(cont);
   }
+  pdf.save(nombreFichero);
 };
