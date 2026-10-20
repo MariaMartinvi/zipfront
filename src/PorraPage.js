@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getPorraPricing } from './utils/pricing';
 import { TEMAS, temaValido, PREGUNTAS_RONDA_1 } from './utils/porra';
 import { trackEvent } from './utils/analytics';
@@ -46,7 +46,22 @@ const PorraPage = ({ tema = 'navidad' }) => {
   const t = TEMAS[temaValido(tema)];
   const c = CONTENIDO[t.id];
   const [hayVideo, setHayVideo] = useState(true);
+  const navigate = useNavigate();
   const { price } = getPorraPricing();
+
+  // A la portada y abajo, a la zona de subir el chat (sin sesión muestra el aviso de registro).
+  const irASubirChat = (e) => {
+    e.preventDefault();
+    trackEvent('porra_pagina_cta');
+    navigate('/');
+    let intentos = 0;
+    const bajar = () => {
+      const zona = document.getElementById('upload-section');
+      if (zona) zona.scrollIntoView({ behavior: 'smooth' });
+      else if (intentos++ < 10) setTimeout(bajar, 200);
+    };
+    setTimeout(bajar, 150);
+  };
   const muestra = [...PREGUNTAS_RONDA_1.slice(0, 2), ...t.preguntasRonda2.slice(0, 4)];
 
   useEffect(() => {
@@ -56,9 +71,9 @@ const PorraPage = ({ tema = 'navidad' }) => {
   }, [c.titulo]);
 
   const cta = (texto) => (
-    <Link to="/" className="porra-cta-btn" onClick={() => trackEvent('porra_pagina_cta')}>
+    <a href="/" className="porra-cta-btn" onClick={irASubirChat}>
       {t.emoji} {texto} · {price}
-    </Link>
+    </a>
   );
 
   return (
