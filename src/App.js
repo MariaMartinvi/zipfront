@@ -12,7 +12,7 @@ import AnalisisEstadistico from './AnalisisEstadistico';
 import AnalisisTop from './Analisis_top';
 import { Login, Register, PasswordReset } from './AuthComponents';
 import FreemiumPlans from './FreemiumPlans';
-import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits } from './firebase_auth';
+import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits, canUsePorra } from './firebase_auth';
 import Header from './Header';
 import Footer from './Footer';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
@@ -350,6 +350,8 @@ function AppContent() {
   // Referencias para secciones de análisis - usadas para scroll automático
   const analysisRef = useRef(null);
   const aiLockedRef = useRef(null);
+  // "La Porra del Grupo": juegos ya pagados van arriba del todo en los resultados
+  const [porraPagada, setPorraPagada] = useState({ halloween: false, navidad: false });
   // Get user-related state from AuthContext instead of managing locally
   const { user, userProfile, setUserProfile, isAuthLoading, setUser } = useAuth();
   
@@ -1075,6 +1077,21 @@ function AppContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [operationId, chatData, userCredits?.canUse]);
+
+  useEffect(() => {
+    if (!user?.uid) { setPorraPagada({ halloween: false, navidad: false }); return; }
+    let vivo = true;
+    Promise.all([canUsePorra(user.uid, 'halloween'), canUsePorra(user.uid, 'navidad')]).then(([h, n]) => {
+      if (vivo) setPorraPagada({ halloween: !!h.canUse, navidad: !!n.canUse });
+    });
+    return () => { vivo = false; };
+  }, [user?.uid, showPaymentSuccess]);
+
+  const tarjetasPorra = (pagadas) =>
+    operationId && user && chatData && (i18n.language || 'es').startsWith('es') &&
+    ['halloween', 'navidad'].filter((tema) => porraPagada[tema] === pagadas).map((tema) => (
+      <PorraSection key={tema} user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} tema={tema} />
+    ));
 
   // Embudo de pago: el bloque IA bloqueado ha entrado en pantalla de verdad (una vez por chat)
   useTrackOnceVisible(
@@ -2193,6 +2210,9 @@ const tryDeleteFiles = async (operationId) => {
             path="/"
             element={
               <>
+                {/* LA PORRA DEL GRUPO: juegos ya pagados, arriba del todo */}
+                {tarjetasPorra(true)}
+
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
                 {operationId && user && (
                   <div className="analysis-container" ref={analysisRef}>
@@ -2450,13 +2470,8 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
-                {/* LA PORRA DEL GRUPO - juegos de Halloween y Navidad (solo castellano) */}
-                {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
-                  <>
-                    <PorraSection user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} tema="halloween" />
-                    <PorraSection user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} tema="navidad" />
-                  </>
-                )}
+                {/* LA PORRA DEL GRUPO: juegos sin comprar, tras los juegos (solo castellano) */}
+                {tarjetasPorra(false)}
 
                 {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
                 {operationId && user && chatData && (
