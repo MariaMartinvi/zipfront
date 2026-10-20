@@ -465,3 +465,11 @@ Ronda 2.
   `STRIPE_PRICE_ID_PORRA_HALLOWEEN`, `STRIPE_PRICE_ID_PORRA_HALLOWEEN_LATAM`, `STRIPE_PRICE_ID_PORRA_NAVIDAD`,
   `STRIPE_PRICE_ID_PORRA_NAVIDAD_LATAM`. (Las variables `STRIPE_PRICE_ID_PORRA*` sin tema ya no existen.)
 - Tests: backend 34 OK; front 108 OK; build + es-check OK.
+
+### Landings tipo póster (20-oct, tarde)
+- `/porra-halloween` y `/porra-navidad`: hero a pantalla completa con las ilustraciones de Maria
+  (`public/img/porra-{halloween,navidad}-{h,v}.jpg`, apaisada en escritorio y vertical en móvil), título en tipografía
+  de fiesta (Creepster / Mountains of Christmas, cargadas solo en esas páginas), secciones sobre fondo del tema.
+- `fix-font-sizes.css` forzaba h1/h2/h3/a/button con `!important`; las landings quedan excluidas con `:not(.porra-page …)`.
+- Cajón de subida rediseñado (`UploadBox`): título "Sube tu chat de WhatsApp", Android comparte desde WhatsApp,
+  iOS/PC arrastra el zip, instrucciones plegadas.

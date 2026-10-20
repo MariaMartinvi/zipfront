@@ -11,12 +11,17 @@ import './PorraPage.css';
 const CONTENIDO = {
   halloween: {
     video: '/videos/porra-halloween.mp4',
+    imagenH: '/img/porra-halloween-h.jpg',
+    imagenV: '/img/porra-halloween-v.jpg',
+    fuente: 'Creepster',
+    fuenteUrl: 'https://fonts.googleapis.com/css2?family=Creepster&display=swap',
     titulo: 'La Porra de Halloween',
     gancho: 'Tu grupo de WhatsApp esconde cosas. Esta noche salen todas.',
     intro:
       'Veinte preguntas de miedo sobre vuestro grupo. Cada uno apuesta quién es el fantasma, quién moriría el primero ' +
       'en la peli, quién es el vampiro emocional. Luego el acta del moderador revela la verdad, con pruebas sacadas del chat.',
     decor: ['🎃', '👻', '🦇', '🕸️', '💀'],
+    iconos: ['🖨️', '🕯️', '💀'],
     pasos: [
       ['Imprime', 'una hoja de preguntas por víctima y el acta del moderador, solo una. Luz baja, velas opcionales.'],
       ['Apostad', 'cada uno escribe quién cree que es la respuesta. Sin mirar el chat. Sin piedad.'],
@@ -27,6 +32,10 @@ const CONTENIDO = {
   },
   navidad: {
     video: '/videos/porra-navidad.mp4',
+    imagenH: '/img/porra-navidad-h.jpg',
+    imagenV: '/img/porra-navidad-v.jpg',
+    fuente: 'Mountains of Christmas',
+    fuenteUrl: 'https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap',
     titulo: 'La Porra de Navidad',
     gancho: 'La familia reunida. El cuñao calentando. La abuela con un consejo. Y el chat del grupo, que lo sabe todo.',
     intro:
@@ -34,6 +43,7 @@ const CONTENIDO = {
       'apuesta quién es quién, y el acta del moderador revela las respuestas reales con el dato que lo demuestra. ' +
       'Se discute, se niega, se enseña el chat. Y se ríe.',
     decor: ['🎄', '🍗', '🎁', '🥂', '🧑‍🎄'],
+    iconos: ['🖨️', '🍗', '🎁'],
     pasos: [
       ['Imprime', 'una hoja de preguntas por comensal y el acta del moderador, solo una. Que la guarde quien no haga trampas.'],
       ['Apostad', 'entre plato y plato, cada uno escribe quién cree que es la respuesta. Sin mirar el chat. Sin consultar a la cuñada.'],
@@ -57,8 +67,13 @@ const PorraPage = ({ tema = 'navidad' }) => {
   useEffect(() => {
     const anterior = document.title;
     document.title = `${c.titulo} · El juego de tu grupo de WhatsApp | ChatSalsa`;
-    return () => { document.title = anterior; };
-  }, [c.titulo]);
+    // Tipografía de fiesta solo en esta página
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = c.fuenteUrl;
+    document.head.appendChild(link);
+    return () => { document.title = anterior; document.head.removeChild(link); };
+  }, [c.titulo, c.fuenteUrl]);
 
   // Con sesión y el juego ya comprado: a la portada, a la tarjeta del juego (o al cajón de subir el chat).
   // Con sesión sin comprar: directo a Stripe. Sin sesión: a la portada, al aviso de registro.
@@ -102,23 +117,31 @@ const PorraPage = ({ tema = 'navidad' }) => {
   );
 
   return (
-    <div className={`porra-page tema-${t.id}`}>
-      <div className="porra-decor" aria-hidden="true">{c.decor.map((e, i) => <span key={i}>{e}</span>)}</div>
-
+    <div className={`porra-page tema-${t.id}`} style={{ '--fuente-fiesta': `'${c.fuente}', cursive` }}>
       <header className="porra-hero">
-        <span className="porra-page-badge">{t.emoji} {t.badge}</span>
-        <h1>{c.titulo}</h1>
-        <p className="porra-gancho">{c.gancho}</p>
-        <p className="porra-intro">{c.intro}</p>
-        {cta(c.ctaTexto)}
-        <p className="porra-page-nota">
-          {user ? 'Pago seguro con Stripe. Después subes el chat y te descargas los dos PDFs. Un juego por chat.'
-                : 'Regístrate gratis, sube el chat y te descargas los dos PDFs. Pago único por chat.'}
-        </p>
+        <picture className="porra-hero-img">
+          <source media="(max-width: 700px)" srcSet={c.imagenV} />
+          <img src={c.imagenH} alt="" loading="eager" />
+        </picture>
+        <div className="porra-hero-velo" aria-hidden="true" />
+        <div className="porra-hero-contenido">
+          <span className="porra-page-badge">{t.emoji} {t.badge}</span>
+          <h1>{c.titulo}</h1>
+          <p className="porra-gancho">{c.gancho}</p>
+          {cta(c.ctaTexto)}
+          <p className="porra-page-nota">
+            {user ? 'Pago seguro con Stripe · Después subes el chat y descargas los dos PDFs · Un juego por chat'
+                  : 'Regístrate gratis, sube el chat y descarga los dos PDFs · Pago único por chat'}
+          </p>
+        </div>
       </header>
 
+      <section className="porra-bloque porra-intro-bloque">
+        <p className="porra-intro">{c.intro}</p>
+      </section>
+
       {hayVideo && (
-        <section className="porra-video">
+        <section className="porra-bloque porra-video">
           <video controls playsInline preload="metadata" src={c.video} onError={() => setHayVideo(false)}>
             <track kind="captions" />
           </video>
@@ -127,19 +150,25 @@ const PorraPage = ({ tema = 'navidad' }) => {
 
       <section className="porra-bloque">
         <h2>Cómo se juega</h2>
-        <ol className="porra-pasos">
-          {c.pasos.map(([titulo, texto]) => (
-            <li key={titulo}><strong>{titulo}.</strong> {texto}</li>
+        <div className="porra-pasos">
+          {c.pasos.map(([titulo, texto], i) => (
+            <div className="porra-paso" key={titulo}>
+              <span className="porra-paso-icono" aria-hidden="true">{c.iconos[i]}</span>
+              <h3>{i + 1}. {titulo}</h3>
+              <p>{texto}</p>
+            </div>
           ))}
-        </ol>
+        </div>
       </section>
 
       <section className="porra-bloque">
         <h2>Algunas de las preguntas</h2>
-        <ul className="porra-preguntas">
-          {muestra.map((p) => <li key={p.id}>{p.texto}</li>)}
-          <li className="porra-mas">… y {20 - muestra.length} más. La Ronda 1 la responden los números del chat; la Ronda 2, «{t.ronda2.toLowerCase()}», la IA de ChatSalsa.</li>
-        </ul>
+        <div className="porra-preguntas">
+          {muestra.map((p) => (
+            <div className="porra-pregunta" key={p.id}><span className="porra-pregunta-num">{p.id}</span>{p.texto}</div>
+          ))}
+        </div>
+        <p className="porra-mas">… y {20 - muestra.length} más. La Ronda 1 la responden los números del chat; la Ronda 2, «{t.ronda2.toLowerCase()}», la IA de ChatSalsa.</p>
       </section>
 
       <section className="porra-bloque porra-final">
