@@ -12,3 +12,6 @@
 .juego-boton-nota { font-size: 0.82rem; color: #718096; min-height: 1em; }
 .juego-boton-error { font-size: 0.82rem; color: #c53030; }
 @media (max-width: 600px) { .juegos-barra-botones { grid-template-columns: 1fr; } .juegos-barra { margin: 12px 12px 8px; } }
+.juego-descargas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.juego-boton-nota.arriba { font-weight: 700; color: #2d3748; }
+.juego-boton-enlace { background: none; border: none; color: #718096; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }

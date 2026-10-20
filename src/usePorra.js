@@ -13,12 +13,24 @@ const nombreGrupoActual = () => {
   }
 };
 
-// Lógica de un juego (halloween / navidad) para este chat: crédito, compra y generación de los dos PDFs.
-export const usePorra = ({ user, chatData, skipIA = false, tema = 'navidad' }) => {
+// Resultado generado (ya pagado) guardado en el navegador para volver a descargar los PDFs sin consumir crédito.
+const claveGenerado = (tema, operationId) => `juego_generado_${tema}_${operationId || 'sin_id'}`;
+const leerGenerado = (tema, operationId) => {
+  try { return JSON.parse(localStorage.getItem(claveGenerado(tema, operationId)) || 'null'); } catch (e) { return null; }
+};
+const guardarGenerado = (tema, operationId, datos) => {
+  try { localStorage.setItem(claveGenerado(tema, operationId), JSON.stringify(datos)); } catch (e) { /* sin localStorage */ }
+};
+
+// Lógica de un juego (halloween / navidad) para este chat: crédito, compra, generación y descargas.
+export const usePorra = ({ user, chatData, skipIA = false, tema = 'navidad', operationId = null }) => {
   const t = TEMAS[temaValido(tema)];
   const [credito, setCredito] = useState(null); // null = cargando
   const [estado, setEstado] = useState('idle'); // idle | comprando | generando | listo | error
   const [error, setError] = useState('');
+  const [generado, setGenerado] = useState(() => leerGenerado(t.id, operationId));
+
+  useEffect(() => { setGenerado(leerGenerado(t.id, operationId)); }, [t.id, operationId]);
 
   useEffect(() => {
     let vivo = true;
@@ -51,18 +63,37 @@ export const usePorra = ({ user, chatData, skipIA = false, tema = 'navidad' }) =
         ronda2 = respuestasRonda2(ia.respuestas, t.id);
       }
       await decrementPorraCredit(user.uid, t.id);
-      await descargarPdf(htmlPreguntas(grupo, t.id), `juego-${t.id}-preguntas.pdf`, t.id);
-      await descargarPdf(htmlRespuestas(grupo, ronda1, ronda2, !skipIA, t.id), `juego-${t.id}-respuestas.pdf`, t.id);
+      // Ya está pagado: se guarda para poder descargar las veces que haga falta
+      const datos = { grupo, ronda1, ronda2, conIA: !skipIA, fecha: new Date().toISOString() };
+      guardarGenerado(t.id, operationId, datos);
+      setGenerado(datos);
       trackEvent('porra_descargada');
       setEstado('listo');
+      // Primera descarga automática: solo la hoja de preguntas (los móviles bloquean una segunda descarga seguida)
+      try { await descargarPdf(htmlPreguntas(grupo, t.id), `juego-${t.id}-preguntas.pdf`, t.id); } catch (e) { /* queda el botón */ }
     } catch (e) {
       setError(e.message || 'No se ha podido generar el juego.');
       setEstado('error');
     }
   };
 
+  // Descargas a partir de lo ya generado (sin consumir crédito)
+  const descargar = async (cual) => {
+    if (!generado) return;
+    setError('');
+    try {
+      if (cual === 'preguntas') {
+        await descargarPdf(htmlPreguntas(generado.grupo, t.id), `juego-${t.id}-preguntas.pdf`, t.id);
+      } else {
+        await descargarPdf(htmlRespuestas(generado.grupo, generado.ronda1, generado.ronda2, generado.conIA, t.id), `juego-${t.id}-respuestas.pdf`, t.id);
+      }
+    } catch (e) {
+      setError('No se ha podido descargar el PDF. Inténtalo de nuevo.');
+    }
+  };
+
   // Un solo botón: con juego comprado genera; sin él, compra.
   const accion = () => (credito?.canUse ? generar() : comprar());
 
-  return { tema: t, credito, estado, error, accion, grupo: nombreGrupoActual() };
+  return { tema: t, credito, estado, error, accion, generado, descargar, grupo: nombreGrupoActual() };
 };

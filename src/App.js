@@ -2004,7 +2004,7 @@ const tryDeleteFiles = async (operationId) => {
 
                 {/* Botones de los juegos, arriba del todo de los resultados (solo castellano) */}
                 {esCastellano && hayResultados && (
-                  <JuegosBarra user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} />
+                  <JuegosBarra user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} operationId={operationId} />
                 )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
