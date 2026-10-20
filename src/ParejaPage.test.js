@@ -24,7 +24,8 @@ afterEach(() => { borrarEstado(); mockUser = null; });
 test('sin sesión: explica y pide empezar', () => {
   const html = pintar();
   expect(html).toContain('Consigue tu objetivo');
-  expect(html).toContain('Empezar');
+  expect(html).toContain('Empezar · desde');
+  expect(html).toContain('pareja-h.jpg');
 });
 
 test('con sesión y sin chat: pide subirlo', () => {

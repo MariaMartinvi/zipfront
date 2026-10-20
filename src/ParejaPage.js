@@ -224,23 +224,38 @@ const ParejaPage = () => {
 
   return (
     <div className="pareja">
-      <header className="pareja-cabecera">
-        <span className="pareja-etiqueta">💘 Doctor Amor · Chat de pareja</span>
-        <h1>Consigue tu objetivo</h1>
-        <p>Sube tu chat con esa persona, dinos qué quieres y te decimos lo cerca que estás, qué estás haciendo bien, qué cambiar y qué escribir.</p>
-      </header>
+      {paso === 'intro' ? (
+        <header className="pareja-hero">
+          <picture className="pareja-hero-img">
+            <source media="(max-width: 700px)" srcSet="/img/pareja-v.jpg" />
+            <img src="/img/pareja-h.jpg" alt="" loading="eager" />
+          </picture>
+          <div className="pareja-hero-velo" aria-hidden="true" />
+          <div className="pareja-hero-contenido">
+            <span className="pareja-etiqueta">💘 Doctor Amor · Chat de pareja</span>
+            <h1>Consigue tu objetivo</h1>
+            <p className="pareja-gancho">Tu chat con esa persona ya tiene la respuesta. El Doctor Amor te dice lo cerca que estás, qué cambiar y qué escribir.</p>
+            <button type="button" className="pareja-boton pareja-cta" onClick={() => empezar('/register')}>Empezar · desde {precios.price}</button>
+            <button type="button" className="pareja-enlace claro" onClick={() => empezar('/login')}>Ya tengo cuenta</button>
+          </div>
+        </header>
+      ) : (
+        <header className="pareja-cabecera">
+          <span className="pareja-etiqueta">💘 Doctor Amor · Chat de pareja</span>
+          <h1>Consigue tu objetivo</h1>
+        </header>
+      )}
 
       {error && <div className="pareja-error">{error}</div>}
 
       {paso === 'intro' && (
-        <section className="pareja-tarjeta">
-          <ol className="pareja-pasos-intro">
-            <li>Sube el chat de WhatsApp con esa persona.</li>
-            <li>Elige quién eres y qué quieres conseguir.</li>
-            <li>Recibe tu puntuación, tus mejores y peores momentos, tu plan y mensajes listos para enviar.</li>
-          </ol>
-          <button type="button" className="pareja-boton" onClick={() => empezar('/register')}>Empezar</button>
-          <button type="button" className="pareja-enlace" onClick={() => empezar('/login')}>Ya tengo cuenta</button>
+        <section className="pareja-intro">
+          <div className="pareja-pasos-grid">
+            <div><span>📲</span><h3>1. Sube el chat</h3><p>La conversación de WhatsApp con esa persona, sin medios. Se anonimiza en tu navegador.</p></div>
+            <div><span>🎯</span><h3>2. Di qué quieres</h3><p>Saber si le gustas, que avance, mejorar, recuperar o saber si dejarlo.</p></div>
+            <div><span>💌</span><h3>3. Recibe tu plan</h3><p>Puntuación, tus mejores y peores momentos, el tono que te conviene y mensajes listos para enviar.</p></div>
+          </div>
+          <p className="pareja-intro-nota">Desde {precios.price} por análisis · {precios.pack} con un mes de seguimiento y consejos a los 14 y 28 días</p>
         </section>
       )}
 
