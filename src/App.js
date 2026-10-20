@@ -11,7 +11,7 @@ import AnalisisEstadistico from './AnalisisEstadistico';
 import AnalisisTop from './Analisis_top';
 import { Login, Register, PasswordReset } from './AuthComponents';
 import FreemiumPlans from './FreemiumPlans';
-import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits } from './firebase_auth';
+import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits, purchasePorra } from './firebase_auth';
 import Header from './Header';
 import Footer from './Footer';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
@@ -1083,6 +1083,17 @@ function AppContent() {
 
   const esCastellano = (i18n.language || 'es').startsWith('es');
   const hayResultados = !!(operationId && user && chatData);
+
+  // Flujo desde la landing de un juego sin sesión: tras registrarse, abrir el pago de ese juego automáticamente.
+  useEffect(() => {
+    if (!user?.uid) return;
+    let pendiente = null;
+    try { pendiente = localStorage.getItem('porra_pendiente'); localStorage.removeItem('porra_pendiente'); } catch (e) { /* sin localStorage */ }
+    if (pendiente === 'halloween' || pendiente === 'navidad') {
+      trackEvent('porra_click');
+      purchasePorra(user.uid, pendiente).catch(() => {});
+    }
+  }, [user?.uid]);
 
   // Embudo de pago: el bloque IA bloqueado ha entrado en pantalla de verdad (una vez por chat)
   useTrackOnceVisible(

@@ -67,18 +67,8 @@ const PorraPage = ({ tema = 'navidad' }) => {
     return () => { document.title = anterior; document.head.removeChild(link); };
   }, [c.titulo, t.fuenteUrl]);
 
-  // Con sesión y el juego ya comprado: a la portada, a la tarjeta del juego (o al cajón de subir el chat).
-  // Con sesión sin comprar: directo a Stripe. Sin sesión: a la portada, al aviso de registro.
-  const bajarA = (ids) => {
-    let intentos = 0;
-    const bajar = () => {
-      const zona = ids.map((id) => document.getElementById(id)).find(Boolean);
-      if (zona) zona.scrollIntoView({ behavior: 'smooth' });
-      else if (intentos++ < 10) setTimeout(bajar, 200);
-    };
-    setTimeout(bajar, 150);
-  };
-
+  // Con sesión y el juego ya comprado: a la portada (el botón de descarga está en los resultados).
+  // Con sesión sin comprar: directo a Stripe. Sin sesión: registro y después pago automático.
   const irASubirChat = async (e) => {
     e.preventDefault();
     trackEvent('porra_pagina_cta');
@@ -88,7 +78,6 @@ const PorraPage = ({ tema = 'navidad' }) => {
         const credito = await canUsePorra(user.uid, t.id);
         if (credito.canUse) {
           navigate('/');
-          bajarA([`porra-${t.id}`, 'upload-section']);
           return;
         }
         trackEvent('porra_click');
@@ -98,8 +87,9 @@ const PorraPage = ({ tema = 'navidad' }) => {
         setComprando(false);
       }
     }
-    navigate('/');
-    bajarA(['upload-section']);
+    // Sin sesión: registrarse y, al volver con sesión, la portada abre el pago de este juego sola
+    try { localStorage.setItem('porra_pendiente', t.id); } catch (err) { /* sin localStorage */ }
+    navigate('/register');
   };
 
   const cta = (texto) => (
@@ -123,7 +113,7 @@ const PorraPage = ({ tema = 'navidad' }) => {
           {cta(c.ctaTexto)}
           <p className="porra-page-nota">
             {user ? 'Pago seguro con Stripe · Después subes el chat y descargas los dos PDFs · Un juego por chat'
-                  : 'Regístrate gratis, sube el chat y descarga los dos PDFs · Pago único por chat'}
+                  : 'Regístrate gratis, paga 2,99 € una vez, sube el chat y descarga los dos PDFs'}
           </p>
         </div>
       </header>
