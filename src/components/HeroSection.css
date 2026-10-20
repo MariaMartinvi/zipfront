@@ -767,19 +767,11 @@ section.hero-section div.hero-actions button.cta-primary:hover {
 
 .security-icon-green-alt {
   background: #25D366 !important;
-} 
-/* Tarjetas de los juegos (solo castellano), bajo el móvil de la derecha */
-.hero-preview { flex-direction: column; gap: 28px; }
-.hero-juegos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 520px; }
-.hero-juego { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; min-height: 150px;
-  padding: 14px 16px; border-radius: 18px; background-size: cover; background-position: center 30%; color: #fff; text-decoration: none;
-  overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.18);
-  transition: transform 0.25s ease, box-shadow 0.25s ease; }
-.hero-juego::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,0.78) 100%); }
-.hero-juego > * { position: relative; }
-.hero-juego strong { font-size: 1.05rem; line-height: 1.2; }
-.hero-juego > span:last-child { font-size: 0.82rem; opacity: 0.9; }
-.hero-juego-nuevo { position: absolute; top: 10px; left: 12px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 999px; background: #25D366; color: #052e16; }
-.hero-juego:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 22px 48px rgba(0,0,0,0.45); }
-@media (max-width: 640px) { .hero-juegos { grid-template-columns: 1fr; order: -1; } .hero-juego { min-height: 120px; } }
+}
+
+/* Avisos de los juegos (solo castellano) */
+.hero-porra-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+.hero-porra-etiqueta { display: block; width: 100%; color: #fff; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em; }
+.hero-porra-link { display: inline-block; padding: 8px 14px; border-radius: 999px; background: #e9f9ef; color: #128C7E;
+  text-decoration: none; font-size: 0.95rem; }
+.hero-porra-link:hover { background: #d4f3e1; }
