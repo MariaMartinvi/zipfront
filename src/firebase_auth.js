@@ -1,6 +1,6 @@
 // Updated firebase_auth.js with persistence
 import { initializeApp } from 'firebase/app';
-import { getAiPackPricing, getPorraPricing } from './utils/pricing';
+import { getAiPackPricing, getPorraPricing, getParejaPricing } from './utils/pricing';
 import { 
   getAuth, 
   createUserWithEmailAndPassword, 
@@ -1341,4 +1341,62 @@ export const purchasePorra = async (userId, tema = 'navidad') => {
   const data = await response.json();
   if (!data.url) throw new Error('No checkout URL received');
   window.location.href = data.url;
+};
+
+// ===== "Consigue tu objetivo · Chat de pareja": 1 crédito por análisis o seguimiento =====
+
+export const canUsePareja = async (userId) => {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    if (!userDoc.exists()) return { canUse: false, parejaCredits: 0 };
+    const perfil = userDoc.data();
+    if (perfil.is_admin) return { canUse: true, parejaCredits: 'unlimited' };
+    const parejaCredits = perfil.parejaCredits || 0;
+    return { canUse: parejaCredits > 0, parejaCredits };
+  } catch (error) {
+    return { canUse: false, parejaCredits: 0 };
+  }
+};
+
+export const decrementParejaCredit = async (userId) => {
+  const userRef = doc(db, 'users', userId);
+  const userDoc = await getDoc(userRef);
+  if (!userDoc.exists()) throw new Error('Usuario no encontrado');
+  const perfil = userDoc.data();
+  if (perfil.is_admin) return { success: true, creditsRemaining: 'unlimited' };
+  const actuales = perfil.parejaCredits || 0;
+  if (actuales <= 0) throw new Error('Sin análisis disponibles');
+  await updateDoc(userRef, { parejaCredits: actuales - 1, lastParejaUsage: new Date() });
+  return { success: true, creditsRemaining: actuales - 1 };
+};
+
+export const purchasePareja = async (userId, product = 'pareja') => {
+  const idToken = await auth.currentUser.getIdToken();
+  const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/create-checkout-session`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+    body: JSON.stringify({ userId, product: product === 'pareja_pack' ? 'pareja_pack' : 'pareja', region: getParejaPricing().region })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.url) throw new Error(data.error || 'Error creating checkout session');
+  window.location.href = data.url;
+};
+
+// Seguimiento: solo puntuación, fecha y plan, bajo una clave que es un hash de los dos nombres (nunca los nombres ni mensajes)
+export const leerSeguimientoPareja = async (userId, clave) => {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    return userDoc.exists() ? (userDoc.data().parejaSeguimientos || {})[clave] || null : null;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const guardarSeguimientoPareja = async (userId, clave, datos) => {
+  try {
+    await updateDoc(doc(db, 'users', userId), { [`parejaSeguimientos.${clave}`]: datos });
+    return true;
+  } catch (error) {
+    return false;
+  }
 };

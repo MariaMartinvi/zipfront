@@ -479,3 +479,58 @@ Ronda 2.
 - Juego: respuestas con GPT-4.1 (Mistral de reserva), muestra de 120.000 caracteres repartida por toda la historia
   del chat, pistas por pregunta y método prueba-primero; acta en dos páginas sin filas partidas; gunicorn timeout 120 s.
 - Pendiente para medir negocio: evento de compra del juego en GA4 y píxel de Meta; decidir precio tachado del pack IA.
+
+# Plan: "Consigue tu objetivo · Chat de pareja" (2026-10-21)
+
+## Qué es
+Pantalla nueva dentro de ChatSalsa para chats de DOS personas. El usuario dice quién es, qué quiere con la otra
+persona, y recibe (tras pagar) un análisis orientado a ese objetivo: puntuación, momentos buenos y mejorables con
+alternativa, tono, plan de 2 semanas y mensajes de ejemplo. Pack con seguimientos a los 14 y 28 días.
+Origen: especificación pegada por Maria (pantallas, paywall, prompt y prompt de seguimiento).
+
+## Decisiones tomadas
+- Dentro de ChatSalsa, pantalla propia (ruta `/pareja`), no producto aparte.
+- Nada se enseña antes de pagar salvo que el análisis "está listo": puntuación tapada y bloques con candado.
+- Número de "momentos mejorables" antes del pago: texto genérico ("varios momentos"), sin ejecutar la IA antes de
+  pagar. Se puede probar el número real más adelante si convierte bien.
+- Persistencia en Firestore (perfil del usuario), no en metadatos de Stripe: puntuación, fecha y plan. Nunca mensajes.
+- Mismo tratamiento de privacidad que el análisis: anonimización en el navegador, nombres restaurados en el navegador.
+- Modelo: GPT-4.1 con Mistral de reserva, como el resto.
+
+## Suposiciones (corregir si no)
+- Solo castellano en el lanzamiento, igual que los juegos.
+- Precios iguales en todas las regiones: 2,99 € análisis / 4,99 € pack con 2 seguimientos (US$ en Latam).
+- Si el chat tiene más de 2 participantes, la pantalla avisa y sugiere el análisis de grupo normal.
+- Los avisos por email (14 y 28 días) se dejan para el final y solo si Maria elige proveedor de correo.
+
+## TODOs
+- [~] P1. (código hecho; falta que Maria cree los productos en Stripe y pase los price IDs) Backend `pricing.py`: productos `pareja` (2,99) y `pareja_pack` (4,99, 3 créditos: análisis + 2
+      seguimientos) con su campo de créditos; checkout y webhook. → tests `test_pricing.py`.
+      **Maria: crear los dos productos en Stripe (€ y US$) y pasar los price IDs.**
+- [x] P2. Backend: `services/pareja.py` con el prompt (y el de seguimiento), parser estricto del JSON y endpoint
+      `/api/pareja-analysis` (misma auth, entrada anonimizada, no guarda nada). → tests del parser y del prompt.
+- [x] P3. Front: ruta `/pareja` con cajón de subida (reutiliza `UploadBox`) y detección de 2 participantes.
+      → test con chat de 2 y de 3 participantes.
+- [x] P4. Pantallas 1 y 2: "¿Quién eres tú en este chat?" y "¿Qué quieres con {X}?" (5 objetivos).
+      → test de render.
+- [x] P5. Pantalla 3, paywall: bloques con candado y dos botones (2,99 € / ⭐ 4,99 €). Eventos GA4.
+      → test de render; compra de prueba.
+- [x] P6. Resultado: llamada a P2 con usuario, otra persona y objetivo; página de resultado con todos los bloques;
+      alerta de seguridad destacada si viene a true (sin tácticas). → test de render con un JSON de ejemplo.
+- [x] P7. Seguimiento: guardar puntuación, fecha y plan en Firestore tras el análisis; si el usuario tiene crédito
+      de seguimiento y vuelve con el mismo chat, se usa el prompt de seguimiento con la comparación. → tests.
+- [x] P8. Entrada: enlace en el menú y en la portada (solo es), texto de privacidad exacto ("guardamos tu
+      puntuación y tu plan, nunca los mensajes") también en la política de privacidad.
+- [ ] P9. (Opcional, tras decidir proveedor) avisos por email a los 14 y 28 días con tarea programada en Render.
+
+Fuera de alcance: otros idiomas, chats de grupo, mostrar el número real de momentos antes de pagar.
+
+### Estado 21-oct
+- Hecho: backend (productos `pareja` 1 crédito / `pareja_pack` 3 créditos, `/api/pareja-analysis` con GPT-4.1 y
+  Mistral de reserva, parser que vacía los mensajes si hay alerta de seguridad), página `/pareja` con subida,
+  ¿quién eres?, objetivo, paywall, resultado y seguimiento (Firestore `parejaSeguimientos.{hash}`: fecha,
+  puntuación, plan), menú "💘 Pareja", vuelta del pago y del login a `/pareja`, política de privacidad.
+- Tests: backend 46 OK, front 124 OK; build + es-check OK.
+- Pendiente Maria: 4 price IDs en Stripe → `STRIPE_PRICE_ID_PAREJA[_LATAM]`, `STRIPE_PRICE_ID_PAREJA_PACK[_LATAM]`;
+  eventos `pareja_paywall|pareja_click|pareja_resultado` en el activador de GTM. P9 (emails) sin empezar.
+- Observación: la política de privacidad aún habla de Azure; hoy la IA es OpenAI (GPT-4.1) y Mistral.

@@ -476,3 +476,6 @@ span.menu-icon {
     font-size: 22px !important;
   }
 }
+
+/* Con los enlaces de juegos y pareja: sin partir líneas */
+.nav-link { white-space: nowrap; }

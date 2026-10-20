@@ -31,7 +31,7 @@ export const muestrearChat = (texto, maxChars, bloques = 30) => {
   return trozos.join('\n...\n');
 };
 
-const processContentForAzure = (content, userLanguage = 'es', { maxChars = 20000, muestreo = false } = {}) => {
+const processContentForAzure = (content, userLanguage = 'es', { maxChars = 20000, muestreo = false, conservarFechas = false } = {}) => {
   try {
     let processedContent = content;
 
@@ -40,9 +40,11 @@ const processContentForAzure = (content, userLanguage = 'es', { maxChars = 20000
     processedContent = anonymizationService.anonymizeParticipants(processedContent, userLanguage);
 
     // 2. Limpiar el texto (eliminar fechas, timestamps, etc.) DESPUÉS de identificar participantes
-    processedContent = processedContent
+    if (!conservarFechas) {
       // Eliminar fechas en formato MM/DD/YY o DD/MM/YY
-      .replace(/\d{1,2}\/\d{1,2}\/\d{2}/g, '')
+      processedContent = processedContent.replace(/\d{1,2}\/\d{1,2}\/\d{2}/g, '');
+    }
+    processedContent = processedContent
       // Eliminar timestamps en formato HH:mm o HH:mm:ss
       .replace(/\d{1,2}:\d{2}(:\d{2})?/g, '')
       // Eliminar corchetes
@@ -580,6 +582,52 @@ export const getPorraResponse = async (chatContent, tema = 'navidad') => {
     return { success: true, respuestas };
   } catch (error) {
     return { success: false, error: error.message || 'Error generando la porra' };
+  }
+};
+
+/**
+ * Chat de pareja: prepara el chat (anonimizado, con fechas, últimos ~120.000 caracteres) y devuelve
+ * el texto procesado, el mapeo nombre → "Participante N" y la lista de participantes que escriben.
+ */
+export const prepararChatPareja = (chatContent) => {
+  anonymizationService.reset();
+  const { processedContent, nameMapping } = processContentForAzure(chatContent, 'es', { maxChars: 120000, conservarFechas: true });
+  const participantes = Object.entries(nameMapping)
+    .filter(([, id]) => processedContent.includes(`${id}:`))
+    .map(([nombre]) => nombre);
+  return { procesado: processedContent, mapping: nameMapping, participantes };
+};
+
+const restaurarNombres = (valor, mapping) => {
+  if (typeof valor === 'string') return reconstructNames(valor, mapping);
+  if (Array.isArray(valor)) return valor.map((v) => restaurarNombres(v, mapping));
+  if (valor && typeof valor === 'object') {
+    return Object.fromEntries(Object.entries(valor).map(([k, v]) => [k, restaurarNombres(v, mapping)]));
+  }
+  return valor;
+};
+
+/** Chat de pareja: análisis con objetivo (y seguimiento opcional). Devuelve { success, analisis } con nombres reales. */
+export const getParejaAnalysis = async ({ procesado, mapping, usuarioNombre, otraNombre, objetivo, seguimiento = null }) => {
+  try {
+    const usuario = mapping[usuarioNombre];
+    const otra = mapping[otraNombre];
+    if (!usuario || !otra || !procesado.includes(`${usuario}:`)) {
+      return { success: false, error: 'No se ha reconocido el formato del chat, así que no se ha enviado a la IA para proteger tu privacidad.' };
+    }
+    const { auth } = await import('./firebase_auth');
+    const token = await auth.currentUser.getIdToken();
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const response = await fetch(`${API_URL}/api/pareja-analysis`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ textContent: procesado, usuario, otra, objetivo, seguimiento })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) throw new Error(data.error || `Error del servidor (${response.status})`);
+    return { success: true, analisis: restaurarNombres(data.analisis, mapping) };
+  } catch (error) {
+    return { success: false, error: error.message || 'Error generando el análisis' };
   }
 };
 

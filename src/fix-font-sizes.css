@@ -16,15 +16,15 @@ body {
 /* También excluimos todo AppPreview para que use sus propios estilos */
 
 /* Títulos con tamaños apropiados - Excluir AppPreview */
-h1:not(.modern-preview-container h1):not(.porra-page h1) {
+h1:not(.modern-preview-container h1):not(.porra-page h1):not(.pareja h1) {
   font-size: max(28px, 1.75rem) !important;
 }
 
-h2:not(.modern-preview-container h2):not(.porra-page h2) {
+h2:not(.modern-preview-container h2):not(.porra-page h2):not(.pareja h2) {
   font-size: max(24px, 1.5rem) !important;
 }
 
-h3:not(.modern-preview-container h3):not(.porra-page h3) {
+h3:not(.modern-preview-container h3):not(.porra-page h3):not(.pareja h3) {
   font-size: max(20px, 1.25rem) !important;
 }
 
@@ -49,7 +49,7 @@ h6:not(.modern-preview-container h6) {
 }
 
 /* Botones legibles - excluyendo los botones CTA que tienen tamaños específicos y AppPreview */
-button:not(.modern-preview-container button):not([class*="-cta"]):not(.porra-page button) {
+button:not(.modern-preview-container button):not([class*="-cta"]):not(.porra-page button):not(.pareja button) {
   font-size: max(14px, 0.875rem) !important;
 }
 
