@@ -19,7 +19,7 @@
   text-shadow: 0 2px 12px rgba(0,0,0,0.7); }
 .porra-cta-btn { display: inline-block; text-decoration: none; background: linear-gradient(135deg, var(--a), var(--b)); color: #fff;
   padding: 18px 36px; border-radius: 14px; font-size: 1.15rem; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.45); transition: transform 0.2s; }
-.porra-cta-btn:hover { transform: translateY(-2px); }
+.porra-page .porra-cta-btn:hover, .porra-page .porra-cta-btn:focus, .porra-page .porra-cta-btn:active { transform: translateY(-2px); color: #fff; text-decoration: none; }
 .porra-page-nota { color: #fff; opacity: 0.85; font-size: 0.9rem; margin: 14px 0 0; text-shadow: 0 1px 8px rgba(0,0,0,0.8); }
 
 /* Secciones */
