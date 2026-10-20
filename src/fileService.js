@@ -16,7 +16,22 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
  * @param {string} content - Contenido del chat
  * @returns {Object} - Objeto con el contenido procesado y el mapeo de nombres
  */
-const processContentForAzure = (content, userLanguage = 'es') => {
+// Muestra repartida por toda la historia: `bloques` trozos de líneas seguidas, espaciados a lo largo del chat.
+export const muestrearChat = (texto, maxChars, bloques = 30) => {
+  if (!texto || texto.length <= maxChars) return texto;
+  const lineas = texto.split('\n');
+  const porBloque = Math.floor(maxChars / bloques);
+  const paso = Math.max(1, Math.floor(lineas.length / bloques));
+  const trozos = [];
+  for (let b = 0; b < bloques; b += 1) {
+    let trozo = '';
+    for (let i = b * paso; i < lineas.length && trozo.length < porBloque; i += 1) trozo += `${lineas[i]}\n`;
+    if (trozo.trim()) trozos.push(trozo.trimEnd());
+  }
+  return trozos.join('\n...\n');
+};
+
+const processContentForAzure = (content, userLanguage = 'es', { maxChars = 20000, muestreo = false } = {}) => {
   try {
     let processedContent = content;
 
@@ -38,8 +53,10 @@ const processContentForAzure = (content, userLanguage = 'es') => {
     // 3. Limitar tamaño del contenido después de limpiar fechas
     console.log(`Longitud después de limpiar fechas: ${processedContent.length} caracteres`);
     
-    const MAX_CHARS = 20000;
-    if (processedContent.length > MAX_CHARS) {
+    const MAX_CHARS = maxChars;
+    if (muestreo && processedContent.length > MAX_CHARS) {
+      processedContent = muestrearChat(processedContent, MAX_CHARS);
+    } else if (processedContent.length > MAX_CHARS) {
       console.log(`Contenido del chat demasiado largo (${processedContent.length} caracteres), limitando a los últimos ${MAX_CHARS} caracteres`);
       processedContent = "...[Contenido anterior truncado]...\n\n" + processedContent.substring(processedContent.length - MAX_CHARS);
       console.log(`Contenido truncado a ${processedContent.length} caracteres`);
@@ -528,7 +545,8 @@ export const getPorraResponse = async (chatContent, tema = 'navidad') => {
   try {
     if (!chatContent) return { success: false, error: 'No hay chat que analizar' };
 
-    const { processedContent, nameMapping } = processContentForAzure(chatContent, 'es');
+    // El juego necesita ver toda la historia: muestra de ~120.000 caracteres repartida por el chat
+    const { processedContent, nameMapping } = processContentForAzure(chatContent, 'es', { maxChars: 120000, muestreo: true });
     const algunParticipanteAnonimizado = Object.values(nameMapping)
       .some((participantId) => processedContent.includes(`${participantId}:`));
     if (!algunParticipanteAnonimizado) {
