@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "es-check": "^9.6.4",
+    "http-proxy-middleware": "^2.0.10",
     "typescript": "4.9.5"
   },
   "scripts": {
