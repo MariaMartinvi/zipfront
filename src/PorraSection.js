@@ -44,8 +44,8 @@ const PorraSection = ({ user, chatData, skipIA = false, tema = 'navidad' }) => {
         ronda2 = respuestasRonda2(ia.respuestas, t.id);
       }
       await decrementPorraCredit(user.uid, t.id);
-      await descargarPdf(htmlPreguntas(nombreGrupo, t.id), `porra-${t.id}-preguntas.pdf`);
-      await descargarPdf(htmlRespuestas(nombreGrupo, ronda1, ronda2, !skipIA, t.id), `porra-${t.id}-respuestas.pdf`);
+      await descargarPdf(htmlPreguntas(nombreGrupo, t.id), `juego-${t.id}-preguntas.pdf`);
+      await descargarPdf(htmlRespuestas(nombreGrupo, ronda1, ronda2, !skipIA, t.id), `juego-${t.id}-respuestas.pdf`);
       trackEvent('porra_descargada');
       setEstado('listo');
     } catch (e) {
@@ -97,7 +97,7 @@ const PorraSection = ({ user, chatData, skipIA = false, tema = 'navidad' }) => {
           <div className="porra-cta">
             <p className="porra-grupo">Grupo: <strong>{nombreGrupoActual()}</strong></p>
             <button className="unlock-ai-button" onClick={generar} disabled={estado === 'generando'}>
-              {estado === 'generando' ? '⏳ Preparando tu Porra…' : `📥 Generar y descargar ${t.nombre}`}
+              {estado === 'generando' ? '⏳ Preparando tu juego…' : `📥 Generar y descargar ${t.nombre}`}
             </button>
             <p className="porra-nota">Se descargan dos PDFs: preguntas y respuestas. Guarda el de respuestas lejos del grupo.</p>
           </div>

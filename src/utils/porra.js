@@ -19,7 +19,8 @@ export const TEMAS = {
   halloween: {
     id: 'halloween',
     emoji: '🎃',
-    nombre: 'La Porra de Halloween',
+    nombre: 'El Juego de Halloween',
+    lema: 'Juegos para tu fiesta de Halloween',
     badge: 'Noche de Halloween',
     ocasion: 'la noche de Halloween',
     subtitulo: 'El juego de miedo de tu grupo de WhatsApp',
@@ -41,7 +42,8 @@ export const TEMAS = {
   navidad: {
     id: 'navidad',
     emoji: '🎄',
-    nombre: 'La Porra de Navidad',
+    nombre: 'El Juego de Navidad',
+    lema: 'El juego para la cena de Navidad',
     badge: 'Cena de Navidad',
     ocasion: 'la cena de Navidad',
     subtitulo: 'El juego de mesa de tu grupo de WhatsApp',

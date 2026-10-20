@@ -15,7 +15,7 @@ const CONTENIDO = {
     imagenV: '/img/porra-halloween-v.jpg',
     fuente: 'Creepster',
     fuenteUrl: 'https://fonts.googleapis.com/css2?family=Creepster&display=swap',
-    titulo: 'La Porra de Halloween',
+    titulo: 'El Juego de Halloween',
     gancho: 'Tu grupo de WhatsApp esconde cosas. Esta noche salen todas.',
     intro:
       'Veinte preguntas de miedo sobre vuestro grupo. Cada uno apuesta quién es el fantasma, quién moriría el primero ' +
@@ -28,7 +28,7 @@ const CONTENIDO = {
       ['Revelad', 'el moderador lee las respuestas reales una a una, con la prueba del chat. Un punto por acierto. Quien más acierte sobrevive.'],
     ],
     cierre: 'Lo que el grupo lleva años callando, resuelto en una noche.',
-    ctaTexto: 'Crear la Porra de Halloween',
+    ctaTexto: 'Crear el Juego de Halloween',
   },
   navidad: {
     video: '/videos/porra-navidad.mp4',
@@ -36,7 +36,7 @@ const CONTENIDO = {
     imagenV: '/img/porra-navidad-v.jpg',
     fuente: 'Mountains of Christmas',
     fuenteUrl: 'https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap',
-    titulo: 'La Porra de Navidad',
+    titulo: 'El Juego de Navidad',
     gancho: 'La familia reunida. El cuñao calentando. La abuela con un consejo. Y el chat del grupo, que lo sabe todo.',
     intro:
       'Veinte preguntas sobre vuestro grupo de WhatsApp para poner sobre la mesa entre el entrante y el turrón. Cada uno ' +
@@ -50,7 +50,7 @@ const CONTENIDO = {
       ['Revelad', 'en el postre, el moderador lee las respuestas reales con su dato. Un punto por acierto. Quien más acierte elige la peli.'],
     ],
     cierre: 'Las peleas de siempre, pero con pruebas.',
-    ctaTexto: 'Crear la Porra de Navidad',
+    ctaTexto: 'Crear el Juego de Navidad',
   },
 };
 

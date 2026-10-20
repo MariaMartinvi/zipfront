@@ -27,12 +27,6 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick, onViewAnalysisClick }) 
               {t('hero.buttons.how_it_works', 'Cómo funciona')}
             </button>
           </div>
-          {esCastellano && (
-            <div className="hero-porra-links">
-              <a href="/porra-halloween" className="hero-porra-link">🎃 Nuevo: <strong>La Porra de Halloween</strong> →</a>
-              <a href="/porra-navidad" className="hero-porra-link">🎄 Nuevo: <strong>La Porra de Navidad</strong> →</a>
-            </div>
-          )}
           <div className="security-badge">
             <div className="security-icons">
               <div className="security-icon-circle security-icon-green">🔒</div>
@@ -74,6 +68,20 @@ const HeroSection = ({ onAnalyzeClick, onLearnMoreClick, onViewAnalysisClick }) 
               </button>
             </div>
           </div>
+          {esCastellano && (
+            <div className="hero-juegos">
+              <a href="/porra-halloween" className="hero-juego hero-juego-halloween" style={{ backgroundImage: 'url(/img/porra-halloween-h.jpg)' }}>
+                <span className="hero-juego-nuevo">Nuevo</span>
+                <strong>🎃 Juego de Halloween</strong>
+                <span>Juegos para tu fiesta de Halloween →</span>
+              </a>
+              <a href="/porra-navidad" className="hero-juego hero-juego-navidad" style={{ backgroundImage: 'url(/img/porra-navidad-h.jpg)' }}>
+                <span className="hero-juego-nuevo">Nuevo</span>
+                <strong>🎄 Juego de Navidad</strong>
+                <span>El juego para la cena de Navidad →</span>
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </section>

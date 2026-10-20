@@ -19,11 +19,11 @@ const pintar = (props = {}) =>
 
 test('presenta cada juego con su nombre, sin enseñar preguntas ni respuestas', () => {
   const navidad = pintar({ tema: 'navidad' });
-  expect(navidad).toContain('La Porra de Navidad');
+  expect(navidad).toContain('El Juego de Navidad');
   expect(navidad).toContain('Hoja de jugador');
   expect(navidad).not.toContain('¿Quién');
   const halloween = pintar({ tema: 'halloween' });
-  expect(halloween).toContain('La Porra de Halloween');
+  expect(halloween).toContain('El Juego de Halloween');
   expect(halloween).toContain('porra-halloween');
   expect(halloween).not.toContain('¿Quién');
 });
@@ -36,6 +36,6 @@ test('sin IA avisa de que solo habrá Ronda 1', () => {
 test('mientras no se sabe el crédito no muestra ningún botón (el crédito llega async)', () => {
   // renderToStaticMarkup no ejecuta effects: credito === null → sin botón de compra ni de descarga
   const html = pintar();
-  expect(html).not.toContain('Crear la Porra');
+  expect(html).not.toContain('Crear El Juego');
   expect(html).not.toContain('Generar y descargar');
 });
