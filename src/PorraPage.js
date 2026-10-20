@@ -52,6 +52,13 @@ const PorraPage = ({ tema = 'navidad' }) => {
   const { user } = useAuth();
   const [comprando, setComprando] = useState(false);
   const { price } = getPorraPricing();
+  const muestra = [...PREGUNTAS_RONDA_1.slice(0, 2), ...t.preguntasRonda2.slice(0, 4)];
+
+  useEffect(() => {
+    const anterior = document.title;
+    document.title = `${c.titulo} · El juego de tu grupo de WhatsApp | ChatSalsa`;
+    return () => { document.title = anterior; };
+  }, [c.titulo]);
 
   // Con sesión y el juego ya comprado: a la portada, a la tarjeta del juego (o al cajón de subir el chat).
   // Con sesión sin comprar: directo a Stripe. Sin sesión: a la portada, al aviso de registro.
