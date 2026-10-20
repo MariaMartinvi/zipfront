@@ -4,7 +4,7 @@ import { getPorraPricing } from './utils/pricing';
 import { TEMAS, temaValido, PREGUNTAS_RONDA_1 } from './utils/porra';
 import { trackEvent } from './utils/analytics';
 import { useAuth } from './AuthContext';
-import { purchasePorra } from './firebase_auth';
+import { canUsePorra, purchasePorra } from './firebase_auth';
 import './PorraPage.css';
 
 // Landings de los dos juegos (solo castellano). Los vídeos los sube Maria a public/videos/.
@@ -53,14 +53,30 @@ const PorraPage = ({ tema = 'navidad' }) => {
   const [comprando, setComprando] = useState(false);
   const { price } = getPorraPricing();
 
-  // Con sesión: directo a Stripe (el crédito queda en la cuenta; el chat se sube al volver).
-  // Sin sesión: a la portada, abajo, al aviso de registro.
+  // Con sesión y el juego ya comprado: a la portada, a la tarjeta del juego (o al cajón de subir el chat).
+  // Con sesión sin comprar: directo a Stripe. Sin sesión: a la portada, al aviso de registro.
+  const bajarA = (ids) => {
+    let intentos = 0;
+    const bajar = () => {
+      const zona = ids.map((id) => document.getElementById(id)).find(Boolean);
+      if (zona) zona.scrollIntoView({ behavior: 'smooth' });
+      else if (intentos++ < 10) setTimeout(bajar, 200);
+    };
+    setTimeout(bajar, 150);
+  };
+
   const irASubirChat = async (e) => {
     e.preventDefault();
     trackEvent('porra_pagina_cta');
     if (user?.uid) {
       setComprando(true);
       try {
+        const credito = await canUsePorra(user.uid, t.id);
+        if (credito.canUse) {
+          navigate('/');
+          bajarA([`porra-${t.id}`, 'upload-section']);
+          return;
+        }
         trackEvent('porra_click');
         await purchasePorra(user.uid, t.id);
         return;
@@ -69,25 +85,12 @@ const PorraPage = ({ tema = 'navidad' }) => {
       }
     }
     navigate('/');
-    let intentos = 0;
-    const bajar = () => {
-      const zona = document.getElementById('upload-section');
-      if (zona) zona.scrollIntoView({ behavior: 'smooth' });
-      else if (intentos++ < 10) setTimeout(bajar, 200);
-    };
-    setTimeout(bajar, 150);
+    bajarA(['upload-section']);
   };
-  const muestra = [...PREGUNTAS_RONDA_1.slice(0, 2), ...t.preguntasRonda2.slice(0, 4)];
-
-  useEffect(() => {
-    const anterior = document.title;
-    document.title = `${c.titulo} · El juego de tu grupo de WhatsApp | ChatSalsa`;
-    return () => { document.title = anterior; };
-  }, [c.titulo]);
 
   const cta = (texto) => (
     <a href="/" className="porra-cta-btn" onClick={irASubirChat} aria-disabled={comprando}>
-      {t.emoji} {comprando ? 'Abriendo el pago…' : texto} · {price}
+      {t.emoji} {comprando ? 'Un momento…' : texto} · {price}
     </a>
   );
 

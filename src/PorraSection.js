@@ -59,7 +59,7 @@ const PorraSection = ({ user, chatData, skipIA = false, tema = 'navidad' }) => {
   const tieneCredito = !!credito?.canUse;
 
   return (
-    <section className={`porra-section porra-${t.id}`}>
+    <section id={`porra-${t.id}`} className={`porra-section porra-${t.id}`}>
       <div className="porra-card">
         <div className="porra-head">
           <span className="porra-badge">{t.emoji} Nuevo · {t.badge}</span>
