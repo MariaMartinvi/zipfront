@@ -651,7 +651,13 @@ function AppContent() {
     
     const tryScroll = () => {
       attempts++;
-      if (analysisRef.current) {
+      // Si hay un juego de la Porra ya pagado (va arriba del todo), el scroll va a él y no al resumen
+      const porraArriba = document.querySelector('.porra-section');
+      const primeraTarjetaArriba = porraArriba && analysisRef.current &&
+        porraArriba.compareDocumentPosition(analysisRef.current) & Node.DOCUMENT_POSITION_FOLLOWING;
+      if (primeraTarjetaArriba) {
+        porraArriba.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (analysisRef.current) {
         // Si encontramos la referencia, hacer scroll
         analysisRef.current.scrollIntoView({ 
           behavior: 'smooth', 
