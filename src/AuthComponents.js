@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { loginUser, registerUser, resetPassword, getCurrentUser, loginWithGoogle, handleGoogleRedirectResult, getErrorMessage } from './firebase_auth';
 import './AuthComponents.css';
+import './AuthModerno.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,18 @@ import { confirmEmailVerification, resendEmailVerification, confirmPasswordReset
  
 
 // Login Component
+
+const AuthAside = ({ t, login = false }) => (
+  <aside className="auth-aside">
+    <h1>{t('auth.aside.aside_title')}</h1>
+    <p>{login ? t('auth.aside.login_aside') : t('auth.aside.aside_sub')}</p>
+    <ul>
+      <li>📊 {t('auth.aside.b1')}</li>
+      <li>🔒 {t('auth.aside.b2')}</li>
+      <li>💳 {t('auth.aside.b3')}</li>
+    </ul>
+  </aside>
+);
 
 export const Login = ({ onLoginSuccess }) => {
   const { t } = useTranslation();
@@ -312,6 +325,8 @@ export const Login = ({ onLoginSuccess }) => {
 
 
   return (
+    <div className="auth-layout">
+    <AuthAside t={t} login={true} />
     <div className="auth-form-container">
       <h2>{t('auth.login.title')}</h2>
       {error && (
@@ -545,6 +560,7 @@ export const Login = ({ onLoginSuccess }) => {
         </button>
       </div>
     </div>
+    </div>
   );
 };
 
@@ -732,6 +748,8 @@ export const Register = ({ onRegisterSuccess }) => {
   }
 
   return (
+    <div className="auth-layout">
+    <AuthAside t={t} login={false} />
     <div className="auth-form-container">
       <h2>{t('auth.register.title')}</h2>
       {error && (
@@ -786,6 +804,7 @@ export const Register = ({ onRegisterSuccess }) => {
               disabled={isLoading}
             />
           </div>
+          <div className="form-row">
           <div className="form-group">
             <label htmlFor="password">{t('auth.register.password')}</label>
             <input
@@ -809,6 +828,7 @@ export const Register = ({ onRegisterSuccess }) => {
               disabled={isLoading}
               minLength={6}
             />
+          </div>
           </div>
           <button 
             type="submit" 
@@ -845,6 +865,7 @@ export const Register = ({ onRegisterSuccess }) => {
           {t('auth.links.login')}
         </button>
       </div>
+    </div>
     </div>
   );
 };

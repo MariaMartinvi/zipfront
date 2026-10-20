@@ -440,6 +440,14 @@
       "forgot_password": "Mot de passe oublié ?",
       "login": "Vous avez déjà un compte ? Connectez-vous",
       "register": "Vous n'avez pas de compte ? Inscrivez-vous"
+    },
+    "aside": {
+      "aside_title": "Votre groupe, dévoilé",
+      "aside_sub": "Gratuit et en 30 secondes. Créez votre compte et importez votre chat.",
+      "b1": "Statistiques et profils du groupe, toujours gratuits",
+      "b2": "Votre chat est anonymisé sur votre appareil",
+      "b3": "Sans abonnement : payez seulement si vous voulez plus",
+      "login_aside": "Bon retour. Connectez-vous et importez votre chat."
     }
   },
   "subscription": {

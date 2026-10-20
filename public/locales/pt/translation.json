@@ -748,6 +748,14 @@
       "forgot_password": "Esqueceu sua senha?",
       "login": "Já tem uma conta? Entrar",
       "register": "Não tem uma conta? Registrar"
+    },
+    "aside": {
+      "aside_title": "Seu grupo, revelado",
+      "aside_sub": "Grátis e em 30 segundos. Crie sua conta e envie seu chat.",
+      "b1": "Estatísticas e perfis do grupo, sempre grátis",
+      "b2": "Seu chat é anonimizado no seu dispositivo",
+      "b3": "Sem assinatura: só paga se quiser mais",
+      "login_aside": "Bem-vindo de volta. Entre e envie seu chat."
     }
   },
   "subscription": {

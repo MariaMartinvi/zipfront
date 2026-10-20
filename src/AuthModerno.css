@@ -1,0 +1,33 @@
+/* Login y registro: panel lateral + formulario compacto (capa sobre AuthComponents.css) */
+.auth-layout { display: grid; grid-template-columns: 1fr 1fr; max-width: 980px; margin: 40px auto; border-radius: 24px; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.12); background: #fff; }
+.auth-aside { background: linear-gradient(160deg, #128C7E 0%, #25D366 35%, #8A2BE2 100%); color: #fff; padding: 48px 40px; display: flex; flex-direction: column; justify-content: center; text-align: left; }
+.auth-layout .auth-aside h1 { font-size: 2rem !important; font-weight: 800; line-height: 1.15; margin: 0 0 12px; color: #fff; letter-spacing: -0.02em; }
+.auth-aside p { color: rgba(255,255,255,0.92); font-size: 1.05rem; line-height: 1.5; margin: 0 0 22px; }
+.auth-aside ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.auth-aside li { list-style: none; padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.2); font-size: 0.95rem; font-weight: 500; }
+
+.auth-layout .auth-form-container { max-width: none; margin: 0; padding: 36px 36px 28px; border-radius: 0; box-shadow: none; background: #fff; }
+.auth-layout .auth-form-container::before { display: none; }
+.auth-layout .auth-form-container h2 { font-size: 1.6rem !important; margin: 0 0 18px; }
+.auth-layout .google-auth-button { height: 48px; padding: 0 16px; border-radius: 12px; font-size: 0.95rem !important; }
+.auth-layout .separator { margin: 14px 0; }
+.auth-layout .auth-form { gap: 12px; }
+.auth-layout .form-group { gap: 4px; }
+.auth-layout .form-group label { font-size: 0.85rem; color: #4a5568; }
+.auth-layout .form-group input { height: 46px; padding: 0 14px; border-radius: 10px; font-size: 0.95rem; }
+.auth-layout .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.auth-layout .auth-button { height: 50px; padding: 0 20px; margin-top: 6px; border-radius: 12px; font-size: 1rem !important; }
+.auth-layout .auth-links { margin-top: 14px; gap: 2px; }
+.auth-layout .auth-link-button { font-size: 0.92rem !important; padding: 6px 10px; }
+.auth-layout .security-status:empty { display: none; }
+
+@media (max-width: 860px) {
+  .auth-layout { grid-template-columns: 1fr; margin: 16px 12px; border-radius: 18px; }
+  .auth-aside { padding: 24px 22px; text-align: center; }
+  .auth-layout .auth-aside h1 { font-size: 1.5rem !important; }
+  .auth-aside p { margin-bottom: 12px; font-size: 0.98rem; }
+  .auth-aside ul { display: none; }
+  .auth-layout .auth-form-container { padding: 22px 18px 20px; }
+  .auth-layout .form-row { grid-template-columns: 1fr; }
+}

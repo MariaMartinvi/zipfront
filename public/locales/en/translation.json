@@ -854,6 +854,14 @@
       "forgot_password": "Forgot your password?",
       "login": "Already have an account? Login",
       "register": "Don't have an account? Register"
+    },
+    "aside": {
+      "aside_title": "Your group, uncovered",
+      "aside_sub": "Free and in 30 seconds. Create your account and upload your chat.",
+      "b1": "Group stats and profiles, always free",
+      "b2": "Your chat is anonymized on your device",
+      "b3": "No subscription: pay only if you want more",
+      "login_aside": "Welcome back. Sign in and upload your chat."
     }
   },
   "subscription": {
