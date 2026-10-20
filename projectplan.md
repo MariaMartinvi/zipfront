@@ -473,3 +473,9 @@ Ronda 2.
 - `fix-font-sizes.css` forzaba h1/h2/h3/a/button con `!important`; las landings quedan excluidas con `:not(.porra-page …)`.
 - Cajón de subida rediseñado (`UploadBox`): título "Sube tu chat de WhatsApp", Android comparte desde WhatsApp,
   iOS/PC arrastra el zip, instrucciones plegadas.
+
+### Cierre 20-oct (noche)
+- Precios: tres tarjetas (Gratis, Análisis IA, Juegos) y fuera urgencia y cifras inventadas.
+- Juego: respuestas con GPT-4.1 (Mistral de reserva), muestra de 120.000 caracteres repartida por toda la historia
+  del chat, pistas por pregunta y método prueba-primero; acta en dos páginas sin filas partidas; gunicorn timeout 120 s.
+- Pendiente para medir negocio: evento de compra del juego en GA4 y píxel de Meta; decidir precio tachado del pack IA.
