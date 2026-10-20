@@ -23,7 +23,7 @@
 .App .activity-icon { font-size: 1.5rem; margin-bottom: 4px; }
 
 .App .modern-analysis-container { padding: 0; }
-.App .summary-content { gap: 12px; margin: 0; }
+.App .summary-content { gap: 12px; margin: 0 auto; }
 .App .stat-highlight-card { padding: 14px 16px; border-radius: 14px; box-shadow: none; border: 1px solid #edf2f7;
   display: flex; align-items: center; gap: 14px; text-align: left; }
 .App .stat-highlight-card::before { display: none; }
