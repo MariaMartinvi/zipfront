@@ -14,18 +14,6 @@ import { confirmEmailVerification, resendEmailVerification, confirmPasswordReset
 
 // Login Component
 
-const AuthAside = ({ t, login = false }) => (
-  <aside className="auth-aside">
-    <h1>{t('auth.aside.aside_title')}</h1>
-    <p>{login ? t('auth.aside.login_aside') : t('auth.aside.aside_sub')}</p>
-    <ul>
-      <li>📊 {t('auth.aside.b1')}</li>
-      <li>🔒 {t('auth.aside.b2')}</li>
-      <li>💳 {t('auth.aside.b3')}</li>
-    </ul>
-  </aside>
-);
-
 export const Login = ({ onLoginSuccess }) => {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
@@ -326,7 +314,6 @@ export const Login = ({ onLoginSuccess }) => {
 
   return (
     <div className="auth-layout">
-    <AuthAside t={t} login={true} />
     <div className="auth-form-container">
       <h2>{t('auth.login.title')}</h2>
       {error && (
@@ -749,7 +736,6 @@ export const Register = ({ onRegisterSuccess }) => {
 
   return (
     <div className="auth-layout">
-    <AuthAside t={t} login={false} />
     <div className="auth-form-container">
       <h2>{t('auth.register.title')}</h2>
       {error && (

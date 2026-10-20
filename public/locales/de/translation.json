@@ -835,14 +835,6 @@
       "forgot_password": "Passwort vergessen?",
       "login": "Haben Sie bereits ein Konto? Anmelden",
       "register": "Haben Sie kein Konto? Registrieren"
-    },
-    "aside": {
-      "aside_title": "Deine Gruppe, aufgedeckt",
-      "aside_sub": "Kostenlos und in 30 Sekunden. Konto erstellen und Chat hochladen.",
-      "b1": "Statistiken und Profile der Gruppe, immer kostenlos",
-      "b2": "Dein Chat wird auf deinem Gerät anonymisiert",
-      "b3": "Kein Abo: du zahlst nur, wenn du mehr willst",
-      "login_aside": "Willkommen zurück. Melde dich an und lade deinen Chat hoch."
     }
   },
   "subscription": {

@@ -816,14 +816,6 @@
       "forgot_password": "¿Olvidaste tu contraseña?",
       "login": "¿Ya tienes una cuenta? Inicia sesión",
       "register": "¿No tienes una cuenta? Regístrate"
-    },
-    "aside": {
-      "aside_title": "Tu grupo, al descubierto",
-      "aside_sub": "Gratis y en 30 segundos. Crea tu cuenta y sube tu chat.",
-      "b1": "Estadísticas y perfiles del grupo, siempre gratis",
-      "b2": "Tu chat se anonimiza en tu dispositivo",
-      "b3": "Sin suscripción: solo pagas si quieres más",
-      "login_aside": "Bienvenido de nuevo. Entra y sube tu chat."
     }
   },
   "subscription": {

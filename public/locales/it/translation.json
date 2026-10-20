@@ -379,14 +379,6 @@
       "description": "Devi accedere per analizzare le conversazioni",
       "login": "Accedi",
       "register": "Crea Account"
-    },
-    "aside": {
-      "aside_title": "Il tuo gruppo, allo scoperto",
-      "aside_sub": "Gratis e in 30 secondi. Crea il tuo account e carica la chat.",
-      "b1": "Statistiche e profili del gruppo, sempre gratis",
-      "b2": "La tua chat viene anonimizzata sul tuo dispositivo",
-      "b3": "Senza abbonamento: paghi solo se vuoi di più",
-      "login_aside": "Bentornato. Accedi e carica la tua chat."
     }
   },
   "subscription": {
