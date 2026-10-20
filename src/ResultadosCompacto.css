@@ -2,92 +2,105 @@
    (App.css, Analisis_primer_chat.css, Analisis_top.css, Chatgptresultados.css). Se importa la última en App.js. */
 
 /* ---- Tarjetas de sección: mismo lenguaje en toda la página ---- */
-.analysis-container, .chat-analysis-section, .additional-analysis .analysis-module, .statistical-analysis-section .analysis-module {
+.App .analysis-container, .App .chat-analysis-section, .App .additional-analysis .analysis-module, .App .statistical-analysis-section .analysis-module {
   border-radius: 16px; border: 1px solid #edf2f7; box-shadow: 0 4px 14px rgba(0,0,0,0.05); background: #fff; }
-.analysis-container { margin-bottom: 16px; }
-.chat-analysis-section { margin-bottom: 16px; }
-.additional-analysis { margin-top: 16px; gap: 12px; }
-.analysis-module { padding: 10px; margin-bottom: 12px; box-shadow: none; border-radius: 12px; }
-.analysis-special-title { font-size: 18px; letter-spacing: 0.6px; margin: 18px 0 2px; }
-.analysis-special-title::after { bottom: -6px; width: 40px; height: 2px; }
+.App .analysis-container { margin-bottom: 16px; }
+.App .chat-analysis-section { margin-bottom: 16px; }
+.App .additional-analysis { margin-top: 16px; gap: 12px; }
+.App .analysis-module { padding: 10px; margin-bottom: 12px; box-shadow: none; border-radius: 12px; }
+.App .analysis-special-title { font-size: 18px; letter-spacing: 0.6px; margin: 18px 0 2px; }
+.App .analysis-special-title::after { bottom: -6px; width: 40px; height: 2px; }
 
 /* ---- Resumen general: menos aire, números a la vista ---- */
-.summary-section { padding: 20px 12px 12px; }
-.summary-badge { display: none; }
-.summary-title { font-size: 1.6rem; margin-bottom: 6px; }
-.summary-description { font-size: 15px; margin: 0 auto 18px; }
-.stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-.stat-card, .activity-card { padding: 16px 12px; border-radius: 14px; box-shadow: none; border: 1px solid #edf2f7; }
-.stat-card:hover, .activity-card:hover { transform: none; box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
-.activity-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-.activity-icon { font-size: 1.5rem; margin-bottom: 4px; }
+.App .summary-section { padding: 20px 12px 12px; }
+.App .summary-badge { display: none; }
+.App .summary-title { font-size: 1.6rem; margin-bottom: 6px; }
+.App .summary-description { font-size: 15px; margin: 0 auto 18px; }
+.App .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.App .stat-card, .App .activity-card { padding: 16px 12px; border-radius: 14px; box-shadow: none; border: 1px solid #edf2f7; }
+.App .stat-card:hover, .App .activity-card:hover { transform: none; box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+.App .activity-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.App .activity-icon { font-size: 1.5rem; margin-bottom: 4px; }
+
+.App .modern-analysis-container { padding: 0; }
+.App .summary-content { gap: 12px; margin: 0; }
+.App .stat-highlight-card { padding: 14px 16px; border-radius: 14px; box-shadow: none; border: 1px solid #edf2f7;
+  display: flex; align-items: center; gap: 14px; text-align: left; }
+.App .stat-highlight-card::before { display: none; }
+.App .highlight-icon { font-size: 1.8rem; margin: 0; }
+.App .highlight-title { font-size: 13px; margin: 0; color: #718096; }
+.App .highlight-value { font-size: 1.3rem !important; margin: 0; }
+.App .highlight-detail { font-size: 13px; margin: 0; }
+.App .stat-icon { font-size: 1.5rem; margin-bottom: 6px; }
+.App .stat-value { font-size: 1.25rem; margin-bottom: 2px; }
+.App .stat-label { font-size: 12.5px; }
 
 /* ---- Perfiles destacados: tarjetas pequeñas, 3 o 4 por fila ---- */
-.modern-analysis-top-container, .analysis-top-section { background: transparent; }
-.analysis-top-section { padding: 12px 8px 12px; }
-.analysis-badge { display: none; }
-.analysis-title { font-size: 1.6rem; margin-bottom: 6px; }
-.analysis-description { font-size: 15px; margin: 0 auto 16px; }
-.profiles-grid-container { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-top: 0; }
-.profile-card { padding: 16px 12px; border-radius: 14px; box-shadow: none; border: 1px solid #edf2f7; justify-content: flex-start; }
-.profile-card::before { display: none; }
-.profile-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-.profile-card.selected { transform: none; box-shadow: 0 8px 20px rgba(37,211,102,0.15); }
-.profile-icon { font-size: 2rem; margin-bottom: 8px; }
-.profile-title { font-size: 15px; margin-bottom: 2px; }
-.profile-description { font-size: 12.5px; line-height: 1.35; margin-bottom: 8px; color: #718096;
+.App .modern-analysis-top-container, .App .analysis-top-section { background: transparent; }
+.App .analysis-top-section { padding: 12px 8px 12px; }
+.App .analysis-badge { display: none; }
+.App .analysis-title { font-size: 1.6rem; margin-bottom: 6px; }
+.App .analysis-description { font-size: 15px; margin: 0 auto 16px; }
+.App .profiles-grid-container { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-top: 0; }
+.App .profile-card { padding: 16px 12px; border-radius: 14px; box-shadow: none; border: 1px solid #edf2f7; justify-content: flex-start; }
+.App .profile-card::before { display: none; }
+.App .profile-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+.App .profile-card.selected { transform: none; box-shadow: 0 8px 20px rgba(37,211,102,0.15); }
+.App .profile-icon { font-size: 2rem; margin-bottom: 8px; }
+.App .profile-title { font-size: 15px; margin-bottom: 2px; }
+.App .profile-description { font-size: 12.5px; line-height: 1.35; margin-bottom: 8px; color: #718096;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.profile-user { font-size: 17px; }
-.profile-detail-container { padding: 20px; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-.profile-detail-header { margin-bottom: 14px; }
-.profile-detail-icon { font-size: 2.4rem; margin-right: 14px; }
-.profile-detail-title { font-size: 1.3rem; margin-bottom: 2px; }
-.profile-detail-description { font-size: 15px; }
-.usuario-destacado { padding: 12px 16px; margin-bottom: 14px; border-radius: 12px; }
-.usuario-destacado .nombre { font-size: 1.2rem; }
-.estadisticas-container { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-.estadistica { padding: 14px; border-radius: 12px; box-shadow: none; }
-.estadistica:hover { transform: none; box-shadow: none; }
-.estadistica .valor { font-size: 1.7rem; }
-.estadistica .label, .estadistica .media-resto { font-size: 13px; }
-.estadistica .media-resto span { font-size: 14px; }
+.App .profile-user { font-size: 17px; }
+.App .profile-detail-container { padding: 20px; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.App .profile-detail-header { margin-bottom: 14px; }
+.App .profile-detail-icon { font-size: 2.4rem; margin-right: 14px; }
+.App .profile-detail-title { font-size: 1.3rem; margin-bottom: 2px; }
+.App .profile-detail-description { font-size: 15px; }
+.App .usuario-destacado { padding: 12px 16px; margin-bottom: 14px; border-radius: 12px; }
+.App .usuario-destacado .nombre { font-size: 1.2rem; }
+.App .estadisticas-container { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.App .estadistica { padding: 14px; border-radius: 12px; box-shadow: none; }
+.App .estadistica:hover { transform: none; box-shadow: none; }
+.App .estadistica .valor { font-size: 1.7rem; }
+.App .estadistica .label, .App .estadistica .media-resto { font-size: 13px; }
+.App .estadistica .media-resto span { font-size: 14px; }
 
 /* ---- Perfiles psicológicos: comprimidos ---- */
-.chat-analysis-container { font-size: 15px; margin-bottom: 8px; }
-.chat-analysis-container h2 .emoji { font-size: 1.3rem; }
-.chat-analysis-container h3 { margin-top: 12px !important; margin-bottom: 8px !important; padding: 8px 12px !important; font-size: 1.05rem !important; }
-.psychology-list { gap: 10px; margin-bottom: 12px; }
-.psychology-item { padding: 12px 14px; gap: 12px; border-radius: 12px; box-shadow: none; border: 1px solid #edf2f7; }
-.psychology-item:hover { transform: none; box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
-.avatar { width: 2.4rem; height: 2.4rem; font-size: 1rem; }
-.psychology-content h4 { font-size: 1rem !important; margin: 0 0 4px !important; }
-.psychology-content p, .psychology-content li { font-size: 0.93rem !important; line-height: 1.5 !important; margin-bottom: 6px !important; }
-.psychology-tags { gap: 6px; }
-.tag { font-size: 12px !important; padding: 4px 10px !important; margin: 0 !important; }
-.subsections-container { gap: 10px; margin: 12px 0; }
-.subsection-item { border-radius: 12px; box-shadow: none; }
-.subsection-item:hover { transform: none; box-shadow: none; }
-.subsection-header { padding: 10px 14px 4px; }
-.subsection-header h4 { font-size: 1rem !important; }
-.subsection-content { padding: 8px 14px 12px; line-height: 1.5; }
-.subsection-content p, .subsection-content li { font-size: 0.93rem !important; line-height: 1.5 !important; margin-bottom: 8px !important; }
-.subsection-content ul { margin: 8px 0 !important; }
+.App .chat-analysis-container { font-size: 15px; margin-bottom: 8px; }
+.App .chat-analysis-container h2 .emoji { font-size: 1.3rem; }
+.App .chat-analysis-container h3 { margin-top: 12px !important; margin-bottom: 8px !important; padding: 8px 12px !important; font-size: 1.05rem !important; }
+.App .psychology-list { gap: 10px; margin-bottom: 12px; }
+.App .psychology-item { padding: 12px 14px; gap: 12px; border-radius: 12px; box-shadow: none; border: 1px solid #edf2f7; }
+.App .psychology-item:hover { transform: none; box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+.App .avatar { width: 2.4rem; height: 2.4rem; font-size: 1rem; }
+.App .psychology-content h4 { font-size: 1rem !important; margin: 0 0 4px !important; }
+.App .psychology-content p, .App .psychology-content li { font-size: 0.93rem !important; line-height: 1.5 !important; margin-bottom: 6px !important; }
+.App .psychology-tags { gap: 6px; }
+.App .tag { font-size: 12px !important; padding: 4px 10px !important; margin: 0 !important; }
+.App .subsections-container { gap: 10px; margin: 12px 0; }
+.App .subsection-item { border-radius: 12px; box-shadow: none; }
+.App .subsection-item:hover { transform: none; box-shadow: none; }
+.App .subsection-header { padding: 10px 14px 4px; }
+.App .subsection-header h4 { font-size: 1rem !important; }
+.App .subsection-content { padding: 8px 14px 12px; line-height: 1.5; }
+.App .subsection-content p, .App .subsection-content li { font-size: 0.93rem !important; line-height: 1.5 !important; margin-bottom: 8px !important; }
+.App .subsection-content ul { margin: 8px 0 !important; }
 
 /* ---- Juegos: cajas pequeñas ---- */
-.games-section { margin: 0 0 16px; }
-.games-container { gap: 12px; margin: 8px auto; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-.game-card { padding: 18px 16px; border-radius: 14px; box-shadow: none; border: 1px solid #edf2f7; }
-.game-card::before { display: none; }
-.game-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-.game-icon { width: 2.6rem; height: 2.6rem; font-size: 1.3rem; margin-bottom: 8px; }
-.game-badge { font-size: 11px; }
-.game-title { font-size: 1.25rem !important; margin-bottom: 6px !important; }
-.game-description { font-size: 14px; line-height: 1.4; }
-.game-buttons { gap: 10px; margin-top: 10px; }
-.game-link, .game-button { padding: 8px 14px !important; font-size: 14px !important; }
+.App .games-section { margin: 0 0 16px; }
+.App .games-container { gap: 12px; margin: 8px auto; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.App .game-card { padding: 18px 16px; border-radius: 14px; box-shadow: none; border: 1px solid #edf2f7; }
+.App .game-card::before { display: none; }
+.App .game-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+.App .game-icon { width: 2.6rem; height: 2.6rem; font-size: 1.3rem; margin-bottom: 8px; }
+.App .game-badge { font-size: 11px; }
+.App .game-title { font-size: 1.25rem !important; margin-bottom: 6px !important; }
+.App .game-description { font-size: 14px; line-height: 1.4; }
+.App .game-buttons { gap: 10px; margin-top: 10px; }
+.App .game-link, .App .game-button { padding: 8px 14px !important; font-size: 14px !important; }
 
 @media (max-width: 600px) {
-  .profiles-grid-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .profile-card { padding: 12px 8px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .App .profiles-grid-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .App .profile-card { padding: 12px 8px; }
+  .App .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }

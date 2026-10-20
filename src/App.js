@@ -50,13 +50,13 @@ import PorraPage from './PorraPage';
 // LoginPage component with useNavigate hook
 function LoginPage() {
   const navigate = useNavigate();
-  return <Login onLoginSuccess={() => navigate('/')} />;
+  return <Login onLoginSuccess={() => navigate('/', { state: { subirChat: true } })} />;
 }
 
 // RegisterPage component with useNavigate hook
 function RegisterPage() {
   const navigate = useNavigate();
-  return <Register onRegisterSuccess={() => navigate('/')} />;
+  return <Register onRegisterSuccess={() => navigate('/', { state: { subirChat: true } })} />;
 }
 
 // HomePage component - you can define this or use your existing code
@@ -1084,6 +1084,21 @@ function AppContent() {
 
   const esCastellano = (i18n.language || 'es').startsWith('es');
   const hayResultados = !!(operationId && user && chatData);
+
+  // Tras iniciar sesión o registrarse: siempre al cajón de subir el chat.
+  useEffect(() => {
+    if (!location.state?.subirChat) return undefined;
+    window.history.replaceState({}, document.title, window.location.pathname);
+    let intentos = 0;
+    let timer;
+    const bajar = () => {
+      const zona = document.getElementById('upload-section');
+      if (zona) zona.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else if (intentos++ < 15) timer = setTimeout(bajar, 200);
+    };
+    timer = setTimeout(bajar, 250);
+    return () => clearTimeout(timer);
+  }, [location.state]);
 
   // Flujo desde la landing de un juego sin sesión: tras registrarse, abrir el pago de ese juego automáticamente.
   useEffect(() => {

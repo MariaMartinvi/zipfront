@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import './AppPreview.css';
+import './AndroidAppPrompt.css';
 
 const AndroidAppPrompt = () => {
   const [showPrompt, setShowPrompt] = useState(false);
@@ -113,7 +114,11 @@ const AndroidAppPrompt = () => {
     <div className="android-app-prompt-overlay">
       <div className="android-app-prompt-modal">
         <div className="prompt-header">
-          <div className="prompt-icon">📱</div>
+          <div className="prompt-icon" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="6" y="2" width="12" height="20" rx="3" /><path d="M11 18h2" />
+            </svg>
+          </div>
           <h3>{t('android_prompt.title', '¡Descarga nuestra App!')}</h3>
           <button 
             className="prompt-close"
@@ -148,7 +153,11 @@ const AndroidAppPrompt = () => {
             className="prompt-download-btn"
             onClick={handleDownloadApp}
           >
-            <span className="download-icon">📱</span>
+            <span className="download-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" />
+              </svg>
+            </span>
             {t('android_prompt.download_button', 'Descargar desde Google Play')}
           </button>
           
@@ -167,182 +176,6 @@ const AndroidAppPrompt = () => {
           </button>
         </div>
       </div>
-      
-      <style jsx>{`
-        .android-app-prompt-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.7);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10000;
-          padding: 20px;
-        }
-        
-        .android-app-prompt-modal {
-          background: white;
-          border-radius: 16px;
-          max-width: 400px;
-          width: 100%;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-          overflow: hidden;
-          animation: slideUp 0.3s ease-out;
-        }
-        
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .prompt-header {
-          background: linear-gradient(135deg, #25D366, #7122AC);
-          color: white;
-          padding: 20px;
-          text-align: center;
-          position: relative;
-        }
-        
-        .prompt-icon {
-          font-size: 2.5rem;
-          margin-bottom: 10px;
-        }
-        
-        .prompt-header h3 {
-          margin: 0;
-          font-size: 1.4rem;
-          font-weight: 600;
-        }
-        
-        .prompt-close {
-          position: absolute;
-          top: 15px;
-          right: 15px;
-          background: rgba(255, 255, 255, 0.2);
-          border: none;
-          color: white;
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          cursor: pointer;
-          font-size: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background 0.2s;
-        }
-        
-        .prompt-close:hover {
-          background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .prompt-content {
-          padding: 20px;
-        }
-        
-        .prompt-content p {
-          margin: 0 0 20px 0;
-          color: #333;
-          line-height: 1.5;
-          text-align: center;
-        }
-        
-        .prompt-features {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          margin-bottom: 20px;
-        }
-        
-        .feature-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 8px;
-          background: #f8f9fa;
-          border-radius: 8px;
-        }
-        
-        .feature-icon {
-          font-size: 1.2rem;
-        }
-        
-        .prompt-actions {
-          padding: 0 20px 20px 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-        
-        .prompt-download-btn {
-          background: linear-gradient(135deg, #25D366, #7122AC);
-          color: white;
-          border: none;
-          padding: 14px 20px;
-          border-radius: 10px;
-          font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .prompt-download-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
-        }
-        
-        .download-icon {
-          font-size: 1.1rem;
-        }
-        
-        .prompt-dismiss-btn {
-          background: transparent;
-          color: #666;
-          border: 1px solid #ddd;
-          padding: 12px 20px;
-          border-radius: 10px;
-          font-size: 14px;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        
-        .prompt-dismiss-btn:hover {
-          background: #f8f9fa;
-          border-color: #ccc;
-        }
-        
-        @media (max-width: 480px) {
-          .android-app-prompt-modal {
-            margin: 10px;
-            max-width: none;
-          }
-          
-          .prompt-header {
-            padding: 15px;
-          }
-          
-          .prompt-content {
-            padding: 15px;
-          }
-          
-          .prompt-actions {
-            padding: 0 15px 15px 15px;
-          }
-        }
-      `}</style>
     </div>
   );
 };

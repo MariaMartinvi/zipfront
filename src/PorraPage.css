@@ -56,7 +56,13 @@
 
 @media (max-width: 1000px) { .porra-page .porra-hero h1 { font-size: 4.6rem; } }
 @media (max-width: 700px) {
-  .porra-hero { min-height: 100vh; }
+  .porra-hero { min-height: 0; height: clamp(520px, 78svh, 680px); }
+  .porra-hero-img img { object-position: center 70%; }
+  .porra-hero-velo { background: linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.05) 72%, var(--fondo2) 100%); }
+  .tema-navidad .porra-hero-velo { background: linear-gradient(180deg, rgba(5,30,20,0.82) 0%, rgba(5,30,20,0.58) 45%, rgba(0,0,0,0.05) 72%, var(--fondo2) 100%); }
+  .porra-gancho { font-size: 1.05rem; margin-bottom: 16px; }
+  .porra-page-nota { font-size: 0.82rem; }
+  .porra-bloque { padding: 24px 16px; }
   .porra-page .porra-hero h1 { font-size: 3.4rem; }
   .porra-hero-contenido { padding-top: 36px; }
   .porra-pasos, .porra-preguntas { grid-template-columns: 1fr; }
