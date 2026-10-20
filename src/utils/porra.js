@@ -151,3 +151,19 @@ export const respuestasRonda2 = (respuestasIA, tema = 'navidad') =>
       dato: r ? [r.frase, r.cita ? `«${r.cita}»` : ''].filter(Boolean).join(' ') : 'Sin análisis de IA en este chat.',
     };
   });
+
+export const CLAVE_NOMBRE_ARCHIVO = 'whatsapp_analyzer_chat_file_name';
+
+/** Nombre del grupo a partir del nombre del zip/txt exportado por WhatsApp
+ *  ("WhatsApp Chat - Los de siempre.zip", "Chat de WhatsApp con Familia.txt"...). Sin pista → 'Mi grupo'. */
+export const nombreGrupoDesdeArchivo = (...nombres) => {
+  const PREFIJOS = /^(whatsapp chat (with|-) |chat de whatsapp con |chat de whatsapp - |conversa do whatsapp com |discussion whatsapp avec |whatsapp-chat mit |chat whatsapp con )/i;
+  for (const n of nombres) {
+    if (!n || typeof n !== 'string') continue;
+    let g = n.split('/').pop().replace(/\.(zip|txt)$/i, '').replace(/\s*\(\d+\)$/, '').trim();
+    if (!PREFIJOS.test(g)) continue; // "_chat", "archivo.zip"... no dicen el nombre
+    g = g.replace(PREFIJOS, '').trim();
+    if (g) return g.slice(0, 40);
+  }
+  return 'Mi grupo';
+};

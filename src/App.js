@@ -593,6 +593,10 @@ function AppContent() {
           // Guardamos el contenido del chat en el estado para usarlo en todos los análisis
           setChatData(extractedContent.chat);
           trackEvent('analisis_devuelto');
+          // Nombre del fichero (para el nombre del grupo en "La Porra del Grupo"); sobrevive a Stripe
+          try {
+            localStorage.setItem('whatsapp_analyzer_chat_file_name', `${file.name}|${extractedContent.fileName || ''}`);
+          } catch (e) { /* sin localStorage no pasa nada */ }
           
           // Mostrar inmediatamente la sección de análisis estadístico sin esperar al análisis psicológico
           setShowAnalysis(true);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { canUsePorra, decrementPorraCredit, purchasePorra } from './firebase_auth';
 import { getPorraResponse } from './fileService';
 import { getPorraPricing } from './utils/pricing';
-import { TEMAS, temaValido, respuestasRonda1, respuestasRonda2 } from './utils/porra';
+import { TEMAS, temaValido, respuestasRonda1, respuestasRonda2, nombreGrupoDesdeArchivo, CLAVE_NOMBRE_ARCHIVO } from './utils/porra';
 import { htmlPreguntas, htmlRespuestas, descargarPdf } from './utils/porraPdf';
 import { trackEvent } from './utils/analytics';
 import './PorraSection.css';
@@ -12,7 +12,6 @@ import './PorraSection.css';
 const PorraSection = ({ user, chatData, skipIA = false, tema = 'navidad' }) => {
   const t = TEMAS[temaValido(tema)];
   const [credito, setCredito] = useState(null); // null = cargando
-  const [grupo, setGrupo] = useState('');
   const [estado, setEstado] = useState('idle'); // idle | generando | listo | error
   const [error, setError] = useState('');
 
@@ -36,7 +35,7 @@ const PorraSection = ({ user, chatData, skipIA = false, tema = 'navidad' }) => {
     setEstado('generando');
     setError('');
     try {
-      const nombreGrupo = grupo.trim() || 'Mi grupo';
+      const nombreGrupo = nombreGrupoActual();
       const ronda1 = respuestasRonda1(window.lastAnalysisTopData);
       let ronda2 = respuestasRonda2(null, t.id);
       if (!skipIA) {
@@ -57,6 +56,13 @@ const PorraSection = ({ user, chatData, skipIA = false, tema = 'navidad' }) => {
 
   const { price } = getPorraPricing();
   const tieneCredito = !!credito?.canUse;
+  const nombreGrupoActual = () => {
+    try {
+      return nombreGrupoDesdeArchivo(...(localStorage.getItem(CLAVE_NOMBRE_ARCHIVO) || '').split('|'));
+    } catch (e) {
+      return 'Mi grupo';
+    }
+  };
 
   return (
     <section id={`porra-${t.id}`} className={`porra-section porra-${t.id}`}>
@@ -89,15 +95,7 @@ const PorraSection = ({ user, chatData, skipIA = false, tema = 'navidad' }) => {
           </div>
         ) : (
           <div className="porra-cta">
-            <label className="porra-label" htmlFor="porra-grupo">Nombre del grupo (saldrá en las hojas)</label>
-            <input
-              id="porra-grupo"
-              className="porra-input"
-              value={grupo}
-              onChange={(e) => setGrupo(e.target.value)}
-              placeholder="Los de siempre"
-              maxLength={40}
-            />
+            <p className="porra-grupo">Grupo: <strong>{nombreGrupoActual()}</strong></p>
             <button className="unlock-ai-button" onClick={generar} disabled={estado === 'generando'}>
               {estado === 'generando' ? '⏳ Preparando tu Porra…' : `📥 Generar y descargar ${t.nombre}`}
             </button>

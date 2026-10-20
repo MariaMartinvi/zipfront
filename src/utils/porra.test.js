@@ -1,4 +1,4 @@
-import { PREGUNTAS_RONDA_1, TEMAS, preguntasRonda2, temaValido, temaSugerido, respuestasRonda1, respuestasRonda2 } from './porra';
+import { nombreGrupoDesdeArchivo, PREGUNTAS_RONDA_1, TEMAS, preguntasRonda2, temaValido, temaSugerido, respuestasRonda1, respuestasRonda2 } from './porra';
 
 const datos = {
   mensajes_por_usuario: { Marta: 2341, Luis: 900, Eva: 15 },
@@ -64,4 +64,16 @@ test('Ronda 2: junta frase y cita, y sin IA deja las preguntas sin responder', (
   expect(r[9]).toMatchObject({ id: 20, nombre: 'Luis', dato: 'El alma.' });
   expect(r[1]).toMatchObject({ id: 12, nombre: '—' });
   expect(respuestasRonda2(null).every((x) => x.nombre === '—')).toBe(true);
+});
+
+test('nombre del grupo a partir del fichero exportado', () => {
+  expect(nombreGrupoDesdeArchivo('WhatsApp Chat - Los de siempre.zip')).toBe('Los de siempre');
+  expect(nombreGrupoDesdeArchivo('WhatsApp Chat - Los de siempre (2).zip')).toBe('Los de siempre');
+  expect(nombreGrupoDesdeArchivo('Chat de WhatsApp con Familia Pérez.txt')).toBe('Familia Pérez');
+  expect(nombreGrupoDesdeArchivo('WhatsApp Chat with Office.zip')).toBe('Office');
+  // iOS: el zip trae el nombre y el txt interno es "_chat.txt"
+  expect(nombreGrupoDesdeArchivo('WhatsApp Chat - Cena.zip', '_chat.txt')).toBe('Cena');
+  expect(nombreGrupoDesdeArchivo('_chat.txt', 'Chat de WhatsApp con Primos.txt')).toBe('Primos');
+  expect(nombreGrupoDesdeArchivo('archivo.zip', '_chat.txt')).toBe('Mi grupo');
+  expect(nombreGrupoDesdeArchivo(null, undefined)).toBe('Mi grupo');
 });

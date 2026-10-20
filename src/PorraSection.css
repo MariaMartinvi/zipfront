@@ -10,6 +10,7 @@
 .porra-cta { text-align: center; }
 .porra-nota { color: #718096; font-size: 0.9rem; margin: 0; }
 .porra-ok { color: #128C7E; font-weight: 600; }
+.porra-grupo { margin: 0 0 12px; color: #2d3748; }
 .porra-label { display: block; font-weight: 600; margin-bottom: 6px; color: #2d3748; }
 .porra-input { width: 100%; max-width: 360px; padding: 10px 12px; border: 1px solid #cbd5e0; border-radius: 8px;
   font-size: 1rem; margin-bottom: 14px; }
