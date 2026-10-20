@@ -1,0 +1,14 @@
+.juegos-barra { max-width: 900px; margin: 16px auto 8px; padding: 16px; border-radius: 16px; background: #fff;
+  border: 1px solid #e2e8f0; box-shadow: 0 6px 20px rgba(0,0,0,0.06); text-align: center; }
+.juegos-barra-titulo { margin: 0 0 12px; font-weight: 700; color: #2d3748; }
+.juegos-barra-botones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.juego-boton { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.juego-boton-cta { width: 100%; border: none; border-radius: 12px; padding: 14px 16px; font-size: 1rem; font-weight: 700; color: #fff;
+  cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,0.15); transition: transform 0.2s, box-shadow 0.2s; }
+.juego-boton-cta:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.2); }
+.juego-boton-cta:disabled { opacity: 0.7; cursor: default; }
+.juego-halloween .juego-boton-cta { background: linear-gradient(135deg, #ff7a00, #8A2BE2); }
+.juego-navidad .juego-boton-cta { background: linear-gradient(135deg, #c62828, #2e7d32); }
+.juego-boton-nota { font-size: 0.82rem; color: #718096; min-height: 1em; }
+.juego-boton-error { font-size: 0.82rem; color: #c53030; }
+@media (max-width: 600px) { .juegos-barra-botones { grid-template-columns: 1fr; } .juegos-barra { margin: 12px 12px 8px; } }

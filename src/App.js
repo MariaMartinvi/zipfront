@@ -11,7 +11,7 @@ import AnalisisEstadistico from './AnalisisEstadistico';
 import AnalisisTop from './Analisis_top';
 import { Login, Register, PasswordReset } from './AuthComponents';
 import FreemiumPlans from './FreemiumPlans';
-import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits, canUsePorra } from './firebase_auth';
+import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits } from './firebase_auth';
 import Header from './Header';
 import Footer from './Footer';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
@@ -40,7 +40,7 @@ import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
 import { trackEvent } from './utils/analytics';
 import { useTrackOnceVisible } from './utils/useTrackOnceVisible';
-import PorraSection from './PorraSection';
+import JuegosBarra from './JuegosBarra';
 import UploadBox from './UploadBox';
 import BandaJuegos from './BandaJuegos';
 import PorraPage from './PorraPage';
@@ -351,8 +351,6 @@ function AppContent() {
   // Referencias para secciones de análisis - usadas para scroll automático
   const analysisRef = useRef(null);
   const aiLockedRef = useRef(null);
-  // "La Porra del Grupo": juegos ya pagados van arriba del todo en los resultados
-  const [porraPagada, setPorraPagada] = useState({ halloween: false, navidad: false });
   // Get user-related state from AuthContext instead of managing locally
   const { user, userProfile, setUserProfile, isAuthLoading, setUser } = useAuth();
   
@@ -652,12 +650,10 @@ function AppContent() {
     
     const tryScroll = () => {
       attempts++;
-      // Si hay un juego de la Porra ya pagado (va arriba del todo), el scroll va a él y no al resumen
-      const porraArriba = document.querySelector('.porra-section');
-      const primeraTarjetaArriba = porraArriba && analysisRef.current &&
-        porraArriba.compareDocumentPosition(analysisRef.current) & Node.DOCUMENT_POSITION_FOLLOWING;
-      if (primeraTarjetaArriba) {
-        porraArriba.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // La barra de juegos va justo encima del análisis: el scroll empieza en ella
+      const barraJuegos = document.querySelector('.juegos-barra');
+      if (barraJuegos) {
+        barraJuegos.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else if (analysisRef.current) {
         // Si encontramos la referencia, hacer scroll
         analysisRef.current.scrollIntoView({ 
@@ -1085,20 +1081,8 @@ function AppContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [operationId, chatData, userCredits?.canUse]);
 
-  useEffect(() => {
-    if (!user?.uid) { setPorraPagada({ halloween: false, navidad: false }); return; }
-    let vivo = true;
-    Promise.all([canUsePorra(user.uid, 'halloween'), canUsePorra(user.uid, 'navidad')]).then(([h, n]) => {
-      if (vivo) setPorraPagada({ halloween: !!h.canUse, navidad: !!n.canUse });
-    });
-    return () => { vivo = false; };
-  }, [user?.uid, showPaymentSuccess]);
-
-  const tarjetasPorra = (pagadas) =>
-    operationId && user && chatData && (i18n.language || 'es').startsWith('es') &&
-    ['halloween', 'navidad'].filter((tema) => porraPagada[tema] === pagadas).map((tema) => (
-      <PorraSection key={tema} user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} tema={tema} />
-    ));
+  const esCastellano = (i18n.language || 'es').startsWith('es');
+  const hayResultados = !!(operationId && user && chatData);
 
   // Embudo de pago: el bloque IA bloqueado ha entrado en pantalla de verdad (una vez por chat)
   useTrackOnceVisible(
@@ -2217,11 +2201,13 @@ const tryDeleteFiles = async (operationId) => {
             path="/"
             element={
               <>
-                {/* Banda de los juegos de Halloween y Navidad (solo castellano) */}
-                {(i18n.language || 'es').startsWith('es') && <BandaJuegos />}
+                {/* Banda de los juegos (solo castellano, y solo mientras no hay resultados) */}
+                {esCastellano && !hayResultados && <BandaJuegos />}
 
-                {/* LA PORRA DEL GRUPO: juegos ya pagados, arriba del todo */}
-                {tarjetasPorra(true)}
+                {/* Botones de los juegos, arriba del todo de los resultados (solo castellano) */}
+                {esCastellano && hayResultados && (
+                  <JuegosBarra user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} />
+                )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
                 {operationId && user && (
@@ -2480,8 +2466,6 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
-                {/* LA PORRA DEL GRUPO: juegos sin comprar, tras los juegos (solo castellano) */}
-                {tarjetasPorra(false)}
 
                 {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
                 {operationId && user && chatData && (
