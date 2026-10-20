@@ -1,0 +1,10 @@
+.banda-juegos { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 14px;
+  padding: 9px 16px; color: #fff; font-size: 0.95rem;
+  background: linear-gradient(90deg, #ff7a00, #8A2BE2, #25D366, #ff7a00); background-size: 300% 100%; animation: banda-juegos-flujo 9s linear infinite; }
+@keyframes banda-juegos-flujo { from { background-position: 0% 50%; } to { background-position: 300% 50%; } }
+@media (prefers-reduced-motion: reduce) { .banda-juegos { animation: none; } }
+.banda-juegos-texto { font-weight: 700; text-shadow: 0 1px 6px rgba(0,0,0,0.35); }
+.banda-juegos-link { color: #fff; font-weight: 600; text-decoration: none; padding: 4px 12px; border-radius: 999px;
+  background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.35); }
+.banda-juegos-link:hover { background: rgba(0,0,0,0.45); }
+@media (max-width: 480px) { .banda-juegos { font-size: 0.88rem; padding: 8px 10px; } }

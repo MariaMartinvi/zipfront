@@ -42,6 +42,7 @@ import { trackEvent } from './utils/analytics';
 import { useTrackOnceVisible } from './utils/useTrackOnceVisible';
 import PorraSection from './PorraSection';
 import UploadBox from './UploadBox';
+import BandaJuegos from './BandaJuegos';
 import PorraPage from './PorraPage';
 
 
@@ -2216,6 +2217,9 @@ const tryDeleteFiles = async (operationId) => {
             path="/"
             element={
               <>
+                {/* Banda de los juegos de Halloween y Navidad (solo castellano) */}
+                {(i18n.language || 'es').startsWith('es') && <BandaJuegos />}
+
                 {/* LA PORRA DEL GRUPO: juegos ya pagados, arriba del todo */}
                 {tarjetasPorra(true)}
 

@@ -768,10 +768,3 @@ section.hero-section div.hero-actions button.cta-primary:hover {
 .security-icon-green-alt {
   background: #25D366 !important;
 }
-
-/* Avisos de los juegos (solo castellano) */
-.hero-porra-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
-.hero-porra-etiqueta { display: block; width: 100%; color: #fff; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em; }
-.hero-porra-link { display: inline-block; padding: 8px 14px; border-radius: 999px; background: #e9f9ef; color: #128C7E;
-  text-decoration: none; font-size: 0.95rem; }
-.hero-porra-link:hover { background: #d4f3e1; }
