@@ -21,7 +21,7 @@ const ESTILOS = (t) => {
   .cab .contenido { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 40px; }
   .cab h1 { margin: 0; font-family: '${t.fuente}', cursive; font-weight: 700; font-size: 58px; line-height: 1; color: ${c.titulo};
             text-shadow: 0 3px 0 ${c.sombra}, 0 6px 18px rgba(0,0,0,0.7); }
-  .cab .sub { margin: 10px 0 0; font-size: 15px; font-weight: 600; text-shadow: 0 1px 8px rgba(0,0,0,0.8); }
+  .detalle { margin: 16px 48px 0; padding: 10px 14px; border-radius: 6px; background: ${c.r1bg}; color: ${c.r1}; font-size: 14px; text-align: center; }
   .cab .marca { position: absolute; top: 14px; right: 20px; font-weight: bold; font-size: 14px; text-align: right; text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
   .cab .marca small { display: block; font-weight: normal; font-size: 11px; }
   .cuerpo { padding: 22px 48px 0; }
@@ -52,8 +52,9 @@ const cabecera = (t, detalle) => `
   <div class="cab" style="background-image:url('${t.imagenH}')">
     <div class="velo"></div>
     <div class="marca">ChatSalsa<small>chatsalsa.com</small></div>
-    <div class="contenido"><h1>${esc(t.nombre)}</h1><p class="sub">${esc(t.subtitulo)} · ${esc(detalle)}</p></div>
-  </div>`;
+    <div class="contenido"><h1>${esc(t.nombre)}</h1></div>
+  </div>
+  <p class="detalle">${esc(t.subtitulo)} · <strong>${esc(detalle)}</strong></p>`;
 
 const filasPreguntas = (preguntas) => preguntas.map((p) => `
   <div class="fila"><span class="num">${p.id}</span><span class="preg">${esc(p.texto)}</span><span class="linea"></span><span class="caja"></span></div>`).join('');
