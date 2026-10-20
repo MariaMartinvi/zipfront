@@ -17,13 +17,8 @@
 .pareja .pareja-enlace { display: block; margin: 12px auto 0; background: none; border: none; color: #8A2BE2; text-decoration: underline; cursor: pointer; font-size: 0.92rem !important; }
 .pareja-objetivo .pareja-enlace { display: inline; margin: 0; }
 
-.pareja-dropzone { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 36px 16px; border: 2px dashed #e2d4f5; border-radius: 16px; cursor: pointer; text-align: center; }
-.pareja-dropzone input { display: none; }
-.pareja-dropzone:hover, .pareja-dropzone.arrastrando { border-color: #e91e63; background: #fff7fa; }
-.pareja-dropzone-icono { font-size: 2.2rem; }
-.pareja-dropzone small { color: #718096; }
-.pareja-ayuda { margin-top: 14px; }
-.pareja-ayuda summary { cursor: pointer; font-weight: 600; color: #4a5568; }
+.pareja-subida { padding: 12px 12px 18px; }
+.pareja-subida .upload-box-title { font-size: 1.4rem; }
 
 .pareja-opciones { display: grid; gap: 10px; }
 .pareja-opciones.dos { grid-template-columns: 1fr 1fr; }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { canUsePareja, decrementParejaCredit, purchasePareja, leerSeguimientoPareja, guardarSeguimientoPareja } from './firebase_auth';
@@ -7,7 +7,7 @@ import { extractChatContent, anonimizarChat } from './utils/chatImport';
 import { getParejaPricing } from './utils/pricing';
 import { OBJETIVOS, textoObjetivo, clavePar, hoy, diasDesde, guardarEstado, leerEstado, borrarEstado } from './utils/pareja';
 import { trackEvent } from './utils/analytics';
-import WhatsappInstructions from './WhatsappInstructions';
+import UploadBox from './UploadBox';
 import './ParejaPage.css';
 
 const ESTILOS = [['divertido', '😄 Divertido'], ['carinoso', '🥰 Cariñoso'], ['coqueto', '😏 Coqueto'], ['atrevido', '🔥 Atrevido']];
@@ -112,14 +112,12 @@ export const Resultado = ({ a, otra, onNuevo }) => (
 const ParejaPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const inputRef = useRef(null);
   const precios = getParejaPricing();
   const [estado, setEstado] = useState(() => leerEstado() || {});
   const [credito, setCredito] = useState(null);
   const [anterior, setAnterior] = useState(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState('');
-  const [arrastrando, setArrastrando] = useState(false);
 
   const actualizar = (cambios) => setEstado((e) => { const n = { ...e, ...cambios }; guardarEstado(n); return n; });
 
@@ -247,19 +245,16 @@ const ParejaPage = () => {
       )}
 
       {paso === 'subir' && (
-        <section className="pareja-tarjeta">
-          <label
-            className={`pareja-dropzone ${arrastrando ? 'arrastrando' : ''}`}
-            onDragOver={(e) => { e.preventDefault(); setArrastrando(true); }}
-            onDragLeave={() => setArrastrando(false)}
-            onDrop={(e) => { e.preventDefault(); setArrastrando(false); subir(e.dataTransfer?.files?.[0]); }}
-          >
-            <input ref={inputRef} type="file" accept=".zip,.txt,application/zip,text/plain,*/*" onChange={(e) => subir(e.target.files[0])} />
-            <span className="pareja-dropzone-icono">📂</span>
-            <strong>{cargando ? 'Leyendo el chat…' : 'Sube el chat (.zip o .txt)'}</strong>
-            <small>Exporta la conversación desde WhatsApp sin medios</small>
-          </label>
-          <details className="pareja-ayuda"><summary>¿Cómo exporto el chat?</summary><WhatsappInstructions compact /></details>
+        <section className="pareja-tarjeta pareja-subida">
+          <UploadBox
+            onFileUpload={(e) => subir(e.target.files[0])}
+            skipIA={false}
+            onSkipIAChange={() => {}}
+            showAnalysis={false}
+            titulo={cargando ? 'Leyendo el chat…' : 'Sube el chat con esa persona'}
+            subtitulo="Exporta la conversación desde WhatsApp sin medios. Solo chats de dos personas."
+            sinPrivacidad
+          />
         </section>
       )}
 

@@ -10,7 +10,7 @@ jest.mock('./firebase_auth', () => ({
 }));
 jest.mock('./fileService', () => ({ prepararChatPareja: jest.fn(), getParejaAnalysis: jest.fn() }));
 jest.mock('./utils/chatImport', () => ({ extractChatContent: jest.fn(), anonimizarChat: jest.fn() }));
-jest.mock('./WhatsappInstructions', () => () => null);
+jest.mock('./UploadBox', () => ({ titulo }) => require('react').createElement('div', { className: 'upload-box' }, titulo));
 
 // eslint-disable-next-line import/first
 import ParejaPage, { Resultado } from './ParejaPage';
@@ -29,7 +29,7 @@ test('sin sesión: explica y pide empezar', () => {
 
 test('con sesión y sin chat: pide subirlo', () => {
   mockUser = { uid: 'u1' };
-  expect(pintar()).toContain('Sube el chat (.zip o .txt)');
+  expect(pintar()).toContain('Sube el chat con esa persona');
 });
 
 test('con chat: pregunta quién eres con los dos nombres', () => {

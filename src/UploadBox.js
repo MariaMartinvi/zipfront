@@ -6,7 +6,7 @@ import './UploadBox.css';
 
 // Cajón de subida: en Android el chat se comparte desde WhatsApp; en iOS y PC se sube el .zip.
 // Las instrucciones detalladas van plegadas debajo.
-const UploadBox = ({ onFileUpload, skipIA, onSkipIAChange, showAnalysis }) => {
+const UploadBox = ({ onFileUpload, skipIA, onSkipIAChange, showAnalysis, titulo, subtitulo, sinPrivacidad = false }) => {
   const { t } = useTranslation();
   const [platform, setPlatform] = useState(detectPlatform());
   const [arrastrando, setArrastrando] = useState(false);
@@ -32,9 +32,9 @@ const UploadBox = ({ onFileUpload, skipIA, onSkipIAChange, showAnalysis }) => {
   return (
     <div className="upload-box">
       <h2 className="upload-box-title">
-        {showAnalysis ? t('app.upload.another') : t('app.upload.hero_title')}
+        {titulo || (showAnalysis ? t('app.upload.another') : t('app.upload.hero_title'))}
       </h2>
-      <p className="upload-box-sub">{t('app.upload.hero_subtitle')}</p>
+      <p className="upload-box-sub">{subtitulo || t('app.upload.hero_subtitle')}</p>
 
       <div className="upload-platforms" role="tablist">
         {['android', 'ios', 'desktop'].map((p) => (
@@ -79,10 +79,12 @@ const UploadBox = ({ onFileUpload, skipIA, onSkipIAChange, showAnalysis }) => {
         </label>
       )}
 
-      <label className="upload-privacy">
-        <input type="checkbox" checked={skipIA} onChange={(e) => onSkipIAChange(e.target.checked)} />
-        <span>{t('app.privacy.no_ai_analysis')}</span>
-      </label>
+      {!sinPrivacidad && (
+        <label className="upload-privacy">
+          <input type="checkbox" checked={skipIA} onChange={(e) => onSkipIAChange(e.target.checked)} />
+          <span>{t('app.privacy.no_ai_analysis')}</span>
+        </label>
+      )}
 
       <details className="upload-help">
         <summary>{t('app.upload.how_export')}</summary>
