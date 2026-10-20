@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 import './fix-font-sizes.css';
+import './ResultadosCompacto.css';
 import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import AndroidAppPrompt from './AndroidAppPrompt';
