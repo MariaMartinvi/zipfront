@@ -981,6 +981,16 @@
         "instant_analysis": "⚡ Instant analysis after payment",
         "no_subscription": "🚫 No subscription - One-time payment"
       }
+    },
+    "plans": {
+      "free_title": "Free",
+      "free_price": "€0",
+      "free_f1": "Full chat statistics",
+      "free_f2": "Top profiles of the group",
+      "free_f3": "Headlines and personality games",
+      "free_button": "Analyze my chat for free",
+      "your_credits": "You have {{count}} AI analyses available",
+      "games_title": "Party games"
     }
   },
   "weekdays": {

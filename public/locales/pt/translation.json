@@ -854,6 +854,16 @@
       "cta_description": "Crie sua conta em segundos e obtenha análises estatísticas ilimitadas",
       "register_button": "📝 Criar conta gratuita",
       "register_and_buy": "📝 Cadastrar e Comprar ({{price}})"
+    },
+    "plans": {
+      "free_title": "Grátis",
+      "free_price": "0 €",
+      "free_f1": "Estatísticas completas do chat",
+      "free_f2": "Perfis em destaque do grupo",
+      "free_f3": "Jogos de manchetes e personalidade",
+      "free_button": "Analisar meu chat grátis",
+      "your_credits": "Você tem {{count}} análises de IA disponíveis",
+      "games_title": "Jogos para festas"
     }
   },
   "payment": {

@@ -942,6 +942,16 @@
         "instant_analysis": "⚡ Análisis instantáneo tras el pago",
         "no_subscription": "🚫 Sin suscripción - Pago único"
       }
+    },
+    "plans": {
+      "free_title": "Gratis",
+      "free_price": "0 €",
+      "free_f1": "Estadísticas completas del chat",
+      "free_f2": "Perfiles destacados del grupo",
+      "free_f3": "Juegos de titulares y personalidad",
+      "free_button": "Analizar mi chat gratis",
+      "your_credits": "Tienes {{count}} análisis IA disponibles",
+      "games_title": "Juegos para fiestas"
     }
   },
   "payment": {

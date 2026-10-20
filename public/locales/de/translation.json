@@ -935,6 +935,16 @@
         "title": "3. Kein Abonnement",
         "description": "Einmalige Zahlung pro Paket - Keine monatlichen Verpflichtungen"
       }
+    },
+    "plans": {
+      "free_title": "Kostenlos",
+      "free_price": "0 €",
+      "free_f1": "Vollständige Chat-Statistiken",
+      "free_f2": "Top-Profile der Gruppe",
+      "free_f3": "Schlagzeilen- und Persönlichkeitsspiele",
+      "free_button": "Meinen Chat kostenlos analysieren",
+      "your_credits": "Du hast {{count}} KI-Analysen verfügbar",
+      "games_title": "Partyspiele"
     }
   },
   "payment": {

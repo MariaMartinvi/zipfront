@@ -540,6 +540,16 @@
         "title": "3. Pas d'Abonnement",
         "description": "Paiement unique par pack - Aucun engagement mensuel"
       }
+    },
+    "plans": {
+      "free_title": "Gratuit",
+      "free_price": "0 €",
+      "free_f1": "Statistiques complètes du chat",
+      "free_f2": "Profils marquants du groupe",
+      "free_f3": "Jeux des titres et de personnalité",
+      "free_button": "Analyser mon chat gratuitement",
+      "your_credits": "Vous avez {{count}} analyses IA disponibles",
+      "games_title": "Jeux de fête"
     }
   },
   "weekdays": {

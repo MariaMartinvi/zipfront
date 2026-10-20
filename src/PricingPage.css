@@ -1,0 +1,44 @@
+/* Página de precios (FreemiumPlans): limpia, tres tarjetas */
+.precios { max-width: 1080px; margin: 0 auto; padding: 40px 16px 64px; color: #2d3748; font-family: var(--font-family-base); }
+.precios-cargando { text-align: center; padding: 80px 16px; color: #718096; }
+.precios-cabecera { text-align: center; margin-bottom: 28px; }
+.precios .precios-cabecera h1 { font-size: 2.2rem !important; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; color: #1a202c; }
+.precios-cabecera p { margin: 0 auto; max-width: 620px; color: #4a5568; font-size: 1.05rem; }
+.precios-cabecera .precios-creditos { display: inline-block; margin-top: 14px; padding: 6px 14px; border-radius: 999px; background: #e9f9ef; color: #128C7E; font-weight: 600; font-size: 0.95rem; }
+.precios-error { max-width: 600px; margin: 0 auto 16px; padding: 12px 16px; border-radius: 10px; background: #fff5f5; color: #c53030; text-align: center; }
+
+.precios-tarjetas { display: grid; gap: 16px; align-items: stretch; }
+.precios-tarjetas.tres { grid-template-columns: repeat(3, 1fr); }
+.precios-tarjetas.dos { grid-template-columns: repeat(2, 1fr); max-width: 760px; margin: 0 auto; }
+.precios-tarjeta { text-align: left; display: flex; flex-direction: column; background: #fff; border: 1px solid #e2e8f0; border-radius: 18px; padding: 24px 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.04); }
+.precios-tarjeta.destacada { border: 2px solid transparent; background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #25D366, #8A2BE2) border-box; box-shadow: 0 12px 30px rgba(138,43,226,0.12); }
+.precios .precios-tarjeta h2 { font-size: 1.15rem !important; font-weight: 700; margin: 0 0 10px; color: #1a202c; }
+.precios-precio { font-size: 2.2rem; font-weight: 800; color: #1a202c; margin-bottom: 14px; line-height: 1.1; }
+.precios-precio span { display: block; font-size: 0.9rem; font-weight: 500; color: #718096; margin-top: 4px; }
+.precios-tarjeta ul { list-style: none; padding: 0; margin: 0 0 20px; flex: 1; text-align: left; }
+.precios-tarjeta li { list-style: none; position: relative; padding: 6px 0 6px 26px; font-size: 0.95rem; color: #4a5568; }
+.precios-tarjeta li::before { content: '✓'; position: absolute; left: 0; top: 6px; width: 18px; height: 18px; border-radius: 50%; background: #e9f9ef; color: #128C7E; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+.precios .precios-boton { display: block; width: 100%; text-align: center; border: none; border-radius: 12px; padding: 13px 16px; font-size: 1rem !important; font-weight: 700; color: #fff; text-decoration: none; cursor: pointer;
+  background: linear-gradient(135deg, #25D366, #8A2BE2); box-shadow: 0 6px 16px rgba(37,211,102,0.25); transition: transform 0.15s, box-shadow 0.15s; }
+.precios .precios-boton:hover:not(:disabled) { transform: translateY(-1px); color: #fff; text-decoration: none; }
+.precios .precios-boton:disabled { opacity: 0.7; cursor: default; }
+.precios .precios-boton.secundario { background: #fff; color: #128C7E; border: 1px solid #c6f0d6; box-shadow: none; }
+.precios .precios-boton.secundario:hover { color: #128C7E; background: #f3fdf7; }
+.precios-juegos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.precios .precios-boton.halloween { background: linear-gradient(135deg, #ff7a00, #8A2BE2); }
+.precios .precios-boton.navidad { background: linear-gradient(135deg, #c62828, #2e7d32); }
+
+.precios-garantias { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; margin: 24px 0 8px; color: #4a5568; font-size: 0.92rem; }
+
+.precios-como { margin-top: 36px; text-align: center; }
+.precios .precios-como h3 { font-size: 1.3rem !important; margin: 0 0 16px; color: #1a202c; }
+.precios-pasos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: left; }
+.precios-pasos > div { padding: 16px; border-radius: 14px; background: #f7f8fa; }
+.precios .precios-pasos h4 { font-size: 1rem !important; margin: 0 0 6px; color: #1a202c; }
+.precios-pasos p { margin: 0; font-size: 0.92rem; color: #4a5568; }
+
+@media (max-width: 860px) {
+  .precios-tarjetas.tres, .precios-tarjetas.dos, .precios-pasos { grid-template-columns: 1fr; }
+  .precios .precios-cabecera h1 { font-size: 1.7rem !important; }
+}
