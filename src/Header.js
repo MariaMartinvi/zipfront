@@ -45,7 +45,7 @@ const Header = ({ user }) => {
             <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
             {esCastellano && <Link to="/porra-halloween" className="nav-link">🎃 Halloween</Link>}
             {esCastellano && <Link to="/porra-navidad" className="nav-link">🎄 Navidad</Link>}
-            {esCastellano && <Link to="/pareja" className="nav-link">💘 Pareja</Link>}
+            {esCastellano && <Link to="/pareja" className="nav-link">💘 Doctor Amor</Link>}
             {user ? (
               <>
                 <LanguageSwitcher />
@@ -95,7 +95,7 @@ const Header = ({ user }) => {
           <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
           {esCastellano && <Link to="/porra-halloween" className="mobile-nav-link" onClick={toggleMenu}>🎃 Juego de Halloween</Link>}
           {esCastellano && <Link to="/porra-navidad" className="mobile-nav-link" onClick={toggleMenu}>🎄 Juego de Navidad</Link>}
-          {esCastellano && <Link to="/pareja" className="mobile-nav-link" onClick={toggleMenu}>💘 Chat de pareja</Link>}
+          {esCastellano && <Link to="/pareja" className="mobile-nav-link" onClick={toggleMenu}>💘 Doctor Amor</Link>}
           {user ? (
             <>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

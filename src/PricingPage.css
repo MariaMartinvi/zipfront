@@ -9,6 +9,7 @@
 
 .precios-tarjetas { display: grid; gap: 16px; align-items: stretch; }
 .precios-tarjetas.tres { grid-template-columns: repeat(3, 1fr); }
+.precios-tarjetas.cuatro { grid-template-columns: repeat(4, 1fr); }
 .precios-tarjetas.dos { grid-template-columns: repeat(2, 1fr); max-width: 760px; margin: 0 auto; }
 .precios-tarjeta { text-align: left; display: flex; flex-direction: column; background: #fff; border: 1px solid #e2e8f0; border-radius: 18px; padding: 24px 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.04); }
 .precios-tarjeta.destacada { border: 2px solid transparent; background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #25D366, #8A2BE2) border-box; box-shadow: 0 12px 30px rgba(138,43,226,0.12); }
@@ -28,6 +29,7 @@
 .precios-juegos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .precios .precios-boton.halloween { background: linear-gradient(135deg, #ff7a00, #8A2BE2); }
 .precios .precios-boton.navidad { background: linear-gradient(135deg, #c62828, #2e7d32); }
+.precios .precios-boton.pareja { background: linear-gradient(135deg, #e91e63, #8A2BE2); }
 
 .precios-garantias { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; margin: 24px 0 8px; color: #4a5568; font-size: 0.92rem; }
 
@@ -38,7 +40,8 @@
 .precios .precios-pasos h4 { font-size: 1rem !important; margin: 0 0 6px; color: #1a202c; }
 .precios-pasos p { margin: 0; font-size: 0.92rem; color: #4a5568; }
 
+@media (max-width: 1100px) { .precios-tarjetas.cuatro { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 860px) {
-  .precios-tarjetas.tres, .precios-tarjetas.dos, .precios-pasos { grid-template-columns: 1fr; }
+  .precios-tarjetas.tres, .precios-tarjetas.dos, .precios-tarjetas.cuatro, .precios-pasos { grid-template-columns: 1fr; }
   .precios .precios-cabecera h1 { font-size: 1.7rem !important; }
 }

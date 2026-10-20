@@ -227,7 +227,7 @@ const ParejaPage = () => {
   return (
     <div className="pareja">
       <header className="pareja-cabecera">
-        <span className="pareja-etiqueta">💘 Chat de pareja</span>
+        <span className="pareja-etiqueta">💘 Doctor Amor · Chat de pareja</span>
         <h1>Consigue tu objetivo</h1>
         <p>Sube tu chat con esa persona, dinos qué quieres y te decimos lo cerca que estás, qué estás haciendo bien, qué cambiar y qué escribir.</p>
       </header>
