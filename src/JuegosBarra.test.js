@@ -17,7 +17,7 @@ test('un botón por juego: el comprado dice listo, el otro muestra el precio', (
   const html = renderToStaticMarkup(<JuegosBarra user={{ uid: 'u1' }} chatData="chat" skipIA={false} />);
   expect(html).toContain('🎃 Descargar juego de Halloween');
   expect(html).toContain('🎄 Comprar juego de Navidad · 2,99€');
-  expect(html).toContain('Comprado · dos PDFs listos para imprimir');
-  expect(html).toContain('Pago único por chat');
+  expect(html).toContain('Comprado');
+  expect(html).not.toContain('Pago único');
   expect(html).not.toContain('¿Quién');
 });

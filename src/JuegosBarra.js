@@ -13,10 +13,9 @@ const BotonJuego = ({ user, chatData, skipIA, tema }) => {
     : credito === null ? `${t.emoji} Juego de ${nombre}`
     : credito.canUse ? `${t.emoji} Descargar juego de ${nombre}`
     : `${t.emoji} Comprar juego de ${nombre} · ${price}`;
-  const nota = credito === null ? ' '
-    : estado === 'listo' ? '✅ Descargado. Pulsa para volver a generar.'
-    : credito.canUse ? 'Comprado · dos PDFs listos para imprimir'
-    : `Pago único por chat · luego se descarga aquí${skipIA ? ' · solo Ronda 1 sin IA' : ''}`;
+  const nota = estado === 'listo' ? '✅ Descargado'
+    : credito?.canUse ? 'Comprado'
+    : skipIA ? 'Solo Ronda 1 sin IA' : '';
 
   return (
     <div className={`juego-boton juego-${t.id}`}>
