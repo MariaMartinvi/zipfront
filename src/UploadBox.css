@@ -21,7 +21,8 @@
 
 .upload-card-android { border-style: solid; border-color: var(--border-light); box-shadow: var(--shadow-md); text-align: left; }
 .upload-card-android .upload-card-icon, .upload-card-android h3 { text-align: center; }
-.upload-android-steps { margin: 14px 0 18px; padding-left: 22px; color: var(--text-primary); line-height: 1.6; }
+.upload-android-steps { list-style: decimal inside; margin: 14px 0 18px; padding-left: 4px; }
+.upload-android-steps li { list-style-type: decimal; margin-bottom: 6px; color: var(--text-primary); line-height: 1.6; }
 .upload-card-android .install-pwa-container { position: static; animation: none; display: flex; justify-content: center; margin-bottom: 12px; }
 .upload-android-zip { display: block; text-align: center; color: var(--primary-green-dark); cursor: pointer; text-decoration: underline; font-size: 0.95rem; }
 
