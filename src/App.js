@@ -6,7 +6,6 @@ import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import AndroidAppPrompt from './AndroidAppPrompt';
 import Chatgptresultados from './Chatgptresultados';
-import WhatsappInstructions from './WhatsappInstructions';
 import AnalisisResumenGeneral from './AnalisisResumenGeneral';
 import AnalisisEstadistico from './AnalisisEstadistico';
 import AnalisisTop from './Analisis_top';
@@ -42,6 +41,7 @@ import { getAiPackPricing } from './utils/pricing';
 import { trackEvent } from './utils/analytics';
 import { useTrackOnceVisible } from './utils/useTrackOnceVisible';
 import PorraSection from './PorraSection';
+import UploadBox from './UploadBox';
 import PorraPage from './PorraPage';
 
 
@@ -2517,40 +2517,12 @@ const tryDeleteFiles = async (operationId) => {
                         </div>
                       </div>
                     ) : (
-                      <>
-                        <h2>{showAnalysis ? t('app.upload.another') : (<>{t('app.upload.title')} <span className="whatsapp-text">WhatsApp</span></>)}</h2>
-                        
-                        {/* Carrusel de instrucciones de WhatsApp separado del botón */}
-                        <WhatsappInstructions />
-                        
-                        {/* User subscription status card */}
-                        
-                        <div className="file-upload-container">
-                          <label className="file-upload-label">
-                            <input 
-                              type="file" 
-                              className="file-upload-input" 
-                              accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" 
-                              onChange={handleFileUpload} 
-                            />
-                            <div className="file-upload-text">
-                              <span className="upload-icon">📂</span>
-                              <span>{t('app.upload.button')}</span>
-                              <span className="file-upload-subtext">{t('app.upload.subtext')}</span>
-                            </div>
-                          </label>
-                          <div className="privacy-option">
-                            <label className="privacy-checkbox-label">
-                              <input
-                                type="checkbox"
-                                checked={skipAIPsychologicalAnalysis}
-                                onChange={(e) => setSkipAIPsychologicalAnalysis(e.target.checked)}
-                              />
-                              <span>{t('app.privacy.no_ai_analysis')}</span>
-                            </label>
-                          </div>
-                        </div>
-                      </>
+                      <UploadBox
+                        onFileUpload={handleFileUpload}
+                        skipIA={skipAIPsychologicalAnalysis}
+                        onSkipIAChange={setSkipAIPsychologicalAnalysis}
+                        showAnalysis={showAnalysis}
+                      />
                     )}
                   </div>
                 </div>

@@ -14,7 +14,13 @@
       "title": "Analise seu chat",
       "button": "Fazer upload do arquivo ZIP",
       "subtext": "ou compartilhe diretamente do WhatsApp seguindo os passos acima",
-      "another": "Quer analisar outro chat?"
+      "another": "Quer analisar outro chat?",
+      "hero_title": "Envie seu chat do WhatsApp",
+      "hero_subtitle": "Exporte o chat sem mídia e envie aqui. Em 10 segundos você tem a análise.",
+      "drop": "Arraste seu arquivo .zip aqui ou clique para escolher",
+      "android_title": "Compartilhe o chat pelo WhatsApp",
+      "android_or_zip": "Já tem o .zip? Envie aqui",
+      "how_export": "Como exporto o chat?"
     },
     "analysis": {
       "statistical": "Análise Estatística",

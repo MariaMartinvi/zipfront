@@ -222,3 +222,11 @@
     font-size: 14px;
   }
 }
+
+/* Modo compacto (dentro del desplegable del cajón de subida) */
+.whatsapp-instructions.compact { padding: 8px 0 16px; }
+.whatsapp-instructions.compact .instruction-tabs { margin-bottom: 16px; }
+.whatsapp-instructions.compact .steps-grid { gap: 14px; }
+.whatsapp-instructions.compact .step-card { padding: 14px; }
+.whatsapp-instructions.compact .step-image { max-height: 170px; }
+.whatsapp-instructions.compact .step-description { margin-bottom: 10px; }

@@ -548,7 +548,13 @@
       "title": "Analizza la tua chat",
       "button": "Carica file ZIP",
       "subtext": "o condividi direttamente da WhatsApp seguendo i passaggi sopra",
-      "another": "Vuoi analizzare un'altra chat?"
+      "another": "Vuoi analizzare un'altra chat?",
+      "hero_title": "Carica la tua chat di WhatsApp",
+      "hero_subtitle": "Esporta la chat senza media e caricala qui. In 10 secondi hai l'analisi.",
+      "drop": "Trascina qui il file .zip o clicca per sceglierlo",
+      "android_title": "Condividi la chat da WhatsApp",
+      "android_or_zip": "Hai già il .zip? Caricalo qui",
+      "how_export": "Come esporto la chat?"
     },
     "analysis": {
       "statistical": "Analisi Statistica",

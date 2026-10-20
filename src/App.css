@@ -1847,10 +1847,10 @@ li {
 /* Sección de carga principal - Estilo moderno consistente */
 .upload-section {
   margin: 40px 0 20px 0;
-  padding: 60px 40px;
+  padding: 48px 24px;
   border-radius: 20px;
-  background: white;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  background: var(--background-light);
+  box-shadow: none;
   scroll-margin-top: 20px;
   width: 100%;
   position: relative;

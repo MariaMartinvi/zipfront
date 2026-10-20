@@ -14,7 +14,13 @@
       "title": "Analyze your chat",
       "button": "Upload ZIP file",
       "subtext": "or share directly from WhatsApp following the steps above",
-      "another": "Want to analyze another chat?"
+      "another": "Want to analyze another chat?",
+      "hero_title": "Upload your WhatsApp chat",
+      "hero_subtitle": "Export the chat without media and upload it here. Your analysis is ready in 10 seconds.",
+      "drop": "Drag your .zip file here or click to choose it",
+      "android_title": "Share the chat from WhatsApp",
+      "android_or_zip": "Already have the .zip? Upload it here",
+      "how_export": "How do I export the chat?"
     },
     "analysis": {
       "statistical": "Statistical Analysis",
@@ -1390,7 +1396,9 @@
       "subtitle": "Guess which person in the chat corresponds to each category"
     },
     "loading": "Loading game...",
-    "share": { "text": "I got {{score}} out of {{total}} in our chat game! How many can you get? 👀" },
+    "share": {
+      "text": "I got {{score}} out of {{total}} in our chat game! How many can you get? 👀"
+    },
     "button": {
       "backToHome": "Back to home",
       "playAgainResults": "Play again",

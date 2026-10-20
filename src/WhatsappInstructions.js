@@ -4,16 +4,18 @@ import './WhatsappInstructions.css';
 import InstallPWA from './InstallPWA';
 
 // Detectar plataforma automáticamente
-const detectPlatform = () => {
+export const detectPlatform = () => {
   const userAgent = navigator.userAgent;
   if (/Android/i.test(userAgent)) return 'android';
   if (/iPhone|iPad|iPod/i.test(userAgent)) return 'ios';
   return 'desktop';
 };
 
-function WhatsappInstructions() {
+// `platform` + `compact`: controlado desde UploadBox (sin cabecera ni selector, capturas pequeñas)
+function WhatsappInstructions({ platform: platformProp, compact = false }) {
   const { t } = useTranslation();
-  const [platform, setPlatform] = useState(detectPlatform());
+  const [platformState, setPlatform] = useState(detectPlatform());
+  const platform = platformProp || platformState;
   const [activeTab, setActiveTab] = useState('steps');
 
   const scrollToUpload = () => {
@@ -103,14 +105,16 @@ function WhatsappInstructions() {
       : '/desktop.mp4';
 
   return (
-    <div className="whatsapp-instructions">
-      <div className="instructions-header">
-        <h2>{t(`whatsapp.hero.${platform}.title`, t('whatsapp.title'))}</h2>
-        <p className="instructions-subtitle">{t(`whatsapp.hero.${platform}.subtitle`, '')}</p>
-      </div>
+    <div className={`whatsapp-instructions ${compact ? 'compact' : ''}`}>
+      {!compact && (
+        <div className="instructions-header">
+          <h2>{t(`whatsapp.hero.${platform}.title`, t('whatsapp.title'))}</h2>
+          <p className="instructions-subtitle">{t(`whatsapp.hero.${platform}.subtitle`, '')}</p>
+        </div>
+      )}
 
-      {/* Selector de plataforma (solo visible en escritorio) */}
-      {detectPlatform() === 'desktop' && (
+      {/* Selector de plataforma (solo visible en escritorio y sin control externo) */}
+      {!platformProp && detectPlatform() === 'desktop' && (
         <div className="platform-selector" role="tablist">
           {['android', 'ios', 'desktop'].map((p) => (
             <button
