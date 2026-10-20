@@ -19,7 +19,7 @@ test('el estado sobrevive al pago (localStorage)', () => {
   expect(leerEstado()).toBeNull();
 });
 
-test('precios de pareja: 2,99 y 4,99, en US$ en Latam', () => {
+test('precios de pareja: 2,99 y 4,99 en euros; 1,99 y 2,99 US$ en Latam', () => {
   expect(getParejaPricing('Europe/Madrid', true)).toMatchObject({ price: '2,99€', pack: '4,99€' });
-  expect(getParejaPricing('America/Lima', true)).toMatchObject({ region: 'latam', price: '2,99 US$', pack: '4,99 US$' });
+  expect(getParejaPricing('America/Lima', true)).toMatchObject({ region: 'latam', price: '1,99 US$', pack: '2,99 US$' });
 });

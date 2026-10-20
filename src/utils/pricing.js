@@ -76,8 +76,8 @@ export const getPorraPricing = (timeZone = getUserTimeZone(), latamActive = LATA
   return { region: 'default', price: '2,99€' };
 };
 
-/** "Consigue tu objetivo · Chat de pareja": análisis 2,99 y seguimiento de 1 mes 4,99 (US$ en Latam). */
+/** "Consigue tu objetivo · Chat de pareja": análisis 2,99 € / 1,99 US$ en Latam; seguimiento 1 mes 4,99 € / 2,99 US$. */
 export const getParejaPricing = (timeZone = getUserTimeZone(), latamActive = LATAM_PRICE_ACTIVE) => {
-  if (latamActive && isLatamTimeZone(timeZone)) return { region: 'latam', price: '2,99 US$', pack: '4,99 US$' };
+  if (latamActive && isLatamTimeZone(timeZone)) return { region: 'latam', price: '1,99 US$', pack: '2,99 US$' };
   return { region: isSpainTimeZone(timeZone) ? 'es' : 'default', price: '2,99€', pack: '4,99€' };
 };
