@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { getPorraPricing } from './utils/pricing';
 import { TEMAS, temaValido, PREGUNTAS_RONDA_1 } from './utils/porra';
 import { trackEvent } from './utils/analytics';
+import { useAuth } from './AuthContext';
+import { purchasePorra } from './firebase_auth';
 import './PorraPage.css';
 
 // Landings de los dos juegos (solo castellano). Los vídeos los sube Maria a public/videos/.
@@ -47,12 +49,25 @@ const PorraPage = ({ tema = 'navidad' }) => {
   const c = CONTENIDO[t.id];
   const [hayVideo, setHayVideo] = useState(true);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [comprando, setComprando] = useState(false);
   const { price } = getPorraPricing();
 
-  // A la portada y abajo, a la zona de subir el chat (sin sesión muestra el aviso de registro).
-  const irASubirChat = (e) => {
+  // Con sesión: directo a Stripe (el crédito queda en la cuenta; el chat se sube al volver).
+  // Sin sesión: a la portada, abajo, al aviso de registro.
+  const irASubirChat = async (e) => {
     e.preventDefault();
     trackEvent('porra_pagina_cta');
+    if (user?.uid) {
+      setComprando(true);
+      try {
+        trackEvent('porra_click');
+        await purchasePorra(user.uid, t.id);
+        return;
+      } catch (err) {
+        setComprando(false);
+      }
+    }
     navigate('/');
     let intentos = 0;
     const bajar = () => {
@@ -71,8 +86,8 @@ const PorraPage = ({ tema = 'navidad' }) => {
   }, [c.titulo]);
 
   const cta = (texto) => (
-    <a href="/" className="porra-cta-btn" onClick={irASubirChat}>
-      {t.emoji} {texto} · {price}
+    <a href="/" className="porra-cta-btn" onClick={irASubirChat} aria-disabled={comprando}>
+      {t.emoji} {comprando ? 'Abriendo el pago…' : texto} · {price}
     </a>
   );
 
@@ -86,7 +101,10 @@ const PorraPage = ({ tema = 'navidad' }) => {
         <p className="porra-gancho">{c.gancho}</p>
         <p className="porra-intro">{c.intro}</p>
         {cta(c.ctaTexto)}
-        <p className="porra-page-nota">Sube el chat, se analiza en tu navegador y te descargas los dos PDFs. Pago único por chat.</p>
+        <p className="porra-page-nota">
+          {user ? 'Pago seguro con Stripe. Después subes el chat y te descargas los dos PDFs. Un juego por chat.'
+                : 'Regístrate gratis, sube el chat y te descargas los dos PDFs. Pago único por chat.'}
+        </p>
       </header>
 
       {hayVideo && (
