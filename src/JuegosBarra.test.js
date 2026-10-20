@@ -24,11 +24,11 @@ test('un botón por juego: el comprado dice listo, el otro muestra el precio', (
   expect(html).not.toContain('¿Quién');
 });
 
-test('juego ya generado para este chat: dos botones de descarga, sin pedir pago', () => {
+test('juego ya generado para este chat: botón de descarga del PDF completo, sin pedir pago', () => {
   mockGenerado = { grupo: 'G', ronda1: [], ronda2: [], conIA: true };
   const html = renderToStaticMarkup(<JuegosBarra user={{ uid: 'u1' }} chatData="chat" skipIA={false} operationId="op1" />);
-  expect(html).toContain('📄 Hoja de preguntas');
-  expect(html).toContain('🔐 Acta de respuestas');
+  expect(html).toContain('📥 Descargar juego de Navidad (PDF)');
+  expect(html).toContain('solo para el moderador');
   expect(html).not.toContain('Comprar juego de Navidad');
   mockGenerado = null;
 });

@@ -13,11 +13,8 @@ const BotonJuego = ({ user, chatData, skipIA, tema, operationId }) => {
   if (generado && !ocupado) {
     return (
       <div className={`juego-boton juego-${t.id}`}>
-        <span className="juego-boton-nota arriba">{t.emoji} Juego de {nombre} · listo para imprimir</span>
-        <div className="juego-descargas">
-          <button type="button" className="juego-boton-cta" onClick={() => descargar('preguntas')}>📄 Hoja de preguntas</button>
-          <button type="button" className="juego-boton-cta" onClick={() => descargar('respuestas')}>🔐 Acta de respuestas</button>
-        </div>
+        <button type="button" className="juego-boton-cta" onClick={descargar}>📥 Descargar juego de {nombre} (PDF)</button>
+        <span className="juego-boton-nota">Página 1 para los jugadores · páginas 2 y 3 solo para el moderador</span>
         {credito?.canUse && <button type="button" className="juego-boton-enlace" onClick={accion}>Volver a generar (gasta un juego)</button>}
         {error && <span className="juego-boton-error">{error}</span>}
       </div>

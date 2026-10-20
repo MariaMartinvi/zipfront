@@ -78,7 +78,7 @@ export const htmlPreguntas = (grupo, tema = 'navidad') => {
       <div class="ronda r2"><span>RONDA 2 · ${t.ronda2}</span><small>Lo que ha visto la IA de ChatSalsa</small></div>
       ${filasPreguntas(t.preguntasRonda2)}
       <div class="fila" style="border:0;margin-top:10px"><strong>Mis aciertos: ____ / 20</strong><span class="nota" style="margin-left:auto">Marca la casilla de cada pregunta que aciertes.</span></div>
-      <p class="pie">Imprime una hoja por jugador · ${esc(t.nombre)} · un juego de ChatSalsa · chatsalsa.com</p>
+      <p class="pie">Página 1: imprime una por jugador · Páginas 2 y 3: el acta con las respuestas, solo para el moderador · ${esc(t.nombre)} · chatsalsa.com</p>
     </div>
   </div>`;
 };
@@ -160,3 +160,7 @@ export const descargarPdf = async (html, nombreFichero, tema = 'navidad') => {
   }
   pdf.save(nombreFichero);
 };
+
+/** El juego completo en un solo PDF: hoja de jugador (página 1) + acta del moderador (páginas 2 y 3). */
+export const descargarJuegoCompleto = async ({ grupo, ronda1, ronda2, conIA = true, tema = 'navidad' }) =>
+  descargarPdf([htmlPreguntas(grupo, tema), ...htmlRespuestas(grupo, ronda1, ronda2, conIA, tema)], `juego-${tema}.pdf`, tema);

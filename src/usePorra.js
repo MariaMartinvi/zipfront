@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { canUsePorra, decrementPorraCredit, purchasePorra } from './firebase_auth';
 import { getPorraResponse } from './fileService';
 import { TEMAS, temaValido, respuestasRonda1, respuestasRonda2, nombreGrupoDesdeArchivo, CLAVE_NOMBRE_ARCHIVO } from './utils/porra';
-import { htmlPreguntas, htmlRespuestas, descargarPdf } from './utils/porraPdf';
+import { descargarJuegoCompleto } from './utils/porraPdf';
 import { trackEvent } from './utils/analytics';
 
 const nombreGrupoActual = () => {
@@ -69,24 +69,20 @@ export const usePorra = ({ user, chatData, skipIA = false, tema = 'navidad', ope
       setGenerado(datos);
       trackEvent('porra_descargada');
       setEstado('listo');
-      // Primera descarga automática: solo la hoja de preguntas (los móviles bloquean una segunda descarga seguida)
-      try { await descargarPdf(htmlPreguntas(grupo, t.id), `juego-${t.id}-preguntas.pdf`, t.id); } catch (e) { /* queda el botón */ }
+      // Un solo PDF (preguntas + acta): una única descarga, que los móviles sí permiten
+      try { await descargarJuegoCompleto({ ...datos, tema: t.id }); } catch (e) { /* queda el botón para volver a bajarlo */ }
     } catch (e) {
       setError(e.message || 'No se ha podido generar el juego.');
       setEstado('error');
     }
   };
 
-  // Descargas a partir de lo ya generado (sin consumir crédito)
-  const descargar = async (cual) => {
+  // Volver a descargar lo ya generado (sin consumir crédito)
+  const descargar = async () => {
     if (!generado) return;
     setError('');
     try {
-      if (cual === 'preguntas') {
-        await descargarPdf(htmlPreguntas(generado.grupo, t.id), `juego-${t.id}-preguntas.pdf`, t.id);
-      } else {
-        await descargarPdf(htmlRespuestas(generado.grupo, generado.ronda1, generado.ronda2, generado.conIA, t.id), `juego-${t.id}-respuestas.pdf`, t.id);
-      }
+      await descargarJuegoCompleto({ ...generado, tema: t.id });
     } catch (e) {
       setError('No se ha podido descargar el PDF. Inténtalo de nuevo.');
     }

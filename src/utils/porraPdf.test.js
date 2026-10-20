@@ -8,6 +8,7 @@ test.each(['halloween', 'navidad'])('la hoja de jugador (%s) lleva sus 20 pregun
   todas(tema).forEach((p) => expect(html).toContain(p.texto.replace(/"/g, '&quot;')));
   expect(html).toContain('Grupo: Los de siempre');
   expect(html).toContain('chatsalsa.com');
+  expect(html).toContain('solo para el moderador');
   expect(html).not.toContain('class="resp"');
 });
 
