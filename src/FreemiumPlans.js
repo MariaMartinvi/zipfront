@@ -7,6 +7,7 @@ import { purchaseAICredits, db } from './firebase_auth';
 import { doc, getDoc } from 'firebase/firestore';
 import './PricingPage.css';
 import { getAiPackPricing, getPaymentHighlightKey, getPorraPricing, getParejaPricing } from './utils/pricing';
+import { trackProductoClick } from './utils/analytics';
 
 const FreemiumPlans = ({ userId }) => {
   const { t, i18n } = useTranslation();
@@ -115,7 +116,7 @@ const FreemiumPlans = ({ userId }) => {
               <li>Tus mejores momentos y los que podrías haber dicho mejor</li>
               <li>Plan de 2 semanas y mensajes listos para enviar</li>
             </ul>
-            <Link to="/pareja" className="precios-boton pareja">Empezar</Link>
+            <Link to="/pareja" className="precios-boton pareja" onClick={() => trackProductoClick('doctor_amor', 'precios')}>Empezar</Link>
           </section>
         )}
 
@@ -129,8 +130,8 @@ const FreemiumPlans = ({ userId }) => {
               <li>Ronda 1 con datos del chat, Ronda 2 con IA</li>
             </ul>
             <div className="precios-juegos">
-              <Link to="/porra-halloween" className="precios-boton halloween">🎃 Halloween</Link>
-              <Link to="/porra-navidad" className="precios-boton navidad">🎄 Navidad</Link>
+              <Link to="/porra-halloween" className="precios-boton halloween" onClick={() => trackProductoClick('halloween', 'precios')}>🎃 Halloween</Link>
+              <Link to="/porra-navidad" className="precios-boton navidad" onClick={() => trackProductoClick('navidad', 'precios')}>🎄 Navidad</Link>
             </div>
           </section>
         )}

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { logoutUser } from './firebase_auth';
 import { useTranslation } from 'react-i18next';
+import { trackProductoClick } from './utils/analytics';
 import LanguageSwitcher from './LanguageSwitcher';
 import './Header.css';
 
@@ -43,9 +44,9 @@ const Header = ({ user }) => {
           <nav className="desktop-nav">
             <Link to="/" className="nav-link">{t('header.home')}</Link>
             <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
-            {esCastellano && <Link to="/porra-halloween" className="nav-link">🎃 Halloween</Link>}
-            {esCastellano && <Link to="/porra-navidad" className="nav-link">🎄 Navidad</Link>}
-            {esCastellano && <Link to="/pareja" className="nav-link">💘 Doctor Amor</Link>}
+            {esCastellano && <Link to="/porra-halloween" className="nav-link" onClick={() => trackProductoClick('halloween', 'menu')}>🎃 Halloween</Link>}
+            {esCastellano && <Link to="/porra-navidad" className="nav-link" onClick={() => trackProductoClick('navidad', 'menu')}>🎄 Navidad</Link>}
+            {esCastellano && <Link to="/pareja" className="nav-link" onClick={() => trackProductoClick('doctor_amor', 'menu')}>💘 Doctor Amor</Link>}
             {user ? (
               <>
                 <LanguageSwitcher />
@@ -93,9 +94,9 @@ const Header = ({ user }) => {
         <div className="mobile-menu">
           <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>{t('header.home')}</Link>
           <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
-          {esCastellano && <Link to="/porra-halloween" className="mobile-nav-link" onClick={toggleMenu}>🎃 Juego de Halloween</Link>}
-          {esCastellano && <Link to="/porra-navidad" className="mobile-nav-link" onClick={toggleMenu}>🎄 Juego de Navidad</Link>}
-          {esCastellano && <Link to="/pareja" className="mobile-nav-link" onClick={toggleMenu}>💘 Doctor Amor</Link>}
+          {esCastellano && <Link to="/porra-halloween" className="mobile-nav-link" onClick={() => { trackProductoClick('halloween', 'menu'); toggleMenu(); }}>🎃 Juego de Halloween</Link>}
+          {esCastellano && <Link to="/porra-navidad" className="mobile-nav-link" onClick={() => { trackProductoClick('navidad', 'menu'); toggleMenu(); }}>🎄 Juego de Navidad</Link>}
+          {esCastellano && <Link to="/pareja" className="mobile-nav-link" onClick={() => { trackProductoClick('doctor_amor', 'menu'); toggleMenu(); }}>💘 Doctor Amor</Link>}
           {user ? (
             <>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

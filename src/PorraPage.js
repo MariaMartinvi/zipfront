@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPorraPricing } from './utils/pricing';
 import { TEMAS, temaValido, PREGUNTAS_RONDA_1 } from './utils/porra';
-import { trackEvent } from './utils/analytics';
+import { trackEvent, trackProductoClick } from './utils/analytics';
 import { useAuth } from './AuthContext';
 import { canUsePorra, purchasePorra } from './firebase_auth';
 import './PorraPage.css';
@@ -55,6 +55,8 @@ const PorraPage = ({ tema = 'navidad' }) => {
   const [comprando, setComprando] = useState(false);
   const { price } = getPorraPricing();
   const muestra = [...PREGUNTAS_RONDA_1.slice(0, 2), ...t.preguntasRonda2.slice(0, 4)];
+
+  useEffect(() => { trackProductoClick(t.id, 'landing'); }, [t.id]);
 
   useEffect(() => {
     const anterior = document.title;

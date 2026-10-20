@@ -6,7 +6,7 @@ import { prepararChatPareja, getParejaAnalysis } from './fileService';
 import { extractChatContent, anonimizarChat } from './utils/chatImport';
 import { getParejaPricing } from './utils/pricing';
 import { OBJETIVOS, textoObjetivo, clavePar, hoy, diasDesde, guardarEstado, leerEstado, borrarEstado } from './utils/pareja';
-import { trackEvent } from './utils/analytics';
+import { trackEvent, trackProductoClick } from './utils/analytics';
 import UploadBox from './UploadBox';
 import './ParejaPage.css';
 
@@ -120,6 +120,8 @@ const ParejaPage = () => {
   const [error, setError] = useState('');
 
   const actualizar = (cambios) => setEstado((e) => { const n = { ...e, ...cambios }; guardarEstado(n); return n; });
+
+  useEffect(() => { trackProductoClick('doctor_amor', 'landing'); }, []);
 
   useEffect(() => {
     const anteriorTitulo = document.title;
