@@ -12,9 +12,12 @@ test.each(['halloween', 'navidad'])('la hoja de jugador (%s) lleva sus 20 pregun
 });
 
 test('cada tema tiene su cabecera y su color', () => {
-  expect(htmlPreguntas('G', 'halloween')).toContain('EL JUEGO DE HALLOWEEN');
+  expect(htmlPreguntas('G', 'halloween')).toContain('El Juego de Halloween');
+  expect(htmlPreguntas('G', 'halloween')).toContain('Creepster');
+  expect(htmlPreguntas('G', 'halloween')).toContain('porra-halloween-h.jpg');
   expect(htmlPreguntas('G', 'halloween')).toContain('#ff7a00');
-  expect(htmlPreguntas('G', 'navidad')).toContain('EL JUEGO DE NAVIDAD');
+  expect(htmlPreguntas('G', 'navidad')).toContain('El Juego de Navidad');
+  expect(htmlPreguntas('G', 'navidad')).toContain('Mountains of Christmas');
   expect(htmlPreguntas('G', 'navidad')).not.toContain('#ff7a00');
 });
 

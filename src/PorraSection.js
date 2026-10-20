@@ -44,8 +44,8 @@ const PorraSection = ({ user, chatData, skipIA = false, tema = 'navidad' }) => {
         ronda2 = respuestasRonda2(ia.respuestas, t.id);
       }
       await decrementPorraCredit(user.uid, t.id);
-      await descargarPdf(htmlPreguntas(nombreGrupo, t.id), `juego-${t.id}-preguntas.pdf`);
-      await descargarPdf(htmlRespuestas(nombreGrupo, ronda1, ronda2, !skipIA, t.id), `juego-${t.id}-respuestas.pdf`);
+      await descargarPdf(htmlPreguntas(nombreGrupo, t.id), `juego-${t.id}-preguntas.pdf`, t.id);
+      await descargarPdf(htmlRespuestas(nombreGrupo, ronda1, ronda2, !skipIA, t.id), `juego-${t.id}-respuestas.pdf`, t.id);
       trackEvent('porra_descargada');
       setEstado('listo');
     } catch (e) {

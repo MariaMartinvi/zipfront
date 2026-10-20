@@ -26,6 +26,10 @@ export const TEMAS = {
     subtitulo: 'El juego de miedo de tu grupo de WhatsApp',
     ronda2: 'LA TENEBROSA',
     colores: ['#ff7a00', '#8A2BE2'],
+    fuente: 'Creepster',
+    fuenteUrl: 'https://fonts.googleapis.com/css2?family=Creepster&display=swap',
+    imagenH: '/img/porra-halloween-h.jpg',
+    imagenV: '/img/porra-halloween-v.jpg',
     preguntasRonda2: [
       { id: 11, texto: '¿Quién moriría el primero en una película de terror?' },
       { id: 12, texto: '¿Quién es el fantasma del grupo: aparece, asusta y desaparece?' },
@@ -48,7 +52,11 @@ export const TEMAS = {
     ocasion: 'la cena de Navidad',
     subtitulo: 'El juego de mesa de tu grupo de WhatsApp',
     ronda2: 'LA FAMILIAR',
-    colores: ['#25D366', '#8A2BE2'],
+    colores: ['#c62828', '#2e7d32'],
+    fuente: 'Mountains of Christmas',
+    fuenteUrl: 'https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap',
+    imagenH: '/img/porra-navidad-h.jpg',
+    imagenV: '/img/porra-navidad-v.jpg',
     preguntasRonda2: [
       { id: 11, texto: '¿Quién sería el cuñao oficial de la cena?' },
       { id: 12, texto: '¿Quién lo organiza todo y luego se queja?' },

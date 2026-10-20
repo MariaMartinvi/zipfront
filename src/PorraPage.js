@@ -11,10 +11,6 @@ import './PorraPage.css';
 const CONTENIDO = {
   halloween: {
     video: '/videos/porra-halloween.mp4',
-    imagenH: '/img/porra-halloween-h.jpg',
-    imagenV: '/img/porra-halloween-v.jpg',
-    fuente: 'Creepster',
-    fuenteUrl: 'https://fonts.googleapis.com/css2?family=Creepster&display=swap',
     titulo: 'El Juego de Halloween',
     gancho: 'Tu grupo de WhatsApp esconde cosas. Esta noche salen todas.',
     intro:
@@ -32,10 +28,6 @@ const CONTENIDO = {
   },
   navidad: {
     video: '/videos/porra-navidad.mp4',
-    imagenH: '/img/porra-navidad-h.jpg',
-    imagenV: '/img/porra-navidad-v.jpg',
-    fuente: 'Mountains of Christmas',
-    fuenteUrl: 'https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap',
     titulo: 'El Juego de Navidad',
     gancho: 'La familia reunida. El cuñao calentando. La abuela con un consejo. Y el chat del grupo, que lo sabe todo.',
     intro:
@@ -70,10 +62,10 @@ const PorraPage = ({ tema = 'navidad' }) => {
     // Tipografía de fiesta solo en esta página
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = c.fuenteUrl;
+    link.href = t.fuenteUrl;
     document.head.appendChild(link);
     return () => { document.title = anterior; document.head.removeChild(link); };
-  }, [c.titulo, c.fuenteUrl]);
+  }, [c.titulo, t.fuenteUrl]);
 
   // Con sesión y el juego ya comprado: a la portada, a la tarjeta del juego (o al cajón de subir el chat).
   // Con sesión sin comprar: directo a Stripe. Sin sesión: a la portada, al aviso de registro.
@@ -117,11 +109,11 @@ const PorraPage = ({ tema = 'navidad' }) => {
   );
 
   return (
-    <div className={`porra-page tema-${t.id}`} style={{ '--fuente-fiesta': `'${c.fuente}', cursive` }}>
+    <div className={`porra-page tema-${t.id}`} style={{ '--fuente-fiesta': `'${t.fuente}', cursive` }}>
       <header className="porra-hero">
         <picture className="porra-hero-img">
-          <source media="(max-width: 700px)" srcSet={c.imagenV} />
-          <img src={c.imagenH} alt="" loading="eager" />
+          <source media="(max-width: 700px)" srcSet={t.imagenV} />
+          <img src={t.imagenH} alt="" loading="eager" />
         </picture>
         <div className="porra-hero-velo" aria-hidden="true" />
         <div className="porra-hero-contenido">
