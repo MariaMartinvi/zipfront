@@ -1,6 +1,6 @@
 // Genera los dos PDFs de "La Porra del Grupo" en el navegador (A4): hoja de jugador y
 // acta del moderador con las respuestas. Nada pasa por el servidor.
-import { PREGUNTAS_RONDA_1, TEMAS, temaValido, preguntasRonda2 } from './porra';
+import { PREGUNTAS_RONDA_1, TEMAS, temaValido } from './porra';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
