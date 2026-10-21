@@ -534,3 +534,50 @@ Fuera de alcance: otros idiomas, chats de grupo, mostrar el número real de mome
 - Pendiente Maria: 4 price IDs en Stripe → `STRIPE_PRICE_ID_PAREJA[_LATAM]`, `STRIPE_PRICE_ID_PAREJA_PACK[_LATAM]`;
   eventos `pareja_paywall|pareja_click|pareja_resultado` en el activador de GTM. P9 (emails) sin empezar.
 - Observación: la política de privacidad aún habla de Azure; hoy la IA es OpenAI (GPT-4.1) y Mistral.
+
+---
+
+# Precios en pesos mexicanos (región `mx`) — plan 2026-10-21
+
+## Contexto
+Anuncios en Meta para México. Hoy México cae en la región `latam` y paga en US$. Objetivo: que un usuario
+en México vea y pague en pesos (MX$), que convierte mejor y evita el aviso de "compra en el extranjero".
+
+## Cómo funciona hoy
+- Front `src/utils/pricing.js`: región por zona horaria (`latam` | `es` | `default`) y textos de precio.
+- Backend `zipback/pricing.py`: `select_price_id(region, product)` elige el price ID de Stripe; el webhook
+  reconoce la compra por price ID (`credits_for_price_id`). Producto por región = una entrada en `PLANS`.
+
+## Precios propuestos (cambio ≈ 18-19 MX$/US$, redondeados a precio "bonito")
+| Producto | Hoy Latam (US$) | Propuesta México (MX$) |
+|---|---|---|
+| Pack 10 análisis IA | 1,99 (antes 5) | 39 (antes 99) · 3,90/análisis |
+| Porra Halloween / Navidad | 2,99 | 59 |
+| Chat de pareja | 1,99 | 39 |
+| Chat de pareja · seguimiento | 2,99 | 59 |
+
+## Suposiciones (corregir si no)
+- Maria crea en Stripe 5 precios de pago único en MXN (pack IA, porra Halloween, porra Navidad, pareja,
+  pareja pack) y pasa los price IDs. Hasta entonces, México sigue pagando en US$ (nada se rompe).
+- Mismos créditos que el resto de regiones. Solo cambia moneda e importe.
+- Sin OXXO ni métodos de pago locales en esta tanda (es otra configuración de Stripe; se puede mirar después).
+- Stripe convierte MXN a EUR al liquidar con una comisión extra (~2 %). Aceptable para probar.
+
+## TODOs
+- [x] M1. Backend `pricing.py`: entradas `*_mx` para los 5 productos (env `STRIPE_PRICE_ID_*_MX`, vacías =
+      desactivado) y `select_price_id('mx', ...)` las elige, con caída a Latam y luego al normal.
+      → verificar: `tests/test_pricing.py` (región mx con y sin variable; webhook reconoce el price ID mx).
+- [x] M2. Front `pricing.js`: `isMexicoTimeZone` (zonas `America/Mexico_City`, `Cancun`, `Merida`, `Monterrey`,
+      `Matamoros`, `Chihuahua`, `Ciudad_Juarez`, `Ojinaga`, `Mazatlan`, `Bahia_Banderas`, `Hermosillo`,
+      `Tijuana`), región `mx` con textos "39 MX$" etc. en `getAiPackPricing`, `getPorraPricing`,
+      `getParejaPricing`; `MX_PRICE_ACTIVE` como interruptor. Resto de Latam sigue en US$.
+      → verificar: `pricing.test.js` (Mexico_City → mx; Bogotá sigue latam; interruptor apagado → latam).
+- [x] M3. Comprobar que ninguna pantalla tiene "US$" escrito a mano para Latam (grep en `src` y locales).
+      → verificar: grep sin resultados fuera de `pricing.js`; `npm test` y build OK.
+- [ ] M4. Maria: crear los 5 precios en Stripe (MXN) y poner `STRIPE_PRICE_ID_MX`,
+      `STRIPE_PRICE_ID_PORRA_HALLOWEEN_MX`, `STRIPE_PRICE_ID_PORRA_NAVIDAD_MX`, `STRIPE_PRICE_ID_PAREJA_MX`,
+      `STRIPE_PRICE_ID_PAREJA_PACK_MX` en Render (zipback). Desplegar backend y front.
+      → verificar: con zona horaria `America/Mexico_City` en DevTools, el modal muestra 39 MX$ y el
+      checkout de Stripe cobra en pesos (compra de prueba y reembolso).
+
+Fuera de alcance: píxel de Meta (plan aparte), OXXO/SPEI, español neutro de los textos.

@@ -6,17 +6,24 @@
 export const LATAM_PRICE_ACTIVE = true;
 // Requiere que el backend tenga el price ID de España (STRIPE_PRICE_ID_ES en Render).
 export const ES_PRICE_ACTIVE = true;
+// México paga en pesos. Requiere los price IDs *_MX en Render; sin ellos el backend cobra el precio Latam (US$).
+export const MX_PRICE_ACTIVE = true;
 
 const SPAIN_TIMEZONES = new Set(['Europe/Madrid', 'Atlantic/Canary', 'Africa/Ceuta']);
 export const isSpainTimeZone = (timeZone) => SPAIN_TIMEZONES.has(timeZone);
 
-const LATAM_TIMEZONES = new Set([
-  // Venezuela
-  'America/Caracas',
-  // México
+const MEXICO_TIMEZONES = new Set([
   'America/Mexico_City', 'America/Cancun', 'America/Merida', 'America/Monterrey',
   'America/Matamoros', 'America/Chihuahua', 'America/Ciudad_Juarez', 'America/Ojinaga',
   'America/Mazatlan', 'America/Bahia_Banderas', 'America/Hermosillo', 'America/Tijuana',
+]);
+export const isMexicoTimeZone = (timeZone) => MEXICO_TIMEZONES.has(timeZone);
+
+// México también es Latam: si el precio en pesos está apagado, paga en US$.
+const LATAM_TIMEZONES = new Set([
+  ...MEXICO_TIMEZONES,
+  // Venezuela
+  'America/Caracas',
   // Colombia, Perú, Ecuador, Bolivia, Paraguay, Uruguay
   'America/Bogota', 'America/Lima', 'America/Guayaquil', 'Pacific/Galapagos',
   'America/La_Paz', 'America/Asuncion', 'America/Montevideo',
@@ -50,13 +57,17 @@ const DEFAULT_PRICING = { region: 'default', price: '5€', original: '10€', p
 // Latam se cobra en dólares; "US$" y no "$", que en Latam significa pesos.
 const LATAM_PRICING = { region: 'latam', price: '1,99 US$', original: '5 US$', perAnalysis: '0,20 US$' };
 const ES_PRICING = { region: 'es', price: '2,99€', original: '5€', perAnalysis: '0,30€' };
+// En México "$" son pesos y el decimal es el punto: "$39 MXN".
+const MX_PRICING = { region: 'mx', price: '$39 MXN', original: '$99 MXN', perAnalysis: '$3.90 MXN' };
 
 /** Precios a mostrar y región a enviar al backend. */
 export const getAiPackPricing = (
   timeZone = getUserTimeZone(),
   latamActive = LATAM_PRICE_ACTIVE,
-  esActive = ES_PRICE_ACTIVE
+  esActive = ES_PRICE_ACTIVE,
+  mxActive = MX_PRICE_ACTIVE
 ) => {
+  if (mxActive && isMexicoTimeZone(timeZone)) return MX_PRICING;
   if (latamActive && isLatamTimeZone(timeZone)) return LATAM_PRICING;
   if (esActive && isSpainTimeZone(timeZone)) return ES_PRICING;
   return DEFAULT_PRICING;
@@ -69,15 +80,17 @@ export const getPaymentHighlightKey = (timeZone = getUserTimeZone()) => {
   return null;
 };
 
-/** "La Porra del Grupo" (juego para la cena de Navidad): 2,99 € en todas partes, en US$ para Latam. */
-export const getPorraPricing = (timeZone = getUserTimeZone(), latamActive = LATAM_PRICE_ACTIVE) => {
+/** "La Porra del Grupo" (juego para la cena de Navidad): 2,99 € en todas partes, en US$ para Latam, $59 MXN en México. */
+export const getPorraPricing = (timeZone = getUserTimeZone(), latamActive = LATAM_PRICE_ACTIVE, mxActive = MX_PRICE_ACTIVE) => {
+  if (mxActive && isMexicoTimeZone(timeZone)) return { region: 'mx', price: '$59 MXN' };
   if (latamActive && isLatamTimeZone(timeZone)) return { region: 'latam', price: '2,99 US$' };
   if (isSpainTimeZone(timeZone)) return { region: 'es', price: '2,99€' };
   return { region: 'default', price: '2,99€' };
 };
 
-/** "Consigue tu objetivo · Chat de pareja": análisis 2,99 € / 1,99 US$ en Latam; seguimiento 1 mes 4,99 € / 2,99 US$. */
-export const getParejaPricing = (timeZone = getUserTimeZone(), latamActive = LATAM_PRICE_ACTIVE) => {
+/** "Consigue tu objetivo · Chat de pareja": análisis 2,99 € / 1,99 US$ en Latam / $39 MXN; seguimiento 1 mes 4,99 € / 2,99 US$ / $59 MXN. */
+export const getParejaPricing = (timeZone = getUserTimeZone(), latamActive = LATAM_PRICE_ACTIVE, mxActive = MX_PRICE_ACTIVE) => {
+  if (mxActive && isMexicoTimeZone(timeZone)) return { region: 'mx', price: '$39 MXN', pack: '$59 MXN' };
   if (latamActive && isLatamTimeZone(timeZone)) return { region: 'latam', price: '1,99 US$', pack: '2,99 US$' };
   return { region: isSpainTimeZone(timeZone) ? 'es' : 'default', price: '2,99€', pack: '4,99€' };
 };

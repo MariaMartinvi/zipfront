@@ -1,11 +1,32 @@
-import { getAiPackPricing, isLatamTimeZone, isSpainTimeZone, getPaymentHighlightKey } from './pricing';
+import { getAiPackPricing, getPorraPricing, getParejaPricing, isLatamTimeZone, isSpainTimeZone, isMexicoTimeZone, getPaymentHighlightKey } from './pricing';
 
 test.each([
-  'America/Caracas', 'America/Mexico_City', 'America/Tijuana', 'America/Bogota', 'America/Lima',
+  'America/Caracas', 'America/Bogota', 'America/Lima',
   'America/Santiago', 'America/Argentina/Buenos_Aires', 'America/Buenos_Aires', 'America/Sao_Paulo',
 ])('%s es Latinoamérica', (tz) => {
   expect(isLatamTimeZone(tz)).toBe(true);
+  expect(isMexicoTimeZone(tz)).toBe(false);
   expect(getAiPackPricing(tz, true)).toMatchObject({ region: 'latam', price: '1,99 US$' });
+});
+
+test.each(['America/Mexico_City', 'America/Tijuana', 'America/Monterrey', 'America/Cancun'])('%s es México: paga en pesos', (tz) => {
+  expect(isMexicoTimeZone(tz)).toBe(true);
+  expect(isLatamTimeZone(tz)).toBe(true);
+  expect(getAiPackPricing(tz, true, true, true)).toMatchObject({ region: 'mx', price: '$39 MXN', original: '$99 MXN', perAnalysis: '$3.90 MXN' });
+  expect(getPorraPricing(tz, true, true)).toEqual({ region: 'mx', price: '$59 MXN' });
+  expect(getParejaPricing(tz, true, true)).toEqual({ region: 'mx', price: '$39 MXN', pack: '$59 MXN' });
+});
+
+test('con el precio de México apagado, Ciudad de México paga en US$ como el resto de Latam', () => {
+  expect(getAiPackPricing('America/Mexico_City', true, true, false)).toMatchObject({ region: 'latam', price: '1,99 US$' });
+  expect(getPorraPricing('America/Mexico_City', true, false)).toEqual({ region: 'latam', price: '2,99 US$' });
+  expect(getParejaPricing('America/Mexico_City', true, false)).toMatchObject({ region: 'latam' });
+});
+
+test('México no cambia el precio de Colombia ni de España', () => {
+  expect(getAiPackPricing('America/Bogota', true, true, true).region).toBe('latam');
+  expect(getAiPackPricing('Europe/Madrid', true, true, true).region).toBe('es');
+  expect(getPorraPricing('Europe/Madrid', true, true).price).toBe('2,99€');
 });
 
 test.each([

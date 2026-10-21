@@ -42,6 +42,14 @@ describe.each(IDIOMAS)('textos de precio en %s', (lng) => {
     expect(i18n.t('hero.ai_preview.unlock_note', p)).toContain('0,20 US$');
   });
 
+  test('precio México: $39 MXN', async () => {
+    const i18n = await crear(lng);
+    const p = getAiPackPricing('America/Mexico_City', true, true, true);
+    expect(i18n.t('hero.ai_preview.unlock_button', p)).toContain('$39 MXN');
+    expect(i18n.t('freemium.ai_pack.original_price', p)).toBe('$99 MXN');
+    expect(i18n.t('hero.ai_preview.unlock_note', p)).toContain('$3.90 MXN');
+  });
+
   test('precio España: 2,99 €', async () => {
     const i18n = await crear(lng);
     const p = getAiPackPricing('Europe/Madrid', true, true);
