@@ -595,3 +595,4 @@ Fuera de alcance: píxel de Meta (plan aparte), OXXO/SPEI, español neutro de lo
 - [x] Quitado el enlace 🎄 Navidad del menú escritorio y móvil (`Header.js`). Halloween y Doctor Amor siguen.
 - [x] Añadido "🎄 Juego de Navidad" en el footer, sección Navegación, solo en castellano (`Footer.js`).
 - Verificado: eslint 0 errores, 19 suites / 136 tests en verde.
+- [x] Quitada también la barra "Juegos para tu grupo" de encima de los resultados (`JuegosBarra` + CSS + test borrados). Tests: 18 suites / 134 en verde.

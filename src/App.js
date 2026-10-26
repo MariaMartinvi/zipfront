@@ -41,7 +41,6 @@ import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
 import { trackEvent } from './utils/analytics';
 import { useTrackOnceVisible } from './utils/useTrackOnceVisible';
-import JuegosBarra from './JuegosBarra';
 import UploadBox from './UploadBox';
 import { extractChatContent } from './utils/chatImport';
 import PorraPage from './PorraPage';
@@ -850,8 +849,6 @@ function AppContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [operationId, chatData, userCredits?.canUse]);
 
-  const esCastellano = (i18n.language || 'es').startsWith('es');
-  const hayResultados = !!(operationId && user && chatData);
 
   // Tras iniciar sesión o registrarse: siempre al cajón de subir el chat.
   useEffect(() => {
@@ -1998,11 +1995,6 @@ const tryDeleteFiles = async (operationId) => {
             path="/"
             element={
               <>
-                {/* Botones de los juegos, arriba del todo de los resultados (solo castellano) */}
-                {esCastellano && hayResultados && (
-                  <JuegosBarra user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} operationId={operationId} />
-                )}
-
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
                 {operationId && user && (
                   <div className="analysis-container" ref={analysisRef}>
