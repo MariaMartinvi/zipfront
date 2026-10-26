@@ -581,3 +581,17 @@ en México vea y pague en pesos (MX$), que convierte mejor y evita el aviso de "
       checkout de Stripe cobra en pesos (compra de prueba y reembolso).
 
 Fuera de alcance: píxel de Meta (plan aparte), OXXO/SPEI, español neutro de los textos.
+
+## Review (2026-10-21)
+- Hecho y desplegado (zipback 3c8a113, chatsalsa 6a4cefa): región `mx` por zona horaria, 5 precios en MXN
+  como valor por defecto en `pricing.py` (sin variables nuevas en Render), textos "$39 MXN" / "$59 MXN".
+- Tests: backend 52 OK (6 nuevos), front 136 OK; build OK. M4 pendiente de verificación manual en producción.
+- Aprendizajes: todos los precios salen de `src/utils/pricing.js` (las traducciones solo interpolan), así que
+  una región nueva son 3 funciones + tests. En México "$" son pesos, por eso el formato "$39 MXN" y no "39 MX$".
+  Un price ID pegado por error era el de pareja Latam: conviene comparar con los existentes antes de aceptarlos.
+
+## 2026-10-26 — Navidad fuera del menú
+- [x] Quitado el banner `BandaJuegos` (ficheros .js y .css borrados, desmontado de `App.js`).
+- [x] Quitado el enlace 🎄 Navidad del menú escritorio y móvil (`Header.js`). Halloween y Doctor Amor siguen.
+- [x] Añadido "🎄 Juego de Navidad" en el footer, sección Navegación, solo en castellano (`Footer.js`).
+- Verificado: eslint 0 errores, 19 suites / 136 tests en verde.

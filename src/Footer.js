@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import './Footer.css';
 import { useTranslation } from 'react-i18next';
 import { FaArrowUp, FaAndroid } from 'react-icons/fa';
+import { trackProductoClick } from './utils/analytics';
 
 const Footer = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const esCastellano = (i18n.language || 'es').startsWith('es');
   
   const scrollToTop = () => {
     window.scrollTo({
@@ -41,6 +43,11 @@ const Footer = () => {
               <Link to="/contact" className="footer-link">
                 <span>{t('footer.contact')}</span>
               </Link>
+              {esCastellano && (
+                <Link to="/porra-navidad" className="footer-link" onClick={() => trackProductoClick('navidad', 'footer')}>
+                  <span>🎄 Juego de Navidad</span>
+                </Link>
+              )}
             </div>
           </div>
           

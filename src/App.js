@@ -44,7 +44,6 @@ import { useTrackOnceVisible } from './utils/useTrackOnceVisible';
 import JuegosBarra from './JuegosBarra';
 import UploadBox from './UploadBox';
 import { extractChatContent } from './utils/chatImport';
-import BandaJuegos from './BandaJuegos';
 import PorraPage from './PorraPage';
 import ParejaPage from './ParejaPage';
 
@@ -1999,9 +1998,6 @@ const tryDeleteFiles = async (operationId) => {
             path="/"
             element={
               <>
-                {/* Banda de los juegos (solo castellano, y solo mientras no hay resultados) */}
-                {esCastellano && !hayResultados && <BandaJuegos />}
-
                 {/* Botones de los juegos, arriba del todo de los resultados (solo castellano) */}
                 {esCastellano && hayResultados && (
                   <JuegosBarra user={user} chatData={chatData} skipIA={skipAIPsychologicalAnalysis} operationId={operationId} />

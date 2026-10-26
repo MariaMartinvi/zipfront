@@ -45,7 +45,6 @@ const Header = ({ user }) => {
             <Link to="/" className="nav-link">{t('header.home')}</Link>
             <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
             {esCastellano && <Link to="/porra-halloween" className="nav-link" onClick={() => trackProductoClick('halloween', 'menu')}>🎃 Halloween</Link>}
-            {esCastellano && <Link to="/porra-navidad" className="nav-link" onClick={() => trackProductoClick('navidad', 'menu')}>🎄 Navidad</Link>}
             {esCastellano && <Link to="/pareja" className="nav-link" onClick={() => trackProductoClick('doctor_amor', 'menu')}>💘 Doctor Amor</Link>}
             {user ? (
               <>
@@ -95,7 +94,6 @@ const Header = ({ user }) => {
           <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>{t('header.home')}</Link>
           <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
           {esCastellano && <Link to="/porra-halloween" className="mobile-nav-link" onClick={() => { trackProductoClick('halloween', 'menu'); toggleMenu(); }}>🎃 Juego de Halloween</Link>}
-          {esCastellano && <Link to="/porra-navidad" className="mobile-nav-link" onClick={() => { trackProductoClick('navidad', 'menu'); toggleMenu(); }}>🎄 Juego de Navidad</Link>}
           {esCastellano && <Link to="/pareja" className="mobile-nav-link" onClick={() => { trackProductoClick('doctor_amor', 'menu'); toggleMenu(); }}>💘 Doctor Amor</Link>}
           {user ? (
             <>
