@@ -2781,6 +2781,11 @@
   transition: all 0.3s ease;
   user-select: none;
   pointer-events: none;
+  /* Recortado a ~3 líneas con desvanecido: basta con que se vea que hay algo */
+  max-height: 4.8rem;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 40%, transparent 100%);
 }
 
 /* Nuevo estilo para blur menos agresivo */

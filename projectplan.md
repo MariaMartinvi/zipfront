@@ -596,3 +596,4 @@ Fuera de alcance: píxel de Meta (plan aparte), OXXO/SPEI, español neutro de lo
 - [x] Añadido "🎄 Juego de Navidad" en el footer, sección Navegación, solo en castellano (`Footer.js`).
 - Verificado: eslint 0 errores, 19 suites / 136 tests en verde.
 - [x] Quitada también la barra "Juegos para tu grupo" de encima de los resultados (`JuegosBarra` + CSS + test borrados). Tests: 18 suites / 134 en verde.
+- [x] Bloques difuminados del preview de IA recortados a ~3 líneas con desvanecido (`.blurred-content` en `AppPreview.css`). Verificación manual: subir un chat sin créditos y comprobar que cada bloque borroso ocupa la mitad.
