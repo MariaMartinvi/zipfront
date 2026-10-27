@@ -31,18 +31,16 @@ import { useTranslation } from 'react-i18next';
 import ChatTopGame from './ChatTopGame';
 import ChatHeadlinesGame from './ChatHeadlinesGame';
 import Juegos from './Juegos';
+import LibroPage from './libro/LibroPage';
+import LibroPedido from './libro/LibroPedido';
+import LibroLanding from './libro/LibroLanding';
+import { libroStore } from './libro/store';
 import { userSession } from './utils/userSession';
 import HeroSection from './components/HeroSection';
 import { SecurityCaptchaProvider } from './components/SecurityCaptcha';
 import TopProfilesViewer from './components/TopProfilesViewer';
 import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
-import LibroPage from './libro/LibroPage';
-import { libroStore } from './libro/store';
-import LibroLanding from './libro/LibroLanding';
-import UploadDone from './UploadDone';
-import UnlockBar from './UnlockBar';
-import LibroPedido from './libro/LibroPedido';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
 import { trackEvent } from './utils/analytics';
@@ -139,8 +137,6 @@ function AppContent() {
   
   // Configuración de privacidad
   const [skipAIPsychologicalAnalysis, setSkipAIPsychologicalAnalysis] = useState(false);
-  const [subirOtro, setSubirOtro] = useState(false); // tras analizar, la caja de subida se pliega hasta pulsar "Subir otro chat"
-  useEffect(() => { setSubirOtro(false); }, [chatData]);
   
   // NUEVO: Estado para datos del juego de titulares
   const [headlinesGameData, setHeadlinesGameData] = useState(null);
@@ -367,7 +363,6 @@ function AppContent() {
         const extractedContent = await extractChatContent(zipContent);
         
         if (extractedContent && extractedContent.chat) {
-          // Libro impreso: chat y zip (fotos) solo en memoria, para la página /libro
           libroStore.set({ chatText: extractedContent.chat, zip: zipContent, fileName: file.name, file });
           // Guardamos el contenido del chat en el estado para usarlo en todos los análisis
           setChatData(extractedContent.chat);
@@ -2005,48 +2000,6 @@ const tryDeleteFiles = async (operationId) => {
             path="/"
             element={
               <>
-                {/* Subida siempre arriba: caja completa si no hay chat (o se pide otro); si ya hay análisis, tarjeta "¡Listo!" */}
-                {!user ? null : (!chatData || subirOtro) ? (
-                <div id="upload-section" className="upload-section">
-                  <div className="upload-section-container">
-                    {!user ? (
-                      <div className="login-required">
-                        <h2>{t('app.login_required.title')}</h2>
-                        <p>{t('app.login_required.description')}</p>
-                        <div className="auth-buttons">
-                          <button 
-                            className="login-button"
-                            onClick={() => window.location.href = '/login'}
-                          >
-                            {t('app.login_required.login')}
-                          </button>
-                          <button 
-                            className="register-button"
-                            onClick={() => window.location.href = '/register'}
-                          >
-                            {t('app.login_required.register')}
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <UploadBox
-                        onFileUpload={handleFileUpload}
-                        skipIA={skipAIPsychologicalAnalysis}
-                        onSkipIAChange={setSkipAIPsychologicalAnalysis}
-                        showAnalysis={showAnalysis}
-                      />
-                    )}
-                  </div>
-                </div>
-
-                ) : (
-                  <UploadDone
-                    onAnother={() => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }}
-                    reportLocked={!chatGptResponse}
-                    onReport={() => { if (chatGptResponse) { document.title = 'ChatSalsa - Informe'; window.print(); } else { startAIAnalysis(); } }}
-                  />
-                )}
-
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
                 {operationId && user && (
                   <div className="analysis-container" ref={analysisRef}>
@@ -2064,14 +2017,6 @@ const tryDeleteFiles = async (operationId) => {
                         <p>{progressMessage || (isLoading ? t('app.progress.processing') : t('app.progress.generating'))}</p>
                       </div>
                     )}
-                  </div>
-                )}
-
-                {/* Gancho discreto tras el resumen: lo gratis primero, el candado después */}
-                {chatData && userCredits && !userCredits.canUse && !chatGptResponse && !isFetchingMistral && (
-                  <div className="ai-teaser" onClick={() => aiLockedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} role="button" tabIndex={0}>
-                    <span>🧠 {t('unlock_bar.teaser', 'La IA ya ha leído vuestro chat: personalidad de cada uno, señales de alerta y nota de la relación.')}</span>
-                    <b>{t('unlock_bar.unlock', 'Desbloquear · {{price}}', { price: getAiPackPricing().price })} ↓</b>
                   </div>
                 )}
 
@@ -2300,11 +2245,6 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
-                {/* Barra fija: el pack de IA siempre a un clic mientras el candado no está a la vista */}
-                {chatData && userCredits && !userCredits.canUse && !chatGptResponse && !isFetchingMistral && (
-                  <UnlockBar targetRef={aiLockedRef} price={getAiPackPricing().price} onUnlock={startAIAnalysis} />
-                )}
-
                 {/* JUEGOS - Tercera parte (tras el análisis IA) */}
                 {operationId && user && chatData && (
                   <div className="games-section">
@@ -2328,25 +2268,43 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
                 
-
                 {/* Botón para compartir juego al final del análisis - MOVIDO A CHATGPTRESULTADOS.JS */}
 
                 {/* Vista previa de la aplicación para usuarios no logueados */}
                 {!user && <AppPreview />}
-                {!user && (
-                  <div id="upload-section" className="upload-section">
-                    <div className="upload-section-container">
+
+                {/* Sección de carga de archivos */}
+                <div id="upload-section" className="upload-section">
+                  <div className="upload-section-container">
+                    {!user ? (
                       <div className="login-required">
                         <h2>{t('app.login_required.title')}</h2>
                         <p>{t('app.login_required.description')}</p>
                         <div className="auth-buttons">
-                          <button className="login-button" onClick={() => window.location.href = '/login'}>{t('app.login_required.login')}</button>
-                          <button className="register-button" onClick={() => window.location.href = '/register'}>{t('app.login_required.register')}</button>
+                          <button 
+                            className="login-button"
+                            onClick={() => window.location.href = '/login'}
+                          >
+                            {t('app.login_required.login')}
+                          </button>
+                          <button 
+                            className="register-button"
+                            onClick={() => window.location.href = '/register'}
+                          >
+                            {t('app.login_required.register')}
+                          </button>
                         </div>
                       </div>
-                    </div>
+                    ) : (
+                      <UploadBox
+                        onFileUpload={handleFileUpload}
+                        skipIA={skipAIPsychologicalAnalysis}
+                        onSkipIAChange={setSkipAIPsychologicalAnalysis}
+                        showAnalysis={showAnalysis}
+                      />
+                    )}
                   </div>
-                )}
+                </div>
 
                 {error && (
                   <div className="error-message">
@@ -2398,15 +2356,16 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/headlines-game" element={<ChatHeadlinesGame />} />
         {/* NUEVAS RUTAS: Visualizadores de datos compartidos */}
         <Route path="/top-profiles" element={<TopProfilesViewer />} />
-        <Route path="/libro-recuerdo" element={<LibroLanding />} />
-        <Route path="/libro" element={<LibroPage />} />
-        <Route path="/libro/pedido" element={<LibroPedido />} />
         <Route path="/analysis" element={<AnalysisViewer />} />
         {/* DEMO ANALYSIS */}
         <Route path="/demo" element={<DemoExample />} />
         <Route path="/porra-halloween" element={<PorraPage tema="halloween" />} />
         <Route path="/porra-navidad" element={<PorraPage tema="navidad" />} />
         <Route path="/pareja" element={<ParejaPage />} />
+        <Route path="/libro-recuerdo" element={<LibroLanding />} />
+        <Route path="/libro" element={<LibroPage />} />
+        <Route path="/libro/pedido" element={<LibroPedido />} />
+
         </Routes>
         
         {/* Componente de instalación de PWA */}
