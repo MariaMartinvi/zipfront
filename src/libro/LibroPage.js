@@ -7,7 +7,7 @@ import { parseChat, participantes } from './parser';
 import { puntuar } from './scorer';
 import { proponer, montar } from './propuesta';
 import { renderHTML, PAGE, FONTS } from './render';
-import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds } from './media';
+import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds, tienePersona } from './media';
 import { libroStore } from './store';
 import { isSpainTimeZone, isMexicoTimeZone, isLatamTimeZone } from '../utils/pricing';
 import './libro.css';
@@ -109,6 +109,11 @@ export default function LibroPage() {
         }
         setMedia(imgs); setVideos(vids); setCargandoFotos('');
         setFotosChat(Object.keys(imgs).filter(n => imgs[n].w >= 600).slice(0, 24));
+        // portada por defecto: la primera foto del chat en la que sale una persona (y no es un pantallazo)
+        for (const m of ms) {
+          if (m.tipo !== 'image' || m.captura || !imgs[m.archivo] || imgs[m.archivo].w < 500) continue;
+          if (await tienePersona(idx, m.archivo)) { setPortadaFoto(f => f || m.archivo); break; }
+        }
       } catch (e) { console.error(e); setEstado('error'); setProgreso('No se ha podido leer el chat.'); }
     })();
   }, []);

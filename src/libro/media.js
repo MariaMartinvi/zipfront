@@ -70,6 +70,23 @@ export async function isScreenshot(idx, name) {
   return false;
 }
 
+// ¿Hay una persona? Heurística de tono de piel (YCbCr) sobre una miniatura: ≥ 6 % de píxeles "piel"
+// y no es un pantallazo. Sirve para elegir la foto de portada; no sale del navegador.
+export async function tienePersona(idx, name) {
+  const img = await imageUri(idx, name);
+  if (!img) return false;
+  const im = await loadImage(await (await fetch(img.uri)).blob());
+  const S = 48; const c = document.createElement('canvas'); c.width = S; c.height = S;
+  const ctx = c.getContext('2d'); ctx.drawImage(im, 0, 0, S, S);
+  const d = ctx.getImageData(0, 0, S, S).data; let piel = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], g = d[i + 1], b = d[i + 2];
+    const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b, cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+    if (cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173 && r > 60 && r > g && r > b) piel++;
+  }
+  return piel / (S * S) >= 0.06;
+}
+
 // Fotograma más nítido de un vídeo (muestreo de 5 puntos) + duración
 export async function videoFrame(idx, name) {
   const key = 'v:' + name;
