@@ -1,5 +1,5 @@
 // HTML del libro (misma plantilla para la vista previa y el PDF). 140 × 215 mm + 3 mm de sangrado.
-import { personajes } from './personajes.js';
+import { EMOJI, personajes } from './personajes';
 
 export const PAGE = { w: 140, h: 215, bleed: 3, margin: 12 };
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -13,7 +13,7 @@ export function stats(mensajes) {
   const txt = mensajes.filter(m => m.tipo === 'text');
   const dias = new Set(mensajes.map(m => m.dia));
   const emo = {};
-  for (const m of txt) for (const e of m.texto.match(/\p{Extended_Pictographic}/gu) || []) emo[e] = (emo[e] || 0) + 1;
+  for (const m of txt) for (const e of m.texto.match(EMOJI) || []) emo[e] = (emo[e] || 0) + 1;
   const horas = {};
   for (const m of mensajes) { const h = new Date(m.fecha).getHours(); horas[h] = (horas[h] || 0) + 1; }
   const horaPunta = Object.entries(horas).sort((a, b) => b[1] - a[1])[0]?.[0];
