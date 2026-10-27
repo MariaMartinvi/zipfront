@@ -35,12 +35,15 @@ export default function LibroPedido() {
       <p>Si el pago se ha realizado, no te preocupes: escríbenos a info@comartinvi.com con el email del pago y lo resolvemos.</p>
       <button onClick={() => navigate('/')}>Volver</button></div>
   );
+  const esPdf = datos.product === 'pdf';
   return (
     <div className="libro-empty">
-      <h2>¡Tu libro está en marcha! 📖</h2>
-      <p>Hemos enviado tu libro a imprenta. Recibirás el recibo de pago por email{datos.email ? ` (${datos.email})` : ''} y te avisaremos cuando salga de camino.</p>
-      <p>Referencia del pedido: <b>{datos.orderId}</b></p>
-      <p className="libro-nota">Tu chat no se ha guardado en ningún sitio: el PDF del libro se borra en cuanto se imprime.</p>
+      <h2>{esPdf ? '¡Tu libro en PDF está listo! 📖' : '¡Tu libro está en marcha! 📖'}</h2>
+      {datos.downloadUrl && <p><a className="libro-descarga" href={datos.downloadUrl} download="libro.pdf">Descargar el PDF</a></p>}
+      {datos.downloadUrl && <p className="libro-nota">El enlace funciona durante {datos.downloadDays || 7} días; guárdate el archivo.</p>}
+      {!esPdf && <p>Hemos enviado tu libro a imprenta. Recibirás el recibo de pago por email{datos.email ? ` (${datos.email})` : ''} y te avisaremos cuando salga de camino.</p>}
+      {!esPdf && <p>Referencia del pedido: <b>{datos.orderId}</b></p>}
+      <p className="libro-nota">Tu chat no se ha guardado en ningún sitio: solo este PDF, cifrado, hasta que caduque.</p>
       <button onClick={() => navigate('/')}>Volver a ChatSalsa</button>
     </div>
   );

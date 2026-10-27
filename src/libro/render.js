@@ -42,21 +42,39 @@ export function renderHTML(mensajes, man, opts = {}) {
   const der = derecha || autores[0];
 
   const bubbles = (ids) => {
-    let out = '', ultimoDia = null, ultimoAutor = null;
+    // Un mensaje → HTML de burbuja. Las fotos sueltas consecutivas de la misma persona se agrupan en un
+    // "álbum" de dos por fila (como WhatsApp): varias verticales una tras otra quedaban fatal.
+    const items = [];
+    let ultimoDia = null, ultimoAutor = null;
     for (const id of ids) {
       const m = mensajes[id];
-      if (m.dia !== ultimoDia) { out += `<div class="day">${esc(fechaLarga(m.dia))}</div>`; ultimoDia = m.dia; ultimoAutor = null; }
+      let dayHTML = '';
+      if (m.dia !== ultimoDia) { dayHTML = `<div class="day">${esc(fechaLarga(m.dia))}</div>`; ultimoDia = m.dia; ultimoAutor = null; }
       const side = m.autor === der ? 'r' : 'l';
       const pi = autores.indexOf(m.autor); const pcls = side === 'l' ? ` p${(pi % 4) + 1}` : '';
-      const showName = m.autor !== ultimoAutor; ultimoAutor = m.autor;
+      const showName = m.autor !== ultimoAutor;
       let mediaHTML = '';
       if (m.tipo === 'image' && m.archivo && media[m.archivo]) mediaHTML = `<div class="media"><img src="${media[m.archivo].uri}"/></div>`;
       else if (m.tipo === 'video' && m.archivo && videos[m.archivo]) mediaHTML = `<div class="media video"><img src="${videos[m.archivo].uri}"/><span class="vid">vídeo${dur(videos[m.archivo].seconds)}</span></div>`;
       else if (m.tipo === 'image' && preview) mediaHTML = `<div class="media missing">foto</div>`;
       if (!mediaHTML && !m.tieneTexto) continue;
-      const pic = mediaHTML && !m.tieneTexto;
-      out += `<div class="msg ${side}${pcls}${pic ? ' pic' : ''}" data-id="${m.id}">${showName ? `<div class="name">${esc(nombre(m.autor))}</div>` : ''}
+      ultimoAutor = m.autor;
+      const pic = !!mediaHTML && !m.tieneTexto;
+      const html = `<div class="msg ${side}${pcls}${pic ? ' pic' : ''}" data-id="${m.id}">${showName && !pic ? `<div class="name">${esc(nombre(m.autor))}</div>` : ''}
         <div class="bubble">${mediaHTML}${m.tieneTexto ? `<div class="txt">${esc(m.texto).replace(/\n/g, '<br>')}</div>` : ''}<span class="time">${hora(m.fecha)}</span></div></div>`;
+      items.push({ m, side, pcls, pic, showName, dayHTML, html });
+    }
+    let out = '';
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      out += it.dayHTML;
+      if (it.pic) {
+        const grupo = [it];
+        while (i + 1 < items.length && items[i + 1].pic && !items[i + 1].dayHTML && items[i + 1].m.autor === it.m.autor) grupo.push(items[++i]);
+        const nombreHTML = it.showName ? `<div class="name">${esc(nombre(it.m.autor))}</div>` : '';
+        if (grupo.length === 1) out += nombreHTML ? `<div class="msg ${it.side}${it.pcls} pic" data-id="${it.m.id}">${nombreHTML}${it.html.slice(it.html.indexOf('<div class="bubble">'), -6)}</div>` : it.html;
+        else out += `<div class="album ${it.side}${it.pcls}">${nombreHTML}<div class="album-grid">${grupo.map(g => g.html).join('')}</div></div>`;
+      } else out += it.html;
     }
     return out;
   };
@@ -128,6 +146,13 @@ export function renderHTML(mensajes, man, opts = {}) {
   .msg.pic .media { margin: 0; }
   .msg.pic .media img { width: auto; max-width: 100%; max-height: 80mm; object-fit: contain; }
   .msg.pic .bubble .time { color: #fff; text-shadow: 0 0 2mm rgba(0,0,0,.6); right: 1.8mm; bottom: 1.2mm; }
+  /* álbum: varias fotos seguidas de la misma persona, dos por fila, recortadas a la misma altura */
+  .album { max-width: 82%; margin: 1.6mm 0; break-inside: avoid; }
+  .album.r { margin-left: auto; }
+  .album-grid { display: flex; flex-wrap: wrap; gap: 1.5mm; }
+  .album-grid .msg { width: calc(50% - .75mm); max-width: none; margin: 0; }
+  .album-grid .msg .bubble { display: block; }
+  .album-grid .msg .media img { width: 100%; height: 48mm; max-height: none; object-fit: cover; }
   .media.missing { height: 30mm; width: 60mm; background: #e4e2dc; color: #999; display: flex; align-items: center; justify-content: center; font-size: 8pt; }
   .media .vid { position: absolute; left: 2mm; bottom: 1.5mm; font-family: 'Poppins', sans-serif; font-size: 6.5pt; color: #fff; background: rgba(0,0,0,.45); padding: .4mm 1.6mm; border-radius: 1mm; }
   .person { display: flex; gap: 4mm; margin-bottom: 7mm; break-inside: avoid; }

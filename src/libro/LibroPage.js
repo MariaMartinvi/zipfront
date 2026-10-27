@@ -7,12 +7,24 @@ import { parseChat, participantes } from './parser';
 import { puntuar } from './scorer';
 import { proponer, montar } from './propuesta';
 import { renderHTML, PAGE, FONTS } from './render';
-import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds } from './media';
+import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds, tienePersona, imageUriFromFile } from './media';
 import { libroStore } from './store';
+import { isSpainTimeZone, isMexicoTimeZone, isLatamTimeZone } from '../utils/pricing';
 import './libro.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
-const PRECIO = 39;
+// Región como el resto de ChatSalsa (por zona horaria); el precio real lo decide el servidor.
+function regionLibro() {
+  let tz = '';
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { /* nada */ }
+  if (isMexicoTimeZone(tz)) return 'mx';
+  if (isLatamTimeZone(tz)) return 'latam';
+  if (isSpainTimeZone(tz)) return 'es';
+  if (/^America\//.test(tz) || /^(Pacific\/Honolulu|US\/)/.test(tz)) return 'us';
+  return 'default';
+}
+const REGION = regionLibro();
+const LABELS_DEFECTO = { libro: '39 €', pdf: '12,99 €' };
 const COLORES = ['#2f3e46', '#5b3a4a', '#3a4a3f', '#1d1d1b', '#8c5a2b', '#2b4a6f'];
 
 export default function LibroPage() {
@@ -34,9 +46,16 @@ export default function LibroPage() {
   const [pidiendo, setPidiendo] = useState(false);
   const [cargandoFotos, setCargandoFotos] = useState('');
   const [paginasReales, setPaginasReales] = useState(0);
+  const [precios, setPrecios] = useState(LABELS_DEFECTO);
+  const [galeria, setGaleria] = useState(false);
   const cssRef = useRef('');
   const iframeRef = useRef(null);
   const idxRef = useRef(null);
+
+  // precios de la región (el servidor manda)
+  useEffect(() => {
+    fetch(`${API_URL}/api/book/config?region=${REGION}`).then(r => r.json()).then(c => { if (c && c.labels) setPrecios(c.labels); }).catch(() => {});
+  }, []);
 
   // 1) cargar chat + media del store (lo deja App al subir el zip)
   useEffect(() => {
@@ -91,6 +110,11 @@ export default function LibroPage() {
         }
         setMedia(imgs); setVideos(vids); setCargandoFotos('');
         setFotosChat(Object.keys(imgs).filter(n => imgs[n].w >= 600).slice(0, 24));
+        // portada por defecto: la primera foto del chat en la que sale una persona (y no es un pantallazo)
+        for (const m of ms) {
+          if (m.tipo !== 'image' || m.captura || !imgs[m.archivo] || imgs[m.archivo].w < 500) continue;
+          if (await tienePersona(idx, m.archivo)) { setPortadaFoto(f => f || m.archivo); break; }
+        }
       } catch (e) { console.error(e); setEstado('error'); setProgreso('No se ha podido leer el chat.'); }
     })();
   }, []);
@@ -140,6 +164,18 @@ export default function LibroPage() {
     return () => { cancelado = true; };
   }, [man, mensajes, media, videos, derecha, caps]);
 
+  async function subirPortada(e) {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try {
+      const r = await imageUriFromFile(f);
+      const key = 'portada:' + f.name;
+      setMedia(m => ({ ...m, [key]: r }));
+      setFotosChat(fs => fs.includes(key) ? fs : [key, ...fs]);
+      setPortadaFoto(key);
+    } catch (err) { alert('No se ha podido leer la imagen'); }
+    e.target.value = '';
+  }
+
   const toggle = k => setCaps(cs => cs.map((c, i) => i === k ? { ...c, on: !c.on } : c));
   const renombrar = (k, t) => setCaps(cs => cs.map((c, i) => i === k ? { ...c, titulo: t } : c));
   const deshacer = () => setQuitados(new Set());
@@ -165,20 +201,9 @@ export default function LibroPage() {
     return r.blob();
   }
 
-  // Solo para revisar: descarga el PDF tal cual irá a imprenta.
-  async function verPDF() {
-    if (pidiendo) return;
-    setPidiendo(true);
-    try {
-      const pdf = await generarPDF();
-      const url = URL.createObjectURL(pdf); const a = document.createElement('a'); a.href = url; a.download = `${titulo.replace(/[^\w&\- ]/g, '')}.pdf`; a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-    } catch (e) { alert(e.message); }
-    setPidiendo(false);
-  }
-
-  // Pedir: PDF → subida cifrada (caduca en 24 h) → Stripe Checkout (dirección y pago) → /libro/pedido.
-  async function pedir() {
+  // Pedir (libro impreso o solo PDF): PDF → subida cifrada → Stripe Checkout → /libro/pedido, donde se
+  // entrega la descarga (y, si es impreso, se manda a imprenta). Nadie descarga nada sin pagar.
+  async function pedir(product = 'libro') {
     if (pidiendo || demasiadas || pocas) return;
     setPidiendo(true);
     try {
@@ -191,7 +216,7 @@ export default function LibroPage() {
       const fileToken = u.plainUrl.split('k=')[1];
       setProgreso('Abriendo el pago…');
       const ck = await fetch(`${API_URL}/api/book/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileId: u.id, fileToken, pageCount: paginas, titulo }) });
+        body: JSON.stringify({ fileId: u.id, fileToken, pageCount: paginas, titulo, product, region: REGION }) });
       const c = await ck.json().catch(() => ({}));
       if (!ck.ok || !c.url) throw new Error(c.error || 'No se pudo iniciar el pago');
       window.location.assign(c.url);
@@ -211,9 +236,9 @@ export default function LibroPage() {
         <h1>{titulo || 'Tu libro'} <small>· vista previa</small></h1>
         {quitados.size > 0 && <button className="pill ghost" onClick={deshacer}>Deshacer ({quitados.size})</button>}
         {cargandoFotos && <span className="pill ghost">Cargando fotos {cargandoFotos}</span>}
-        <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas · {PRECIO} €</span>
-        <button className="pill ghost" disabled={pidiendo} onClick={verPDF} title="Descarga el PDF tal cual irá a imprenta">Ver PDF</button>
-        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={pedir}>{pidiendo ? progreso : `Pedir libro · ${PRECIO} €`}</button>
+        <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas</span>
+        <button className="pill ghost" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF">{`Solo PDF · ${precios.pdf}`}</button>
+        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${precios.libro} · PDF incluido`}</button>
       </div>
       <div className="libro-wrap">
         <iframe ref={iframeRef} title="libro" className="libro-pages" />
@@ -222,7 +247,15 @@ export default function LibroPage() {
           <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Título" />
           <input value={subtitulo} onChange={e => setSubtitulo(e.target.value)} placeholder="Subtítulo" />
           <div className="colores">{COLORES.map(c => <button key={c} style={{ background: c }} className={c === color ? 'on' : ''} onClick={() => setColor(c)} aria-label={c} />)}</div>
-          {fotosChat.length > 0 && <div className="fotos"><button className={!portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(null)}>Sin foto</button>{fotosChat.map(n => <img key={n} src={media[n].uri} alt="" className={n === portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(n)} />)}</div>}
+          <div className="portada-btns">
+            <button className={!portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(null)}>Sin foto</button>
+            {fotosChat.length > 0 && <button className={galeria ? 'on' : ''} onClick={() => setGaleria(g => !g)}>{galeria ? 'Cerrar galería' : 'Elegir del chat'}</button>}
+          </div>
+          {galeria && <div className="fotos">
+            {fotosChat.map(n => <img key={n} src={media[n].uri} alt="" className={n === portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(n)} />)}
+            <label className="subir" title="Subir una foto de tu ordenador">+<span>Subir</span>
+              <input type="file" accept="image/*" onChange={subirPortada} /></label>
+          </div>}
           <h2>Dedicatoria</h2>
           <textarea value={dedicatoria} onChange={e => setDedicatoria(e.target.value.slice(0, 300))} placeholder="Opcional. Para quien es este libro…" rows={3} />
           {autores.length === 2 && <><h2>A la derecha</h2><div className="derecha">{autores.map(a => <button key={a} className={a === derecha ? 'on' : ''} onClick={() => setDerecha(a)}>{a}</button>)}</div></>}
