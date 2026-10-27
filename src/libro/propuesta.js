@@ -17,7 +17,7 @@ export function esConversacion(m) {
   if (m.tipo === 'audio') return !!m.archivo;  // los audios van con QR si están en el zip
   if (['document', 'contact', 'sticker', 'gif', 'media'].includes(m.tipo)) return false;
   if (m.captura || m.videoCorto) return false;  // pantallazos y vídeos-meme: fuera (lo marca el navegador al leer el zip)
-  if (m.esMedia) return true;
+  if (m.esMedia) return m.sinArchivo ? m.tieneTexto : true;  // foto que no vino en el zip: solo su texto, si lo tiene
   if (!m.tieneTexto) return false;
   if (m.texto.length >= MUY_LARGO || PEGADO.test(m.texto)) return false;
   return true;

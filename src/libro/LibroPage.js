@@ -83,6 +83,8 @@ export default function LibroPage() {
         setProgreso('Eligiendo los mejores momentos…');
         const idx = await loadMediaIndex(zip); idxRef.current = idx;
         // penalizar memes y capturas antes de proponer
+        // fotos y vídeos que no están en el zip (chat exportado sin archivos): no hay hueco que reservar
+        for (const m of ms) if (m.esMedia && (!m.archivo || !idx.has(m.archivo))) m.sinArchivo = true;
         const conArchivo = ms.filter(m => m.archivo && idx.has(m.archivo));
         let nv = 0, ni = 0;
         for (const m of conArchivo) {
@@ -401,7 +403,9 @@ export default function LibroPage() {
           <div className="portada-btns">
             <button className={!portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(null)}>Sin foto</button>
             {fotosChat.length > 0 && <button className={galeria ? 'on' : ''} onClick={() => setGaleria(g => !g)}>{galeria ? 'Cerrar galería' : 'Elegir del chat'}</button>}
+            <label className="portada-subir">Subir foto<input type="file" accept="image/*" onChange={subirPortada} /></label>
           </div>
+          {portadaFoto && media[portadaFoto] && <img className="portada-elegida" src={media[portadaFoto].uri} alt="Portada" />}
           {galeria && <div className="fotos">
             {fotosChat.map(n => <img key={n} src={media[n].uri} alt="" className={n === portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(n)} />)}
             <label className="subir" title="Subir una foto de tu ordenador">+<span>Subir</span>
