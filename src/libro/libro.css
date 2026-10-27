@@ -39,6 +39,7 @@
 .libro-card { display: flex; align-items: center; gap: 28px; margin: 32px auto; max-width: 900px; padding: 26px 30px; border-radius: 18px; background: #fff !important; border: 1px solid #e6e9e8; box-shadow: 0 8px 30px rgba(0,0,0,.06); color: #1d1d1b !important; font-family: 'Poppins', system-ui, sans-serif; text-align: left !important; }
 .libro-card-book { flex: none; width: 92px; height: 128px; border-radius: 3px 8px 8px 3px; background: linear-gradient(135deg, #2f3e46, #1d1d1b); color: #fff !important; box-shadow: 6px 6px 0 #d9ded9, 0 10px 20px rgba(0,0,0,.18); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; position: relative; }
 .libro-card-book::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.25); }
+.libro-card-pareja { font-size: 34px; line-height: 1; margin-bottom: auto; align-self: center; margin-top: 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
 .libro-card-book b { font-family: Georgia, 'Lora', serif; font-size: 13px; line-height: 1.15; font-weight: 600; color: #fff !important; }
 .libro-card-book span { font-size: 8px; letter-spacing: .1em; text-transform: uppercase; opacity: .7; margin-top: 4px; color: #fff !important; }
 .libro-card-text { flex: 1; }
