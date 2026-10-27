@@ -150,7 +150,7 @@ const ParejaPage = () => {
   }, [user?.uid, estado.usuarioNombre, otraNombre]);
 
   const sinPagar = user && credito && !credito.canUse;
-  const paso = (!user || (sinPagar && !empezado && !estado.procesado && !estado.resultado)) ? 'intro'
+  const paso = (!user || (sinPagar && !empezado && !estado.resultado)) ? 'intro'   // sin pagar: landing siempre; Empezar retoma donde estaba
     : estado.resultado ? 'resultado'
     : !estado.procesado ? 'subir'
     : !estado.usuarioNombre ? 'quien'
