@@ -7,10 +7,11 @@ export default function LibroCard() {
   const navigate = useNavigate();
   return (
     <div className="libro-card">
+      <div className="libro-card-book"><b>Nuestro chat</b><span>2024 – 2026</span></div>
       <div className="libro-card-text">
         <h2>Tu chat en un libro</h2>
         <p>Elegimos los mejores momentos, los ordenamos en capítulos con vuestras fotos y los personajes de cada uno, y lo imprimimos en un libro de verdad. Tú quitas o añades lo que quieras antes de pedirlo.</p>
-        <p className="libro-card-small">Desde 39 € con envío · Nada se guarda en nuestros servidores</p>
+        <p className="libro-card-small">39 € con envío incluido · Tu chat no se guarda en ningún servidor</p>
       </div>
       <button className="libro-card-btn" onClick={() => navigate('/libro')}>Ver mi libro</button>
     </div>

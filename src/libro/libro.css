@@ -36,10 +36,16 @@
 .libro-spinner { width: 32px; height: 32px; border: 3px solid #ddd; border-top-color: #1d1d1b; border-radius: 50%; margin: 20px auto; animation: libro-spin 1s linear infinite; }
 @keyframes libro-spin { to { transform: rotate(360deg); } }
 @media (max-width: 900px) { .libro-wrap { grid-template-columns: 1fr; } .libro-side { position: static; height: auto; border-left: 0; border-top: 1px solid #ddd; } .libro-pages { height: 60vh; } }
-.libro-card { display: flex; align-items: center; gap: 24px; margin: 32px auto; max-width: 900px; padding: 24px 28px; border-radius: 16px; background: linear-gradient(135deg, #2f3e46, #1d1d1b); color: #fff; font-family: 'Poppins', system-ui, sans-serif; }
-.libro-card h2 { margin: 0 0 6px; font-size: 20px; font-weight: 600; }
-.libro-card p { margin: 0; font-size: 14px; line-height: 1.45; opacity: .92; }
-.libro-card-small { margin-top: 8px !important; font-size: 12px !important; opacity: .7 !important; }
-.libro-card-btn { flex: none; padding: 12px 22px; border-radius: 999px; border: 0; background: #fff; color: #1d1d1b; font: inherit; font-weight: 600; cursor: pointer; }
-@media (max-width: 700px) { .libro-card { flex-direction: column; align-items: stretch; text-align: center; } }
+.libro-card { display: flex; align-items: center; gap: 28px; margin: 32px auto; max-width: 900px; padding: 26px 30px; border-radius: 18px; background: #fff !important; border: 1px solid #e6e9e8; box-shadow: 0 8px 30px rgba(0,0,0,.06); color: #1d1d1b !important; font-family: 'Poppins', system-ui, sans-serif; text-align: left !important; }
+.libro-card-book { flex: none; width: 92px; height: 128px; border-radius: 3px 8px 8px 3px; background: linear-gradient(135deg, #2f3e46, #1d1d1b); color: #fff !important; box-shadow: 6px 6px 0 #d9ded9, 0 10px 20px rgba(0,0,0,.18); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; position: relative; }
+.libro-card-book::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.25); }
+.libro-card-book b { font-family: Georgia, 'Lora', serif; font-size: 13px; line-height: 1.15; font-weight: 600; color: #fff !important; }
+.libro-card-book span { font-size: 8px; letter-spacing: .1em; text-transform: uppercase; opacity: .7; margin-top: 4px; color: #fff !important; }
+.libro-card-text { flex: 1; }
+.libro-card h2 { margin: 0 0 6px !important; font-size: 22px !important; font-weight: 700 !important; color: #1d1d1b !important; text-align: left !important; }
+.libro-card p { margin: 0 !important; font-size: 14px !important; line-height: 1.5 !important; color: #444 !important; text-align: left !important; }
+.libro-card-small { margin-top: 8px !important; font-size: 12px !important; color: #128C7E !important; font-weight: 500 !important; }
+.libro-card-btn { flex: none; padding: 14px 26px; border-radius: 999px; border: 0; background: #25D366 !important; color: #fff !important; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 18px rgba(37,211,102,.35); transition: transform .15s; }
+.libro-card-btn:hover { transform: translateY(-1px); background: #1fbf5b !important; }
+@media (max-width: 700px) { .libro-card { flex-direction: column; align-items: center; text-align: center !important; } .libro-card h2, .libro-card p { text-align: center !important; } }
 .libro-nota { font-size: 12px; color: #777; }
