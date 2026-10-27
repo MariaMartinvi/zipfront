@@ -1901,7 +1901,8 @@
     "title": "🧠 AI personality analysis",
     "subtitle": "Who leads, who stays quiet and what the chat says about each one",
     "see": "See what’s included",
-    "unlock": "Unlock · {{price}}"
+    "unlock": "Unlock · {{price}}",
+    "teaser": "The AI has already read your chat: everyone’s personality, red flags and a relationship score."
   },
   "share_personaje": {
     "button": "Share",

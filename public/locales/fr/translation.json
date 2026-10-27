@@ -1599,7 +1599,8 @@
     "title": "🧠 Analyse psychologique par IA",
     "subtitle": "Qui mène, qui se tait et ce que le chat dit de chacun",
     "see": "Voir le contenu",
-    "unlock": "Débloquer · {{price}}"
+    "unlock": "Débloquer · {{price}}",
+    "teaser": "L’IA a déjà lu votre chat : personnalité de chacun, signaux d’alerte et note de la relation."
   },
   "share_personaje": {
     "button": "Partager",
