@@ -97,7 +97,7 @@
 @media (max-width: 700px) { .libro-landing h1 { font-size: 30px; } .ll-pasos, .ll-incluye ul { grid-template-columns: 1fr; } }
 
 /* Landing: hero con foto y tono regalo */
-.libro-landing { max-width: none; padding: 0 0 60px; }
+.libro-landing { max-width: none; width: 100%; margin: 0; padding: 0 0 60px; box-sizing: border-box; }
 .libro-landing > section:not(.ll-hero-foto):not(.ll-ocasiones) { max-width: 980px; margin-left: auto; margin-right: auto; padding-left: 20px; padding-right: 20px; }
 .ll-hero-foto { position: relative; min-height: min(88vh, 820px); background-size: cover; background-position: center 30%; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 60px 20px; }
 .ll-hero-foto::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.6)); }
