@@ -44,16 +44,25 @@ export default function LibroPage() {
       const { chatText, zip, fileName } = libroStore.get();
       if (!chatText) { setEstado('sinchat'); return; }
       try {
-        const ms = parseChat(chatText);
+        // El chat que guarda la web está anonimizado (teléfonos → X), y eso rompe los nombres de archivo
+        // de las fotos (IMG-20250402-WA0006.jpg). Para el libro leemos el texto original del zip;
+        // no sale del navegador.
+        let texto = chatText;
+        try {
+          const entrada = zip && Object.keys(zip.files).find(n => /(^|\/)_chat\.txt$/i.test(n)) || zip && Object.keys(zip.files).find(n => /\.txt$/i.test(n));
+          if (entrada) texto = await zip.files[entrada].async('string');
+        } catch (e) { console.warn('chat original', e); }
+        const ms = parseChat(texto);
         if (ms.length < 30) { setEstado('error'); setProgreso('Este chat tiene muy pocos mensajes para un libro.'); return; }
         puntuar(ms);
         setProgreso('Eligiendo los mejores momentos…');
         const idx = await loadMediaIndex(zip); idxRef.current = idx;
         // penalizar memes y capturas antes de proponer
         const conArchivo = ms.filter(m => m.archivo && idx.has(m.archivo));
-        for (const m of conArchivo.slice(0, 400)) {
-          if (m.tipo === 'video') { const s = await videoSeconds(idx, m.archivo); if (s != null && s < 3) m.score -= 4; }
-          else if (m.tipo === 'image' && await isScreenshot(idx, m.archivo)) m.score -= 4;
+        let nv = 0, ni = 0;
+        for (const m of conArchivo) {
+          if (m.tipo === 'video' && nv++ < 40) { const s = await videoSeconds(idx, m.archivo); if (s != null && s < 3) m.score -= 4; }
+          else if (m.tipo === 'image' && ni++ < 150 && await isScreenshot(idx, m.archivo)) m.score -= 4;
         }
         const props = proponer(ms);
         const parts = participantes(ms);
@@ -105,7 +114,8 @@ export default function LibroPage() {
     const W = PAGE.w + 2 * PAGE.bleed, H = PAGE.h + 2 * PAGE.bleed;
     doc.open();
     doc.write(`<!doctype html><html><head><meta charset="utf-8">${FONTS}<style>${css}
-      body{background:#ecebe7;padding:18px;display:flex;flex-wrap:wrap;gap:18px;justify-content:center;zoom:.6}
+      body{background:#ecebe7;padding:18px;display:grid;grid-template-columns:repeat(2,${W}mm);gap:6px 10px;justify-content:center;zoom:${zoomPara(iframeRef.current, W)}}
+      body::before{content:'';display:block} /* la portada va a la derecha, como en un libro */
       section{width:${W}mm;height:${H}mm;min-height:0;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.12);margin:0;break-after:auto}
       section.hidden{display:none}
       .msg .x{position:absolute;top:-6px;width:22px;height:22px;border-radius:50%;background:#b3261e;color:#fff;font:14px/22px sans-serif;text-align:center;cursor:pointer;display:none;z-index:2}
@@ -254,4 +264,11 @@ function contarPaginas(doc) {
   let n = [...doc.querySelectorAll('section')].filter(s => !s.classList.contains('hidden')).length;
   if (n < 28) n = 28;
   return n % 2 ? n + 1 : n;
+}
+
+// Zoom para que quepan dos páginas (una doble) en el ancho del iframe.
+function zoomPara(iframe, Wmm) {
+  const px = Wmm * 96 / 25.4;
+  const ancho = (iframe && iframe.clientWidth) || 1000;
+  return Math.max(0.3, Math.min(1, (ancho - 60) / (2 * px + 10))).toFixed(3);
 }
