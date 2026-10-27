@@ -42,3 +42,4 @@
 .libro-card-small { margin-top: 8px !important; font-size: 12px !important; opacity: .7 !important; }
 .libro-card-btn { flex: none; padding: 12px 22px; border-radius: 999px; border: 0; background: #fff; color: #1d1d1b; font: inherit; font-weight: 600; cursor: pointer; }
 @media (max-width: 700px) { .libro-card { flex-direction: column; align-items: stretch; text-align: center; } }
+.libro-nota { font-size: 12px; color: #777; }

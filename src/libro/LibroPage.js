@@ -115,17 +115,45 @@ export default function LibroPage() {
   const renombrar = (k, t) => setCaps(cs => cs.map((c, i) => i === k ? { ...c, titulo: t } : c));
   const deshacer = () => setQuitados(new Set());
 
+  async function generarPDF() {
+    setProgreso('Generando el PDF…');
+    const { html } = renderHTML(mensajes, man, { media, videos, derecha });
+    const r = await fetch(`${API_URL}/api/book/pdf`, { method: 'POST', headers: { 'Content-Type': 'text/html' }, body: html });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'No se pudo generar el PDF');
+    return r.blob();
+  }
+
+  // Solo para revisar: descarga el PDF tal cual irá a imprenta.
+  async function verPDF() {
+    if (pidiendo) return;
+    setPidiendo(true);
+    try {
+      const pdf = await generarPDF();
+      const url = URL.createObjectURL(pdf); const a = document.createElement('a'); a.href = url; a.download = `${titulo.replace(/[^\w&\- ]/g, '')}.pdf`; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    } catch (e) { alert(e.message); }
+    setPidiendo(false);
+  }
+
+  // Pedir: PDF → subida cifrada (caduca en 24 h) → Stripe Checkout (dirección y pago) → /libro/pedido.
   async function pedir() {
     if (pidiendo || demasiadas || pocas) return;
     setPidiendo(true);
     try {
-      const { html } = renderHTML(mensajes, man, { media, videos, derecha });
-      const r = await fetch(`${API_URL}/api/book/pdf`, { method: 'POST', headers: { 'Content-Type': 'text/html' }, body: html });
-      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'No se pudo generar el PDF');
-      const pdf = await r.blob();
-      // de momento: descargar el PDF; el pago y el pedido a imprenta van en el siguiente paso
-      const url = URL.createObjectURL(pdf); const a = document.createElement('a'); a.href = url; a.download = `${titulo.replace(/[^\w&\- ]/g, '')}.pdf`; a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      const pdf = await generarPDF();
+      setProgreso('Subiendo el libro…');
+      const fd = new FormData(); fd.append('kind', 'pdf'); fd.append('file', pdf, 'libro.pdf');
+      const up = await fetch(`${API_URL}/api/book/upload`, { method: 'POST', body: fd });
+      const u = await up.json().catch(() => ({}));
+      if (!up.ok) throw new Error(u.error || 'No se pudo subir el PDF');
+      const fileToken = u.plainUrl.split('k=')[1];
+      setProgreso('Abriendo el pago…');
+      const ck = await fetch(`${API_URL}/api/book/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileId: u.id, fileToken, pageCount: paginas, titulo }) });
+      const c = await ck.json().catch(() => ({}));
+      if (!ck.ok || !c.url) throw new Error(c.error || 'No se pudo iniciar el pago');
+      window.location.assign(c.url);
+      return; // salimos de la página
     } catch (e) { alert(e.message); }
     setPidiendo(false);
   }
@@ -141,7 +169,8 @@ export default function LibroPage() {
         <h1>{titulo || 'Tu libro'} <small>· vista previa</small></h1>
         {quitados.size > 0 && <button className="pill ghost" onClick={deshacer}>Deshacer ({quitados.size})</button>}
         <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas · {PRECIO} €</span>
-        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={pedir}>{pidiendo ? 'Generando…' : 'Descargar PDF'}</button>
+        <button className="pill ghost" disabled={pidiendo} onClick={verPDF} title="Descarga el PDF tal cual irá a imprenta">Ver PDF</button>
+        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={pedir}>{pidiendo ? progreso : `Pedir libro · ${PRECIO} €`}</button>
       </div>
       <div className="libro-wrap">
         <iframe ref={iframeRef} title="libro" className="libro-pages" />

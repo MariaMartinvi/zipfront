@@ -40,6 +40,7 @@ import DemoExample from './components/DemoExample';
 import LibroPage from './libro/LibroPage';
 import { libroStore } from './libro/store';
 import LibroCard from './libro/LibroCard';
+import LibroPedido from './libro/LibroPedido';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
 import { trackEvent } from './utils/analytics';
@@ -2360,6 +2361,7 @@ const tryDeleteFiles = async (operationId) => {
         {/* NUEVAS RUTAS: Visualizadores de datos compartidos */}
         <Route path="/top-profiles" element={<TopProfilesViewer />} />
         <Route path="/libro" element={<LibroPage />} />
+        <Route path="/libro/pedido" element={<LibroPedido />} />
         <Route path="/analysis" element={<AnalysisViewer />} />
         {/* DEMO ANALYSIS */}
         <Route path="/demo" element={<DemoExample />} />
