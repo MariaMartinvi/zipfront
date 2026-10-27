@@ -1747,6 +1747,8 @@ const AnalisisTop = ({ operationId, chatData }) => {
         totales: datos.totales || {},
         mensajes_por_usuario: mensajesPorUsuario
       };
+      // avisar a App de que ya hay datos para el juego ¿Quién es quién? (si no, puede no volver a pintarse)
+      try { window.dispatchEvent(new Event('chatsalsa:top-listo')); } catch (e) { /* nada */ }
       
       console.log('Datos de análisis disponibles para el juego:', {
         categorias: categoriasMapeadas ? Object.keys(categoriasMapeadas).length : 0,
