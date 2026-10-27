@@ -6,3 +6,12 @@
 .upload-done-btn { flex: none; padding: 11px 20px; border-radius: 999px; border: 1px solid #25D366; background: #fff; color: #128C7E; font: inherit; font-weight: 600; cursor: pointer; }
 .upload-done-btn:hover { background: #25D366; color: #fff; }
 @media (max-width: 600px) { .upload-done { flex-direction: column; text-align: center; } .upload-done-text { text-align: center; } }
+.upload-done-report { border-color: #1d1d1b; color: #1d1d1b; }
+.upload-done-report:hover { background: #1d1d1b; color: #fff; }
+/* Informe PDF = imprimir la página de resultados sin cabecera, subida ni botones */
+@media print {
+  header, .app-header, .site-header, nav, footer, .footer, .upload-section, .upload-done, .unlock-bar, .profile-share, .share-button, .share-analysis-button, .games-section, .ai-analysis-locked, button { display: none !important; }
+  body { background: #fff !important; }
+  .analysis-container, .chat-analysis-section, .additional-analysis, .statistical-analysis-section { break-inside: auto; box-shadow: none !important; }
+  .profile-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ddd; }
+}

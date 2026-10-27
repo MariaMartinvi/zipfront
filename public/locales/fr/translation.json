@@ -23,7 +23,9 @@
       "how_export": "Comment exporter le chat ?",
       "done_title": "C’est prêt !",
       "done_text": "Votre analyse est juste en dessous.",
-      "done_another": "Importer un autre chat"
+      "done_another": "Importer un autre chat",
+      "report": "Rapport PDF",
+      "report_locked": "Inclus dans le pack IA"
     },
     "analysis": {
       "statistical": "Analyse Statistique",

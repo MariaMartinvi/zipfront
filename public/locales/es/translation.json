@@ -23,7 +23,9 @@
       "how_export": "¿Cómo exporto el chat?",
       "done_title": "¡Listo!",
       "done_text": "Tu análisis está aquí abajo.",
-      "done_another": "Subir otro chat"
+      "done_another": "Subir otro chat",
+      "report": "Informe PDF",
+      "report_locked": "Incluido en el pack de IA"
     },
     "analysis": {
       "statistical": "Análisis Estadístico",

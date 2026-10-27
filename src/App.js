@@ -2040,7 +2040,11 @@ const tryDeleteFiles = async (operationId) => {
                 </div>
 
                 ) : (
-                  <UploadDone onAnother={() => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }} />
+                  <UploadDone
+                    onAnother={() => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }}
+                    reportLocked={!chatGptResponse}
+                    onReport={() => { if (chatGptResponse) { document.title = 'ChatSalsa - Informe'; window.print(); } else { startAIAnalysis(); } }}
+                  />
                 )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
