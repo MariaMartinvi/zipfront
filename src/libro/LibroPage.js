@@ -60,8 +60,10 @@ export default function LibroPage() {
   // 1) cargar chat + media del store (lo deja App al subir el zip)
   useEffect(() => {
     (async () => {
-      const { chatText, zip, fileName } = libroStore.get();
+      setProgreso('Leyendo el chat…');
+      const { chatText, zip, fileName } = await libroStore.recuperar();  // memoria o, tras recargar, el guardado en el navegador
       if (!chatText) { setEstado('sinchat'); return; }
+      const guardado = await libroStore.cargarEdicion();  // edición anterior de este mismo chat, si la hay
       try {
         // El chat que guarda la web está anonimizado (teléfonos → X), y eso rompe los nombres de archivo
         // de las fotos (IMG-20250402-WA0006.jpg). Para el libro leemos el texto original del zip;
@@ -86,11 +88,24 @@ export default function LibroPage() {
         const props = proponer(ms);
         const parts = participantes(ms);
         const nombres = parts.map(p => p.nombre);
-        setMensajes(ms); setCaps(props);
-        setTitulo(nombres.length === 2 ? `${nombres[0]} & ${nombres[1]}` : (fileName || 'Nuestro chat').replace(/^Chat de WhatsApp con /i, '').replace(/\.zip$/i, ''));
+        setMensajes(ms);
         const y1 = ms[0].dia.slice(0, 4), y2 = ms.at(-1).dia.slice(0, 4);
-        setSubtitulo(y1 === y2 ? y1 : `${y1} – ${y2}`);
-        setDerecha(nombres.find(n => /^(tú|you|yo)$/i.test(n)) || nombres[0]);
+        const g = guardado && guardado.fileName === fileName && guardado.nMensajes === ms.length ? guardado : null;
+        if (g) {
+          // retomar donde lo dejó: capítulos (encendidos y títulos), mensajes quitados, portada, dedicatoria…
+          setCaps(props.map((c, i) => g.caps && g.caps[i] ? { ...c, on: g.caps[i].on, titulo: g.caps[i].titulo || c.titulo } : c));
+          setQuitados(new Set(g.quitados || []));
+          setTitulo(g.titulo || ''); setSubtitulo(g.subtitulo || ''); setDedicatoria(g.dedicatoria || '');
+          if (g.color) setColor(g.color);
+          if (g.portadaFoto && !String(g.portadaFoto).startsWith('portada:')) setPortadaFoto(g.portadaFoto);
+          setDerecha(g.derecha || nombres[0]);
+        } else {
+          setCaps(props);
+          setTitulo(nombres.length === 2 ? `${nombres[0]} & ${nombres[1]}` : (fileName || 'Nuestro chat').replace(/^Chat de WhatsApp con /i, '').replace(/\.zip$/i, ''));
+          setSubtitulo(y1 === y2 ? y1 : `${y1} – ${y2}`);
+          setDerecha(nombres.find(n => /^(tú|you|yo)$/i.test(n)) || nombres[0]);
+        }
+        retomado.current = !!g;
         setEstado('listo');
         // 2) cargar media en segundo plano: primero las fotos de los capítulos elegidos, luego
         //    unas cuantas más como candidatas a portada. Progresivo: la vista previa se va rellenando.
@@ -113,6 +128,7 @@ export default function LibroPage() {
         // portada por defecto: la primera foto del chat en la que sale una persona (y no es un pantallazo)
         for (const m of ms) {
           if (m.tipo !== 'image' || m.captura || !imgs[m.archivo] || imgs[m.archivo].w < 500) continue;
+          if (retomado.current) break;
           if (await tienePersona(idx, m.archivo)) { setPortadaFoto(f => f || m.archivo); break; }
         }
       } catch (e) { console.error(e); setEstado('error'); setProgreso('No se ha podido leer el chat.'); }
@@ -174,6 +190,23 @@ export default function LibroPage() {
       setPortadaFoto(key);
     } catch (err) { alert('No se ha podido leer la imagen'); }
     e.target.value = '';
+  }
+
+  // Guardar la edición en el navegador cada vez que cambia algo (con medio segundo de margen)
+  useEffect(() => {
+    if (estado !== 'listo' || !mensajes) return undefined;
+    const t = setTimeout(() => {
+      const { fileName } = libroStore.get();
+      libroStore.guardarEdicion({ fileName, nMensajes: mensajes.length, caps: caps.map(c => ({ on: c.on, titulo: c.titulo })),
+        quitados: [...quitados], titulo, subtitulo, dedicatoria, color, portadaFoto, derecha });
+    }, 500);
+    return () => clearTimeout(t);
+  }, [estado, mensajes, caps, quitados, titulo, subtitulo, dedicatoria, color, portadaFoto, derecha]);
+
+  async function borrarLibro() {
+    if (!window.confirm('¿Borrar este libro y el chat guardado en este navegador?')) return;
+    await libroStore.borrar();
+    navigate('/libro-recuerdo');
   }
 
   const toggle = k => setCaps(cs => cs.map((c, i) => i === k ? { ...c, on: !c.on } : c));
@@ -278,6 +311,7 @@ export default function LibroPage() {
           <h2>Dedicatoria</h2>
           <textarea value={dedicatoria} onChange={e => setDedicatoria(e.target.value.slice(0, 300))} placeholder="Opcional. Para quien es este libro…" rows={3} />
           {autores.length === 2 && <><h2>A la derecha</h2><div className="derecha">{autores.map(a => <button key={a} className={a === derecha ? 'on' : ''} onClick={() => setDerecha(a)}>{a}</button>)}</div></>}
+          <p className="libro-guardado">💾 Se guarda solo en este navegador. Puedes cerrar y seguir luego.</p>
           <h2>Capítulos</h2>
           {caps.map((c, k) => (
             <div key={k} className={`cap ${c.on ? '' : 'off'}`}>
@@ -285,6 +319,7 @@ export default function LibroPage() {
               <div className="t"><input value={c.titulo} onChange={e => renombrar(k, e.target.value)} /><span>{c.desde} → {c.hasta} · {man.capitulos[k].paginas} pág · {man.capitulos[k].fotos} fotos</span></div>
             </div>))}
           <p className="hint">{demasiadas ? 'Más de 200 páginas: apaga algún capítulo.' : pocas ? 'Enciende al menos un capítulo.' : 'Pasa el ratón por una burbuja y pulsa × para quitarla. Nada se guarda en nuestros servidores.'}</p>
+          <button className="libro-borrar" onClick={borrarLibro}>Borrar mi libro de este navegador</button>
         </aside>
       </div>
     </div>

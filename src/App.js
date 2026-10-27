@@ -368,7 +368,7 @@ function AppContent() {
         
         if (extractedContent && extractedContent.chat) {
           // Libro impreso: chat y zip (fotos) solo en memoria, para la página /libro
-          libroStore.set({ chatText: extractedContent.chat, zip: zipContent, fileName: file.name });
+          libroStore.set({ chatText: extractedContent.chat, zip: zipContent, fileName: file.name, file });
           // Guardamos el contenido del chat en el estado para usarlo en todos los análisis
           setChatData(extractedContent.chat);
           trackEvent('analisis_devuelto');
