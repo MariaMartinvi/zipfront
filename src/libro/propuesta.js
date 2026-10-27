@@ -2,7 +2,7 @@
 // Los títulos con IA (Mistral, vía zipback) sustituirán a estos cuando estén; la estructura es la misma.
 import { puntuar } from './scorer.js';
 
-const BURBUJAS_POR_PAGINA = 16;   // medido en el navegador: ~16 burbujas por página de 14×21,5
+const BURBUJAS_POR_PAGINA = 14;   // ~14 burbujas por página de 20×20 (la paginación real la hace el navegador)
 const PESO_FOTO = 0.5;            // dos fotos por página
 const RAFAGA_MS = 3 * 60e3;       // fotos de la misma persona en 3 min = ráfaga
 const MAX_POR_RAFAGA = 3;
