@@ -41,6 +41,7 @@ import LibroPage from './libro/LibroPage';
 import { libroStore } from './libro/store';
 import LibroCard from './libro/LibroCard';
 import UploadDone from './UploadDone';
+import UnlockBar from './UnlockBar';
 import LibroPedido from './libro/LibroPedido';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
@@ -2062,15 +2063,6 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
-                {/* ANÁLISIS TOP - Segunda parte */}
-                {operationId && user && chatData && (
-                  <div className="additional-analysis">
-                    <div className="analysis-module">
-                      <AnalisisTop chatData={chatData} />
-                    </div>
-                  </div>
-                )}
-
                 {/* Análisis psicológico de Azure */}
                 {operationId && user && (
                   <div className="chat-analysis-section">
@@ -2285,6 +2277,20 @@ const tryDeleteFiles = async (operationId) => {
                       </div>
                     ) : null}
                   </div>
+                )}
+
+                {/* ANÁLISIS TOP - Segunda parte */}
+                {operationId && user && chatData && (
+                  <div className="additional-analysis">
+                    <div className="analysis-module">
+                      <AnalisisTop chatData={chatData} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Barra fija: el pack de IA siempre a un clic mientras el candado no está a la vista */}
+                {chatData && userCredits && !userCredits.canUse && !chatGptResponse && !isFetchingMistral && (
+                  <UnlockBar targetRef={aiLockedRef} price={getAiPackPricing().price} onUnlock={startAIAnalysis} />
                 )}
 
                 {/* JUEGOS - Tercera parte (tras el análisis IA) */}

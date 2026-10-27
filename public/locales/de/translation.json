@@ -1741,5 +1741,16 @@
     "title": "Für immer kostenlos, KI optional",
     "ai_cta": "KI-Paket ansehen",
     "final_title": "Finde heraus, was deine Gruppe verbirgt"
+  },
+  "unlock_bar": {
+    "title": "🧠 KI-Persönlichkeitsanalyse",
+    "subtitle": "Wer führt, wer schweigt und was der Chat über jeden verrät",
+    "see": "Was ist enthalten?",
+    "unlock": "Freischalten · {{price}}"
+  },
+  "share_personaje": {
+    "button": "Teilen",
+    "lema": "In unserer Gruppe bin ich…",
+    "text": "In unserer Gruppe bin ich {{titulo}} 😂 Finde heraus, wer du bist: https://chatsalsa.com?utm_source=share&utm_medium=personaje"
   }
 }

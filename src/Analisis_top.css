@@ -440,3 +440,7 @@
     font-size: 14px;
   }
 }
+/* Compartir un personaje como imagen */
+.profile-card { position: relative; }
+.profile-share { margin-top: 14px; padding: 8px 16px; border-radius: 999px; border: 1px solid #25D366; background: #fff; color: #128C7E; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.profile-share:hover { background: #25D366; color: #fff; }

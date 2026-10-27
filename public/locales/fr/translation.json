@@ -1592,5 +1592,16 @@
     "title": "Gratuit pour toujours, IA en option",
     "ai_cta": "Voir le Pack IA",
     "final_title": "Découvrez ce que cache votre groupe"
+  },
+  "unlock_bar": {
+    "title": "🧠 Analyse psychologique par IA",
+    "subtitle": "Qui mène, qui se tait et ce que le chat dit de chacun",
+    "see": "Voir le contenu",
+    "unlock": "Débloquer · {{price}}"
+  },
+  "share_personaje": {
+    "button": "Partager",
+    "lema": "Dans notre groupe je suis…",
+    "text": "Dans notre groupe je suis {{titulo}} 😂 Découvre qui tu es : https://chatsalsa.com?utm_source=share&utm_medium=personaje"
   }
 }
