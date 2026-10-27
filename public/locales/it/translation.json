@@ -56,7 +56,7 @@
       "price": "💰 Pacchetto di 10 analisi IA: ~~10€~~ 5€",
       "pack_description": "Pacchetto di 10 analisi IA",
       "discount_notice": "🔥 Offerta speciale -50%! Solo per tempo limitato",
-      "full_chat_notice": "✨ Personalità di ognuno + segnali d'allarme + voto alla relazione + consigli",
+      "full_chat_notice": "✨ Personalità di ognuno + segnali d’allarme + voto della relazione + consigli. Include il report PDF da salvare o condividere.",
       "question": "Vuoi approfittare di questa offerta?",
       "buy_button": "Sblocca ora (pagamento sicuro con Stripe)",
       "cancel_button": "Annulla",
