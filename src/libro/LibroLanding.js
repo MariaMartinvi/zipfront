@@ -99,7 +99,7 @@ export default function LibroLanding() {
 
       <section className="ll-precios-sec">
         <div className="ll-precios">
-          <div className="ll-destacado"><em>El regalo</em><b>{precios.libro}</b><span>Libro impreso · tapa blanda 14×21,5 cm · envío incluido · PDF incluido</span></div>
+          <div className="ll-destacado"><em>El regalo</em><b>{precios.libro}</b><span>Libro impreso · tapa blanda 20×20 cm, papel fotográfico · envío incluido · PDF incluido</span></div>
           <div><em>Para leer ya</em><b>{precios.pdf}</b><span>Solo PDF · descarga inmediata</span></div>
         </div>
       </section>

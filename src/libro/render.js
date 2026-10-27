@@ -1,7 +1,7 @@
-// HTML del libro (misma plantilla para la vista previa y el PDF). 140 × 215 mm + 3 mm de sangrado.
+// HTML del libro (misma plantilla para la vista previa y el PDF). 200 × 200 mm + 3 mm de sangrado (fotolibro Gelato, papel estucado).
 import { EMOJI, personajes } from './personajes';
 
-export const PAGE = { w: 140, h: 215, bleed: 3, margin: 12 };
+export const PAGE = { w: 200, h: 200, bleed: 3, margin: 15 };
 export const FONTS = `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&display=block" rel="stylesheet">`;
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -121,7 +121,7 @@ export function renderHTML(mensajes, man, opts = {}) {
   const css = `
   @page { size: ${PAGE.w + 2 * PAGE.bleed}mm ${PAGE.h + 2 * PAGE.bleed}mm; margin: 0; }
   * { box-sizing: border-box; } html, body { margin: 0; padding: 0; }
-  body { font-family: 'Lora', Georgia, serif; color: #1d1d1b; font-size: 9.5pt; line-height: 1.35; }
+  body { font-family: 'Lora', Georgia, serif; color: #1d1d1b; font-size: 10.5pt; line-height: 1.4; }
   .emo, .txt { font-family: 'Lora', 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', Georgia, serif; }
   section { page-break-after: always; break-after: page; padding: ${M}mm; min-height: ${PAGE.h + 2 * PAGE.bleed}mm; position: relative; background: #fff; }
   .cover { background: ${esc(color)}; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; }
@@ -138,7 +138,7 @@ export function renderHTML(mensajes, man, opts = {}) {
   .chapter-open .range { font-family: 'Poppins', sans-serif; font-size: 8.5pt; letter-spacing: .1em; text-transform: uppercase; color: #777; }
   .chapter-body { page-break-after: auto; break-after: auto; min-height: 0; }
   .day { text-align: center; font-family: 'Poppins', sans-serif; font-size: 7.5pt; color: #777; margin: 5mm 0 3mm; letter-spacing: .05em; }
-  .msg { display: flex; flex-direction: column; margin: 1.6mm 0; max-width: 82%; break-inside: avoid; position: relative; }
+  .msg { display: flex; flex-direction: column; margin: 1.6mm 0; max-width: 72%; break-inside: avoid; position: relative; }
   .msg.r { align-self: flex-end; margin-left: auto; align-items: flex-end; }
   .msg .name { font-family: 'Poppins', sans-serif; font-size: 7pt; color: #888; margin: 0 2mm .6mm; }
   .bubble { position: relative; border-radius: 3mm; padding: 2mm 3mm 2.8mm; background: #f1efe9; }
@@ -147,12 +147,12 @@ export function renderHTML(mensajes, man, opts = {}) {
   .bubble .time { position: absolute; right: 2.2mm; bottom: .9mm; font-family: 'Poppins', sans-serif; font-size: 6pt; color: #999; }
   .txt { padding-right: 8mm; white-space: pre-wrap; word-wrap: break-word; }
   .media { position: relative; margin: -1mm -2mm 1.5mm; border-radius: 2.5mm; overflow: hidden; }
-  .media img { display: block; width: 100%; max-height: 60mm; object-fit: cover; }
+  .media img { display: block; width: 100%; max-height: 70mm; object-fit: cover; }
   /* foto sin texto: más grande, sin burbuja, y las verticales no se recortan */
   .msg.pic { max-width: 70%; }
   .msg.pic .bubble { padding: 0; background: none; display: inline-block; }
   .msg.pic .media { margin: 0; }
-  .msg.pic .media img { width: auto; max-width: 100%; max-height: 80mm; object-fit: contain; }
+  .msg.pic .media img { width: auto; max-width: 100%; max-height: 95mm; object-fit: contain; }
   .msg.pic .bubble .time { color: #fff; text-shadow: 0 0 2mm rgba(0,0,0,.6); right: 1.8mm; bottom: 1.2mm; }
   /* álbum: varias fotos seguidas de la misma persona, dos por fila, recortadas a la misma altura */
   .album { max-width: 82%; margin: 1.6mm 0; break-inside: avoid; }
@@ -160,7 +160,7 @@ export function renderHTML(mensajes, man, opts = {}) {
   .album-grid { display: flex; flex-wrap: wrap; gap: 1.5mm; }
   .album-grid .msg { width: calc(50% - .75mm); max-width: none; margin: 0; }
   .album-grid .msg .bubble { display: block; }
-  .album-grid .msg .media img { width: 100%; height: 48mm; max-height: none; object-fit: cover; }
+  .album-grid .msg .media img { width: 100%; height: 62mm; max-height: none; object-fit: cover; }
   .media.missing { height: 30mm; width: 60mm; background: #e4e2dc; color: #999; display: flex; align-items: center; justify-content: center; font-size: 8pt; }
   .media .qr { position: absolute; right: 2mm; bottom: 2mm; width: 18mm; height: 18mm; background: #fff; padding: 1mm; border-radius: 1.5mm; box-shadow: 0 0 2mm rgba(0,0,0,.3); }
   .media .qr-nota { position: absolute; right: 2mm; bottom: 1.5mm; font-family: 'Poppins', sans-serif; font-size: 6pt; color: #fff; background: rgba(0,0,0,.45); padding: .4mm 1.6mm; border-radius: 1mm; }
