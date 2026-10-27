@@ -93,7 +93,7 @@ export default function LibroLanding() {
 
       <section className="ll-pasos">
         <div><span>1</span><b>Sube el chat</b><p>Exportado desde WhatsApp con archivos. Dos minutos.</p></div>
-        <div><span>2</span><b>Mira tu libro</b><p>Te proponemos capítulos con los mejores días, enteros. Quita lo que quieras, pon título, portada y dedicatoria.</p></div>
+        <div><span>2</span><b>Revisa y edita tu libro</b><p>Te proponemos capítulos con los mejores días, enteros. Quita lo que quieras, pon título, portada y dedicatoria.</p></div>
         <div><span>3</span><b>Recíbelo en casa</b><p>Impreso en tapa blanda en pocos días, o el PDF al momento. Pago seguro con Stripe.</p></div>
       </section>
 
