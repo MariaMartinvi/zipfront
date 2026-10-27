@@ -195,3 +195,4 @@
 .libro .portada-subir { flex: 1; padding: 7px; border-radius: 8px; border: 1px dashed #bbb; background: #fff; cursor: pointer; font-size: 12px; text-align: center; }
 .libro .portada-subir input { display: none; }
 .libro .portada-elegida { width: 100%; max-height: 140px; object-fit: cover; border-radius: 8px; margin: 2px 0 8px; }
+@media (min-width: 900px) { .ll-ejemplos-grid { flex-wrap: nowrap; gap: 20px; } .ll-ejemplos-grid .ll-ejemplo { flex: 1 1 0; max-width: 220px; } }
