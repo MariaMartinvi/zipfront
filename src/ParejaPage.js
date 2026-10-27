@@ -115,6 +115,7 @@ const ParejaPage = () => {
   const precios = getParejaPricing();
   const [estado, setEstado] = useState(() => leerEstado() || {});
   const [credito, setCredito] = useState(null);
+  const [empezado, setEmpezado] = useState(false); // con sesión pero sin pagar: la landing se ve igual que en Halloween hasta pulsar Empezar
   const [anterior, setAnterior] = useState(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState('');
@@ -148,7 +149,8 @@ const ParejaPage = () => {
     return () => { vivo = false; };
   }, [user?.uid, estado.usuarioNombre, otraNombre]);
 
-  const paso = !user ? 'intro'
+  const sinPagar = user && credito && !credito.canUse;
+  const paso = (!user || (sinPagar && !empezado && !estado.procesado && !estado.resultado)) ? 'intro'
     : estado.resultado ? 'resultado'
     : !estado.procesado ? 'subir'
     : !estado.usuarioNombre ? 'quien'
@@ -158,6 +160,7 @@ const ParejaPage = () => {
   useEffect(() => { if (paso === 'paywall' && credito && !credito.canUse) trackEvent('pareja_paywall'); }, [paso, credito]);
 
   const empezar = (ruta) => {
+    if (user) { setEmpezado(true); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     try { localStorage.setItem('despues_login', '/pareja'); } catch (e) { /* sin localStorage */ }
     navigate(ruta);
   };
@@ -238,7 +241,7 @@ const ParejaPage = () => {
             <h1>Consigue tu objetivo</h1>
             <p className="pareja-gancho">Tu chat con esa persona ya tiene la respuesta. El Doctor Amor te dice lo cerca que estás, qué cambiar y qué escribir.</p>
             <button type="button" className="pareja-boton pareja-cta" onClick={() => empezar('/register')}>Empezar · desde {precios.price}</button>
-            <button type="button" className="pareja-enlace claro" onClick={() => empezar('/login')}>Ya tengo cuenta</button>
+            {!user && <button type="button" className="pareja-enlace claro" onClick={() => empezar('/login')}>Ya tengo cuenta</button>}
           </div>
         </header>
       ) : (
