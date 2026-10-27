@@ -181,7 +181,7 @@ export default function LibroPage() {
   const deshacer = () => setQuitados(new Set());
 
   // El PDF se hace con exactamente lo que se ve: las páginas ya partidas en la vista previa.
-  async function generarPDF() {
+  async function generarPDF(marcaDeAgua = false) {
     setProgreso('Generando el PDF…');
     const doc = iframeRef.current?.contentDocument;
     if (!doc || !doc.body) throw new Error('La vista previa aún no está lista');
@@ -189,16 +189,34 @@ export default function LibroPage() {
     body.querySelectorAll('.x, section.hidden').forEach(el => el.remove());
     // fotos que no se pudieron leer: fuera (la burbuja entera si no tenía texto)
     body.querySelectorAll('.media.missing').forEach(el => { const msg = el.closest('.msg'); if (msg && !msg.querySelector('.txt')) msg.remove(); else el.remove(); });
-    // número par de páginas y mínimo de 28 (imprenta): rellenamos con blancas antes de la contraportada
     const back = body.querySelector('section.back');
+    if (marcaDeAgua) {
+      // muestra: solo las 8 primeras páginas (portada, personajes, índice y el arranque del primer capítulo)
+      [...body.querySelectorAll('section')].forEach((sec, i) => { if (i >= 8 && sec !== back) sec.remove(); });
+    }
+    // número par de páginas y mínimo de 28 (imprenta): rellenamos con blancas antes de la contraportada
     let n = body.querySelectorAll('section').length;
-    while (n < 28 || n % 2) { const b = doc.createElement('section'); b.className = 'blank'; body.insertBefore(b, back); n++; }
+    while (!marcaDeAgua && (n < 28 || n % 2)) { const b = doc.createElement('section'); b.className = 'blank'; body.insertBefore(b, back); n++; }
     const H = PAGE.h + 2 * PAGE.bleed;
+    const marca = marcaDeAgua ? `section::after{content:'chatsalsa.com · vista previa';position:absolute;left:0;right:0;top:50%;transform:rotate(-30deg);text-align:center;font-family:'Poppins',sans-serif;font-size:22pt;font-weight:600;letter-spacing:.1em;color:rgba(0,0,0,.13);pointer-events:none;z-index:9}
+      section.cover::after,section.back::after{color:rgba(255,255,255,.22)}` : '';
     const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${(titulo || 'libro').replace(/[<>&]/g, '')}</title>${FONTS}<style>${cssRef.current}
-      section{height:${H}mm;min-height:${H}mm;overflow:hidden}</style></head><body>${body.innerHTML}</body></html>`;
+      section{height:${H}mm;min-height:${H}mm;overflow:hidden}${marca}</style></head><body>${body.innerHTML}</body></html>`;
     const r = await fetch(`${API_URL}/api/book/pdf`, { method: 'POST', headers: { 'Content-Type': 'text/html' }, body: html });
     if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'No se pudo generar el PDF');
     return r.blob();
+  }
+
+  // PDF de muestra: gratis, con marca de agua en cada página, sin subir nada al servidor.
+  async function muestra() {
+    if (pidiendo || pocas) return;
+    setPidiendo(true);
+    try {
+      const pdf = await generarPDF(true);
+      const url = URL.createObjectURL(pdf); const a = document.createElement('a'); a.href = url; a.download = `${(titulo || 'libro').replace(/[^\w&\- ]/g, '')} - muestra.pdf`; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    } catch (e) { alert(e.message); }
+    setPidiendo(false);
   }
 
   // Pedir (libro impreso o solo PDF): PDF → subida cifrada → Stripe Checkout → /libro/pedido, donde se
@@ -237,7 +255,8 @@ export default function LibroPage() {
         {quitados.size > 0 && <button className="pill ghost" onClick={deshacer}>Deshacer ({quitados.size})</button>}
         {cargandoFotos && <span className="pill ghost">Cargando fotos {cargandoFotos}</span>}
         <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas</span>
-        <button className="pill ghost" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF">{`Solo PDF · ${precios.pdf}`}</button>
+        <button className="pill ghost" disabled={pidiendo || pocas} onClick={muestra} title="Las 8 primeras páginas en PDF, con marca de agua, para ver la calidad">PDF de muestra</button>
+        <button className="pill ghost" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF, sin marca de agua">{`Solo PDF · ${precios.pdf}`}</button>
         <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${precios.libro} · PDF incluido`}</button>
       </div>
       <div className="libro-wrap">
