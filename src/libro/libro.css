@@ -95,3 +95,24 @@
 .ll-cta { text-align: center; margin: 30px 0; }
 .ll-cta button { padding: 16px 30px; border-radius: 999px; border: 0; background: #25D366; color: #fff; font: inherit; font-size: 17px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(37,211,102,.4); }
 @media (max-width: 700px) { .libro-landing h1 { font-size: 30px; } .ll-pasos, .ll-incluye ul { grid-template-columns: 1fr; } }
+
+/* Landing: hero con foto y tono regalo */
+.libro-landing { max-width: none; padding: 0 0 60px; }
+.libro-landing > section:not(.ll-hero-foto):not(.ll-ocasiones) { max-width: 980px; margin-left: auto; margin-right: auto; padding-left: 20px; padding-right: 20px; }
+.ll-hero-foto { position: relative; min-height: 560px; background-size: cover; background-position: center 30%; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 60px 20px; }
+.ll-hero-foto::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.6)); }
+.ll-hero-texto { position: relative; max-width: 760px; }
+.ll-hero-foto h1 { color: #fff; font-size: 52px; text-shadow: 0 2px 12px rgba(0,0,0,.4); }
+.ll-hero-foto p { color: #fff; opacity: .95; font-size: 18px; text-shadow: 0 1px 6px rgba(0,0,0,.4); }
+.ll-hero-foto .ll-badge { background: rgba(255,255,255,.15); color: #fff; border-color: rgba(255,255,255,.4); backdrop-filter: blur(4px); }
+.ll-hero-cta { margin-top: 26px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.ll-hero-cta button { padding: 18px 36px; border-radius: 999px; border: 0; background: #25D366; color: #fff; font: inherit; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 30px rgba(37,211,102,.5); }
+.ll-hero-cta span { font-size: 13px; opacity: .9; }
+.ll-ocasiones { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 18px 20px; background: #f7f7f4; border-bottom: 1px solid #ecebe7; }
+.ll-ocasiones span { font-size: 13px; color: #555; background: #fff; border: 1px solid #e6e9e8; border-radius: 999px; padding: 6px 14px; }
+.ll-ejemplo { display: flex; flex-direction: column; align-items: center; gap: 14px; max-width: 240px; }
+.ll-ejemplo p { font-size: 14px; margin: 0; }
+.ll-precios-sec { margin: 10px 0 30px; }
+.ll-precios div em { display: block; font-style: normal; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #777; margin-bottom: 4px; }
+.ll-precios .ll-destacado { border-color: #25D366; box-shadow: 0 10px 34px rgba(37,211,102,.18); }
+@media (max-width: 700px) { .ll-hero-foto { min-height: 460px; } .ll-hero-foto h1 { font-size: 34px; } }
