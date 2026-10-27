@@ -37,6 +37,9 @@ import { SecurityCaptchaProvider } from './components/SecurityCaptcha';
 import TopProfilesViewer from './components/TopProfilesViewer';
 import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
+import LibroPage from './libro/LibroPage';
+import { libroStore } from './libro/store';
+import LibroCard from './libro/LibroCard';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
 import { trackEvent } from './utils/analytics';
@@ -359,6 +362,8 @@ function AppContent() {
         const extractedContent = await extractChatContent(zipContent);
         
         if (extractedContent && extractedContent.chat) {
+          // Libro impreso: chat y zip (fotos) solo en memoria, para la página /libro
+          libroStore.set({ chatText: extractedContent.chat, zip: zipContent, fileName: file.name });
           // Guardamos el contenido del chat en el estado para usarlo en todos los análisis
           setChatData(extractedContent.chat);
           trackEvent('analisis_devuelto');
@@ -2263,6 +2268,9 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
                 
+                {/* TU CHAT EN UN LIBRO */}
+                {chatData && <LibroCard />}
+
                 {/* Botón para compartir juego al final del análisis - MOVIDO A CHATGPTRESULTADOS.JS */}
 
                 {/* Vista previa de la aplicación para usuarios no logueados */}
@@ -2351,6 +2359,7 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/headlines-game" element={<ChatHeadlinesGame />} />
         {/* NUEVAS RUTAS: Visualizadores de datos compartidos */}
         <Route path="/top-profiles" element={<TopProfilesViewer />} />
+        <Route path="/libro" element={<LibroPage />} />
         <Route path="/analysis" element={<AnalysisViewer />} />
         {/* DEMO ANALYSIS */}
         <Route path="/demo" element={<DemoExample />} />
