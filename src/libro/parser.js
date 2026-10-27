@@ -100,6 +100,9 @@ function normalizar(m, i) {
   let tipo = 'text';
   let reenviado = false, editado = false, archivo = null;
   texto = texto.replace(/[\u200e\u200f\u202a-\u202e]/g, '').trim(); // marcas de dirección que mete WhatsApp
+  // iPhone escribe los adjuntos como "<adjunto: 00000020-PHOTO-….jpg>"; Android como "IMG-….jpg (archivo adjunto)".
+  // Pasamos el formato iPhone al de Android para que el resto del parser los reconozca igual.
+  texto = texto.replace(/<\s*(adjunto|attached|adjunt|anexado|archivo adjunto|pièce jointe)\s*:\s*([^>]+?)\s*>/gi, '$2 (archivo adjunto)');
   if (REENVIADO.test(texto)) { reenviado = true; texto = texto.replace(REENVIADO, ''); }
   if (EDITADO.test(texto)) { editado = true; texto = texto.replace(EDITADO, ''); }
   const adj = texto.match(ADJUNTO);
