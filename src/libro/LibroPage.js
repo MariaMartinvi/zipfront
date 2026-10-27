@@ -61,8 +61,8 @@ export default function LibroPage() {
         const conArchivo = ms.filter(m => m.archivo && idx.has(m.archivo));
         let nv = 0, ni = 0;
         for (const m of conArchivo) {
-          if (m.tipo === 'video' && nv++ < 40) { const s = await videoSeconds(idx, m.archivo); if (s != null && s < 3) m.score -= 4; }
-          else if (m.tipo === 'image' && ni++ < 150 && await isScreenshot(idx, m.archivo)) m.score -= 4;
+          if (m.tipo === 'video' && nv++ < 40) { const s = await videoSeconds(idx, m.archivo); if (s != null && s < 3) { m.videoCorto = true; m.score -= 4; } }
+          else if (m.tipo === 'image' && ni++ < 400 && await isScreenshot(idx, m.archivo)) { m.captura = true; m.score -= 4; }
         }
         const props = proponer(ms);
         const parts = participantes(ms);

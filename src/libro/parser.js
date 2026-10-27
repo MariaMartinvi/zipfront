@@ -17,6 +17,7 @@ const MEDIA = [
   [/<?\s*(gif)\s+(omitido|omitted|omès)\s*>?/i, 'gif'],
   [/<?\s*(documento|document)\s+(omitido|omitted|omès)\s*>?/i, 'document'],
   [/<?\s*(contacto|contact)\s+(omitido|omitted)\s*>?/i, 'contact'],
+  [/<?\s*(multimedia|media|mèdia|mídia)\s+(omitid[oa]|omitted|omès|omitida|ausente)\s*>?/i, 'media'],
   [/\.(jpe?g|png|heic)\s*(<(adjunto|attached|adjunt|anexado)>|\((archivo adjunto|file attached|fitxer adjunt|arquivo anexado)\))/i, 'image'],
   [/\.(mp4|mov|3gp)\s*(<(adjunto|attached|adjunt|anexado)>|\((archivo adjunto|file attached|fitxer adjunt|arquivo anexado)\))/i, 'video'],
   [/\.(opus|m4a|mp3|ogg)\s*(<(adjunto|attached|adjunt|anexado)>|\((archivo adjunto|file attached|fitxer adjunt|arquivo anexado)\))/i, 'audio'],
@@ -34,7 +35,7 @@ const SISTEMA = [
   /cambió el asunto|changed the subject|cambió la imagen del grupo|changed this group's icon/i,
   /mensajes temporales|disappearing messages/i,
 ];
-const BORRADO = /^(este mensaje fue eliminado|se eliminó este mensaje|you deleted this message|this message was deleted|eliminaste este mensaje|has eliminat aquest missatge|aquest missatge s'ha eliminat)\.?$/i;
+const BORRADO = /^(este mensaje fue eliminado|se eliminó este mensaje|you deleted this message|this message was deleted|eliminaste este mensaje|has eliminat aquest missatge|aquest missatge s'ha eliminat|esta mensagem foi apagada|você apagou esta mensagem|has eliminado este mensaje)\.?$/i;
 const REENVIADO = /^‎?\[?(reenviado|forwarded|reenviat|encaminhada)\]?\s*/i;
 const EDITADO = /\s*<?(este mensaje fue editado|this message was edited|aquest missatge s'ha editat)>?\.?$/i;
 const SOLO_URL = /^(https?:\/\/\S+\s*)+$/i;
@@ -98,6 +99,7 @@ function normalizar(m, i) {
   let texto = m.texto.trim();
   let tipo = 'text';
   let reenviado = false, editado = false, archivo = null;
+  texto = texto.replace(/[\u200e\u200f\u202a-\u202e]/g, '').trim(); // marcas de dirección que mete WhatsApp
   if (REENVIADO.test(texto)) { reenviado = true; texto = texto.replace(REENVIADO, ''); }
   if (EDITADO.test(texto)) { editado = true; texto = texto.replace(EDITADO, ''); }
   const adj = texto.match(ADJUNTO);
@@ -108,7 +110,7 @@ function normalizar(m, i) {
   if (!m.autor || SISTEMA.some(re => re.test(texto))) tipo = m.autor && tipo !== 'text' ? tipo : 'system';
   if (BORRADO.test(texto)) tipo = 'deleted';
   if (tipo === 'text' && SOLO_URL.test(texto)) tipo = 'link';
-  const esMedia = ['image', 'video', 'audio', 'sticker', 'gif', 'document', 'contact'].includes(tipo);
+  const esMedia = ['image', 'video', 'audio', 'sticker', 'gif', 'document', 'contact', 'media'].includes(tipo);
   return {
     id: i, fecha: m.fecha, dia: m.fecha.toISOString().slice(0, 10), autor: m.autor,
     tipo, texto, archivo, reenviado, editado,

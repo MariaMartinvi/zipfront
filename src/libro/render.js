@@ -54,7 +54,8 @@ export function renderHTML(mensajes, man, opts = {}) {
       else if (m.tipo === 'video' && m.archivo && videos[m.archivo]) mediaHTML = `<div class="media video"><img src="${videos[m.archivo].uri}"/><span class="vid">vídeo${dur(videos[m.archivo].seconds)}</span></div>`;
       else if (m.tipo === 'image' && preview) mediaHTML = `<div class="media missing">foto</div>`;
       if (!mediaHTML && !m.tieneTexto) continue;
-      out += `<div class="msg ${side}${pcls}" data-id="${m.id}">${showName ? `<div class="name">${esc(nombre(m.autor))}</div>` : ''}
+      const pic = mediaHTML && !m.tieneTexto;
+      out += `<div class="msg ${side}${pcls}${pic ? ' pic' : ''}" data-id="${m.id}">${showName ? `<div class="name">${esc(nombre(m.autor))}</div>` : ''}
         <div class="bubble">${mediaHTML}${m.tieneTexto ? `<div class="txt">${esc(m.texto).replace(/\n/g, '<br>')}</div>` : ''}<span class="time">${hora(m.fecha)}</span></div></div>`;
     }
     return out;
@@ -120,7 +121,13 @@ export function renderHTML(mensajes, man, opts = {}) {
   .bubble .time { position: absolute; right: 2.2mm; bottom: .9mm; font-family: 'Poppins', sans-serif; font-size: 6pt; color: #999; }
   .txt { padding-right: 8mm; white-space: pre-wrap; word-wrap: break-word; }
   .media { position: relative; margin: -1mm -2mm 1.5mm; border-radius: 2.5mm; overflow: hidden; }
-  .media img { display: block; width: 100%; max-height: 68mm; object-fit: cover; }
+  .media img { display: block; width: 100%; max-height: 60mm; object-fit: cover; }
+  /* foto sin texto: más grande, sin burbuja, y las verticales no se recortan */
+  .msg.pic { max-width: 70%; }
+  .msg.pic .bubble { padding: 0; background: none; display: inline-block; }
+  .msg.pic .media { margin: 0; }
+  .msg.pic .media img { width: auto; max-width: 100%; max-height: 80mm; object-fit: contain; }
+  .msg.pic .bubble .time { color: #fff; text-shadow: 0 0 2mm rgba(0,0,0,.6); right: 1.8mm; bottom: 1.2mm; }
   .media.missing { height: 30mm; width: 60mm; background: #e4e2dc; color: #999; display: flex; align-items: center; justify-content: center; font-size: 8pt; }
   .media .vid { position: absolute; left: 2mm; bottom: 1.5mm; font-family: 'Poppins', sans-serif; font-size: 6.5pt; color: #fff; background: rgba(0,0,0,.45); padding: .4mm 1.6mm; border-radius: 1mm; }
   .person { display: flex; gap: 4mm; margin-bottom: 7mm; break-inside: avoid; }
