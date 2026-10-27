@@ -64,7 +64,7 @@ export function renderHTML(mensajes, man, opts = {}) {
         if (!qr && !preview) continue;  // sin enlace, un audio en papel no sirve de nada
         mediaHTML = `<div class="media audio">${qr ? `<img class="qr" src="${qr}" alt=""/>` : '<span class="qr-ph"></span>'}<span class="audio-txt">🎤 Nota de voz<small>${qr ? 'Escanea para escucharla' : 'QR al pedir'}</small></span></div>`;
       }
-      else if (m.tipo === 'image' && preview) mediaHTML = `<div class="media missing">foto</div>`;
+      else if (m.tipo === 'image' && preview && !m.sinArchivo) mediaHTML = `<div class="media missing">foto</div>`;  // aún cargando
       if (!mediaHTML && !m.tieneTexto) continue;
       ultimoAutor = m.autor;
       const pic = !!mediaHTML && !m.tieneTexto;
