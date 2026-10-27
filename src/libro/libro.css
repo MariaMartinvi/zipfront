@@ -116,3 +116,6 @@
 .ll-precios div em { display: block; font-style: normal; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #777; margin-bottom: 4px; }
 .ll-precios .ll-destacado { border-color: #25D366; box-shadow: 0 10px 34px rgba(37,211,102,.18); }
 @media (max-width: 700px) { .ll-hero-foto { min-height: 70vh; } }
+.libro-guardado { font-size: 11px; color: #777; margin: 4px 0 10px; }
+.libro-borrar { width: 100%; margin-top: 18px; padding: 9px; border-radius: 8px; border: 1px solid #ddd; background: #fff; color: #b3261e; font: inherit; font-size: 12px; cursor: pointer; }
+.libro-borrar:hover { border-color: #b3261e; }

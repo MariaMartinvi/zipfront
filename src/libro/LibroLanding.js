@@ -40,7 +40,7 @@ export default function LibroLanding() {
       const entrada = Object.keys(zip.files).find(n => /(^|\/)_chat\.txt$/i.test(n)) || Object.keys(zip.files).find(n => /\.txt$/i.test(n));
       if (!entrada) throw new Error('El zip no contiene el chat (archivo .txt). Exporta el chat desde WhatsApp y sube el zip tal cual.');
       const chatText = await zip.files[entrada].async('string');
-      libroStore.set({ chatText, zip, fileName: file.name });
+      libroStore.set({ chatText, zip, fileName: file.name, file });
       navigate('/libro');
     } catch (err) { setError(err.message || 'No se ha podido leer el archivo'); }
     setCargando(false);
