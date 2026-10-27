@@ -6,7 +6,7 @@ import './UploadBox.css';
 
 // Cajón de subida: en Android el chat se comparte desde WhatsApp; en iOS y PC se sube el .zip.
 // Las instrucciones detalladas van plegadas debajo.
-const UploadBox = ({ onFileUpload, skipIA, onSkipIAChange, showAnalysis, titulo, subtitulo, sinPrivacidad = false }) => {
+const UploadBox = ({ onFileUpload, skipIA, onSkipIAChange, showAnalysis, titulo, subtitulo, sinPrivacidad = false, avisoMedios }) => {
   const { t } = useTranslation();
   const [platform, setPlatform] = useState(detectPlatform());
   const [arrastrando, setArrastrando] = useState(false);
@@ -59,6 +59,7 @@ const UploadBox = ({ onFileUpload, skipIA, onSkipIAChange, showAnalysis, titulo,
             <li><strong>{t('whatsapp.simplified_steps.android.0.title')}.</strong> {t('whatsapp.simplified_steps.android.0.description')}</li>
             <li><strong>{t('whatsapp.simplified_steps.android.1.title')}</strong> {t('whatsapp.simplified_steps.android.1.description')}</li>
           </ol>
+          {avisoMedios && <p className="upload-aviso-medios">{avisoMedios}</p>}
           <InstallPWA />
           <label className="upload-android-zip">
             {inputArchivo}
@@ -88,6 +89,7 @@ const UploadBox = ({ onFileUpload, skipIA, onSkipIAChange, showAnalysis, titulo,
 
       <details className="upload-help">
         <summary>{t('app.upload.how_export')}</summary>
+        {avisoMedios && <p className="upload-aviso-medios">{avisoMedios}</p>}
         <WhatsappInstructions platform={platform} compact />
       </details>
     </div>
