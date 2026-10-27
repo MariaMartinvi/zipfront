@@ -9,11 +9,22 @@ import { proponer, montar } from './propuesta';
 import { renderHTML, PAGE, FONTS } from './render';
 import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds } from './media';
 import { libroStore } from './store';
+import { isSpainTimeZone, isMexicoTimeZone, isLatamTimeZone } from '../utils/pricing';
 import './libro.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
-const PRECIO = 39;
-const PRECIO_PDF = 12.99;
+// Región como el resto de ChatSalsa (por zona horaria); el precio real lo decide el servidor.
+function regionLibro() {
+  let tz = '';
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { /* nada */ }
+  if (isMexicoTimeZone(tz)) return 'mx';
+  if (isLatamTimeZone(tz)) return 'latam';
+  if (isSpainTimeZone(tz)) return 'es';
+  if (/^America\//.test(tz) || /^(Pacific\/Honolulu|US\/)/.test(tz)) return 'us';
+  return 'default';
+}
+const REGION = regionLibro();
+const LABELS_DEFECTO = { libro: '39 €', pdf: '12,99 €' };
 const COLORES = ['#2f3e46', '#5b3a4a', '#3a4a3f', '#1d1d1b', '#8c5a2b', '#2b4a6f'];
 
 export default function LibroPage() {
@@ -35,9 +46,15 @@ export default function LibroPage() {
   const [pidiendo, setPidiendo] = useState(false);
   const [cargandoFotos, setCargandoFotos] = useState('');
   const [paginasReales, setPaginasReales] = useState(0);
+  const [precios, setPrecios] = useState(LABELS_DEFECTO);
   const cssRef = useRef('');
   const iframeRef = useRef(null);
   const idxRef = useRef(null);
+
+  // precios de la región (el servidor manda)
+  useEffect(() => {
+    fetch(`${API_URL}/api/book/config?region=${REGION}`).then(r => r.json()).then(c => { if (c && c.labels) setPrecios(c.labels); }).catch(() => {});
+  }, []);
 
   // 1) cargar chat + media del store (lo deja App al subir el zip)
   useEffect(() => {
@@ -181,7 +198,7 @@ export default function LibroPage() {
       const fileToken = u.plainUrl.split('k=')[1];
       setProgreso('Abriendo el pago…');
       const ck = await fetch(`${API_URL}/api/book/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileId: u.id, fileToken, pageCount: paginas, titulo, product }) });
+        body: JSON.stringify({ fileId: u.id, fileToken, pageCount: paginas, titulo, product, region: REGION }) });
       const c = await ck.json().catch(() => ({}));
       if (!ck.ok || !c.url) throw new Error(c.error || 'No se pudo iniciar el pago');
       window.location.assign(c.url);
@@ -202,8 +219,8 @@ export default function LibroPage() {
         {quitados.size > 0 && <button className="pill ghost" onClick={deshacer}>Deshacer ({quitados.size})</button>}
         {cargandoFotos && <span className="pill ghost">Cargando fotos {cargandoFotos}</span>}
         <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas</span>
-        <button className="pill ghost" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF">{`Solo PDF · ${PRECIO_PDF} €`}</button>
-        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${PRECIO} € · PDF incluido`}</button>
+        <button className="pill ghost" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF">{`Solo PDF · ${precios.pdf}`}</button>
+        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${precios.libro} · PDF incluido`}</button>
       </div>
       <div className="libro-wrap">
         <iframe ref={iframeRef} title="libro" className="libro-pages" />
