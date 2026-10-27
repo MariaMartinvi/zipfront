@@ -1849,7 +1849,8 @@
     "title": "🧠 Análisis psicológico con IA",
     "subtitle": "Quién manda, quién calla y qué dice el chat de cada uno",
     "see": "Ver qué incluye",
-    "unlock": "Desbloquear · {{price}}"
+    "unlock": "Desbloquear · {{price}}",
+    "teaser": "La IA ya ha leído vuestro chat: personalidad de cada uno, señales de alerta y nota de la relación."
   },
   "share_personaje": {
     "button": "Compartir",

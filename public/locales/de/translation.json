@@ -1748,7 +1748,8 @@
     "title": "🧠 KI-Persönlichkeitsanalyse",
     "subtitle": "Wer führt, wer schweigt und was der Chat über jeden verrät",
     "see": "Was ist enthalten?",
-    "unlock": "Freischalten · {{price}}"
+    "unlock": "Freischalten · {{price}}",
+    "teaser": "Die KI hat euren Chat schon gelesen: Persönlichkeit jeder Person, Warnsignale und Beziehungsnote."
   },
   "share_personaje": {
     "button": "Teilen",

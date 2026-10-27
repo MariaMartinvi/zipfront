@@ -2067,6 +2067,23 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
+                {/* Gancho discreto tras el resumen: lo gratis primero, el candado después */}
+                {chatData && userCredits && !userCredits.canUse && !chatGptResponse && !isFetchingMistral && (
+                  <div className="ai-teaser" onClick={() => aiLockedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} role="button" tabIndex={0}>
+                    <span>🧠 {t('unlock_bar.teaser', 'La IA ya ha leído vuestro chat: personalidad de cada uno, señales de alerta y nota de la relación.')}</span>
+                    <b>{t('unlock_bar.unlock', 'Desbloquear · {{price}}', { price: getAiPackPricing().price })} ↓</b>
+                  </div>
+                )}
+
+                {/* ANÁLISIS TOP - Segunda parte */}
+                {operationId && user && chatData && (
+                  <div className="additional-analysis">
+                    <div className="analysis-module">
+                      <AnalisisTop chatData={chatData} />
+                    </div>
+                  </div>
+                )}
+
                 {/* Análisis psicológico de Azure */}
                 {operationId && user && (
                   <div className="chat-analysis-section">
@@ -2280,15 +2297,6 @@ const tryDeleteFiles = async (operationId) => {
                         </div>
                       </div>
                     ) : null}
-                  </div>
-                )}
-
-                {/* ANÁLISIS TOP - Segunda parte */}
-                {operationId && user && chatData && (
-                  <div className="additional-analysis">
-                    <div className="analysis-module">
-                      <AnalisisTop chatData={chatData} />
-                    </div>
                   </div>
                 )}
 
