@@ -2006,7 +2006,7 @@ const tryDeleteFiles = async (operationId) => {
             element={
               <>
                 {/* Subida siempre arriba: caja completa si no hay chat (o se pide otro); si ya hay análisis, tarjeta "¡Listo!" */}
-                {(!chatData || subirOtro || !user) ? (
+                {!user ? null : (!chatData || subirOtro) ? (
                 <div id="upload-section" className="upload-section">
                   <div className="upload-section-container">
                     {!user ? (
@@ -2325,6 +2325,20 @@ const tryDeleteFiles = async (operationId) => {
 
                 {/* Vista previa de la aplicación para usuarios no logueados */}
                 {!user && <AppPreview />}
+                {!user && (
+                  <div id="upload-section" className="upload-section">
+                    <div className="upload-section-container">
+                      <div className="login-required">
+                        <h2>{t('app.login_required.title')}</h2>
+                        <p>{t('app.login_required.description')}</p>
+                        <div className="auth-buttons">
+                          <button className="login-button" onClick={() => window.location.href = '/login'}>{t('app.login_required.login')}</button>
+                          <button className="register-button" onClick={() => window.location.href = '/register'}>{t('app.login_required.register')}</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {error && (
                   <div className="error-message">
