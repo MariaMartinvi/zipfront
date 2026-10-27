@@ -139,6 +139,12 @@ function AppContent() {
   
   // Configuración de privacidad
   const [skipAIPsychologicalAnalysis, setSkipAIPsychologicalAnalysis] = useState(false);
+  const [, setTopListo] = useState(0); // re-pinta los juegos cuando AnalisisTop publica sus datos
+  useEffect(() => {
+    const f = () => setTopListo(n => n + 1);
+    window.addEventListener('chatsalsa:top-listo', f);
+    return () => window.removeEventListener('chatsalsa:top-listo', f);
+  }, []);
   const [subirOtro, setSubirOtro] = useState(false); // tras analizar, la caja de subida se pliega hasta pulsar "Subir otro chat"
   useEffect(() => { setSubirOtro(false); }, [chatData]);
   
