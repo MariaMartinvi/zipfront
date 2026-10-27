@@ -43,10 +43,10 @@ const Header = ({ user }) => {
           {/* Desktop Navigation */}
           <nav className="desktop-nav">
             <Link to="/" className="nav-link">{t('header.home')}</Link>
-            <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
-            {esCastellano && <Link to="/porra-halloween" className="nav-link" onClick={() => trackProductoClick('halloween', 'menu')}>🎃 Halloween</Link>}
+            {esCastellano && <Link to="/porra-halloween" className="nav-link" onClick={() => trackProductoClick('halloween', 'menu')}>🎃 Juego de Halloween</Link>}
             {esCastellano && <Link to="/pareja" className="nav-link" onClick={() => trackProductoClick('doctor_amor', 'menu')}>💘 Doctor Amor</Link>}
-            {esCastellano && <Link to="/libro-recuerdo" className="nav-link" onClick={() => trackProductoClick('libro', 'menu')}>📖 Libro</Link>}
+            {esCastellano && <Link to="/libro-recuerdo" className="nav-link" onClick={() => trackProductoClick('libro', 'menu')}>📖 Libro regalo</Link>}
+            <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
             {user ? (
               <>
                 <LanguageSwitcher />
@@ -96,7 +96,7 @@ const Header = ({ user }) => {
           <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
           {esCastellano && <Link to="/porra-halloween" className="mobile-nav-link" onClick={() => { trackProductoClick('halloween', 'menu'); toggleMenu(); }}>🎃 Juego de Halloween</Link>}
           {esCastellano && <Link to="/pareja" className="mobile-nav-link" onClick={() => { trackProductoClick('doctor_amor', 'menu'); toggleMenu(); }}>💘 Doctor Amor</Link>}
-          {esCastellano && <Link to="/libro-recuerdo" className="mobile-nav-link" onClick={() => { trackProductoClick('libro', 'menu'); toggleMenu(); }}>📖 Tu chat en un libro</Link>}
+          {esCastellano && <Link to="/libro-recuerdo" className="mobile-nav-link" onClick={() => { trackProductoClick('libro', 'menu'); toggleMenu(); }}>📖 Libro regalo</Link>}
           {user ? (
             <>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
