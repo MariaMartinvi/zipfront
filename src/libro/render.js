@@ -34,7 +34,7 @@ export function stats(mensajes) {
  * @param opts       { media: {name → {uri}}, videos: {name → {uri, seconds}}, nombres, derecha, genero, fotosPersona, conStats, conIndice, preview }
  */
 export function renderHTML(mensajes, man, opts = {}) {
-  const { media = {}, videos = {}, nombres = {}, derecha = null, genero = {}, fotosPersona = {}, conStats = true, conIndice = true, preview = false } = opts;
+  const { media = {}, videos = {}, qrs = {}, nombres = {}, derecha = null, genero = {}, fotosPersona = {}, conStats = true, conIndice = true, preview = false } = opts;
   const nombre = a => nombres[a] || a;
   const encendidos = man.capitulos.filter(c => c.on);
   const st = stats(mensajes);
@@ -55,7 +55,15 @@ export function renderHTML(mensajes, man, opts = {}) {
       const showName = m.autor !== ultimoAutor;
       let mediaHTML = '';
       if (m.tipo === 'image' && m.archivo && media[m.archivo]) mediaHTML = `<div class="media"><img src="${media[m.archivo].uri}"/></div>`;
-      else if (m.tipo === 'video' && m.archivo && videos[m.archivo]) mediaHTML = `<div class="media video"><img src="${videos[m.archivo].uri}"/><span class="vid">vídeo${dur(videos[m.archivo].seconds)}</span></div>`;
+      else if (m.tipo === 'video' && m.archivo && videos[m.archivo]) {
+        const qr = qrs[m.archivo];
+        mediaHTML = `<div class="media video"><img src="${videos[m.archivo].uri}"/><span class="vid">vídeo${dur(videos[m.archivo].seconds)}</span>${qr ? `<img class="qr" src="${qr}" alt=""/>` : (preview ? '<span class="qr-nota">QR al pedir</span>' : '')}</div>`;
+      }
+      else if (m.tipo === 'audio' && m.archivo) {
+        const qr = qrs[m.archivo];
+        if (!qr && !preview) continue;  // sin enlace, un audio en papel no sirve de nada
+        mediaHTML = `<div class="media audio">${qr ? `<img class="qr" src="${qr}" alt=""/>` : '<span class="qr-ph"></span>'}<span class="audio-txt">🎤 Nota de voz<small>${qr ? 'Escanea para escucharla' : 'QR al pedir'}</small></span></div>`;
+      }
       else if (m.tipo === 'image' && preview) mediaHTML = `<div class="media missing">foto</div>`;
       if (!mediaHTML && !m.tieneTexto) continue;
       ultimoAutor = m.autor;
@@ -154,6 +162,13 @@ export function renderHTML(mensajes, man, opts = {}) {
   .album-grid .msg .bubble { display: block; }
   .album-grid .msg .media img { width: 100%; height: 48mm; max-height: none; object-fit: cover; }
   .media.missing { height: 30mm; width: 60mm; background: #e4e2dc; color: #999; display: flex; align-items: center; justify-content: center; font-size: 8pt; }
+  .media .qr { position: absolute; right: 2mm; bottom: 2mm; width: 18mm; height: 18mm; background: #fff; padding: 1mm; border-radius: 1.5mm; box-shadow: 0 0 2mm rgba(0,0,0,.3); }
+  .media .qr-nota { position: absolute; right: 2mm; bottom: 1.5mm; font-family: 'Poppins', sans-serif; font-size: 6pt; color: #fff; background: rgba(0,0,0,.45); padding: .4mm 1.6mm; border-radius: 1mm; }
+  .media.audio { display: flex; align-items: center; gap: 3mm; padding: 2mm; background: #e9e7e1; margin: -1mm -2mm 1.5mm; }
+  .media.audio .qr { position: static; width: 20mm; height: 20mm; box-shadow: none; }
+  .media.audio .qr-ph { width: 20mm; height: 20mm; border: 1px dashed #aaa; border-radius: 1.5mm; flex: none; }
+  .media.audio .audio-txt { font-family: 'Poppins', sans-serif; font-size: 8.5pt; font-weight: 500; display: flex; flex-direction: column; }
+  .media.audio .audio-txt small { font-weight: 400; font-size: 6.5pt; color: #777; }
   .media .vid { position: absolute; left: 2mm; bottom: 1.5mm; font-family: 'Poppins', sans-serif; font-size: 6.5pt; color: #fff; background: rgba(0,0,0,.45); padding: .4mm 1.6mm; border-radius: 1mm; }
   .person { display: flex; gap: 4mm; margin-bottom: 7mm; break-inside: avoid; }
   .avatar { width: 20mm; height: 20mm; border-radius: 50%; background: #e4e2dc; color: #777; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-size: 16pt; overflow: hidden; flex: none; }
