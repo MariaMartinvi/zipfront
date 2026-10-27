@@ -49,6 +49,12 @@ export async function imageUri(idx, name) {
   } catch { cache.set(name, null); return null; }
 }
 
+// Imagen subida por la persona (p. ej. para la portada) → JPEG reducido, igual que las del zip.
+export async function imageUriFromFile(file) {
+  const im = await loadImage(file);
+  return toJpeg(im, im.naturalWidth, im.naturalHeight);
+}
+
 // ¿Captura de pantalla (pantallazo)? Señales: proporción de pantalla de móvil, pocos colores
 // (interfaces planas), o una franja superior uniforme (barra de estado / barra del navegador).
 export async function isScreenshot(idx, name) {

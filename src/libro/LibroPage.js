@@ -7,7 +7,7 @@ import { parseChat, participantes } from './parser';
 import { puntuar } from './scorer';
 import { proponer, montar } from './propuesta';
 import { renderHTML, PAGE, FONTS } from './render';
-import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds, tienePersona } from './media';
+import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds, tienePersona, imageUriFromFile } from './media';
 import { libroStore } from './store';
 import { isSpainTimeZone, isMexicoTimeZone, isLatamTimeZone } from '../utils/pricing';
 import './libro.css';
@@ -47,6 +47,7 @@ export default function LibroPage() {
   const [cargandoFotos, setCargandoFotos] = useState('');
   const [paginasReales, setPaginasReales] = useState(0);
   const [precios, setPrecios] = useState(LABELS_DEFECTO);
+  const [galeria, setGaleria] = useState(false);
   const cssRef = useRef('');
   const iframeRef = useRef(null);
   const idxRef = useRef(null);
@@ -163,6 +164,18 @@ export default function LibroPage() {
     return () => { cancelado = true; };
   }, [man, mensajes, media, videos, derecha, caps]);
 
+  async function subirPortada(e) {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try {
+      const r = await imageUriFromFile(f);
+      const key = 'portada:' + f.name;
+      setMedia(m => ({ ...m, [key]: r }));
+      setFotosChat(fs => fs.includes(key) ? fs : [key, ...fs]);
+      setPortadaFoto(key);
+    } catch (err) { alert('No se ha podido leer la imagen'); }
+    e.target.value = '';
+  }
+
   const toggle = k => setCaps(cs => cs.map((c, i) => i === k ? { ...c, on: !c.on } : c));
   const renombrar = (k, t) => setCaps(cs => cs.map((c, i) => i === k ? { ...c, titulo: t } : c));
   const deshacer = () => setQuitados(new Set());
@@ -234,7 +247,15 @@ export default function LibroPage() {
           <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Título" />
           <input value={subtitulo} onChange={e => setSubtitulo(e.target.value)} placeholder="Subtítulo" />
           <div className="colores">{COLORES.map(c => <button key={c} style={{ background: c }} className={c === color ? 'on' : ''} onClick={() => setColor(c)} aria-label={c} />)}</div>
-          {fotosChat.length > 0 && <div className="fotos"><button className={!portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(null)}>Sin foto</button>{fotosChat.map(n => <img key={n} src={media[n].uri} alt="" className={n === portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(n)} />)}</div>}
+          <div className="portada-btns">
+            <button className={!portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(null)}>Sin foto</button>
+            {fotosChat.length > 0 && <button className={galeria ? 'on' : ''} onClick={() => setGaleria(g => !g)}>{galeria ? 'Cerrar galería' : 'Elegir del chat'}</button>}
+          </div>
+          {galeria && <div className="fotos">
+            {fotosChat.map(n => <img key={n} src={media[n].uri} alt="" className={n === portadaFoto ? 'on' : ''} onClick={() => setPortadaFoto(n)} />)}
+            <label className="subir" title="Subir una foto de tu ordenador">+<span>Subir</span>
+              <input type="file" accept="image/*" onChange={subirPortada} /></label>
+          </div>}
           <h2>Dedicatoria</h2>
           <textarea value={dedicatoria} onChange={e => setDedicatoria(e.target.value.slice(0, 300))} placeholder="Opcional. Para quien es este libro…" rows={3} />
           {autores.length === 2 && <><h2>A la derecha</h2><div className="derecha">{autores.map(a => <button key={a} className={a === derecha ? 'on' : ''} onClick={() => setDerecha(a)}>{a}</button>)}</div></>}
