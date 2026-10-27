@@ -119,3 +119,34 @@
 .libro-guardado { font-size: 11px; color: #777; margin: 4px 0 10px; }
 .libro-borrar { width: 100%; margin-top: 18px; padding: 9px; border-radius: 8px; border: 1px solid #ddd; background: #fff; color: #b3261e; font: inherit; font-size: 12px; cursor: pointer; }
 .libro-borrar:hover { border-color: #b3261e; }
+
+/* Página de pedido confirmado */
+.pedido-ok { position: relative; overflow: hidden; max-width: 620px; margin: 40px auto 60px; padding: 36px 24px 40px; text-align: center; font-family: 'Poppins', system-ui, sans-serif; background: #fff; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.08); }
+.pedido-ok h2 { font-size: 30px; margin: 18px 0 6px; color: #1d1d1b; }
+.pedido-sub { color: #555; font-size: 16px; margin: 0 0 22px; }
+.pedido-libro { position: relative; width: 120px; height: 150px; margin: 6px auto 0; perspective: 900px; }
+.pedido-libro > div { position: absolute; inset: 0; border-radius: 4px 10px 10px 4px; transform-origin: left center; }
+.pl-tapa-atras { background: #2f3e46; box-shadow: 8px 10px 0 #d9ded9; }
+.pl-hoja { background: #fffdf7; border: 1px solid #e6e2d6; inset: 4px 4px 4px 0 !important; animation: pl-pasar 2.4s ease-in-out infinite; animation-delay: var(--d); background-image: repeating-linear-gradient(#fffdf7 0 10px, #efeadb 10px 11px); background-position: 0 14px; }
+.pl-tapa { background: linear-gradient(135deg, #25D366, #128C7E); display: flex; align-items: center; justify-content: center; font-size: 42px; animation: pl-abrir 2.4s ease-in-out infinite; }
+@keyframes pl-abrir { 0%, 15% { transform: rotateY(0); } 45%, 75% { transform: rotateY(-160deg); } 100% { transform: rotateY(0); } }
+@keyframes pl-pasar { 0%, 20% { transform: rotateY(0); } 55%, 70% { transform: rotateY(-155deg); } 100% { transform: rotateY(0); } }
+.pedido-libro { animation: pl-flotar 3s ease-in-out infinite; }
+@keyframes pl-flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.pedido-confeti { position: absolute; inset: 0; pointer-events: none; }
+.pedido-confeti i { position: absolute; top: -12px; left: calc(var(--i) * 4.2%); width: 8px; height: 12px; border-radius: 2px; background: hsl(calc(var(--i) * 47), 80%, 60%); animation: pl-confeti 2.8s ease-in forwards; animation-delay: calc(var(--i) * 0.05s); opacity: 0; }
+@keyframes pl-confeti { 0% { opacity: 1; transform: translateY(0) rotate(0); } 100% { opacity: 0; transform: translateY(520px) rotate(540deg); } }
+.pedido-pasos { list-style: none; display: flex; justify-content: center; gap: 8px; padding: 0; margin: 0 0 26px; flex-wrap: wrap; }
+.pedido-pasos li { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: #999; width: 84px; position: relative; }
+.pedido-pasos li span { width: 40px; height: 40px; border-radius: 50%; background: #f1f1ee; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.pedido-pasos li.hecho { color: #128C7E; } .pedido-pasos li.hecho span { background: #25D366; color: #fff; font-weight: 700; }
+.pedido-pasos li.ahora { color: #1d1d1b; font-weight: 600; } .pedido-pasos li.ahora span { background: #fff4d6; animation: pl-latir 1.4s ease-in-out infinite; }
+@keyframes pl-latir { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,183,0,.45); } 50% { box-shadow: 0 0 0 8px rgba(255,183,0,0); } }
+.pedido-descarga { display: inline-block; padding: 14px 28px; border-radius: 999px; background: #25D366; color: #fff !important; font-weight: 700; text-decoration: none; box-shadow: 0 8px 24px rgba(37,211,102,.35); }
+.pedido-descarga:hover { background: #1fbf5b; }
+.pedido-nota { font-size: 12px; color: #888; margin: 10px 0; }
+.pedido-datos { margin: 22px 0 8px; padding: 14px 16px; background: #f7f7f4; border-radius: 14px; font-size: 14px; color: #444; }
+.pedido-datos p { margin: 4px 0; }
+.pedido-datos code { background: #fff; padding: 2px 8px; border-radius: 6px; border: 1px solid #e6e9e8; font-size: 13px; }
+.pedido-volver { margin-top: 10px; padding: 11px 22px; border-radius: 999px; border: 1px solid #ddd; background: #fff; color: #1d1d1b; font: inherit; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .pedido-libro, .pedido-libro > div, .pedido-confeti i, .pedido-pasos li span { animation: none !important; } }
