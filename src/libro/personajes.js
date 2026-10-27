@@ -32,7 +32,7 @@ const YO = /\b(yo|me|mi|mío|mía|mis|conmigo|jo|em|meu|meva)\b/i;
 export function personajes(mensajes, opts = {}) {
   const { genero = {} } = opts; // { 'Eva': 'f' }
   const u = {};
-  const get = a => (u[a] ||= { mensajes: 0, palabras: 0, unicas: new Set(), ppm: [], resp: [], noche: 0, horas: [], yo: 0, termina: 0, inicia: 0, longitud: [], otros: 0, emojis: 0, amor: 0, racha: 0, rachaMax: 0, risa: 0, gracias: 0, perdon: 0, preguntas: 0, vicios: 0 });
+  const get = a => (u[a] || (u[a] = { mensajes: 0, palabras: 0, unicas: new Set(), ppm: [], resp: [], noche: 0, horas: [], yo: 0, termina: 0, inicia: 0, longitud: [], otros: 0, emojis: 0, amor: 0, racha: 0, rachaMax: 0, risa: 0, gracias: 0, perdon: 0, preguntas: 0, vicios: 0 }));
   const AMOR = new RegExp(["😍", "😘", "🥰", "😗", "😙", "😚", "💋", "❤", "🧡", "💛", "💝", "💘", "💖", "💗", "💓", "💞", "💕", "❣", "💔", "🩷", "💚", "🩵", "💙", "💜", "🖤", "🩶", "🤍", "🤎", "💟", "🌹", "🌷", "💐", "🥀", "💏"].join('|'), 'g');
   const RISA = /\b(jaja+|jeje+|jiji+|haha+|lol|xd)\b|😂|🤣|😆|😹/i;
   const GRACIAS = /\b(gracias|gràcies|agradec|agradezco|agradecid|thank|thx|merci)\b/i;
