@@ -219,7 +219,7 @@ export default function LibroPage() {
   const deshacer = () => setQuitados(new Set());
 
   // El PDF se hace con exactamente lo que se ve: las páginas ya partidas en la vista previa.
-  async function generarPDF(marcaDeAgua = false) {
+  async function generarPDFSimple(marcaDeAgua = false) {
     setProgreso('Generando el PDF…');
     const doc = iframeRef.current?.contentDocument;
     if (!doc || !doc.body) throw new Error('La vista previa aún no está lista');
@@ -245,12 +245,78 @@ export default function LibroPage() {
     return r.blob();
   }
 
+  // PDF para imprenta, como lo pide Gelato para fotolibros: un PDF con
+  //   pág. 1  = pliego de cubierta (trasera + lomo + delantera), medido por Gelato según las páginas
+  //   pág. 2  = guarda en blanco
+  //   pág. 3… = N páginas interiores (N par, mínimo 30)
+  //   última  = guarda en blanco
+  // y pageCount = N. Devuelve { blob, pageCount }.
+  async function generarPDF(marcaDeAgua = false) {
+    if (marcaDeAgua) return { blob: await generarPDFSimple(true), pageCount: 0 };
+    setProgreso('Generando el PDF…');
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc || !doc.body) throw new Error('La vista previa aún no está lista');
+    const body = doc.body.cloneNode(true);
+    body.querySelectorAll('.x, section.hidden').forEach(el => el.remove());
+    body.querySelectorAll('.media.missing').forEach(el => { const msg = el.closest('.msg'); if (msg && !msg.querySelector('.txt')) msg.remove(); else el.remove(); });
+    const portada = body.querySelector('section.cover');
+    const contra = body.querySelector('section.back');
+    const secciones = [...body.querySelectorAll('section')].filter(sc => sc !== portada && sc !== contra);
+    if (secciones[0] && secciones[0].classList.contains('blank')) secciones.shift(); // la guarda la ponemos nosotros
+    const blanca = () => '<section class="blank"></section>';
+    const interiores = secciones.map(sc => sc.outerHTML);
+    while (interiores.length < 30 || interiores.length % 2) interiores.push(blanca());
+    if (interiores.length > 200) throw new Error(`El libro tiene ${interiores.length} páginas; el máximo es 200. Apaga algún capítulo.`);
+    const N = interiores.length;
+    const P = PAGE.h + 2 * PAGE.bleed;
+    const interiorHTML = `<!doctype html><html lang="es"><head><meta charset="utf-8">${FONTS}<style>${cssRef.current}
+      section{height:${P}mm;min-height:${P}mm;overflow:hidden}</style></head><body>${blanca()}${interiores.join('')}${blanca()}</body></html>`;
+
+    setProgreso('Midiendo la cubierta…');
+    const rc = await fetch(`${API_URL}/api/book/cubierta?paginas=${N}`);
+    const dim = await rc.json().catch(() => ({}));
+    if (!rc.ok || !dim.W) throw new Error('No se pudieron obtener las medidas de la cubierta');
+    const a = dim.areas || {};
+    const area = (...keys) => { for (const k of keys) if (a[k]) return a[k]; return null; };
+    const front = area('contentFrontSize', 'frontSize', 'front') || { left: dim.W / 2, top: 0, width: dim.W / 2, height: dim.H };
+    const backA = area('contentBackSize', 'backSize', 'back') || { left: 0, top: 0, width: dim.W / 2, height: dim.H };
+    const spine = area('spineSize', 'spine') || { left: backA.left + backA.width, top: 0, width: Math.max(0, front.left - backA.left - backA.width), height: dim.H };
+    const color = man?.portada?.color || '#2f3e46';
+    const fotoUri = man?.portada?.foto && media[man.portada.foto] ? media[man.portada.foto].uri : null;
+    const esc = t => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const box = r => `left:${r.left}mm;top:${r.top}mm;width:${r.width}mm;height:${r.height}mm`;
+    // el sangrado lo cubre el fondo de color de toda la hoja
+    const cubiertaHTML = `<!doctype html><html lang="es"><head><meta charset="utf-8">${FONTS}<style>
+      @page { size: ${dim.W}mm ${dim.H}mm; margin: 0; } html,body{margin:0;padding:0}
+      .hoja{position:relative;width:${dim.W}mm;height:${dim.H}mm;background:${esc(color)};overflow:hidden;font-family:'Lora',Georgia,serif;color:#fff}
+      .area{position:absolute;overflow:hidden}
+      .front .photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.6}
+      .front .txt{position:absolute;left:12mm;right:12mm;bottom:16mm}
+      .front h1{font-size:30pt;line-height:1.08;margin:0 0 4mm;font-weight:600}
+      .front .sub{font-family:'Poppins',sans-serif;font-weight:300;font-size:10pt;letter-spacing:.1em;text-transform:uppercase}
+      .spine{display:flex;align-items:center;justify-content:center}
+      .spine span{transform:rotate(90deg);white-space:nowrap;font-family:'Poppins',sans-serif;font-size:${Math.min(9, Math.max(5, spine.width * 0.6))}pt;letter-spacing:.06em}
+      .back{display:flex;align-items:flex-end;justify-content:center}
+      .back span{margin-bottom:14mm;font-family:'Poppins',sans-serif;font-weight:300;font-size:8pt;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+    </style></head><body><div class="hoja">
+      <div class="area back" style="${box(backA)}"><span>chatsalsa.com</span></div>
+      <div class="area spine" style="${box(spine)}">${spine.width >= 6 ? `<span>${esc(titulo)}</span>` : ''}</div>
+      <div class="area front" style="${box(front)}">${fotoUri ? `<div class="photo" style="background-image:url('${fotoUri}')"></div>` : ''}
+        <div class="txt"><h1>${esc(titulo)}</h1><div class="sub">${esc(subtitulo)}</div></div></div>
+    </div></body></html>`;
+
+    setProgreso('Generando el PDF…');
+    const r = await fetch(`${API_URL}/api/book/pdf-libro`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cubierta: cubiertaHTML, interior: interiorHTML }) });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'No se pudo generar el PDF');
+    return { blob: await r.blob(), pageCount: N };
+  }
+
   // PDF de muestra: gratis, con marca de agua en cada página, sin subir nada al servidor.
   async function muestra() {
     if (pidiendo || pocas) return;
     setPidiendo(true);
     try {
-      const pdf = await generarPDF(true);
+      const pdf = (await generarPDF(true)).blob;
       const url = URL.createObjectURL(pdf); const a = document.createElement('a'); a.href = url; a.download = `${(titulo || 'libro').replace(/[^\w&\- ]/g, '')} - muestra.pdf`; a.click();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
     } catch (e) { alert(e.message); }
@@ -290,7 +356,8 @@ export default function LibroPage() {
     setPidiendo(true);
     try {
       await subirMediaConQR();
-      const pdf = await generarPDF();
+      // impreso: PDF con la estructura de Gelato (cubierta en pliego + guardas); solo PDF: el libro tal cual, página a página
+      const { blob: pdf, pageCount } = product === 'pdf' ? { blob: await generarPDFSimple(false), pageCount: paginas } : await generarPDF();
       setProgreso('Subiendo el libro…');
       const fd = new FormData(); fd.append('kind', 'pdf'); fd.append('file', pdf, 'libro.pdf');
       const up = await fetch(`${API_URL}/api/book/upload`, { method: 'POST', body: fd });
@@ -299,7 +366,7 @@ export default function LibroPage() {
       const fileToken = u.plainUrl.split('k=')[1];
       setProgreso('Abriendo el pago…');
       const ck = await fetch(`${API_URL}/api/book/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileId: u.id, fileToken, pageCount: paginas, titulo, product, region: REGION }) });
+        body: JSON.stringify({ fileId: u.id, fileToken, pageCount, titulo, product, region: REGION }) });
       const c = await ck.json().catch(() => ({}));
       if (!ck.ok || !c.url) throw new Error(c.error || 'No se pudo iniciar el pago');
       window.location.assign(c.url);
