@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { parseChat, participantes } from './parser';
 import { puntuar } from './scorer';
 import { proponer, montar } from './propuesta';
-import { renderHTML, PAGE } from './render';
+import { renderHTML, PAGE, FONTS } from './render';
 import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds } from './media';
 import { libroStore } from './store';
 import './libro.css';
@@ -32,6 +32,9 @@ export default function LibroPage() {
   const [videos, setVideos] = useState({});
   const [fotosChat, setFotosChat] = useState([]);
   const [pidiendo, setPidiendo] = useState(false);
+  const [cargandoFotos, setCargandoFotos] = useState('');
+  const [paginasReales, setPaginasReales] = useState(0);
+  const cssRef = useRef('');
   const iframeRef = useRef(null);
   const idxRef = useRef(null);
 
@@ -61,17 +64,23 @@ export default function LibroPage() {
         setSubtitulo(y1 === y2 ? y1 : `${y1} – ${y2}`);
         setDerecha(nombres.find(n => /^(tú|you|yo)$/i.test(n)) || nombres[0]);
         setEstado('listo');
-        // 2) cargar media de los mensajes elegidos en segundo plano
-        setProgreso('Preparando fotos…');
+        // 2) cargar media en segundo plano: primero las fotos de los capítulos elegidos, luego
+        //    unas cuantas más como candidatas a portada. Progresivo: la vista previa se va rellenando.
         const man = montar(ms, props);
         const ids = new Set(man.capitulos.flatMap(c => c.mensajes));
+        const conMedia = ms.filter(m => m.archivo && idx.has(m.archivo));
+        const cola = [...conMedia.filter(m => ids.has(m.id)), ...conMedia.filter(m => !ids.has(m.id) && m.tipo === 'image').slice(0, 60)];
         const imgs = {}, vids = {};
-        for (const m of ms) {
-          if (!m.archivo || !idx.has(m.archivo)) continue;
-          if (m.tipo === 'image') { const r = await imageUri(idx, m.archivo); if (r) imgs[m.archivo] = r; }
-          else if (m.tipo === 'video' && ids.has(m.id)) { const r = await videoFrame(idx, m.archivo); if (r) vids[m.archivo] = r; }
+        let n = 0;
+        for (const m of cola) {
+          n++;
+          if (n % 5 === 0) { setCargandoFotos(`${n}/${cola.length}`); setMedia({ ...imgs }); setVideos({ ...vids }); }
+          try {
+            if (m.tipo === 'image') { if (!imgs[m.archivo]) { const r = await imageUri(idx, m.archivo); if (r) imgs[m.archivo] = r; } }
+            else if (m.tipo === 'video' && ids.has(m.id)) { const r = await videoFrame(idx, m.archivo); if (r) vids[m.archivo] = r; }
+          } catch (e) { console.warn('media', m.archivo, e); }
         }
-        setMedia(imgs); setVideos(vids);
+        setMedia(imgs); setVideos(vids); setCargandoFotos('');
         setFotosChat(Object.keys(imgs).filter(n => imgs[n].w >= 600).slice(0, 24));
       } catch (e) { console.error(e); setEstado('error'); setProgreso('No se ha podido leer el chat.'); }
     })();
@@ -84,40 +93,63 @@ export default function LibroPage() {
   }, [mensajes, caps, quitados, titulo, subtitulo, dedicatoria, color, portadaFoto]);
 
   const encendidos = caps.filter(c => c.on).length;
-  const paginas = man ? man.paginasTotales : 0;
+  const paginas = paginasReales || (man ? man.paginasTotales : 0);
   const demasiadas = paginas > 200, pocas = encendidos === 0;
 
-  // vista previa en iframe (mismo HTML que el PDF)
+  // vista previa en iframe: mismo HTML que el PDF, y las páginas se parten de verdad midiendo en el navegador
   useEffect(() => {
     if (!man || !iframeRef.current) return;
     const { css, body } = renderHTML(mensajes, man, { media, videos, derecha, preview: true });
+    cssRef.current = css;
     const doc = iframeRef.current.contentDocument;
+    const W = PAGE.w + 2 * PAGE.bleed, H = PAGE.h + 2 * PAGE.bleed;
     doc.open();
-    doc.write(`<!doctype html><html><head><meta charset="utf-8"><style>${css}
-      body{background:#ecebe7;padding:18px;display:flex;flex-wrap:wrap;gap:18px;justify-content:center;zoom:.62}
-      section{width:${PAGE.w}mm;height:${PAGE.h}mm;min-height:0;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.12);margin:0;break-after:auto}
-      section.chapter-body{height:auto;min-height:${PAGE.h}mm}
+    doc.write(`<!doctype html><html><head><meta charset="utf-8">${FONTS}<style>${css}
+      body{background:#ecebe7;padding:18px;display:flex;flex-wrap:wrap;gap:18px;justify-content:center;zoom:.6}
+      section{width:${W}mm;height:${H}mm;min-height:0;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.12);margin:0;break-after:auto}
       section.hidden{display:none}
       .msg .x{position:absolute;top:-6px;width:22px;height:22px;border-radius:50%;background:#b3261e;color:#fff;font:14px/22px sans-serif;text-align:center;cursor:pointer;display:none;z-index:2}
       .msg.l .x{right:-9px}.msg.r .x{left:-9px}.msg:hover .x{display:block}
     </style></head><body>${body}</body></html>`);
     doc.close();
     const caps0 = caps;
-    doc.querySelectorAll('[data-cap]').forEach(el => el.classList.toggle('hidden', !caps0[+el.dataset.cap]?.on));
-    doc.querySelectorAll('.msg').forEach(el => {
-      const x = doc.createElement('div'); x.className = 'x'; x.textContent = '×'; x.title = 'Quitar del libro';
-      x.onclick = e => { e.stopPropagation(); setQuitados(q => new Set([...q, +el.dataset.id])); };
-      el.appendChild(x);
-    });
+    let cancelado = false;
+    const acabar = () => {
+      if (cancelado) return;
+      paginar(doc);
+      doc.querySelectorAll('[data-cap]').forEach(el => el.classList.toggle('hidden', !caps0[+el.dataset.cap]?.on));
+      doc.querySelectorAll('.msg').forEach(el => {
+        const x = doc.createElement('div'); x.className = 'x'; x.textContent = '×'; x.title = 'Quitar del libro';
+        x.onclick = e => { e.stopPropagation(); setQuitados(q => new Set([...q, +el.dataset.id])); };
+        el.appendChild(x);
+      });
+      setPaginasReales(contarPaginas(doc));
+    };
+    // esperar a las fuentes (si tardan más de 2 s, paginamos igual)
+    Promise.race([doc.fonts ? doc.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 2000))]).then(acabar);
+    return () => { cancelado = true; };
   }, [man, mensajes, media, videos, derecha, caps]);
 
   const toggle = k => setCaps(cs => cs.map((c, i) => i === k ? { ...c, on: !c.on } : c));
   const renombrar = (k, t) => setCaps(cs => cs.map((c, i) => i === k ? { ...c, titulo: t } : c));
   const deshacer = () => setQuitados(new Set());
 
+  // El PDF se hace con exactamente lo que se ve: las páginas ya partidas en la vista previa.
   async function generarPDF() {
     setProgreso('Generando el PDF…');
-    const { html } = renderHTML(mensajes, man, { media, videos, derecha });
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc || !doc.body) throw new Error('La vista previa aún no está lista');
+    const body = doc.body.cloneNode(true);
+    body.querySelectorAll('.x, section.hidden').forEach(el => el.remove());
+    // fotos que no se pudieron leer: fuera (la burbuja entera si no tenía texto)
+    body.querySelectorAll('.media.missing').forEach(el => { const msg = el.closest('.msg'); if (msg && !msg.querySelector('.txt')) msg.remove(); else el.remove(); });
+    // número par de páginas y mínimo de 28 (imprenta): rellenamos con blancas antes de la contraportada
+    const back = body.querySelector('section.back');
+    let n = body.querySelectorAll('section').length;
+    while (n < 28 || n % 2) { const b = doc.createElement('section'); b.className = 'blank'; body.insertBefore(b, back); n++; }
+    const H = PAGE.h + 2 * PAGE.bleed;
+    const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${(titulo || 'libro').replace(/[<>&]/g, '')}</title>${FONTS}<style>${cssRef.current}
+      section{height:${H}mm;min-height:${H}mm;overflow:hidden}</style></head><body>${body.innerHTML}</body></html>`;
     const r = await fetch(`${API_URL}/api/book/pdf`, { method: 'POST', headers: { 'Content-Type': 'text/html' }, body: html });
     if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'No se pudo generar el PDF');
     return r.blob();
@@ -168,6 +200,7 @@ export default function LibroPage() {
       <div className="libro-top">
         <h1>{titulo || 'Tu libro'} <small>· vista previa</small></h1>
         {quitados.size > 0 && <button className="pill ghost" onClick={deshacer}>Deshacer ({quitados.size})</button>}
+        {cargandoFotos && <span className="pill ghost">Cargando fotos {cargandoFotos}</span>}
         <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas · {PRECIO} €</span>
         <button className="pill ghost" disabled={pidiendo} onClick={verPDF} title="Descarga el PDF tal cual irá a imprenta">Ver PDF</button>
         <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={pedir}>{pidiendo ? progreso : `Pedir libro · ${PRECIO} €`}</button>
@@ -194,4 +227,31 @@ export default function LibroPage() {
       </div>
     </div>
   );
+}
+
+// Parte cada capítulo en páginas de verdad: va metiendo burbujas en una sección de altura fija y,
+// cuando se desborda, pasa la última (y su cabecera de día, si quedó sola) a una sección nueva.
+function paginar(doc) {
+  for (const body of [...doc.querySelectorAll('section.chapter-body')]) {
+    const kids = [...body.children];
+    const nueva = () => { const s = doc.createElement('section'); s.className = 'chapter-body'; s.dataset.cap = body.dataset.cap; body.parentNode.insertBefore(s, body); return s; };
+    let cur = nueva();
+    for (const k of kids) {
+      cur.appendChild(k);
+      if (cur.scrollHeight > cur.clientHeight + 1 && cur.children.length > 1) {
+        const prev = k.previousElementSibling;
+        const nx = nueva();
+        if (prev && prev.classList.contains('day') && cur.children.length > 2) nx.appendChild(prev);
+        nx.appendChild(k); cur = nx;
+      }
+    }
+    if (!cur.children.length) cur.remove();
+    body.remove();
+  }
+}
+
+function contarPaginas(doc) {
+  let n = [...doc.querySelectorAll('section')].filter(s => !s.classList.contains('hidden')).length;
+  if (n < 28) n = 28;
+  return n % 2 ? n + 1 : n;
 }

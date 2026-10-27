@@ -2,8 +2,10 @@
 // Los títulos con IA (Mistral, vía zipback) sustituirán a estos cuando estén; la estructura es la misma.
 import { puntuar } from './scorer.js';
 
-const BURBUJAS_POR_PAGINA = 22;
-const PESO_FOTO = 0.35;
+const BURBUJAS_POR_PAGINA = 16;   // medido en el navegador: ~16 burbujas por página de 14×21,5
+const PESO_FOTO = 0.5;            // dos fotos por página
+const RAFAGA_MS = 3 * 60e3;       // fotos de la misma persona en 3 min = ráfaga
+const MAX_POR_RAFAGA = 2;
 const UMBRAL = 0.5;
 const MAX_PAG_CAP = 6;
 const PEGADO = /(^|\n)(The user prompt|Investig[óo] |Hecho\. |Estimando |Ubicación: \d|Tres escenarios|En resumen|Resumen:|Conclusi[óo]n)|https?:\/\/|\n\s*[-•*]\s|—/i;
@@ -68,6 +70,15 @@ export function montar(mensajes, capitulos, flags = {}) {
       if (nx && nx.autor && nx.autor !== m.autor && nx.tipo === 'text' && (nx.score || 0) > -3 && (nx.fecha - m.fecha) < 5 * 60e3 && !quitados.has(nx.id)) ids.add(nx.id);
     }
     let sel = [...ids].sort((a, b) => a - b).map(i => mensajes[i]);
+    // ráfagas de fotos (la misma persona, pocos minutos): nos quedamos con las 2 mejores
+    const fuera = new Set();
+    for (let i = 0; i < sel.length; i++) {
+      const m = sel[i]; if (m.tipo !== 'image' || fuera.has(m.id)) continue;
+      const grupo = [m];
+      for (let j = i + 1; j < sel.length && sel[j].fecha - grupo[grupo.length - 1].fecha < RAFAGA_MS; j++) if (sel[j].tipo === 'image' && sel[j].autor === m.autor) grupo.push(sel[j]);
+      if (grupo.length > MAX_POR_RAFAGA) [...grupo].sort((a, b) => (b.score || 0) - (a.score || 0)).slice(MAX_POR_RAFAGA).forEach(x => fuera.add(x.id));
+    }
+    sel = sel.filter(m => !fuera.has(m.id));
     const paginas = s => s.reduce((a, m) => a + (m.tipo === 'image' || m.tipo === 'video' ? PESO_FOTO : 1 / BURBUJAS_POR_PAGINA), 0);
     while (paginas(sel) > MAX_PAG_CAP) {
       const peor = sel.reduce((w, m) => ((m.score || 0) < (w.score || 0) ? m : w), sel[0]);
