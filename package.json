@@ -17,6 +17,7 @@
     "i18next-http-backend": "^3.0.2",
     "jspdf": "^3.0.1",
     "jszip": "^3.10.1",
+    "qrcode": "^1.5.3",
     "lz-string": "^1.5.0",
     "marked": "^4.2.12",
     "openai": "^4.98.0",

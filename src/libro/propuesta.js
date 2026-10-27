@@ -14,7 +14,8 @@ const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', '
 // Lo que entra en el libro es la conversación entera; solo se queda fuera lo que no es conversación.
 export function esConversacion(m) {
   if (!m || m.tipo === 'system' || m.tipo === 'deleted' || m.tipo === 'link' || m.reenviado) return false;
-  if (['audio', 'document', 'contact', 'sticker', 'gif', 'media'].includes(m.tipo)) return false;
+  if (m.tipo === 'audio') return !!m.archivo;  // los audios van con QR si están en el zip
+  if (['document', 'contact', 'sticker', 'gif', 'media'].includes(m.tipo)) return false;
   if (m.captura || m.videoCorto) return false;  // pantallazos y vídeos-meme: fuera (lo marca el navegador al leer el zip)
   if (m.esMedia) return true;
   if (!m.tieneTexto) return false;

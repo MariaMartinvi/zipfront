@@ -9,6 +9,7 @@ import { proponer, montar } from './propuesta';
 import { renderHTML, PAGE, FONTS } from './render';
 import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds, tienePersona, imageUriFromFile } from './media';
 import { libroStore } from './store';
+import QRCode from 'qrcode';
 import { isSpainTimeZone, isMexicoTimeZone, isLatamTimeZone } from '../utils/pricing';
 import './libro.css';
 
@@ -48,6 +49,8 @@ export default function LibroPage() {
   const [paginasReales, setPaginasReales] = useState(0);
   const [precios, setPrecios] = useState(LABELS_DEFECTO);
   const [galeria, setGaleria] = useState(false);
+  const [qrs, setQrs] = useState({});
+  const renderListo = useRef(null); // promesa que se resuelve cuando la vista previa termina de paginar
   const cssRef = useRef('');
   const iframeRef = useRef(null);
   const idxRef = useRef(null);
@@ -132,7 +135,7 @@ export default function LibroPage() {
   // vista previa en iframe: mismo HTML que el PDF, y las páginas se parten de verdad midiendo en el navegador
   useEffect(() => {
     if (!man || !iframeRef.current) return;
-    const { css, body } = renderHTML(mensajes, man, { media, videos, derecha, preview: true });
+    const { css, body } = renderHTML(mensajes, man, { media, videos, qrs, derecha, preview: true });
     cssRef.current = css;
     const doc = iframeRef.current.contentDocument;
     const W = PAGE.w + 2 * PAGE.bleed, H = PAGE.h + 2 * PAGE.bleed;
@@ -158,11 +161,12 @@ export default function LibroPage() {
         el.appendChild(x);
       });
       setPaginasReales(contarPaginas(doc));
+      if (renderListo.current) { renderListo.current(); renderListo.current = null; }
     };
     // esperar a las fuentes (si tardan más de 2 s, paginamos igual)
     Promise.race([doc.fonts ? doc.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 2000))]).then(acabar);
     return () => { cancelado = true; };
-  }, [man, mensajes, media, videos, derecha, caps]);
+  }, [man, mensajes, media, videos, qrs, derecha, caps]);
 
   async function subirPortada(e) {
     const f = e.target.files && e.target.files[0]; if (!f) return;
@@ -219,12 +223,39 @@ export default function LibroPage() {
     setPidiendo(false);
   }
 
+  // Vídeos y notas de voz de los capítulos elegidos: se suben cifrados (clave solo en la URL, 5 años) y
+  // cada uno recibe un QR que va impreso en el libro. Solo al pedir, nunca antes.
+  const MAX_MEDIA_MB = 40, MAX_MEDIA = 30;
+  async function subirMediaConQR() {
+    const idx = idxRef.current; if (!idx || !man) return;
+    const ids = new Set(man.capitulos.filter(c => c.on).flatMap(c => c.mensajes));
+    const lista = mensajes.filter(m => ids.has(m.id) && m.archivo && idx.has(m.archivo) && ((m.tipo === 'video' && videos[m.archivo]) || m.tipo === 'audio') && !qrs[m.archivo]).slice(0, MAX_MEDIA);
+    if (!lista.length) return;
+    const nuevos = { ...qrs };
+    let n = 0;
+    for (const m of lista) {
+      n++; setProgreso(`Subiendo vídeos y audios ${n}/${lista.length}…`);
+      try {
+        const blob = await idx.get(m.archivo).async('blob');
+        if (blob.size > MAX_MEDIA_MB * 1024 * 1024) continue;
+        const fd = new FormData(); fd.append('kind', 'media'); fd.append('file', blob, m.archivo);
+        const r = await fetch(`${API_URL}/api/book/upload`, { method: 'POST', body: fd });
+        const u = await r.json().catch(() => ({}));
+        if (!r.ok || !u.url) continue;
+        nuevos[m.archivo] = await QRCode.toDataURL(u.url, { margin: 0, width: 360, errorCorrectionLevel: 'M' });
+      } catch (e) { console.warn('media QR', m.archivo, e); }
+    }
+    setProgreso('Colocando los códigos QR…');
+    await new Promise(res => { renderListo.current = res; setQrs(nuevos); setTimeout(res, 15000); });
+  }
+
   // Pedir (libro impreso o solo PDF): PDF → subida cifrada → Stripe Checkout → /libro/pedido, donde se
   // entrega la descarga (y, si es impreso, se manda a imprenta). Nadie descarga nada sin pagar.
   async function pedir(product = 'libro') {
     if (pidiendo || demasiadas || pocas) return;
     setPidiendo(true);
     try {
+      await subirMediaConQR();
       const pdf = await generarPDF();
       setProgreso('Subiendo el libro…');
       const fd = new FormData(); fd.append('kind', 'pdf'); fd.append('file', pdf, 'libro.pdf');
