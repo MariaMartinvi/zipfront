@@ -85,9 +85,9 @@ export default function LibroLanding() {
       <section className="ll-ejemplos">
         <h2>Ejemplos</h2>
         <div className="ll-ejemplos-grid">
-          <div className="ll-libro" style={{ background: 'linear-gradient(135deg,#2f3e46,#1d1d1b)' }}><b>Eva &amp; Noemí</b><span>2024 – 2026</span></div>
-          <div className="ll-libro" style={{ background: 'linear-gradient(135deg,#5b3a4a,#1d1d1b)' }}><b>Las Gemeles</b><span>2025 – 2026</span></div>
-          <div className="ll-libro" style={{ background: 'linear-gradient(135deg,#2b4a6f,#1d1d1b)' }}><b>Familia Martín</b><span>2019 – 2026</span></div>
+          <div className="ll-libro" style={{ backgroundImage: 'url(/libro/pareja.jpg)' }}><b>Eva &amp; Marcos</b><span>2024 – 2026</span></div>
+          <div className="ll-libro" style={{ backgroundImage: 'url(/libro/hermanas.jpg)' }}><b>Las Hermanas Sánchez</b><span>2021 – 2026</span></div>
+          <div className="ll-libro" style={{ backgroundImage: 'url(/libro/familia.jpg)' }}><b>Familia Matutes</b><span>2019 – 2026</span></div>
         </div>
         <p className="ll-nota">Pronto: vídeos de libros reales.</p>
       </section>

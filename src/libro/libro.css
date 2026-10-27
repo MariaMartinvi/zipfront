@@ -82,8 +82,10 @@
 .ll-incluye li { background: #fff; border: 1px solid #e6e9e8; border-radius: 12px; padding: 14px 16px; font-size: 15px; }
 .ll-ejemplos { margin: 44px 0; text-align: center; }
 .ll-ejemplos-grid { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
-.ll-libro { width: 150px; height: 210px; border-radius: 3px 10px 10px 3px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; text-align: left; box-shadow: 8px 8px 0 #d9ded9, 0 14px 30px rgba(0,0,0,.2); position: relative; }
-.ll-libro::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.25); }
+.ll-libro { width: 170px; height: 238px; border-radius: 3px 10px 10px 3px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; text-align: left; background-size: cover; background-position: center top; overflow: hidden; box-shadow: 8px 8px 0 #d9ded9, 0 14px 30px rgba(0,0,0,.2); position: relative; }
+.ll-libro::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.35); z-index: 2; }
+.ll-libro::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.75) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,0) 70%); }
+.ll-libro b, .ll-libro span { position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
 .ll-libro b { font-family: Georgia, 'Lora', serif; font-size: 18px; line-height: 1.15; }
 .ll-libro span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; opacity: .7; margin-top: 6px; }
 .ll-faq { margin: 40px 0; }
