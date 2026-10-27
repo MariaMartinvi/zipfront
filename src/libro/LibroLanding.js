@@ -70,6 +70,7 @@ export default function LibroLanding() {
           <div className="ll-ejemplo"><div className="ll-libro" style={{ backgroundImage: 'url(/libro/pareja.jpg)' }}><b>Eva &amp; Marcos</b><span>2024 – 2026</span></div><p><b>Para tu pareja</b><br />Desde el primer "hola" hasta hoy. 68 páginas.</p></div>
           <div className="ll-ejemplo"><div className="ll-libro" style={{ backgroundImage: 'url(/libro/hermanas.jpg)' }}><b>Las Hermanas Sánchez</b><span>2021 – 2026</span></div><p><b>Para tus hermanas</b><br />Cinco años de grupo, con sus personajes. 84 páginas.</p></div>
           <div className="ll-ejemplo"><div className="ll-libro" style={{ backgroundImage: 'url(/libro/familia.jpg)' }}><b>Familia Matutes</b><span>2019 – 2026</span></div><p><b>Para la familia</b><br />Los abuelos, los primos, las comidas de domingo. 96 páginas.</p></div>
+          <div className="ll-ejemplo"><div className="ll-libro" style={{ backgroundImage: 'url(/libro/amigas.jpg)' }}><b>Las de siempre</b><span>2018 – 2026</span></div><p><b>Para el grupo de amigas</b><br />Ocho años de planes, dramas y risas. 102 páginas.</p></div>
         </div>
       </section>
 
