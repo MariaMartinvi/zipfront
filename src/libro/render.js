@@ -2,6 +2,7 @@
 import { EMOJI, personajes } from './personajes';
 
 export const PAGE = { w: 140, h: 215, bleed: 3, margin: 12 };
+export const FONTS = `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&display=block" rel="stylesheet">`;
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const fechaLarga = d => { const [y, m, dd] = d.split('-').map(Number); return `${dd} de ${MESES[m - 1]} de ${y}`; };
@@ -51,7 +52,7 @@ export function renderHTML(mensajes, man, opts = {}) {
       let mediaHTML = '';
       if (m.tipo === 'image' && m.archivo && media[m.archivo]) mediaHTML = `<div class="media"><img src="${media[m.archivo].uri}"/></div>`;
       else if (m.tipo === 'video' && m.archivo && videos[m.archivo]) mediaHTML = `<div class="media video"><img src="${videos[m.archivo].uri}"/><span class="vid">vídeo${dur(videos[m.archivo].seconds)}</span></div>`;
-      else if (m.tipo === 'image') mediaHTML = `<div class="media missing">foto</div>`;
+      else if (m.tipo === 'image' && preview) mediaHTML = `<div class="media missing">foto</div>`;
       if (!mediaHTML && !m.tieneTexto) continue;
       out += `<div class="msg ${side}${pcls}" data-id="${m.id}">${showName ? `<div class="name">${esc(nombre(m.autor))}</div>` : ''}
         <div class="bubble">${mediaHTML}${m.tieneTexto ? `<div class="txt">${esc(m.texto).replace(/\n/g, '<br>')}</div>` : ''}<span class="time">${hora(m.fecha)}</span></div></div>`;
@@ -119,8 +120,8 @@ export function renderHTML(mensajes, man, opts = {}) {
   .bubble .time { position: absolute; right: 2.2mm; bottom: .9mm; font-family: 'Poppins', sans-serif; font-size: 6pt; color: #999; }
   .txt { padding-right: 8mm; white-space: pre-wrap; word-wrap: break-word; }
   .media { position: relative; margin: -1mm -2mm 1.5mm; border-radius: 2.5mm; overflow: hidden; }
-  .media img { display: block; width: 100%; max-height: 95mm; object-fit: cover; }
-  .media.missing { height: 30mm; background: #e4e2dc; color: #999; display: flex; align-items: center; justify-content: center; font-size: 8pt; }
+  .media img { display: block; width: 100%; max-height: 68mm; object-fit: cover; }
+  .media.missing { height: 30mm; width: 60mm; background: #e4e2dc; color: #999; display: flex; align-items: center; justify-content: center; font-size: 8pt; }
   .media .vid { position: absolute; left: 2mm; bottom: 1.5mm; font-family: 'Poppins', sans-serif; font-size: 6.5pt; color: #fff; background: rgba(0,0,0,.45); padding: .4mm 1.6mm; border-radius: 1mm; }
   .person { display: flex; gap: 4mm; margin-bottom: 7mm; break-inside: avoid; }
   .avatar { width: 20mm; height: 20mm; border-radius: 50%; background: #e4e2dc; color: #777; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-size: 16pt; overflow: hidden; flex: none; }
@@ -143,5 +144,5 @@ export function renderHTML(mensajes, man, opts = {}) {
   ${man.dedicatoria ? `<section class="dedication">${esc(man.dedicatoria)}</section>` : ''}
   ${personajesHTML}${indice}${capsHTML}${statsHTML}
   <section class="back">chatsalsa.com</section>`;
-  return { css, body, html: `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${esc(man.titulo)}</title><style>${css}</style></head><body>${body}</body></html>` };
+  return { css, body, html: `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${esc(man.titulo)}</title>${FONTS}<style>${css}</style></head><body>${body}</body></html>` };
 }
