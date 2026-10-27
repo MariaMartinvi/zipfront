@@ -25,14 +25,15 @@ const CAT = {
 };
 
 const fmtMin = m => m < 1 ? `${Math.round(m * 60)} s` : m < 60 ? `${Math.round(m)} min` : `${(m / 60).toFixed(1)} h`;
-const EMOJI = /\p{Extended_Pictographic}/gu;
+// Sin \p{...}: el compilador de la web (Babel) genera una expresión gigantesca que rompe la build.
+export const EMOJI = /(?:[\u2600-\u27BF]|[\u231A\u231B\u2B50\u2B55]|[\u23E9-\u23FA]|[\u25FB-\u25FE]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|\uD83E[\uDC00-\uDFFF])(?:\uFE0F|\uD83C[\uDFFB-\uDFFF])?/g;
 const YO = /\b(yo|me|mi|mío|mía|mis|conmigo|jo|em|meu|meva)\b/i;
 
 export function personajes(mensajes, opts = {}) {
   const { genero = {} } = opts; // { 'Eva': 'f' }
   const u = {};
   const get = a => (u[a] ||= { mensajes: 0, palabras: 0, unicas: new Set(), ppm: [], resp: [], noche: 0, horas: [], yo: 0, termina: 0, inicia: 0, longitud: [], otros: 0, emojis: 0, amor: 0, racha: 0, rachaMax: 0, risa: 0, gracias: 0, perdon: 0, preguntas: 0, vicios: 0 });
-  const AMOR = /[😍😘🥰😗😙😚💋❤️🧡💛💝💘💖💗💓💞💕❣️💔🩷💚🩵💙💜🖤🩶🤍🤎💟🌹🌷💐🥀💏]/gu;
+  const AMOR = new RegExp(["😍", "😘", "🥰", "😗", "😙", "😚", "💋", "❤", "🧡", "💛", "💝", "💘", "💖", "💗", "💓", "💞", "💕", "❣", "💔", "🩷", "💚", "🩵", "💙", "💜", "🖤", "🩶", "🤍", "🤎", "💟", "🌹", "🌷", "💐", "🥀", "💏"].join('|'), 'g');
   const RISA = /\b(jaja+|jeje+|jiji+|haha+|lol|xd)\b|😂|🤣|😆|😹/i;
   const GRACIAS = /\b(gracias|gràcies|agradec|agradezco|agradecid|thank|thx|merci)\b/i;
   const PERDON = /\b(perd[oó]n|perdona|disculpa|lo siento|sorry|my bad|me equivoqu[eé]|ho sento)\b/i;
@@ -45,7 +46,7 @@ export function personajes(mensajes, opts = {}) {
     if (!m.autor || m.tipo === 'system') continue;
     const d = get(m.autor);
     const t = m.texto || '';
-    const palabras = t.toLowerCase().match(/[\p{L}\p{N}']+/gu) || [];
+    const palabras = t.toLowerCase().match(/[a-z0-9\u00c0-\u024f']+/g) || [];
     d.mensajes++; d.palabras += palabras.length; palabras.forEach(w => d.unicas.add(w));
     d.ppm.push(palabras.length); d.longitud.push(t.length);
     const h = new Date(m.fecha).getHours();
