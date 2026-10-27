@@ -564,7 +564,10 @@
       "drop": "Trascina qui il file .zip o clicca per sceglierlo",
       "android_title": "Condividi la chat da WhatsApp",
       "android_or_zip": "Hai già il .zip? Caricalo qui",
-      "how_export": "Come esporto la chat?"
+      "how_export": "Come esporto la chat?",
+      "done_title": "Fatto!",
+      "done_text": "La tua analisi è qui sotto.",
+      "done_another": "Carica un’altra chat"
     },
     "analysis": {
       "statistical": "Analisi Statistica",

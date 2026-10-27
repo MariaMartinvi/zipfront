@@ -40,6 +40,7 @@ import DemoExample from './components/DemoExample';
 import LibroPage from './libro/LibroPage';
 import { libroStore } from './libro/store';
 import LibroCard from './libro/LibroCard';
+import UploadDone from './UploadDone';
 import LibroPedido from './libro/LibroPedido';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
@@ -137,6 +138,8 @@ function AppContent() {
   
   // Configuración de privacidad
   const [skipAIPsychologicalAnalysis, setSkipAIPsychologicalAnalysis] = useState(false);
+  const [subirOtro, setSubirOtro] = useState(false); // tras analizar, la caja de subida se pliega hasta pulsar "Subir otro chat"
+  useEffect(() => { setSubirOtro(false); }, [chatData]);
   
   // NUEVO: Estado para datos del juego de titulares
   const [headlinesGameData, setHeadlinesGameData] = useState(null);
@@ -2001,6 +2004,44 @@ const tryDeleteFiles = async (operationId) => {
             path="/"
             element={
               <>
+                {/* Subida siempre arriba: caja completa si no hay chat (o se pide otro); si ya hay análisis, tarjeta "¡Listo!" */}
+                {(!chatData || subirOtro || !user) ? (
+                <div id="upload-section" className="upload-section">
+                  <div className="upload-section-container">
+                    {!user ? (
+                      <div className="login-required">
+                        <h2>{t('app.login_required.title')}</h2>
+                        <p>{t('app.login_required.description')}</p>
+                        <div className="auth-buttons">
+                          <button 
+                            className="login-button"
+                            onClick={() => window.location.href = '/login'}
+                          >
+                            {t('app.login_required.login')}
+                          </button>
+                          <button 
+                            className="register-button"
+                            onClick={() => window.location.href = '/register'}
+                          >
+                            {t('app.login_required.register')}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <UploadBox
+                        onFileUpload={handleFileUpload}
+                        skipIA={skipAIPsychologicalAnalysis}
+                        onSkipIAChange={setSkipAIPsychologicalAnalysis}
+                        showAnalysis={showAnalysis}
+                      />
+                    )}
+                  </div>
+                </div>
+
+                ) : (
+                  <UploadDone onAnother={() => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }} />
+                )}
+
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
                 {operationId && user && (
                   <div className="analysis-container" ref={analysisRef}>
@@ -2276,39 +2317,6 @@ const tryDeleteFiles = async (operationId) => {
 
                 {/* Vista previa de la aplicación para usuarios no logueados */}
                 {!user && <AppPreview />}
-
-                {/* Sección de carga de archivos */}
-                <div id="upload-section" className="upload-section">
-                  <div className="upload-section-container">
-                    {!user ? (
-                      <div className="login-required">
-                        <h2>{t('app.login_required.title')}</h2>
-                        <p>{t('app.login_required.description')}</p>
-                        <div className="auth-buttons">
-                          <button 
-                            className="login-button"
-                            onClick={() => window.location.href = '/login'}
-                          >
-                            {t('app.login_required.login')}
-                          </button>
-                          <button 
-                            className="register-button"
-                            onClick={() => window.location.href = '/register'}
-                          >
-                            {t('app.login_required.register')}
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <UploadBox
-                        onFileUpload={handleFileUpload}
-                        skipIA={skipAIPsychologicalAnalysis}
-                        onSkipIAChange={setSkipAIPsychologicalAnalysis}
-                        showAnalysis={showAnalysis}
-                      />
-                    )}
-                  </div>
-                </div>
 
                 {error && (
                   <div className="error-message">

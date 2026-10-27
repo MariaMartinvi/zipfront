@@ -20,7 +20,10 @@
       "drop": "Drag your .zip file here or click to choose it",
       "android_title": "Share the chat from WhatsApp",
       "android_or_zip": "Already have the .zip? Upload it here",
-      "how_export": "How do I export the chat?"
+      "how_export": "How do I export the chat?",
+      "done_title": "Done!",
+      "done_text": "Your analysis is right below.",
+      "done_another": "Upload another chat"
     },
     "analysis": {
       "statistical": "Statistical Analysis",
