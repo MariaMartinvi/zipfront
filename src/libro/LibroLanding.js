@@ -105,7 +105,7 @@ export default function LibroLanding() {
       </section>
 
       <section className="ll-subida" id="subir">
-        <UploadBox onFileUpload={subir} titulo="Sube tu chat y mira tu libro gratis" subtitulo="Exporta el chat CON archivos (para que salgan las fotos) y sube el zip. No pagas nada hasta que lo veas entero y te guste." sinPrivacidad />
+        <UploadBox onFileUpload={subir} titulo="Sube tu chat y mira tu libro gratis" subtitulo="Exporta el chat CON archivos (para que salgan las fotos) y sube el zip. No pagas nada hasta que lo veas entero y te guste." sinPrivacidad avisoMedios={<>📸 Para el libro, exporta <b>CON medios</b> si quieres incluir fotos.</>} />
         {cargando && <p className="ll-nota">Leyendo el chat…</p>}
         {error && <p className="ll-error">{error}</p>}
         <p className="ll-nota">🔒 El chat y las fotos se quedan en tu navegador. Para imprimir solo viaja el PDF, cifrado, y se borra al cabo de unos días.</p>
