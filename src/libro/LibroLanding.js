@@ -48,27 +48,49 @@ export default function LibroLanding() {
 
   return (
     <div className="libro-landing">
-      <section className="ll-hero">
-        <span className="ll-badge">Nuevo · Impreso o PDF</span>
-        <h1>Tu chat de WhatsApp,<br />en un libro de verdad</h1>
-        <p>Elegimos los mejores días de vuestra conversación y los convertimos en un libro con capítulos, vuestras fotos y los personajes de cada uno. Tú lo revisas, quitas lo que quieras y lo recibes en casa.</p>
+      <section className="ll-hero ll-hero-foto" style={{ backgroundImage: 'url(/libro/pareja.jpg)' }}>
+        <div className="ll-hero-texto">
+          <span className="ll-badge">🎁 El regalo que nadie más puede hacer</span>
+          <h1>Regala vuestro chat<br />convertido en un libro</h1>
+          <p>Los mejores momentos de vuestra conversación de WhatsApp, con vuestras fotos y los personajes de cada uno, impresos en un libro de verdad. Para una pareja, unas hermanas, el grupo de amigas, la familia.</p>
+          <div className="ll-hero-cta">
+            <button onClick={() => document.getElementById('subir')?.scrollIntoView({ behavior: 'smooth' })}>Crea tu libro gratis</button>
+            <span>Lo ves entero antes de pagar · desde {precios.pdf}</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="ll-ocasiones">
+        <span>Aniversario</span><span>San Valentín</span><span>Cumpleaños</span><span>Boda</span><span>Navidad</span><span>Día de la madre</span><span>Despedida</span><span>Porque sí</span>
+      </section>
+
+      <section className="ll-ejemplos">
+        <h2>Un libro para cada historia</h2>
+        <div className="ll-ejemplos-grid">
+          <div className="ll-ejemplo"><div className="ll-libro" style={{ backgroundImage: 'url(/libro/pareja.jpg)' }}><b>Eva &amp; Marcos</b><span>2024 – 2026</span></div><p><b>Para tu pareja</b><br />Desde el primer "hola" hasta hoy. 68 páginas.</p></div>
+          <div className="ll-ejemplo"><div className="ll-libro" style={{ backgroundImage: 'url(/libro/hermanas.jpg)' }}><b>Las Hermanas Sánchez</b><span>2021 – 2026</span></div><p><b>Para tus hermanas</b><br />Cinco años de grupo, con sus personajes. 84 páginas.</p></div>
+          <div className="ll-ejemplo"><div className="ll-libro" style={{ backgroundImage: 'url(/libro/familia.jpg)' }}><b>Familia Matutes</b><span>2019 – 2026</span></div><p><b>Para la familia</b><br />Los abuelos, los primos, las comidas de domingo. 96 páginas.</p></div>
+        </div>
+      </section>
+
+      <section className="ll-pasos">
+        <div><span>1</span><b>Sube el chat</b><p>Exportado desde WhatsApp con archivos. Dos minutos.</p></div>
+        <div><span>2</span><b>Mira tu libro</b><p>Te proponemos capítulos con los mejores días, enteros. Quita lo que quieras, pon título, portada y dedicatoria.</p></div>
+        <div><span>3</span><b>Recíbelo en casa</b><p>Impreso en tapa blanda en pocos días, o el PDF al momento. Pago seguro con Stripe.</p></div>
+      </section>
+
+      <section className="ll-precios-sec">
         <div className="ll-precios">
-          <div><b>{precios.libro}</b><span>Libro impreso · tapa blanda 14×21,5 cm · envío incluido · PDF incluido</span></div>
-          <div><b>{precios.pdf}</b><span>Solo PDF · descarga inmediata</span></div>
+          <div className="ll-destacado"><em>El regalo</em><b>{precios.libro}</b><span>Libro impreso · tapa blanda 14×21,5 cm · envío incluido · PDF incluido</span></div>
+          <div><em>Para leer ya</em><b>{precios.pdf}</b><span>Solo PDF · descarga inmediata</span></div>
         </div>
       </section>
 
       <section className="ll-subida" id="subir">
-        <UploadBox onFileUpload={subir} titulo="Sube tu chat para ver tu libro" subtitulo="Exporta el chat CON archivos (para que salgan las fotos) y sube el zip. Ves el libro entero gratis antes de pedirlo." sinPrivacidad />
+        <UploadBox onFileUpload={subir} titulo="Sube tu chat y mira tu libro gratis" subtitulo="Exporta el chat CON archivos (para que salgan las fotos) y sube el zip. No pagas nada hasta que lo veas entero y te guste." sinPrivacidad />
         {cargando && <p className="ll-nota">Leyendo el chat…</p>}
         {error && <p className="ll-error">{error}</p>}
         <p className="ll-nota">🔒 El chat y las fotos se quedan en tu navegador. Para imprimir solo viaja el PDF, cifrado, y se borra al cabo de unos días.</p>
-      </section>
-
-      <section className="ll-pasos">
-        <div><span>1</span><b>Sube el chat</b><p>Exportado desde WhatsApp con archivos. Grupos, parejas, familia, amigos.</p></div>
-        <div><span>2</span><b>Revisa tu libro</b><p>Capítulos propuestos con los mejores días, enteros. Quita capítulos o mensajes, pon título, portada y dedicatoria.</p></div>
-        <div><span>3</span><b>Pídelo</b><p>Impreso en casa en pocos días, o el PDF al momento. Pago seguro con Stripe.</p></div>
       </section>
 
       <section className="ll-incluye">
@@ -82,16 +104,6 @@ export default function LibroLanding() {
         </ul>
       </section>
 
-      <section className="ll-ejemplos">
-        <h2>Ejemplos</h2>
-        <div className="ll-ejemplos-grid">
-          <div className="ll-libro" style={{ background: 'linear-gradient(135deg,#2f3e46,#1d1d1b)' }}><b>Eva &amp; Noemí</b><span>2024 – 2026</span></div>
-          <div className="ll-libro" style={{ background: 'linear-gradient(135deg,#5b3a4a,#1d1d1b)' }}><b>Las Gemeles</b><span>2025 – 2026</span></div>
-          <div className="ll-libro" style={{ background: 'linear-gradient(135deg,#2b4a6f,#1d1d1b)' }}><b>Familia Martín</b><span>2019 – 2026</span></div>
-        </div>
-        <p className="ll-nota">Pronto: vídeos de libros reales.</p>
-      </section>
-
       <section className="ll-faq">
         <h2>Preguntas</h2>
         <details><summary>¿Cómo exporto el chat con las fotos?</summary><p>En WhatsApp, abre el chat → menú → Más → Exportar chat → <b>Incluir archivos</b>. Te genera un zip; súbelo aquí tal cual. Los chats muy grandes pueden tardar en exportarse; si WhatsApp falla, exporta sin archivos y tendrás el libro sin fotos.</p></details>
@@ -102,7 +114,7 @@ export default function LibroLanding() {
       </section>
 
       <section className="ll-cta">
-        <button onClick={() => document.getElementById('subir')?.scrollIntoView({ behavior: 'smooth' })}>Sube tu chat y mira tu libro gratis</button>
+        <button onClick={() => document.getElementById('subir')?.scrollIntoView({ behavior: 'smooth' })}>Crea tu libro gratis</button>
       </section>
     </div>
   );

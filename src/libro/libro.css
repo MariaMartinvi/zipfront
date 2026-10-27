@@ -67,9 +67,9 @@
 .ll-hero p { max-width: 700px; margin: 0 auto; font-size: 17px; }
 .ll-badge { display: inline-block; background: #f0fbf4; color: #128C7E; border: 1px solid #bfe9cf; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 600; letter-spacing: .04em; }
 .ll-precios { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin: 26px 0 10px; }
-.ll-precios div { background: #fff; border: 1px solid #e6e9e8; border-radius: 16px; padding: 16px 22px; min-width: 240px; box-shadow: 0 8px 30px rgba(0,0,0,.05); }
+.ll-precios div { background: #fff; border: 1px solid #e6e9e8; border-radius: 16px; padding: 18px 22px; flex: 1 1 280px; max-width: 340px; box-shadow: 0 8px 30px rgba(0,0,0,.05); text-align: center; }
 .ll-precios b { display: block; font-size: 30px; color: #128C7E; }
-.ll-precios span { font-size: 12px; color: #666; }
+.ll-precios span { font-size: 12px; color: #666; display: block; line-height: 1.4; }
 .ll-subida { margin: 30px auto; max-width: 760px; }
 .ll-nota { font-size: 13px; color: #777; text-align: center; }
 .ll-error { color: #b3261e; text-align: center; font-weight: 600; }
@@ -82,8 +82,10 @@
 .ll-incluye li { background: #fff; border: 1px solid #e6e9e8; border-radius: 12px; padding: 14px 16px; font-size: 15px; }
 .ll-ejemplos { margin: 44px 0; text-align: center; }
 .ll-ejemplos-grid { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
-.ll-libro { width: 150px; height: 210px; border-radius: 3px 10px 10px 3px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; text-align: left; box-shadow: 8px 8px 0 #d9ded9, 0 14px 30px rgba(0,0,0,.2); position: relative; }
-.ll-libro::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.25); }
+.ll-libro { width: 170px; height: 238px; border-radius: 3px 10px 10px 3px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; text-align: left; background-size: cover; background-position: center top; overflow: hidden; box-shadow: 8px 8px 0 #d9ded9, 0 14px 30px rgba(0,0,0,.2); position: relative; }
+.ll-libro::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.35); z-index: 2; }
+.ll-libro::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.75) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,0) 70%); }
+.ll-libro b, .ll-libro span { position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
 .ll-libro b { font-family: Georgia, 'Lora', serif; font-size: 18px; line-height: 1.15; }
 .ll-libro span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; opacity: .7; margin-top: 6px; }
 .ll-faq { margin: 40px 0; }
@@ -93,3 +95,24 @@
 .ll-cta { text-align: center; margin: 30px 0; }
 .ll-cta button { padding: 16px 30px; border-radius: 999px; border: 0; background: #25D366; color: #fff; font: inherit; font-size: 17px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(37,211,102,.4); }
 @media (max-width: 700px) { .libro-landing h1 { font-size: 30px; } .ll-pasos, .ll-incluye ul { grid-template-columns: 1fr; } }
+
+/* Landing: hero con foto y tono regalo */
+.libro-landing { max-width: none; padding: 0 0 60px; }
+.libro-landing > section:not(.ll-hero-foto):not(.ll-ocasiones) { max-width: 980px; margin-left: auto; margin-right: auto; padding-left: 20px; padding-right: 20px; }
+.ll-hero-foto { position: relative; min-height: 560px; background-size: cover; background-position: center 30%; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 60px 20px; }
+.ll-hero-foto::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.6)); }
+.ll-hero-texto { position: relative; max-width: 760px; }
+.ll-hero-foto h1 { color: #fff; font-size: 52px; text-shadow: 0 2px 12px rgba(0,0,0,.4); }
+.ll-hero-foto p { color: #fff; opacity: .95; font-size: 18px; text-shadow: 0 1px 6px rgba(0,0,0,.4); }
+.ll-hero-foto .ll-badge { background: rgba(255,255,255,.15); color: #fff; border-color: rgba(255,255,255,.4); backdrop-filter: blur(4px); }
+.ll-hero-cta { margin-top: 26px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.ll-hero-cta button { padding: 18px 36px; border-radius: 999px; border: 0; background: #25D366; color: #fff; font: inherit; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 30px rgba(37,211,102,.5); }
+.ll-hero-cta span { font-size: 13px; opacity: .9; }
+.ll-ocasiones { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 18px 20px; background: #f7f7f4; border-bottom: 1px solid #ecebe7; }
+.ll-ocasiones span { font-size: 13px; color: #555; background: #fff; border: 1px solid #e6e9e8; border-radius: 999px; padding: 6px 14px; }
+.ll-ejemplo { display: flex; flex-direction: column; align-items: center; gap: 14px; max-width: 240px; }
+.ll-ejemplo p { font-size: 14px; margin: 0; }
+.ll-precios-sec { margin: 10px 0 30px; }
+.ll-precios div em { display: block; font-style: normal; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #777; margin-bottom: 4px; }
+.ll-precios .ll-destacado { border-color: #25D366; box-shadow: 0 10px 34px rgba(37,211,102,.18); }
+@media (max-width: 700px) { .ll-hero-foto { min-height: 460px; } .ll-hero-foto h1 { font-size: 34px; } }
