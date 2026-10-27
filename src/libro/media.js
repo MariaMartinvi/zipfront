@@ -49,18 +49,25 @@ export async function imageUri(idx, name) {
   } catch { cache.set(name, null); return null; }
 }
 
-// ¿Captura de pantalla? Proporción de móvil y pocos colores.
+// ¿Captura de pantalla (pantallazo)? Señales: proporción de pantalla de móvil, pocos colores
+// (interfaces planas), o una franja superior uniforme (barra de estado / barra del navegador).
 export async function isScreenshot(idx, name) {
   const img = await imageUri(idx, name);
   if (!img) return false;
   const ratio = img.h / img.w;
-  if (ratio < 1.6) return false;
+  if (ratio >= 1.9) return true;                       // 19.5:9 y similares: ninguna cámara hace fotos así
   const im = await loadImage(await (await fetch(img.uri)).blob());
-  const c = document.createElement('canvas'); c.width = 48; c.height = 48;
-  const ctx = c.getContext('2d'); ctx.drawImage(im, 0, 0, 48, 48);
-  const d = ctx.getImageData(0, 0, 48, 48).data; const colors = new Set();
+  const S = 64;
+  const c = document.createElement('canvas'); c.width = S; c.height = S;
+  const ctx = c.getContext('2d'); ctx.drawImage(im, 0, 0, S, S);
+  const d = ctx.getImageData(0, 0, S, S).data; const colors = new Set();
   for (let i = 0; i < d.length; i += 4) colors.add(((d[i] >> 4) << 8) | ((d[i + 1] >> 4) << 4) | (d[i + 2] >> 4));
-  return colors.size < 700;
+  if (colors.size < 110) return true;                   // interfaz plana (web, app, chat): las fotos reales pasan de 150
+  // franja superior (3 filas de 64) casi uniforme → barra de estado
+  let maxDev = 0; const r0 = d[0], g0 = d[1], b0 = d[2];
+  for (let y = 0; y < 3; y++) for (let x = 0; x < S; x++) { const i = (y * S + x) * 4; maxDev = Math.max(maxDev, Math.abs(d[i] - r0), Math.abs(d[i + 1] - g0), Math.abs(d[i + 2] - b0)); }
+  if (maxDev < 10 && ratio >= 1.3) return true;
+  return false;
 }
 
 // Fotograma más nítido de un vídeo (muestreo de 5 puntos) + duración

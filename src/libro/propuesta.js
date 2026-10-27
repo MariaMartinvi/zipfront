@@ -5,12 +5,41 @@ import { puntuar } from './scorer.js';
 const BURBUJAS_POR_PAGINA = 16;   // medido en el navegador: ~16 burbujas por página de 14×21,5
 const PESO_FOTO = 0.5;            // dos fotos por página
 const RAFAGA_MS = 3 * 60e3;       // fotos de la misma persona en 3 min = ráfaga
-const MAX_POR_RAFAGA = 2;
-const UMBRAL = 0.5;
-const MAX_PAG_CAP = 6;
+const MAX_POR_RAFAGA = 3;
+const PRESUPUESTO_CAP = 8;        // páginas por capítulo: el bloque se acota a los días más intensos que quepan
 const PEGADO = /(^|\n)(The user prompt|Investig[óo] |Hecho\. |Estimando |Ubicación: \d|Tres escenarios|En resumen|Resumen:|Conclusi[óo]n)|https?:\/\/|\n\s*[-•*]\s|—/i;
 const MUY_LARGO = 600;
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+// Lo que entra en el libro es la conversación entera; solo se queda fuera lo que no es conversación.
+export function esConversacion(m) {
+  if (!m || m.tipo === 'system' || m.tipo === 'deleted' || m.tipo === 'link' || m.reenviado) return false;
+  if (['audio', 'document', 'contact', 'sticker', 'gif', 'media'].includes(m.tipo)) return false;
+  if (m.captura || m.videoCorto) return false;  // pantallazos y vídeos-meme: fuera (lo marca el navegador al leer el zip)
+  if (m.esMedia) return true;
+  if (!m.tieneTexto) return false;
+  if (m.texto.length >= MUY_LARGO || PEGADO.test(m.texto)) return false;
+  return true;
+}
+
+const pesoPaginas = ms => ms.reduce((a, m) => a + (m.tipo === 'image' || m.tipo === 'video' ? PESO_FOTO : 1 / BURBUJAS_POR_PAGINA), 0);
+
+// Acota un bloque de días al tramo contiguo de más puntuación que quepa en el presupuesto de páginas.
+function acotar(dias, resumen, porDia) {
+  const peso = dias.map(d => pesoPaginas((porDia.get(d) || []).filter(esConversacion)));
+  const sc = dias.map(d => resumen.get(d)?.score || 0);
+  let mejor = { i: 0, j: 0, score: -1 };
+  for (let i = 0; i < dias.length; i++) {
+    let p = 0, s = 0;
+    for (let j = i; j < dias.length; j++) {
+      p += peso[j]; s += sc[j];
+      if (p > PRESUPUESTO_CAP && j > i) break;
+      if (s > mejor.score) mejor = { i, j, score: s };
+      if (p > PRESUPUESTO_CAP) break;
+    }
+  }
+  return dias.slice(mejor.i, mejor.j + 1);
+}
 
 function tituloDeBloque(dias, resumen) {
   // hito detectado > palabra más repetida en los mensajes top > mes
@@ -43,10 +72,13 @@ export function proponer(mensajes, { maxCapitulos = 14, encendidos = 8 } = {}) {
   if (primero && !bloques.some(b => b[0] <= primero && b.at(-1) >= primero)) bloques.unshift([primero]);
   if (ultimo && !bloques.some(b => b[0] <= ultimo && b.at(-1) >= ultimo)) bloques.push([ultimo]);
   // 4) puntuar bloques y quedarse con los mejores
+  const porDia = new Map();
+  for (const m of mensajes) { (porDia.get(m.dia) || porDia.set(m.dia, []).get(m.dia)).push(m); }
   const caps = bloques.map(b => {
-    const dias = resumenDias.filter(d => d.dia >= b[0] && d.dia <= b.at(-1)).map(d => d.dia);
+    const todos = resumenDias.filter(d => d.dia >= b[0] && d.dia <= b.at(-1)).map(d => d.dia);
+    const dias = acotar(todos, resumen, porDia);
     const score = dias.reduce((a, d) => a + (resumen.get(d)?.score || 0), 0);
-    return { titulo: tituloDeBloque(dias, resumen), desde: b[0], hasta: b.at(-1), score };
+    return { titulo: tituloDeBloque(dias, resumen), desde: dias[0], hasta: dias.at(-1), score };
   }).sort((a, b) => b.score - a.score).slice(0, maxCapitulos).sort((a, b) => a.desde.localeCompare(b.desde));
   const top = new Set([...caps].sort((a, b) => b.score - a.score).slice(0, encendidos));
   for (const c of caps) { c.on = top.has(c) || c.desde === primero || c.hasta === ultimo; delete c.score; }
@@ -62,28 +94,18 @@ export function montar(mensajes, capitulos, flags = {}) {
   const quitados = flags.quitados || new Set();
   const caps = capitulos.map(c => {
     const dias = [...porDia.keys()].filter(d => d >= c.desde && d <= c.hasta).sort();
-    const cand = dias.flatMap(d => porDia.get(d)).filter(m => (m.esMedia || m.tieneTexto) && (m.score || 0) >= UMBRAL
-      && !PEGADO.test(m.texto) && m.texto.length < MUY_LARGO && !m.reenviado && m.tipo !== 'audio' && m.tipo !== 'document' && m.tipo !== 'contact' && !quitados.has(m.id));
-    const ids = new Set(cand.map(m => m.id));
-    for (const m of cand) {
-      const nx = mensajes[m.id + 1];
-      if (nx && nx.autor && nx.autor !== m.autor && nx.tipo === 'text' && (nx.score || 0) > -3 && (nx.fecha - m.fecha) < 5 * 60e3 && !quitados.has(nx.id)) ids.add(nx.id);
-    }
-    let sel = [...ids].sort((a, b) => a - b).map(i => mensajes[i]);
-    // ráfagas de fotos (la misma persona, pocos minutos): nos quedamos con las 2 mejores
+    // la conversación entera de esos días; solo fuera lo que no es conversación y lo quitado a mano
+    let sel = dias.flatMap(d => porDia.get(d)).filter(m => esConversacion(m) && !quitados.has(m.id));
+    // ráfagas de fotos (la misma persona, pocos minutos): nos quedamos con las 3 mejores
     const fuera = new Set();
     for (let i = 0; i < sel.length; i++) {
       const m = sel[i]; if (m.tipo !== 'image' || fuera.has(m.id)) continue;
       const grupo = [m];
-      for (let j = i + 1; j < sel.length && sel[j].fecha - grupo[grupo.length - 1].fecha < RAFAGA_MS; j++) if (sel[j].tipo === 'image' && sel[j].autor === m.autor) grupo.push(sel[j]);
+      for (let j = i + 1; j < sel.length && sel[j].fecha - grupo[grupo.length - 1].fecha < RAFAGA_MS; j++) if (sel[j].tipo === 'image' && sel[j].autor === m.autor && !fuera.has(sel[j].id)) grupo.push(sel[j]);
       if (grupo.length > MAX_POR_RAFAGA) [...grupo].sort((a, b) => (b.score || 0) - (a.score || 0)).slice(MAX_POR_RAFAGA).forEach(x => fuera.add(x.id));
     }
     sel = sel.filter(m => !fuera.has(m.id));
-    const paginas = s => s.reduce((a, m) => a + (m.tipo === 'image' || m.tipo === 'video' ? PESO_FOTO : 1 / BURBUJAS_POR_PAGINA), 0);
-    while (paginas(sel) > MAX_PAG_CAP) {
-      const peor = sel.reduce((w, m) => ((m.score || 0) < (w.score || 0) ? m : w), sel[0]);
-      sel = sel.filter(m => m !== peor);
-    }
+    const paginas = pesoPaginas;
     return { ...c, mensajes: sel.map(m => m.id), paginas: Math.ceil(paginas(sel) + 1), fotos: sel.filter(m => m.tipo === 'image').length };
   });
   const encendidos = caps.filter(c => c.on);
