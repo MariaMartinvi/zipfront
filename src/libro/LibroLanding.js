@@ -48,14 +48,31 @@ export default function LibroLanding() {
 
   return (
     <div className="libro-landing">
-      <section className="ll-hero ll-hero-foto" style={{ backgroundImage: 'url(/libro/pareja.jpg)' }}>
-        <div className="ll-hero-texto">
-          <span className="ll-badge">🎁 El regalo que nadie más puede hacer</span>
-          <h1>Regala vuestro chat<br />convertido en un libro</h1>
-          <p>Los mejores momentos de vuestra conversación de WhatsApp, con vuestras fotos y los personajes de cada uno, impresos en un libro de verdad. Para una pareja, unas hermanas, el grupo de amigas, la familia.</p>
+      <section className="ll-hero2">
+        <div className="ll-hero2-texto">
+          <span className="ll-etiqueta">🎁 El regalo que nadie más puede hacer</span>
+          <h1>Vuestro chat de WhatsApp, <em>convertido en libro</em></h1>
+          <p className="ll-gancho">Los mejores días de vuestra conversación, con vuestras fotos y los personajes de cada uno, impresos en un libro de verdad.</p>
           <div className="ll-hero-cta">
             <button onClick={() => document.getElementById('subir')?.scrollIntoView({ behavior: 'smooth' })}>Crea tu libro gratis</button>
             <span>Lo ves entero antes de pagar · desde {precios.pdf}</span>
+          </div>
+        </div>
+        <div className="ll-hero2-libro" aria-hidden="true">
+          <div className="ll3d">
+            <div className="ll3d-paginas" />
+            <div className="ll3d-tapa" style={{ backgroundImage: 'url(/libro/pareja.jpg)' }}>
+              <b>Eva &amp; Marcos</b><span>2024 – 2026</span>
+            </div>
+          </div>
+          <div className="ll3d-abierto">
+            <div className="ll3d-pag izq"><small>Capítulo 3</small><strong>Aquel verano en Roma</strong></div>
+            <div className="ll3d-pag der">
+              <div className="b l">¿Ya has aterrizado? ✈️</div>
+              <div className="b r">Sí!! Esto es precioso 😍</div>
+              <div className="foto" style={{ backgroundImage: 'url(/libro/pareja.jpg)' }} />
+              <div className="b l">Te echo de menos</div>
+            </div>
           </div>
         </div>
       </section>
