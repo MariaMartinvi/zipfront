@@ -51,6 +51,7 @@ export default function LibroPage() {
   const cssRef = useRef('');
   const iframeRef = useRef(null);
   const idxRef = useRef(null);
+  const retomado = useRef(false); // true si se ha retomado una edición guardada (no pisar su portada)
 
   // precios de la región (el servidor manda)
   useEffect(() => {
