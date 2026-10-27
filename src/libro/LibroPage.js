@@ -13,6 +13,7 @@ import './libro.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
 const PRECIO = 39;
+const PRECIO_PDF = 12.99;
 const COLORES = ['#2f3e46', '#5b3a4a', '#3a4a3f', '#1d1d1b', '#8c5a2b', '#2b4a6f'];
 
 export default function LibroPage() {
@@ -165,20 +166,9 @@ export default function LibroPage() {
     return r.blob();
   }
 
-  // Solo para revisar: descarga el PDF tal cual irá a imprenta.
-  async function verPDF() {
-    if (pidiendo) return;
-    setPidiendo(true);
-    try {
-      const pdf = await generarPDF();
-      const url = URL.createObjectURL(pdf); const a = document.createElement('a'); a.href = url; a.download = `${titulo.replace(/[^\w&\- ]/g, '')}.pdf`; a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-    } catch (e) { alert(e.message); }
-    setPidiendo(false);
-  }
-
-  // Pedir: PDF → subida cifrada (caduca en 24 h) → Stripe Checkout (dirección y pago) → /libro/pedido.
-  async function pedir() {
+  // Pedir (libro impreso o solo PDF): PDF → subida cifrada → Stripe Checkout → /libro/pedido, donde se
+  // entrega la descarga (y, si es impreso, se manda a imprenta). Nadie descarga nada sin pagar.
+  async function pedir(product = 'libro') {
     if (pidiendo || demasiadas || pocas) return;
     setPidiendo(true);
     try {
@@ -191,7 +181,7 @@ export default function LibroPage() {
       const fileToken = u.plainUrl.split('k=')[1];
       setProgreso('Abriendo el pago…');
       const ck = await fetch(`${API_URL}/api/book/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileId: u.id, fileToken, pageCount: paginas, titulo }) });
+        body: JSON.stringify({ fileId: u.id, fileToken, pageCount: paginas, titulo, product }) });
       const c = await ck.json().catch(() => ({}));
       if (!ck.ok || !c.url) throw new Error(c.error || 'No se pudo iniciar el pago');
       window.location.assign(c.url);
@@ -211,9 +201,9 @@ export default function LibroPage() {
         <h1>{titulo || 'Tu libro'} <small>· vista previa</small></h1>
         {quitados.size > 0 && <button className="pill ghost" onClick={deshacer}>Deshacer ({quitados.size})</button>}
         {cargandoFotos && <span className="pill ghost">Cargando fotos {cargandoFotos}</span>}
-        <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas · {PRECIO} €</span>
-        <button className="pill ghost" disabled={pidiendo} onClick={verPDF} title="Descarga el PDF tal cual irá a imprenta">Descargar PDF</button>
-        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={pedir}>{pidiendo ? progreso : `Pedir libro · ${PRECIO} €`}</button>
+        <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas</span>
+        <button className="pill ghost" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF">{`Solo PDF · ${PRECIO_PDF} €`}</button>
+        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${PRECIO} € · PDF incluido`}</button>
       </div>
       <div className="libro-wrap">
         <iframe ref={iframeRef} title="libro" className="libro-pages" />
