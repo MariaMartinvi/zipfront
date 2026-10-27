@@ -243,7 +243,7 @@ export default function LibroPage() {
     setPidiendo(false);
   }
 
-  if (estado === 'sinchat') return <div className="libro-empty"><h2>Tu chat en un libro</h2><p>Primero sube tu chat en la página principal y, desde los resultados, pulsa «Ver mi libro».</p><button onClick={() => navigate('/')}>Ir a subir el chat</button></div>;
+  if (estado === 'sinchat') return <div className="libro-empty"><h2>Tu chat en un libro</h2><p>Sube tu chat (exportado con archivos) y verás tu libro al momento.</p><button onClick={() => navigate('/libro-recuerdo')}>Subir el chat</button></div>;
   if (estado === 'error') return <div className="libro-empty"><h2>Tu chat en un libro</h2><p>{progreso}</p><button onClick={() => navigate('/')}>Volver</button></div>;
   if (estado === 'cargando') return <div className="libro-empty"><h2>Montando tu libro…</h2><p>{progreso}</p><div className="libro-spinner" /></div>;
 

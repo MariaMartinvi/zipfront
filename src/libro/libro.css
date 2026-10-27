@@ -57,3 +57,39 @@
 .libro .fotos .subir { width: 56px; height: 56px; border-radius: 6px; border: 2px dashed #bbb; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: #777; line-height: 1; }
 .libro .fotos .subir span { font-size: 9px; margin-top: 2px; }
 .libro .fotos .subir input { display: none; }
+
+/* Landing /libro-recuerdo */
+.libro-landing { font-family: 'Poppins', system-ui, sans-serif; color: #1d1d1b; max-width: 980px; margin: 0 auto; padding: 24px 20px 60px; }
+.libro-landing h1 { font-size: 40px; line-height: 1.1; margin: 10px 0 14px; font-weight: 700; }
+.libro-landing h2 { font-size: 22px; margin: 0 0 14px; }
+.libro-landing p { color: #444; line-height: 1.55; }
+.ll-hero { text-align: center; padding: 30px 0 10px; }
+.ll-hero p { max-width: 700px; margin: 0 auto; font-size: 17px; }
+.ll-badge { display: inline-block; background: #f0fbf4; color: #128C7E; border: 1px solid #bfe9cf; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 600; letter-spacing: .04em; }
+.ll-precios { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin: 26px 0 10px; }
+.ll-precios div { background: #fff; border: 1px solid #e6e9e8; border-radius: 16px; padding: 16px 22px; min-width: 240px; box-shadow: 0 8px 30px rgba(0,0,0,.05); }
+.ll-precios b { display: block; font-size: 30px; color: #128C7E; }
+.ll-precios span { font-size: 12px; color: #666; }
+.ll-subida { margin: 30px auto; max-width: 760px; }
+.ll-nota { font-size: 13px; color: #777; text-align: center; }
+.ll-error { color: #b3261e; text-align: center; font-weight: 600; }
+.ll-pasos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 40px 0; }
+.ll-pasos div { background: #fff; border: 1px solid #e6e9e8; border-radius: 16px; padding: 22px; }
+.ll-pasos span { display: inline-flex; width: 34px; height: 34px; border-radius: 50%; background: #25D366; color: #fff; align-items: center; justify-content: center; font-weight: 700; margin-bottom: 10px; }
+.ll-pasos b { display: block; font-size: 17px; margin-bottom: 6px; }
+.ll-pasos p { margin: 0; font-size: 14px; }
+.ll-incluye ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 24px; }
+.ll-incluye li { background: #fff; border: 1px solid #e6e9e8; border-radius: 12px; padding: 14px 16px; font-size: 15px; }
+.ll-ejemplos { margin: 44px 0; text-align: center; }
+.ll-ejemplos-grid { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+.ll-libro { width: 150px; height: 210px; border-radius: 3px 10px 10px 3px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; text-align: left; box-shadow: 8px 8px 0 #d9ded9, 0 14px 30px rgba(0,0,0,.2); position: relative; }
+.ll-libro::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.25); }
+.ll-libro b { font-family: Georgia, 'Lora', serif; font-size: 18px; line-height: 1.15; }
+.ll-libro span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; opacity: .7; margin-top: 6px; }
+.ll-faq { margin: 40px 0; }
+.ll-faq details { background: #fff; border: 1px solid #e6e9e8; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; }
+.ll-faq summary { cursor: pointer; font-weight: 600; }
+.ll-faq p { margin: 10px 0 0; font-size: 14px; }
+.ll-cta { text-align: center; margin: 30px 0; }
+.ll-cta button { padding: 16px 30px; border-radius: 999px; border: 0; background: #25D366; color: #fff; font: inherit; font-size: 17px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(37,211,102,.4); }
+@media (max-width: 700px) { .libro-landing h1 { font-size: 30px; } .ll-pasos, .ll-incluye ul { grid-template-columns: 1fr; } }

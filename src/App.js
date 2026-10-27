@@ -39,7 +39,7 @@ import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
 import LibroPage from './libro/LibroPage';
 import { libroStore } from './libro/store';
-import LibroCard from './libro/LibroCard';
+import LibroLanding from './libro/LibroLanding';
 import UploadDone from './UploadDone';
 import UnlockBar from './UnlockBar';
 import LibroPedido from './libro/LibroPedido';
@@ -2316,8 +2316,6 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
                 
-                {/* TU CHAT EN UN LIBRO */}
-                {chatData && <LibroCard />}
 
                 {/* Botón para compartir juego al final del análisis - MOVIDO A CHATGPTRESULTADOS.JS */}
 
@@ -2374,6 +2372,7 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/headlines-game" element={<ChatHeadlinesGame />} />
         {/* NUEVAS RUTAS: Visualizadores de datos compartidos */}
         <Route path="/top-profiles" element={<TopProfilesViewer />} />
+        <Route path="/libro-recuerdo" element={<LibroLanding />} />
         <Route path="/libro" element={<LibroPage />} />
         <Route path="/libro/pedido" element={<LibroPedido />} />
         <Route path="/analysis" element={<AnalysisViewer />} />
