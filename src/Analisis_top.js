@@ -11,6 +11,7 @@ import { parseDateTime, esDateValido } from './dateUtils.js';
 import { formatMinutesToHoursAndMinutes } from './utils/timeUtils';
 import { useAuth } from './AuthContext';
 import { ShareButton } from './shareTopProfiles';
+import { compartirPersonaje } from './sharePersonaje';
 
 // Diccionario de palabras relacionadas con vicios por idioma
 const palabrasVicios = {
@@ -2157,6 +2158,14 @@ const AnalisisTop = ({ operationId, chatData }) => {
                         <div className="profile-description">{categoriaIconos[categoria].descripcion()}</div>
                         <div className="profile-user">{datos.categorias[categoria].nombre}</div>
                       </div>
+                      <button
+                        type="button"
+                        className="profile-share"
+                        title={t('share_personaje.button', 'Compartir en el grupo')}
+                        onClick={(e) => { e.stopPropagation(); compartirPersonaje({ icono: categoriaIconos[categoria].icono, titulo: categoriaIconos[categoria].titulo(), descripcion: categoriaIconos[categoria].descripcion(), nombre: datos.categorias[categoria].nombre, lema: t('share_personaje.lema', 'En nuestro grupo yo soy…') }, t); }}
+                      >
+                        <span aria-hidden="true">⤴</span> {t('share_personaje.button', 'Compartir')}
+                      </button>
                     </div>
                   );
                 });

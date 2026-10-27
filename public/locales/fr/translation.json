@@ -23,7 +23,9 @@
       "how_export": "Comment exporter le chat ?",
       "done_title": "C’est prêt !",
       "done_text": "Votre analyse est juste en dessous.",
-      "done_another": "Importer un autre chat"
+      "done_another": "Importer un autre chat",
+      "report": "Rapport PDF",
+      "report_locked": "Inclus dans le pack IA"
     },
     "analysis": {
       "statistical": "Analyse Statistique",
@@ -868,7 +870,7 @@
       "price": "💰 Pack de 10 analyses IA : ~~10€~~ 5€",
       "pack_description": "Pack de 10 analyses IA",
       "discount_notice": "🔥 Offre spéciale -50% ! Pour un temps limité seulement",
-      "full_chat_notice": "✨ Personnalité de chacun + signaux d'alerte + note de la relation + conseils",
+      "full_chat_notice": "✨ Personnalité de chacun + signaux d’alerte + note de la relation + conseils. Rapport PDF inclus, à garder ou partager.",
       "question": "Voulez-vous profiter de cette offre?",
       "buy_button": "Débloquer maintenant (paiement sécurisé avec Stripe)",
       "cancel_button": "Annuler",
@@ -1592,5 +1594,16 @@
     "title": "Gratuit pour toujours, IA en option",
     "ai_cta": "Voir le Pack IA",
     "final_title": "Découvrez ce que cache votre groupe"
+  },
+  "unlock_bar": {
+    "title": "🧠 Analyse psychologique par IA",
+    "subtitle": "Qui mène, qui se tait et ce que le chat dit de chacun",
+    "see": "Voir le contenu",
+    "unlock": "Débloquer · {{price}}"
+  },
+  "share_personaje": {
+    "button": "Partager",
+    "lema": "Dans notre groupe je suis…",
+    "text": "Dans notre groupe je suis {{titulo}} 😂 Découvre qui tu es : https://chatsalsa.com?utm_source=share&utm_medium=personaje"
   }
 }

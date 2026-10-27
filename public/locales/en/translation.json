@@ -23,7 +23,9 @@
       "how_export": "How do I export the chat?",
       "done_title": "Done!",
       "done_text": "Your analysis is right below.",
-      "done_another": "Upload another chat"
+      "done_another": "Upload another chat",
+      "report": "PDF report",
+      "report_locked": "Included in the AI pack"
     },
     "analysis": {
       "statistical": "Statistical Analysis",
@@ -553,7 +555,7 @@
       "price": "💰 Pack of 10 AI analyses: ~~€10~~ €5",
       "pack_description": "Pack of 10 AI analyses",
       "discount_notice": "🔥 Special offer -50%! Limited time only",
-      "full_chat_notice": "✨ Each person's personality + red flags + relationship score + advice",
+      "full_chat_notice": "✨ Everyone’s personality + red flags + relationship score + advice. Includes the PDF report to keep or share.",
       "question": "Want to take advantage of this offer?",
       "buy_button": "Unlock now (secure payment with Stripe)",
       "cancel_button": "Cancel",
@@ -1894,5 +1896,16 @@
     "title": "Free forever, optional AI",
     "ai_cta": "See AI Pack",
     "final_title": "Find out what your group is hiding"
+  },
+  "unlock_bar": {
+    "title": "🧠 AI personality analysis",
+    "subtitle": "Who leads, who stays quiet and what the chat says about each one",
+    "see": "See what’s included",
+    "unlock": "Unlock · {{price}}"
+  },
+  "share_personaje": {
+    "button": "Share",
+    "lema": "In our group I am…",
+    "text": "In our group I am {{titulo}} 😂 Find out who you are: https://chatsalsa.com?utm_source=share&utm_medium=personaje"
   }
 }

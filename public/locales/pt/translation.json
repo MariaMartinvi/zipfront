@@ -23,7 +23,9 @@
       "how_export": "Como exporto o chat?",
       "done_title": "Pronto!",
       "done_text": "A sua análise está logo abaixo.",
-      "done_another": "Enviar outro chat"
+      "done_another": "Enviar outro chat",
+      "report": "Relatório PDF",
+      "report_locked": "Incluído no pacote de IA"
     },
     "analysis": {
       "statistical": "Análise Estatística",
@@ -561,7 +563,7 @@
       "price": "💰 Pacote de 10 análises IA: ~~10€~~ 5€",
       "pack_description": "Pacote de 10 análises IA",
       "discount_notice": "🔥 Oferta especial -50%! Apenas por tempo limitado",
-      "full_chat_notice": "✨ Personalidade de cada pessoa + sinais de alerta + nota da relação + conselhos",
+      "full_chat_notice": "✨ Personalidade de cada um + sinais de alerta + nota da relação + conselhos. Inclui o relatório em PDF para guardar ou partilhar.",
       "question": "Quer aproveitar esta oferta?",
       "buy_button": "Desbloquear agora (pagamento seguro com Stripe)",
       "cancel_button": "Cancelar",
@@ -1521,5 +1523,16 @@
     "title": "Grátis para sempre, IA opcional",
     "ai_cta": "Ver Pacote de IA",
     "final_title": "Descubra o que o seu grupo esconde"
+  },
+  "unlock_bar": {
+    "title": "🧠 Análise psicológica com IA",
+    "subtitle": "Quem manda, quem se cala e o que o chat diz de cada um",
+    "see": "Ver o que inclui",
+    "unlock": "Desbloquear · {{price}}"
+  },
+  "share_personaje": {
+    "button": "Partilhar",
+    "lema": "No nosso grupo eu sou…",
+    "text": "No nosso grupo eu sou {{titulo}} 😂 Descobre quem és tu: https://chatsalsa.com?utm_source=share&utm_medium=personaje"
   }
 }

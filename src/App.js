@@ -39,8 +39,9 @@ import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
 import LibroPage from './libro/LibroPage';
 import { libroStore } from './libro/store';
-import LibroCard from './libro/LibroCard';
+import LibroLanding from './libro/LibroLanding';
 import UploadDone from './UploadDone';
+import UnlockBar from './UnlockBar';
 import LibroPedido from './libro/LibroPedido';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
@@ -2039,7 +2040,11 @@ const tryDeleteFiles = async (operationId) => {
                 </div>
 
                 ) : (
-                  <UploadDone onAnother={() => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }} />
+                  <UploadDone
+                    onAnother={() => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }}
+                    reportLocked={!chatGptResponse}
+                    onReport={() => { if (chatGptResponse) { document.title = 'ChatSalsa - Informe'; window.print(); } else { startAIAnalysis(); } }}
+                  />
                 )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
@@ -2059,15 +2064,6 @@ const tryDeleteFiles = async (operationId) => {
                         <p>{progressMessage || (isLoading ? t('app.progress.processing') : t('app.progress.generating'))}</p>
                       </div>
                     )}
-                  </div>
-                )}
-
-                {/* ANÁLISIS TOP - Segunda parte */}
-                {operationId && user && chatData && (
-                  <div className="additional-analysis">
-                    <div className="analysis-module">
-                      <AnalisisTop chatData={chatData} />
-                    </div>
                   </div>
                 )}
 
@@ -2287,6 +2283,20 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
+                {/* ANÁLISIS TOP - Segunda parte */}
+                {operationId && user && chatData && (
+                  <div className="additional-analysis">
+                    <div className="analysis-module">
+                      <AnalisisTop chatData={chatData} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Barra fija: el pack de IA siempre a un clic mientras el candado no está a la vista */}
+                {chatData && userCredits && !userCredits.canUse && !chatGptResponse && !isFetchingMistral && (
+                  <UnlockBar targetRef={aiLockedRef} price={getAiPackPricing().price} onUnlock={startAIAnalysis} />
+                )}
+
                 {/* JUEGOS - Tercera parte (tras el análisis IA) */}
                 {operationId && user && chatData && (
                   <div className="games-section">
@@ -2310,8 +2320,6 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
                 
-                {/* TU CHAT EN UN LIBRO */}
-                {chatData && <LibroCard />}
 
                 {/* Botón para compartir juego al final del análisis - MOVIDO A CHATGPTRESULTADOS.JS */}
 
@@ -2368,6 +2376,7 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/headlines-game" element={<ChatHeadlinesGame />} />
         {/* NUEVAS RUTAS: Visualizadores de datos compartidos */}
         <Route path="/top-profiles" element={<TopProfilesViewer />} />
+        <Route path="/libro-recuerdo" element={<LibroLanding />} />
         <Route path="/libro" element={<LibroPage />} />
         <Route path="/libro/pedido" element={<LibroPedido />} />
         <Route path="/analysis" element={<AnalysisViewer />} />

@@ -23,7 +23,9 @@
       "how_export": "Wie exportiere ich den Chat?",
       "done_title": "Fertig!",
       "done_text": "Deine Analyse findest du direkt hier unten.",
-      "done_another": "Anderen Chat hochladen"
+      "done_another": "Anderen Chat hochladen",
+      "report": "PDF-Bericht",
+      "report_locked": "Im KI-Paket enthalten"
     },
     "analysis": {
       "statistical": "Statistische Analyse",
@@ -577,7 +579,7 @@
       "price": "💰 Paket von 10 KI-Analysen: 5€",
       "pack_description": "Paket von 10 KI-Analysen",
       "discount_notice": "🔥 Sonderangebot -50%! Nur für begrenzte Zeit",
-      "full_chat_notice": "✨ Persönlichkeit jeder Person + Warnsignale + Beziehungsnote + Tipps",
+      "full_chat_notice": "✨ Persönlichkeit jeder Person + Warnsignale + Beziehungsnote + Tipps. Inklusive PDF-Bericht zum Speichern oder Teilen.",
       "question": "Möchten Sie jetzt kaufen?",
       "buy_button": "Jetzt freischalten (sichere Zahlung mit Stripe)",
       "cancel_button": "Abbrechen",
@@ -1741,5 +1743,16 @@
     "title": "Für immer kostenlos, KI optional",
     "ai_cta": "KI-Paket ansehen",
     "final_title": "Finde heraus, was deine Gruppe verbirgt"
+  },
+  "unlock_bar": {
+    "title": "🧠 KI-Persönlichkeitsanalyse",
+    "subtitle": "Wer führt, wer schweigt und was der Chat über jeden verrät",
+    "see": "Was ist enthalten?",
+    "unlock": "Freischalten · {{price}}"
+  },
+  "share_personaje": {
+    "button": "Teilen",
+    "lema": "In unserer Gruppe bin ich…",
+    "text": "In unserer Gruppe bin ich {{titulo}} 😂 Finde heraus, wer du bist: https://chatsalsa.com?utm_source=share&utm_medium=personaje"
   }
 }
