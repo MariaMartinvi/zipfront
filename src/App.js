@@ -41,7 +41,6 @@ import LibroPage from './libro/LibroPage';
 import { libroStore } from './libro/store';
 import LibroLanding from './libro/LibroLanding';
 import UploadDone from './UploadDone';
-import UnlockBar from './UnlockBar';
 import LibroPedido from './libro/LibroPedido';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
@@ -1242,7 +1241,6 @@ function AppContent() {
 
   const handleAIPurchaseClose = () => {
     setShowAIPurchaseModal(false);
-    setError(t('hero.ai_purchase.no_credits'));
   };
   
   // Add this new function for checking if processing is complete before deleting
@@ -2011,8 +2009,8 @@ const tryDeleteFiles = async (operationId) => {
             path="/"
             element={
               <>
-                {/* Subida siempre arriba: caja completa si no hay chat (o se pide otro); si ya hay análisis, tarjeta "¡Listo!" */}
-                {!user ? null : (!chatData || subirOtro) ? (
+                {/* Subida arriba solo si no hay chat (o se pide otro); con análisis, "Subir otro chat" va al final */}
+                {user && (!chatData || subirOtro) && (
                 <div id="upload-section" className="upload-section">
                   <div className="upload-section-container">
                     {!user ? (
@@ -2044,13 +2042,6 @@ const tryDeleteFiles = async (operationId) => {
                     )}
                   </div>
                 </div>
-
-                ) : (
-                  <UploadDone
-                    onAnother={() => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }}
-                    reportLocked={!chatGptResponse}
-                    onReport={() => { if (chatGptResponse) { document.title = 'ChatSalsa - Informe'; window.print(); } else { startAIAnalysis(); } }}
-                  />
                 )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
@@ -2306,11 +2297,6 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
-                {/* Barra fija: el pack de IA siempre a un clic mientras el candado no está a la vista */}
-                {chatData && userCredits && !userCredits.canUse && !chatGptResponse && !isFetchingMistral && (
-                  <UnlockBar targetRef={aiLockedRef} price={getAiPackPricing().price} onUnlock={startAIAnalysis} />
-                )}
-
                 {/* JUEGOS - Tercera parte (tras el análisis IA) */}
                 {operationId && user && chatData && (
                   <div className="games-section">
@@ -2352,6 +2338,10 @@ const tryDeleteFiles = async (operationId) => {
                       </div>
                     </div>
                   </div>
+                )}
+
+                {user && chatData && !subirOtro && (
+                  <UploadDone onAnother={() => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }} />
                 )}
 
                 {error && (

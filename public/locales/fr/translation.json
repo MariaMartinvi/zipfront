@@ -23,9 +23,7 @@
       "how_export": "Comment exporter le chat ?",
       "done_title": "C’est prêt !",
       "done_text": "Votre analyse est juste en dessous.",
-      "done_another": "Importer un autre chat",
-      "report": "Rapport PDF",
-      "report_locked": "Inclus dans le pack IA"
+      "done_another": "Importer un autre chat"
     },
     "analysis": {
       "statistical": "Analyse Statistique",
@@ -870,7 +868,7 @@
       "price": "💰 Pack de 10 analyses IA : ~~10€~~ 5€",
       "pack_description": "Pack de 10 analyses IA",
       "discount_notice": "🔥 Offre spéciale -50% ! Pour un temps limité seulement",
-      "full_chat_notice": "✨ Personnalité de chacun + signaux d’alerte + note de la relation + conseils. Rapport PDF inclus, à garder ou partager.",
+      "full_chat_notice": "✨ Personnalité de chacun + signaux d’alerte + note de la relation + conseils",
       "question": "Voulez-vous profiter de cette offre?",
       "buy_button": "Débloquer maintenant (paiement sécurisé avec Stripe)",
       "cancel_button": "Annuler",

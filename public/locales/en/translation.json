@@ -23,9 +23,7 @@
       "how_export": "How do I export the chat?",
       "done_title": "Done!",
       "done_text": "Your analysis is right below.",
-      "done_another": "Upload another chat",
-      "report": "PDF report",
-      "report_locked": "Included in the AI pack"
+      "done_another": "Upload another chat"
     },
     "analysis": {
       "statistical": "Statistical Analysis",
@@ -555,7 +553,7 @@
       "price": "💰 Pack of 10 AI analyses: ~~€10~~ €5",
       "pack_description": "Pack of 10 AI analyses",
       "discount_notice": "🔥 Special offer -50%! Limited time only",
-      "full_chat_notice": "✨ Everyone’s personality + red flags + relationship score + advice. Includes the PDF report to keep or share.",
+      "full_chat_notice": "✨ Everyone’s personality + red flags + relationship score + advice",
       "question": "Want to take advantage of this offer?",
       "buy_button": "Unlock now (secure payment with Stripe)",
       "cancel_button": "Cancel",
