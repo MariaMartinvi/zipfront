@@ -130,7 +130,6 @@ const FreemiumPlans = ({ userId }) => {
               <li>Ronda 1 con datos del chat, Ronda 2 con IA</li>
             </ul>
             <div className="precios-juegos">
-              <Link to="/porra-halloween" className="precios-boton halloween" onClick={() => trackProductoClick('halloween', 'precios')}>🎃 Halloween</Link>
               <Link to="/porra-navidad" className="precios-boton navidad" onClick={() => trackProductoClick('navidad', 'precios')}>🎄 Navidad</Link>
             </div>
           </section>

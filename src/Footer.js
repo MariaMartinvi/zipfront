@@ -48,6 +48,11 @@ const Footer = () => {
                   <span>🎄 Juego de Navidad</span>
                 </Link>
               )}
+              {esCastellano && (
+                <Link to="/porra-halloween" className="footer-link" onClick={() => trackProductoClick('halloween', 'footer')}>
+                  <span>🎃 Juego de Halloween</span>
+                </Link>
+              )}
             </div>
           </div>
           
