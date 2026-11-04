@@ -31,6 +31,22 @@
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   <link rel="preload" href="%PUBLIC_URL%/fonts/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="%PUBLIC_URL%/fonts/inter.css" />
+  <script>
+    // Pedir las traducciones a la vez que el JS (la app no pinta nada hasta tenerlas: LCP).
+    // Misma detección que src/i18n.js: ?lang, localStorage, navegador; 'es' siempre (fallback).
+    (function () {
+      var soportados = ['it', 'es', 'fr', 'de', 'pt', 'en'], lng = null;
+      try { lng = new URLSearchParams(location.search).get('lang') || localStorage.getItem('i18nextLng'); } catch (e) {}
+      lng = String(lng || navigator.language || 'es').slice(0, 2).toLowerCase();
+      var lngs = soportados.indexOf(lng) >= 0 && lng !== 'es' ? [lng, 'es'] : ['es'];
+      lngs.forEach(function (l) {
+        var link = document.createElement('link');
+        link.rel = 'preload'; link.as = 'fetch'; link.crossOrigin = 'anonymous';
+        link.href = '/locales/' + l + '/translation.json';
+        document.head.appendChild(link);
+      });
+    })();
+  </script>
   <title>ChatSalsa — Analizador de chats de WhatsApp gratis con IA</title>
   
   <!-- Estilos base mínimos -->

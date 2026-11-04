@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 import './fix-font-sizes.css';
@@ -6,9 +6,7 @@ import './ResultadosCompacto.css';
 import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import AndroidAppPrompt from './AndroidAppPrompt';
-import Chatgptresultados from './Chatgptresultados';
 import AnalisisResumenGeneral from './AnalisisResumenGeneral';
-import AnalisisEstadistico from './AnalisisEstadistico';
 import AnalisisTop from './Analisis_top';
 import { Login, Register, PasswordReset } from './AuthComponents';
 import FreemiumPlans from './FreemiumPlans';
@@ -21,11 +19,6 @@ import CookieBanner from './CookieBanner';
 import AIPurchaseModal from './AIPurchaseModal';
 import { useAuth } from './AuthContext';
 import { getMistralResponse } from './fileService';
-import Contact from './Paginasextra/Contact';
-import FAQ from './Paginasextra/FAQ';
-import TermsOfService from './Paginasextra/TermsOfService';
-import PrivacyPolicy from './Paginasextra/PrivacyPolicy';
-import PoliticaCookies from './Paginasextra/PoliticaCookies';
 import AppPreview from './AppPreview';
 import { useTranslation } from 'react-i18next';
 import ChatTopGame from './ChatTopGame';
@@ -37,20 +30,28 @@ import { SecurityCaptchaProvider } from './components/SecurityCaptcha';
 import TopProfilesViewer from './components/TopProfilesViewer';
 import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
-import LibroPage from './libro/LibroPage';
 import { libroStore } from './libro/store';
-import LibroLanding from './libro/LibroLanding';
 import UploadDone from './UploadDone';
-import LibroPedido from './libro/LibroPedido';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
 import { trackEvent } from './utils/analytics';
 import { useTrackOnceVisible } from './utils/useTrackOnceVisible';
 import UploadBox from './UploadBox';
 import { extractChatContent } from './utils/chatImport';
-import PorraPage from './PorraPage';
-import ParejaPage from './ParejaPage';
 
+// Bajo demanda: fuera del JS inicial para que la portada pinte antes (LCP)
+const Chatgptresultados = lazy(() => import('./Chatgptresultados'));
+const AnalisisEstadistico = lazy(() => import('./AnalisisEstadistico'));
+const Contact = lazy(() => import('./Paginasextra/Contact'));
+const FAQ = lazy(() => import('./Paginasextra/FAQ'));
+const TermsOfService = lazy(() => import('./Paginasextra/TermsOfService'));
+const PrivacyPolicy = lazy(() => import('./Paginasextra/PrivacyPolicy'));
+const PoliticaCookies = lazy(() => import('./Paginasextra/PoliticaCookies'));
+const LibroPage = lazy(() => import('./libro/LibroPage'));
+const LibroLanding = lazy(() => import('./libro/LibroLanding'));
+const LibroPedido = lazy(() => import('./libro/LibroPedido'));
+const PorraPage = lazy(() => import('./PorraPage'));
+const ParejaPage = lazy(() => import('./ParejaPage'));
 
 // Tras login/registro: a la página que lo pidió (p. ej. chat de pareja) o, por defecto, al cajón de subir el chat
 const destinoTrasLogin = (navigate) => {
@@ -125,7 +126,9 @@ function AppContent() {
   const analysisRef = useRef(null);
   const aiLockedRef = useRef(null);
   // Get user-related state from AuthContext instead of managing locally
-  const { user, userProfile, setUserProfile, isAuthLoading, setUser } = useAuth();
+  const { user, userProfile, setUserProfile, isAuthLoading, setUser, esperandoSesion } = useAuth();
+  // Con sesión, precargar en segundo plano los resultados (están fuera del JS inicial)
+  useEffect(() => { if (user) { import('./Chatgptresultados'); import('./AnalisisEstadistico'); } }, [user]);
   
   // Estados para juegos
   const [showShareGameModal, setShowShareGameModal] = useState(false);
@@ -2003,6 +2006,7 @@ const tryDeleteFiles = async (operationId) => {
         )}
         {showUpgradeModal && <UpgradeModal />}
         
+        <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
         <Routes>
           {/* Home/Upload Page */}
           <Route 
@@ -2097,11 +2101,13 @@ const tryDeleteFiles = async (operationId) => {
                         <p>{t('app.analysis.preparing_psychological')}</p>
                       </div>
                     ) : chatGptResponse ? (
-                      <Chatgptresultados 
+                      <Suspense fallback={null}>
+                      <Chatgptresultados
                         chatGptResponse={chatGptResponse}
-                        promptInput={chatData?.prompt} 
-                        usuarioId={user?.uid || "anonymous"} 
+                        promptInput={chatData?.prompt}
+                        usuarioId={user?.uid || "anonymous"}
                       />
+                      </Suspense>
                     ) : chatData && userCredits && !userCredits.canUse ? (
                       // Mostrar preview bloqueado SOLO cuando hay datos pero el usuario NO tiene créditos
                       <div className="ai-analysis-locked" ref={aiLockedRef}>
@@ -2315,7 +2321,7 @@ const tryDeleteFiles = async (operationId) => {
                   <div className="statistical-analysis-section">
                     <h2 className="analysis-special-title">{t('app.analysis.statistical_continuation')}</h2>
                     <div className="analysis-module">
-                      <AnalisisEstadistico chatData={chatData} />
+                      <Suspense fallback={null}><AnalisisEstadistico chatData={chatData} /></Suspense>
                     </div>
                   </div>
                 )}
@@ -2324,10 +2330,10 @@ const tryDeleteFiles = async (operationId) => {
                 {/* Botón para compartir juego al final del análisis - MOVIDO A CHATGPTRESULTADOS.JS */}
 
                 {/* Vista previa de la aplicación para usuarios no logueados */}
-                {/* Mientras Firebase decide si hay sesión no se pinta ni la portada ni la subida (evita el salto/CLS al cambiar de una a otra) */}
-                {isAuthLoading && <div style={{ minHeight: '100vh' }} />}
-                {!user && !isAuthLoading && <AppPreview />}
-                {!user && !isAuthLoading && (
+                {/* Si en este navegador hubo sesión, esperar a Firebase antes de pintar la portada (evita el salto/CLS portada → subida) */}
+                {esperandoSesion && <div style={{ minHeight: '100vh' }} />}
+                {!user && !esperandoSesion && <AppPreview />}
+                {!user && !esperandoSesion && (
                   <div id="upload-section" className="upload-section">
                     <div className="upload-section-container">
                       <div className="login-required">
@@ -2406,6 +2412,7 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/porra-navidad" element={<PorraPage tema="navidad" />} />
         <Route path="/pareja" element={<ParejaPage />} />
         </Routes>
+        </Suspense>
         
         {/* Componente de instalación de PWA */}
         <InstallPWA />

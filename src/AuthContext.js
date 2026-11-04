@@ -7,6 +7,14 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  // Marca en localStorage de que en este navegador hubo sesión: solo entonces merece la pena
+  // esperar a Firebase antes de pintar (si no, la portada sale ya y no retrasa el LCP)
+  const [sesionGuardada] = useState(() => { try { return localStorage.getItem('cs_sesion') === '1'; } catch (e) { return false; } });
+
+  useEffect(() => {
+    if (isAuthLoading) return;
+    try { user ? localStorage.setItem('cs_sesion', '1') : localStorage.removeItem('cs_sesion'); } catch (e) {}
+  }, [user, isAuthLoading]);
 
   useEffect(() => {
     const checkAuthState = async () => {
@@ -70,7 +78,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, userProfile, setUserProfile, isAuthLoading }}>
+    <AuthContext.Provider value={{ user, setUser, userProfile, setUserProfile, isAuthLoading, esperandoSesion: isAuthLoading && sesionGuardada }}>
       {children}
     </AuthContext.Provider>
   );
