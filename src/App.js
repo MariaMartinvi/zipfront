@@ -2324,8 +2324,10 @@ const tryDeleteFiles = async (operationId) => {
                 {/* Botón para compartir juego al final del análisis - MOVIDO A CHATGPTRESULTADOS.JS */}
 
                 {/* Vista previa de la aplicación para usuarios no logueados */}
-                {!user && <AppPreview />}
-                {!user && (
+                {/* Mientras Firebase decide si hay sesión no se pinta ni la portada ni la subida (evita el salto/CLS al cambiar de una a otra) */}
+                {isAuthLoading && <div style={{ minHeight: '100vh' }} />}
+                {!user && !isAuthLoading && <AppPreview />}
+                {!user && !isAuthLoading && (
                   <div id="upload-section" className="upload-section">
                     <div className="upload-section-container">
                       <div className="login-required">
