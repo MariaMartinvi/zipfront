@@ -2,6 +2,7 @@
 export const CookieService = {
   // Actualizar el consentimiento en GTM
   updateGTMConsent: (preferences) => {
+    if (preferences.analytics && typeof window !== 'undefined' && window.loadClarity) window.loadClarity();
     if (typeof window !== 'undefined' && window.dataLayer) {
       // Actualizar consentimiento en GTM usando Consent API v2
       window.dataLayer.push({
@@ -148,10 +149,10 @@ export const cookieCategories = {
   },
   analytics: {
     name: 'Cookies de análisis',
-    description: 'Google Analytics para entender cómo usas la aplicación y mejorar la experiencia.',
+    description: 'Google Analytics y Microsoft Clarity (grabación anónima de la navegación) para entender cómo usas la aplicación y mejorar la experiencia.',
     icon: '📊',
     required: false,
-    examples: ['Google Analytics', 'Estadísticas de uso', 'Análisis de rendimiento']
+    examples: ['Google Analytics', 'Microsoft Clarity', 'Estadísticas de uso', 'Análisis de rendimiento']
   },
   marketing: {
     name: 'Cookies de marketing',
