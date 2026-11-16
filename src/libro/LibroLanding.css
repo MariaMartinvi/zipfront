@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
+/* Landing /libro-recuerdo, estilo editorial: papel cálido, tinta oscura, serif grande, mucho aire. */
+.ll { --papel: #f6f2ea; --tinta: #1f1b16; --gris: #6d6458; --linea: #ddd5c7; --serif: 'Instrument Serif', Georgia, serif;
+  background: var(--papel); color: var(--tinta); font-family: var(--font-family-base, 'Poppins', system-ui, sans-serif); text-align: left; padding-bottom: 40px; }
+.App-main:has(> .ll) { padding-left: 0; padding-right: 0; }  /* el papel llega a los bordes también en el móvil */
+.ll > * { max-width: 1120px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; }
+.ll p { color: var(--gris); line-height: 1.6; }
+.ll em { font-style: italic; }
+
+/* Títulos: fix-font-sizes.css fuerza tamaños con !important, de ahí la especificidad y los !important */
+.ll .ll-hero h1 { font-family: var(--serif); font-weight: 400 !important; font-size: clamp(3.2rem, 8vw, 6.4rem) !important; line-height: .95 !important; letter-spacing: -.02em; margin: 0 0 24px; color: var(--tinta); text-align: left; }
+.ll .ll-cabecera h2 { font-family: var(--serif); font-weight: 400 !important; font-size: clamp(2.2rem, 5vw, 3.4rem) !important; line-height: 1 !important; margin: 0; color: var(--tinta); text-align: left; }
+.ll .ll-comparativa h3 { font-family: var(--serif); font-weight: 400 !important; font-size: 1.9rem !important; margin: 0 0 6px; color: var(--tinta); }
+
+.ll-hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; padding-top: 72px; padding-bottom: 64px; }
+.ll-kicker { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--gris); margin: 0 0 22px; }
+.ll-entradilla { font-size: 1.15rem; max-width: 520px; margin: 0 0 32px; }
+.ll-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+.ll-acciones span { font-size: 13px; color: var(--gris); }
+.ll .ll-boton-cta { background: var(--tinta); color: var(--papel); border: 0; border-radius: 999px; padding: 16px 30px; font: inherit; font-size: 1rem !important; font-weight: 500; cursor: pointer; transition: transform .15s; }
+.ll .ll-boton-cta:hover { transform: translateY(-2px); }
+.ll-hero-libro { margin: 0; justify-self: center; width: min(100%, 420px); }
+.ll-hero-libro iframe { display: block; width: 100%; aspect-ratio: 1; border: 0; box-shadow: 0 2px 4px rgba(31,27,22,.12), 0 30px 60px -20px rgba(31,27,22,.45); border-radius: 2px 6px 6px 2px; pointer-events: none; }
+.ll figcaption { font-size: 12px; color: var(--gris); margin-top: 12px; }
+
+.ll-ocasiones { font-family: var(--serif); font-size: 1.35rem; color: var(--tinta) !important; text-align: center; border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); padding-top: 22px !important; padding-bottom: 22px !important; margin: 0 auto 0; line-height: 1.5; }
+
+.ll-bloque { padding-top: 88px; }
+.ll-cabecera { display: grid; grid-template-columns: 64px 1fr; align-items: baseline; gap: 4px 16px; border-top: 1px solid var(--tinta); padding-top: 18px; margin-bottom: 36px; }
+.ll-cabecera > span { font-size: 13px; color: var(--gris); letter-spacing: .1em; }
+.ll-cabecera p { grid-column: 2; margin: 10px 0 0; max-width: 560px; }
+
+.ll-muestra { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px 32px; max-width: 920px; }
+.ll-muestra figure { margin: 0; }
+.ll-muestra iframe { display: block; width: 100%; aspect-ratio: 1; border: 0; background: #fff; box-shadow: 0 1px 2px rgba(31,27,22,.1), 0 14px 30px -14px rgba(31,27,22,.35); pointer-events: none; }
+.ll-muestra figcaption span { color: var(--tinta); margin-right: 8px; }
+
+.ll-pasos { list-style: none; counter-reset: paso; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; padding: 0; margin: 0; }
+.ll-pasos li { counter-increment: paso; }
+.ll-pasos li::before { content: counter(paso); display: block; font-family: var(--serif); font-size: 4.2rem; line-height: 1; margin-bottom: 14px; }
+.ll-pasos b { display: block; font-size: 1.05rem; font-weight: 500; margin-bottom: 6px; }
+.ll-pasos p { margin: 0; font-size: .95rem; }
+
+.ll-precios { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-bottom: 1px solid var(--linea); }
+.ll-precios > div { padding: 0 32px 28px 0; }
+.ll-precios > div + div { padding-left: 32px; border-left: 1px solid var(--linea); }
+.ll-precios em { display: block; font-style: normal; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gris); }
+.ll-precios b { display: block; font-family: var(--serif); font-weight: 400; font-size: clamp(3.4rem, 7vw, 5rem); line-height: 1.05; margin: 6px 0 4px; }
+.ll-precios p { margin: 0; font-size: .92rem; }
+.ll-comparativa { padding-top: 32px; }
+.ll-comparativa > p { margin: 0 0 18px; max-width: 640px; }
+.ll-comparativa table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.ll-comparativa th { text-align: left; font-weight: 500; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--gris); padding: 10px 12px 10px 0; border-bottom: 1px solid var(--tinta); }
+.ll-comparativa td { padding: 14px 12px 14px 0; border-bottom: 1px solid var(--linea); vertical-align: top; }
+.ll-comparativa td:last-child, .ll-comparativa th:last-child { text-align: right; padding-right: 0; white-space: nowrap; }
+.ll-comparativa a { color: var(--tinta); }
+.ll-comparativa .ll-nosotros td { font-weight: 500; border-bottom: 1px solid var(--tinta); }
+.ll-comparativa small { display: block; margin-top: 10px; font-size: 12px; color: var(--gris); }
+
+.ll-subida { padding-top: 88px; max-width: 820px; }
+.ll-nota { font-size: 13px; text-align: center; }
+.ll-error { color: #b3261e !important; text-align: center; font-weight: 500; }
+
+.ll-incluye { margin: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; }
+.ll-incluye div { display: grid; grid-template-columns: 160px 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--linea); }
+.ll-incluye dt { font-family: var(--serif); font-size: 1.4rem; line-height: 1.2; }
+.ll-incluye dd { margin: 0; color: var(--gris); line-height: 1.55; }
+
+.ll-faq details { border-bottom: 1px solid var(--linea); padding: 18px 0; }
+.ll-faq summary { cursor: pointer; font-size: 1.05rem; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+.ll-faq summary::-webkit-details-marker { display: none; }
+.ll-faq summary::after { content: '+'; font-family: var(--serif); font-size: 1.6rem; line-height: 1; color: var(--gris); }
+.ll-faq details[open] summary::after { content: '–'; }
+.ll-faq p { margin: 12px 0 0; max-width: 720px; }
+
+.ll-final { text-align: center; padding-top: 104px; padding-bottom: 40px; }
+.ll-final p { font-family: var(--serif); font-size: clamp(2rem, 5vw, 3.2rem); color: var(--tinta); line-height: 1.1; margin: 0 0 28px; }
+
+@media (max-width: 900px) {
+  .ll-hero { grid-template-columns: 1fr; gap: 40px; padding-top: 40px; }
+  .ll-hero-libro { width: min(80%, 360px); }
+  .ll-pasos { grid-template-columns: 1fr; gap: 28px; }
+  .ll-incluye { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .ll > * { padding-left: 16px; padding-right: 16px; }
+  .ll-bloque, .ll-subida { padding-top: 64px; }
+  .ll-muestra { grid-template-columns: 1fr; gap: 28px; }
+  .ll-cabecera { grid-template-columns: 1fr; }
+  .ll-cabecera p { grid-column: 1; }
+  .ll-precios { grid-template-columns: 1fr; }
+  .ll-precios > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--linea); padding-top: 24px; }
+  .ll-incluye div { grid-template-columns: 1fr; gap: 4px; }
+  .ll-ocasiones { font-size: 1.15rem; }
+  .ll-comparativa td:nth-child(2), .ll-comparativa th:nth-child(2) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .ll .ll-boton-cta { transition: none; } }

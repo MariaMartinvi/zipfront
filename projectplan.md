@@ -597,3 +597,87 @@ Fuera de alcance: píxel de Meta (plan aparte), OXXO/SPEI, español neutro de lo
 - Verificado: eslint 0 errores, 19 suites / 136 tests en verde.
 - [x] Quitada también la barra "Juegos para tu grupo" de encima de los resultados (`JuegosBarra` + CSS + test borrados). Tests: 18 suites / 134 en verde.
 - [x] Bloques difuminados del preview de IA recortados a ~3 líneas con desvanecido (`.blurred-content` en `AppPreview.css`). Verificación manual: subir un chat sin créditos y comprobar que cada bloque borroso ocupa la mitad.
+
+## 2026-11-16 — Eliminar Doctor Amor (`/pareja`)
+
+Motivo (GA4, 90 días; la página existe desde el 21-oct): 78 personas en la landing, 9 s de media,
+5 llegan al muro de pago, 0 `pareja_click` y 0 `pareja_resultado`. Maria da el OK a eliminarla del todo.
+
+Suposiciones: no hay compras (pendiente de que Maria lo confirme en Stripe); solo front en este repo,
+el backend (`zipback`: `/api/pareja-analysis` y productos `pareja*`) queda para después.
+
+- [x] D1. Quitar el enlace del menú (escritorio y móvil) y la tarjeta de precios.
+      → verificar: en el navegador, ni el menú ni `/plans` muestran "Doctor Amor".
+- [x] D2. Borrar `ParejaPage` (js/css/test), `utils/pareja` (js/test) e imágenes `public/img/pareja-{h,v}.jpg`;
+      `/pareja` redirige a la portada. `public/libro/pareja.jpg` se queda (la usa el libro).
+      → verificar: abrir `/pareja` en el navegador acaba en `/`.
+- [x] D3. Limpiar huérfanos: funciones de créditos/seguimiento (`firebase_auth.js`), `prepararChatPareja` y
+      `getParejaAnalysis` (`fileService.js`), `getParejaPricing`, vuelta del pago, `doctor_amor` en analítica,
+      línea de la política de privacidad y selectores CSS `.pareja`.
+      → verificar: `grep -ri pareja src` solo devuelve lo que no es Doctor Amor; eslint 0 errores.
+- [x] D4. Tests en verde y el servidor de desarrollo compila (no se ha lanzado el build de producción).
+
+### Review
+- Hecho (sin commit ni deploy): fuera del menú y de precios; borrados `ParejaPage`, `utils/pareja` y sus imágenes;
+  `/pareja` redirige a `/`; limpiados créditos, precios, vuelta del pago, analítica, privacidad y CSS.
+- Verificado: 16 suites / 123 tests en verde; eslint sin errores en los archivos tocados; en el navegador
+  `/pareja` acaba en `/`, y ni el menú ni `/plans` muestran Doctor Amor.
+- Se queda a propósito: `destinoTrasLogin` (`despues_login`) y la opción `conservarFechas` de `fileService.js`
+  (mecanismos genéricos que ya nadie usa), y los eventos `pareja_*` / `doctor_amor` en la regex del test, porque
+  reflejan el activador de GTM, que no ha cambiado.
+- Pendiente: backend `zipback` (`/api/pareja-analysis`, productos `pareja*`), archivar los productos en Stripe,
+  y los campos `parejaCredits` / `parejaSeguimientos` de Firestore si alguien llegó a tenerlos.
+- Visto de paso: `Header.js` llama a `trackProductoClick('libro', 'menu')` pero `libro` no está en `PRODUCTOS`,
+  así que el clic del menú al libro no se está midiendo.
+
+## 2026-11-16 — Libro: arreglos del editor y landing nueva
+
+Contexto: Maria ha recibido su libro impreso y le ha gustado. La landing `/libro-recuerdo` no le gusta.
+
+### A. Fallos del editor (`/libro`)
+- [x] A1. El pie de la web tapa el editor: la vista previa y la lista de capítulos ocupan una pantalla
+      y debajo va el footer; al hacer scroll quedan cortados. Quitar el footer en `/libro` (es una
+      herramienta a pantalla completa). → verificar: test de que `/libro` no pinta el footer + captura.
+- [x] A2. "El Pistolero · responde en -5492 s": tiempo de respuesta negativo cuando los mensajes no
+      están en orden de hora (`personajes.js`). Ignorar diferencias negativas.
+      → verificar: test con dos mensajes desordenados → nunca sale un tiempo negativo.
+
+### B. Editor más claro
+- [x] B1. Poder quitar la página de personajes (interruptor como los capítulos).
+      → verificar: test de `renderHTML` sin personajes + captura.
+- [x] B2. Que se vea que se puede editar: hoy la × solo aparece al pasar el ratón (en el móvil no
+      sale nunca). Mostrarla siempre, discreta, y un aviso arriba de la vista previa.
+      → verificar: captura en escritorio y móvil.
+
+Notas de A/B (hecho, sin commit):
+- A1: el pie tampoco sale en `/libro/` (al recargar llega con barra final); test `Footer.test.js`.
+- A2: `personajes.test.js` reproducía −58,5 min; ahora se ignoran las diferencias negativas.
+- B1: interruptor "Los personajes" en el panel (sección Páginas), se recuerda al recargar; test `render.test.js`.
+- B2: en vez de una × en cada mensaje (muy cargado), aviso amarillo arriba de la vista previa y la ×
+  sale al pasar el ratón o, en el móvil, al tocar el mensaje. Verificado en el navegador (escritorio y móvil).
+- Visto y no tocado: en el móvil la vista previa es más ancha que la pantalla (dos páginas por fila
+  con zoom mínimo 0,3) y los títulos del panel ("PORTADA"…) salen grandes por estilos globales.
+
+### C. Landing `/libro-recuerdo` (estilo elegido por Maria: editorial)
+- [x] C1. 4 páginas de muestra (portada, personajes, capítulo, conversación con foto) con la plantilla real
+      (`renderHTML`) y un chat inventado de Eva y Marcos (`muestra.js`), cada una en su iframe.
+      → `muestra.test.js` comprueba que cada iframe enseña solo su página (primero salía la portada en las 4).
+- [x] C2. Comparación con tiendas de fotolibros (`comparativa.js`, solo en euros): CEWE 55,90 € (62 pág.) y
+      Hofmann 65,56 € (60 pág., su máximo), tapa blanda ~21 × 21, con envío, consultado el 16-11-2026.
+      Fuera: Saal (no muestra envío), Fotoprix (no muestra precio por página), Lulu (imprenta en papel
+      estucado, no fotolibro, ~23-28 €). → `comparativa.test.js`; verificado en escritorio y móvil.
+- [x] C3. Landing editorial nueva (`LibroLanding.js` + `LibroLanding.css`): papel cálido, Instrument Serif,
+      secciones numeradas con filetes. Quitadas de `libro.css` las 99 reglas de la landing antigua.
+      Verificado en el navegador, escritorio y móvil (sin scroll lateral).
+- Hecho de paso: precio por defecto 39 € → 29 € (`LibroLanding`, `LibroPage`, `LibroCard`): el servidor
+  devuelve 29 € en España y por defecto; los 39 € solo se veían si fallaba esa llamada.
+- Quitado: "Un libro para cada historia" (4 portadas de stock con nº de páginas inventados) y sus fotos
+  `amigas/familia/hermanas.jpg`. `pareja.jpg` se queda (la usa la muestra).
+
+### Review (libro, 2026-11-16)
+- Hecho (sin commit ni deploy): A1-A2, B1-B2, C1-C3. 21 suites / 131 tests en verde; eslint sin errores.
+- Aprendizajes: `fix-font-sizes.css` fuerza tamaños de h1-h3 con `!important` y `:not()`; una landing con
+  títulos grandes necesita su excepción ahí. En las muestras, ocultar con `section:not(X)` + `!important`,
+  porque `.cover{display:flex}` gana a `section{display:none}`. El test de muestra pinta el HTML en jsdom y
+  mira qué se ve, no el texto del CSS: así detecta ese fallo.
+- Pendiente de revisar: los precios de la comparación caducan (promos de las tiendas); revisarlos cada pocos meses.

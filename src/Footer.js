@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './Footer.css';
 import { useTranslation } from 'react-i18next';
 import { FaArrowUp, FaAndroid } from 'react-icons/fa';
@@ -17,6 +17,9 @@ const Footer = () => {
   };
 
   const isDev = process.env.NODE_ENV === 'development';
+
+  // El editor del libro ocupa la pantalla entera: con pie, al hacer scroll quedaba cortado
+  if (useLocation().pathname.replace(/\/$/, '') === '/libro') return null;
 
   return (
     <footer className="app-footer">

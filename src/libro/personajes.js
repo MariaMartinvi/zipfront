@@ -61,7 +61,7 @@ export function personajes(mensajes, opts = {}) {
     if (prev && prev.autor === m.autor) { d.racha++; } else { d.racha = 1; } if (d.racha > d.rachaMax) d.rachaMax = d.racha;
     if (prev) {
       const dt = (m.fecha - prev.fecha) / 60000;
-      if (prev.autor !== m.autor && dt < 60) d.resp.push(dt);
+      if (prev.autor !== m.autor && dt >= 0 && dt < 60) d.resp.push(dt);  // dt < 0: hora desordenada en el chat
       if (dt > 480) d.inicia++;
       const next = mensajes[i + 1];
       if (!next || (next.fecha - m.fecha) / 60000 > 30) d.termina++;

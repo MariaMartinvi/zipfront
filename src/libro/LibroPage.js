@@ -25,7 +25,7 @@ function regionLibro() {
   return 'default';
 }
 const REGION = regionLibro();
-const LABELS_DEFECTO = { libro: '39 €', pdf: '12,99 €' };
+const LABELS_DEFECTO = { libro: '29 €', pdf: '12,99 €' };
 const COLORES = ['#2f3e46', '#5b3a4a', '#3a4a3f', '#1d1d1b', '#8c5a2b', '#2b4a6f'];
 
 export default function LibroPage() {
@@ -41,6 +41,7 @@ export default function LibroPage() {
   const [color, setColor] = useState(COLORES[0]);
   const [portadaFoto, setPortadaFoto] = useState(null);
   const [derecha, setDerecha] = useState(null);
+  const [conPersonajes, setConPersonajes] = useState(true);
   const [media, setMedia] = useState({});
   const [videos, setVideos] = useState({});
   const [fotosChat, setFotosChat] = useState([]);
@@ -105,6 +106,7 @@ export default function LibroPage() {
           if (g.color) setColor(g.color);
           if (g.portadaFoto && !String(g.portadaFoto).startsWith('portada:')) setPortadaFoto(g.portadaFoto);
           setDerecha(g.derecha || nombres[0]);
+          setConPersonajes(g.conPersonajes !== false);
         } else {
           setCaps(props);
           setTitulo(nombres.length === 2 ? `${nombres[0]} & ${nombres[1]}` : (fileName || 'Nuestro chat').replace(/^Chat de WhatsApp con /i, '').replace(/\.zip$/i, ''));
@@ -154,18 +156,22 @@ export default function LibroPage() {
   // vista previa en iframe: mismo HTML que el PDF, y las páginas se parten de verdad midiendo en el navegador
   useEffect(() => {
     if (!man || !iframeRef.current) return;
-    const { css, body } = renderHTML(mensajes, man, { media, videos, qrs, derecha, preview: true });
+    const { css, body } = renderHTML(mensajes, man, { media, videos, qrs, derecha, conPersonajes, preview: true });
     cssRef.current = css;
     const doc = iframeRef.current.contentDocument;
     const W = PAGE.w + 2 * PAGE.bleed, H = PAGE.h + 2 * PAGE.bleed;
+    const zoom = zoomPara(iframeRef.current, W);
+    const x = Math.round(20 / zoom);  // la × mide siempre ~20 px en pantalla, también con las páginas encogidas (móvil)
     doc.open();
     doc.write(`<!doctype html><html><head><meta charset="utf-8">${FONTS}<style>${css}
-      body{background:#ecebe7;padding:18px;display:grid;grid-template-columns:repeat(2,${W}mm);gap:6px 10px;justify-content:center;zoom:${zoomPara(iframeRef.current, W)}}
+      body{background:#ecebe7;padding:18px;display:grid;grid-template-columns:repeat(2,${W}mm);gap:6px 10px;justify-content:center;zoom:${zoom}}
       body::before{content:'';display:block} /* la portada va a la derecha, como en un libro */
       section{width:${W}mm;height:${H}mm;min-height:0;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.12);margin:0;break-after:auto}
       section.hidden{display:none}
-      .msg .x{position:absolute;top:-6px;width:22px;height:22px;border-radius:50%;background:#b3261e;color:#fff;font:14px/22px sans-serif;text-align:center;cursor:pointer;display:none;z-index:2}
-      .msg.l .x{right:-9px}.msg.r .x{left:-9px}.msg:hover .x{display:block}
+      .msg .x{position:absolute;top:${-x / 3}px;width:${x}px;height:${x}px;border-radius:50%;background:#b3261e;color:#fff;font:${Math.round(x * 0.65)}px/${x}px sans-serif;text-align:center;cursor:pointer;z-index:2;display:none}
+      .msg.l .x{right:${-x / 2.5}px}.msg.r .x{left:${-x / 2.5}px}
+      .msg{cursor:pointer}.msg.sel .x{display:block}.msg.sel .bubble{outline:${Math.max(2, Math.round(2 / zoom))}px solid #b3261e88}
+      @media (hover:hover){.msg:hover .x{display:block}.msg:hover .bubble{outline:${Math.max(2, Math.round(2 / zoom))}px solid #b3261e88}}
     </style></head><body>${body}</body></html>`);
     doc.close();
     const caps0 = caps;
@@ -178,6 +184,8 @@ export default function LibroPage() {
         const x = doc.createElement('div'); x.className = 'x'; x.textContent = '×'; x.title = 'Quitar del libro';
         x.onclick = e => { e.stopPropagation(); setQuitados(q => new Set([...q, +el.dataset.id])); };
         el.appendChild(x);
+        // en el móvil no hay "pasar el ratón": tocar un mensaje lo marca y enseña su ×
+        el.onclick = () => { doc.querySelectorAll('.msg.sel').forEach(o => o !== el && o.classList.remove('sel')); el.classList.toggle('sel'); };
       });
       setPaginasReales(contarPaginas(doc));
       if (renderListo.current) { renderListo.current(); renderListo.current = null; }
@@ -185,7 +193,7 @@ export default function LibroPage() {
     // esperar a las fuentes (si tardan más de 2 s, paginamos igual)
     Promise.race([doc.fonts ? doc.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 2000))]).then(acabar);
     return () => { cancelado = true; };
-  }, [man, mensajes, media, videos, qrs, derecha, caps]);
+  }, [man, mensajes, media, videos, qrs, derecha, conPersonajes, caps]);
 
   async function subirPortada(e) {
     const f = e.target.files && e.target.files[0]; if (!f) return;
@@ -205,10 +213,10 @@ export default function LibroPage() {
     const t = setTimeout(() => {
       const { fileName } = libroStore.get();
       libroStore.guardarEdicion({ fileName, nMensajes: mensajes.length, caps: caps.map(c => ({ on: c.on, titulo: c.titulo })),
-        quitados: [...quitados], titulo, subtitulo, dedicatoria, color, portadaFoto, derecha });
+        quitados: [...quitados], titulo, subtitulo, dedicatoria, color, portadaFoto, derecha, conPersonajes });
     }, 500);
     return () => clearTimeout(t);
-  }, [estado, mensajes, caps, quitados, titulo, subtitulo, dedicatoria, color, portadaFoto, derecha]);
+  }, [estado, mensajes, caps, quitados, titulo, subtitulo, dedicatoria, color, portadaFoto, derecha, conPersonajes]);
 
   async function borrarLibro() {
     if (!window.confirm('¿Borrar este libro y el chat guardado en este navegador?')) return;
@@ -394,7 +402,10 @@ export default function LibroPage() {
         <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${precios.libro} · PDF incluido`}</button>
       </div>
       <div className="libro-wrap">
-        <iframe ref={iframeRef} title="libro" className="libro-pages" />
+        <div className="libro-vista">
+          <p className="libro-aviso">✏️ <b>Tu libro se puede editar:</b> toca un mensaje y pulsa la <span>×</span> para quitarlo, y en el panel apaga capítulos o la página de personajes y cambia título, portada y dedicatoria.</p>
+          <iframe ref={iframeRef} title="libro" className="libro-pages" />
+        </div>
         <aside className="libro-side">
           <h2>Portada</h2>
           <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Título" />
@@ -415,13 +426,18 @@ export default function LibroPage() {
           <textarea value={dedicatoria} onChange={e => setDedicatoria(e.target.value.slice(0, 300))} placeholder="Opcional. Para quien es este libro…" rows={3} />
           {autores.length === 2 && <><h2>A la derecha</h2><div className="derecha">{autores.map(a => <button key={a} className={a === derecha ? 'on' : ''} onClick={() => setDerecha(a)}>{a}</button>)}</div></>}
           <p className="libro-guardado">💾 Se guarda solo en este navegador. Puedes cerrar y seguir luego.</p>
+          <h2>Páginas</h2>
+          <div className={`cap ${conPersonajes ? '' : 'off'}`}>
+            <div className={`sw ${conPersonajes ? 'on' : ''}`} onClick={() => setConPersonajes(v => !v)} role="switch" aria-checked={conPersonajes} />
+            <div className="t"><b>Los personajes</b><span>Quién es quién en el chat · 1 pág</span></div>
+          </div>
           <h2>Capítulos</h2>
           {caps.map((c, k) => (
             <div key={k} className={`cap ${c.on ? '' : 'off'}`}>
               <div className={`sw ${c.on ? 'on' : ''}`} onClick={() => toggle(k)} role="switch" aria-checked={c.on} />
               <div className="t"><input value={c.titulo} onChange={e => renombrar(k, e.target.value)} /><span>{c.desde} → {c.hasta} · {man.capitulos[k].paginas} pág · {man.capitulos[k].fotos} fotos</span></div>
             </div>))}
-          <p className="hint">{demasiadas ? 'Más de 200 páginas: apaga algún capítulo.' : pocas ? 'Enciende al menos un capítulo.' : 'Pasa el ratón por una burbuja y pulsa × para quitarla. Nada se guarda en nuestros servidores.'}</p>
+          <p className="hint">{demasiadas ? 'Más de 200 páginas: apaga algún capítulo.' : pocas ? 'Enciende al menos un capítulo.' : 'Toca un mensaje y pulsa la × para quitarlo. Nada se guarda en nuestros servidores.'}</p>
           <button className="libro-borrar" onClick={borrarLibro}>Borrar mi libro de este navegador</button>
         </aside>
       </div>

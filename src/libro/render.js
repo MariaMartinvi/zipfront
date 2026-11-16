@@ -31,10 +31,10 @@ export function stats(mensajes) {
 /**
  * @param mensajes   lista parseada
  * @param man        { titulo, subtitulo, portada:{color, foto}, dedicatoria, capitulos:[{titulo, desde, hasta, on, mensajes:[ids]}] }
- * @param opts       { media: {name → {uri}}, videos: {name → {uri, seconds}}, nombres, derecha, genero, fotosPersona, conStats, conIndice, preview }
+ * @param opts       { media: {name → {uri}}, videos: {name → {uri, seconds}}, nombres, derecha, genero, fotosPersona, conStats, conIndice, conPersonajes, preview }
  */
 export function renderHTML(mensajes, man, opts = {}) {
-  const { media = {}, videos = {}, qrs = {}, nombres = {}, derecha = null, genero = {}, fotosPersona = {}, conStats = true, conIndice = true, preview = false } = opts;
+  const { media = {}, videos = {}, qrs = {}, nombres = {}, derecha = null, genero = {}, fotosPersona = {}, conStats = true, conIndice = true, conPersonajes = true, preview = false } = opts;
   const nombre = a => nombres[a] || a;
   const encendidos = man.capitulos.filter(c => c.on);
   const st = stats(mensajes);
@@ -99,7 +99,7 @@ export function renderHTML(mensajes, man, opts = {}) {
     `<div class="toc-row"><span>${i + 1}. ${esc(c.titulo)}</span><span class="dots"></span><span class="pg">${esc(fechaCorta(c.desde))}</span></div>`).join('')}</section>` : '';
 
   const pj = personajes(mensajes, { genero });
-  const personajesHTML = `<section class="people"><h2>Los personajes</h2>${autores.map(a => {
+  const personajesHTML = !conPersonajes ? '' : `<section class="people"><h2>Los personajes</h2>${autores.map(a => {
     const d = pj.datos[a] || { mensajes: 0 }, cats = (pj.porPersona[a] || []).slice(0, 4), ex = pj.extra[a] || {};
     const foto = fotosPersona[a];
     return `<div class="person"><div class="avatar">${foto ? `<img src="${foto}"/>` : esc(nombre(a).trim()[0] || '?')}</div>
