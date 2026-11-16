@@ -479,3 +479,6 @@ span.menu-icon {
 
 /* Con los enlaces de juegos y pareja: sin partir líneas */
 .nav-link { white-space: nowrap; }
+
+/* Etiqueta "Nuevo" del libro regalo en el menú */
+.nav-nuevo { display: inline-block; margin-right: 4px; padding: 2px 7px; border-radius: 999px; background: linear-gradient(135deg, #25D366, #8A2BE2); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; vertical-align: 1px; }

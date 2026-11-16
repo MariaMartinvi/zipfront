@@ -1,4 +1,4 @@
-import { paginasMuestra } from './muestra';
+import { paginasMuestra, libroAbierto } from './muestra';
 
 // Qué secciones se ven de verdad al pintar el HTML (con todas sus reglas CSS), no lo que dice el texto
 const seccionesVisibles = (html) => {
@@ -25,4 +25,13 @@ test('la muestra lleva título, capítulos y la foto, y no los personajes', () =
   expect(html).toContain('Aquel verano en Roma');
   expect(html).toContain('<img src="/foto.jpg"/>');
   expect(html).toContain('Volveremos');
+});
+
+test('libro abierto: portada y tres dobles páginas, cada página con su sección', () => {
+  const { portada, dobles } = libroAbierto();
+  expect(seccionesVisibles(portada)).toEqual(['cover']);
+  expect(dobles.map((d) => [seccionesVisibles(d.izq)[0], seccionesVisibles(d.dcha)[0]])).toEqual([
+    ['chapter-open', 'chapter-body'], ['chapter-open', 'chapter-body'], ['stats', 'back'],
+  ]);
+  expect(dobles[1].dcha).toContain('<img src="/libro/pareja.jpg"/>');
 });

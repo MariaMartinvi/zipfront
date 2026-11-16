@@ -39,8 +39,16 @@ const CHAT = `02/05/25, 09:12 - Eva: Buenos días ☀️ has dormido algo?
 
 const TITULOS = ['Portada', 'Capítulo', 'La conversación', 'Con vuestras fotos'];
 
-/** Las 4 páginas de muestra como documentos HTML independientes (uno por iframe). */
-export function paginasMuestra(foto = '/libro/pareja.jpg') {
+// HTML de una sola página del libro de ejemplo (la sección que cumple `sel`), para pintarla en su propio iframe.
+function pagina(css, body, sel) {
+  const W = (PAGE.w + 2 * PAGE.bleed) * 96 / 25.4;
+  const H = PAGE.h + 2 * PAGE.bleed;
+  return `<!doctype html><html lang="es"><head><meta charset="utf-8">${FONTS}<style>${css}
+      html,body{background:#fff;overflow:hidden} section{height:${H}mm;min-height:${H}mm;overflow:hidden} section:not(${sel}){display:none !important}</style></head>
+      <body>${body}<script>(()=>{const z=()=>{document.documentElement.style.zoom=innerWidth/${W.toFixed(1)}};z();addEventListener('resize',z)})()</script></body></html>`;
+}
+
+function libroEjemplo(foto) {
   const mensajes = parseChat(CHAT);
   const del = (dia) => mensajes.filter((m) => m.dia === dia).map((m) => m.id);
   const man = {
@@ -50,15 +58,27 @@ export function paginasMuestra(foto = '/libro/pareja.jpg') {
       { titulo: 'Aquel verano en Roma', desde: '2025-07-12', hasta: '2025-07-12', on: true, mensajes: del('2025-07-12') },
     ],
   };
-  const { css, body } = renderHTML(mensajes, man, { media: { [FOTO]: { uri: foto } }, derecha: 'Marcos', conIndice: false, conPersonajes: false });
-  const W = (PAGE.w + 2 * PAGE.bleed) * 96 / 25.4;
-  const H = PAGE.h + 2 * PAGE.bleed;
+  return renderHTML(mensajes, man, { media: { [FOTO]: { uri: foto } }, derecha: 'Marcos', conIndice: false, conPersonajes: false });
+}
+
+/** Las 4 páginas de muestra como documentos HTML independientes (uno por iframe). */
+export function paginasMuestra(foto = '/libro/pareja.jpg') {
+  const { css, body } = libroEjemplo(foto);
   // body: portada, blanca, capítulo 1 (apertura y conversación), capítulo 2 (apertura y conversación con foto)…
   const elegir = ['section.cover', "section.chapter-open[data-cap='1']", "section.chapter-body[data-cap='0']", "section.chapter-body[data-cap='1']"];
-  return elegir.map((sel, i) => ({
-    titulo: TITULOS[i],
-    html: `<!doctype html><html lang="es"><head><meta charset="utf-8">${FONTS}<style>${css}
-      html,body{background:#fff;overflow:hidden} section{height:${H}mm;min-height:${H}mm;overflow:hidden} section:not(${sel}){display:none !important}</style></head>
-      <body>${body}<script>(()=>{const z=()=>{document.documentElement.style.zoom=innerWidth/${W.toFixed(1)}};z();addEventListener('resize',z)})()</script></body></html>`,
-  }));
+  return elegir.map((sel, i) => ({ titulo: TITULOS[i], html: pagina(css, body, sel) }));
+}
+
+/** El libro de ejemplo abierto: la portada y las dobles páginas que se van pasando. */
+export function libroAbierto(foto = '/libro/pareja.jpg') {
+  const { css, body } = libroEjemplo(foto);
+  const p = (sel) => pagina(css, body, sel);
+  return {
+    portada: p('section.cover'),
+    dobles: [
+      { izq: p("section.chapter-open[data-cap='0']"), dcha: p("section.chapter-body[data-cap='0']") },
+      { izq: p("section.chapter-open[data-cap='1']"), dcha: p("section.chapter-body[data-cap='1']") },
+      { izq: p('section.stats'), dcha: p('section.back') },
+    ],
+  };
 }
