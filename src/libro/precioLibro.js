@@ -18,7 +18,13 @@ export function regionLibro(tz) {
 export async function cargarPreciosLibro() {
   try {
     const c = await fetch(`${API_URL}/api/book/config?region=${regionLibro()}`).then((r) => r.json());
-    if (c && c.labels) return { labels: c.labels, currency: c.currency || 'EUR' };
+    if (c && c.labels) return { labels: c.labels, currency: c.currency || 'EUR', tramos: c.tramos || null };
   } catch (e) { /* sin red: precios por defecto */ }
-  return { labels: PRECIOS_LIBRO_DEFECTO, currency: 'EUR' };
+  return { labels: PRECIOS_LIBRO_DEFECTO, currency: 'EUR', tramos: null };
+}
+
+/** Precio del impreso para un libro de `paginas` páginas de imprenta (el servidor cobra por tramos). */
+export function etiquetaImpreso(labels, tramos, paginas) {
+  const t = (tramos || []).find((x) => paginas <= x.hasta);
+  return t ? t.label : labels.libro;
 }

@@ -112,7 +112,7 @@ const FreemiumPlans = ({ userId }) => {
         {esCastellano && (
           <section className="precios-tarjeta libro">
             <h2>📖 Libro regalo</h2>
-            <div className="precios-precio">{libro.pdf}<span>en PDF · impreso {libro.libro}, envío incluido</span></div>
+            <div className="precios-precio">{libro.pdf}<span>en PDF · impreso desde {libro.libro}, envío incluido</span></div>
             <ul>
               <li>Vuestro chat de WhatsApp convertido en libro, con fotos</li>
               <li>Impreso: tapa blanda 20 × 20 cm, papel fotográfico, PDF incluido</li>

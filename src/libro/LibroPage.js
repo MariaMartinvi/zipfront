@@ -7,6 +7,7 @@ import { parseChat, participantes } from './parser';
 import { puntuar } from './scorer';
 import { proponer, montar } from './propuesta';
 import { renderHTML, PAGE, FONTS } from './render';
+import { etiquetaImpreso } from './precioLibro';
 import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds, tienePersona, imageUriFromFile } from './media';
 import { libroStore } from './store';
 import QRCode from 'qrcode';
@@ -48,6 +49,8 @@ export default function LibroPage() {
   const [pidiendo, setPidiendo] = useState(false);
   const [cargandoFotos, setCargandoFotos] = useState('');
   const [paginasReales, setPaginasReales] = useState(0);
+  const [paginasImprenta, setPaginasImprenta] = useState(0);
+  const [tramos, setTramos] = useState(null);
   const [precios, setPrecios] = useState(LABELS_DEFECTO);
   const [galeria, setGaleria] = useState(false);
   const [qrs, setQrs] = useState({});
@@ -59,7 +62,7 @@ export default function LibroPage() {
 
   // precios de la región (el servidor manda)
   useEffect(() => {
-    fetch(`${API_URL}/api/book/config?region=${REGION}`).then(r => r.json()).then(c => { if (c && c.labels) setPrecios(c.labels); }).catch(() => {});
+    fetch(`${API_URL}/api/book/config?region=${REGION}`).then(r => r.json()).then(c => { if (c && c.labels) setPrecios(c.labels); if (c && c.tramos) setTramos(c.tramos); }).catch(() => {});
   }, []);
 
   // 1) cargar chat + media del store (lo deja App al subir el zip)
@@ -188,6 +191,7 @@ export default function LibroPage() {
         el.onclick = () => { doc.querySelectorAll('.msg.sel').forEach(o => o !== el && o.classList.remove('sel')); el.classList.toggle('sel'); };
       });
       setPaginasReales(contarPaginas(doc));
+      setPaginasImprenta(contarInteriores(doc));
       if (renderListo.current) { renderListo.current(); renderListo.current = null; }
     };
     // esperar a las fuentes (si tardan más de 2 s, paginamos igual)
@@ -399,7 +403,7 @@ export default function LibroPage() {
         <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas</span>
         <button className="pill ghost" disabled={pidiendo || pocas} onClick={muestra} title="Las 8 primeras páginas en PDF, con marca de agua, para ver la calidad">PDF de muestra</button>
         <button className="pill ghost" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF, sin marca de agua">{`Solo PDF · ${precios.pdf}`}</button>
-        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${precios.libro} · PDF incluido`}</button>
+        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${etiquetaImpreso(precios, tramos, paginasImprenta)} · PDF incluido`}</button>
       </div>
       <div className="libro-wrap">
         <div className="libro-vista">
@@ -464,6 +468,15 @@ function paginar(doc) {
     if (!cur.children.length) cur.remove();
     body.remove();
   }
+}
+
+// Páginas interiores que se mandan a imprimir (sin portada, contraportada ni la blanca del principio), como
+// en generarPDF: mínimo 30 y número par. Es lo que cobra el servidor por tramos.
+function contarInteriores(doc) {
+  const secs = [...doc.querySelectorAll('section')].filter(s => !s.classList.contains('hidden') && !s.classList.contains('cover') && !s.classList.contains('back'));
+  let n = secs.length - (secs[0] && secs[0].classList.contains('blank') ? 1 : 0);
+  while (n < 30 || n % 2) n++;
+  return n;
 }
 
 function contarPaginas(doc) {

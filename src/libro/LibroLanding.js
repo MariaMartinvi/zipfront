@@ -24,6 +24,7 @@ export default function LibroLanding() {
   const navigate = useNavigate();
   const [precios, setPrecios] = useState(PRECIOS_LIBRO_DEFECTO);
   const [moneda, setMoneda] = useState('EUR');
+  const [tramos, setTramos] = useState(null);
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
   const [plataforma, setPlataforma] = useState(detectPlatform);
@@ -31,7 +32,7 @@ export default function LibroLanding() {
   const paginas = useMemo(() => paginasMuestra(), []);
 
   useEffect(() => {
-    cargarPreciosLibro().then(({ labels, currency }) => { setPrecios(labels); setMoneda(currency); });
+    cargarPreciosLibro().then(({ labels, currency, tramos: t }) => { setPrecios(labels); setMoneda(currency); setTramos(t); });
     window.scrollTo(0, 0);
   }, []);
 
@@ -60,7 +61,7 @@ export default function LibroLanding() {
           <p className="ll-entradilla">Vuestro chat de WhatsApp convertido en un libro de verdad: los mejores días de la conversación, tal cual fueron, con vuestras fotos y los personajes de cada uno.</p>
           <div className="ll-acciones">
             <button className="ll-boton-cta" onClick={irASubir}>Crea tu libro gratis</button>
-            <span>Lo ves entero antes de pagar · PDF {precios.pdf} · impreso {precios.libro}</span>
+            <span>Lo ves entero antes de pagar · PDF {precios.pdf} · impreso desde {precios.libro}</span>
           </div>
         </div>
         <figure className="ll-hero-libro">
@@ -96,7 +97,8 @@ export default function LibroLanding() {
         <header className="ll-cabecera"><span>03</span><h2>Precio</h2></header>
         <div className="ll-precios">
           <div><em>En PDF</em><b>{precios.pdf}</b><p>Descarga inmediata, para leerlo ya o imprimirlo donde quieras</p></div>
-          <div><em>El libro impreso</em><b>{precios.libro}</b><p>Tapa blanda 20 × 20 cm · papel fotográfico · envío incluido · PDF incluido</p></div>
+          <div><em>El libro impreso, desde</em><b>{precios.libro}</b><p>Tapa blanda 20 × 20 cm · papel fotográfico · envío incluido · PDF incluido</p>
+            {tramos && <ul className="ll-tramos">{tramos.map(t => <li key={t.hasta}><span>Hasta {t.hasta} páginas</span><span>{t.label}</span></li>)}</ul>}</div>
         </div>
         {moneda === 'EUR' && COMPARATIVA.length > 0 && (
           <div className="ll-comparativa">
@@ -108,7 +110,7 @@ export default function LibroLanding() {
                 {COMPARATIVA.map(c => (
                   <tr key={c.tienda}><td><a href={c.url} target="_blank" rel="noopener noreferrer">{c.tienda}</a></td><td>{c.producto}</td><td>{c.total}</td></tr>
                 ))}
-                <tr className="ll-nosotros"><td>ChatSalsa</td><td>Tapa blanda 20 × 20 cm, maquetado con tu chat</td><td>{precios.libro}</td></tr>
+                <tr className="ll-nosotros"><td>ChatSalsa</td><td>Tapa blanda 20 × 20 cm, hasta 60 páginas, maquetado con tu chat</td><td>{precios.libro}</td></tr>
               </tbody>
             </table>
             <small>Precios públicos consultados el {FECHA_COMPARATIVA}. Pueden cambiar.</small>
