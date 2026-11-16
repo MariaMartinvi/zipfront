@@ -65,8 +65,13 @@ export default function LibroLanding() {
           </div>
         </div>
         <figure className="ll-hero-libro">
-          <iframe title="Portada de un libro de ejemplo" srcDoc={paginas[0].html} tabIndex={-1} loading="lazy" />
-          <figcaption>Portada de un libro de ejemplo, 20 × 20 cm</figcaption>
+          <div className="ll-libro3d">
+            <div className="ll-libro3d-tapa">
+              <iframe title="Portada de un libro de ejemplo" srcDoc={paginas[0].html} tabIndex={-1} loading="lazy" />
+            </div>
+            <div className="ll-libro3d-canto" />
+          </div>
+          <figcaption>Libro de ejemplo · tapa blanda 20 × 20 cm · papel fotográfico</figcaption>
         </figure>
       </section>
 
