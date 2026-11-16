@@ -157,6 +157,8 @@ export default function LibroPage() {
   const encendidos = caps.filter(c => c.on).length;
   const paginas = paginasReales || (man ? man.paginasTotales : 0);
   const imprime = enviarIgual || puedeImprimir(paises);
+  // Chat exportado sin medios (lo normal si viene del análisis): ningún mensaje trae su foto
+  const sinFotos = !!mensajes && !mensajes.some(m => m.tipo === 'image' && m.archivo);
   const demasiadas = paginas > 200, pocas = encendidos === 0;
 
   // vista previa en iframe: mismo HTML que el PDF, y las páginas se parten de verdad midiendo en el navegador
@@ -416,6 +418,7 @@ export default function LibroPage() {
       <div className="libro-wrap">
         <div className="libro-vista">
           <p className="libro-aviso">✏️ <b>Tu libro se puede editar:</b> toca un mensaje y le saldrá una cruz roja; púlsala para quitarlo. En el panel apaga capítulos o la página de personajes y cambia título, portada y dedicatoria.</p>
+          {sinFotos && <p className="libro-aviso sin-fotos">📸 <b>Este libro sale sin fotos</b> porque el chat se exportó sin archivos. Para que salgan, expórtalo de nuevo desde WhatsApp eligiendo «Incluir archivos» y <button type="button" onClick={() => navigate('/libro-recuerdo')}>súbelo aquí</button>.</p>}
           <iframe ref={iframeRef} title="libro" className="libro-pages" />
         </div>
         <aside className="libro-side">
