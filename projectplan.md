@@ -681,3 +681,13 @@ Notas de A/B (hecho, sin commit):
   porque `.cover{display:flex}` gana a `section{display:none}`. El test de muestra pinta el HTML en jsdom y
   mira qué se ve, no el texto del CSS: así detecta ese fallo.
 - Pendiente de revisar: los precios de la comparación caducan (promos de las tiendas); revisarlos cada pocos meses.
+
+## 2026-11-16 — Precios solo con el libro, muestra sin personajes y subida editorial
+- [x] Precios (`/plans`): fuera "Juegos para fiestas" (Doctor Amor ya estaba fuera); tarjeta "Libro regalo"
+      con el precio del servidor (`libro/precioLibro.js`, compartido con la landing). Quitada la clave
+      `games_title` de las traducciones y el CSS de los botones de juegos. → `precioLibro.test.js`.
+- [x] Muestra de la landing sin personajes: portada, capítulo, conversación y conversación con foto.
+      → `muestra.test.js`.
+- [x] Subida propia en la landing (en vez de `UploadBox`, que explica exportar SIN medios y enseña capturas
+      del análisis): pasos para exportar CON archivos por plataforma y zona para soltar el zip.
+      Verificado en móvil: subir el zip lleva a `/libro`.

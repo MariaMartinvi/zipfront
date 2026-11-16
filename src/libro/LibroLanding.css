@@ -58,8 +58,19 @@
 .ll-comparativa .ll-nosotros td { font-weight: 500; border-bottom: 1px solid var(--tinta); }
 .ll-comparativa small { display: block; margin-top: 10px; font-size: 12px; color: var(--gris); }
 
-.ll-subida { padding-top: 88px; max-width: 820px; }
-.ll-nota { font-size: 13px; text-align: center; }
+.ll-subir { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: stretch; }
+.ll-plataformas { display: flex; gap: 22px; border-bottom: 1px solid var(--linea); margin-bottom: 20px; }
+.ll .ll-plataformas button { background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; padding: 0 0 10px; font: inherit; font-size: .95rem !important; color: var(--gris); cursor: pointer; }
+.ll .ll-plataformas button.on { color: var(--tinta); border-bottom-color: var(--tinta); }
+.ll-exportar ol { list-style: none; counter-reset: exp; padding: 0; margin: 0 0 16px; }
+.ll-exportar li { counter-increment: exp; display: grid; grid-template-columns: 32px 1fr; padding: 12px 0; border-bottom: 1px solid var(--linea); line-height: 1.5; }
+.ll-exportar li::before { content: counter(exp); font-family: var(--serif); font-size: 1.4rem; line-height: 1.1; }
+.ll-nota { font-size: 13px; margin: 0; }
+.ll-soltar { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; padding: 40px 28px; border: 1px dashed var(--tinta); border-radius: 4px; background: #fbf9f4; cursor: pointer; transition: background .15s; }
+.ll-soltar:hover, .ll-soltar.arrastrando { background: #fff; }
+.ll-soltar input { display: none; }
+.ll-soltar b { font-family: var(--serif); font-weight: 400; font-size: 2rem; line-height: 1.1; }
+.ll-soltar small { font-size: 12px; color: var(--gris); max-width: 320px; line-height: 1.5; }
 .ll-error { color: #b3261e !important; text-align: center; font-weight: 500; }
 
 .ll-incluye { margin: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; }
@@ -82,10 +93,11 @@
   .ll-hero-libro { width: min(80%, 360px); }
   .ll-pasos { grid-template-columns: 1fr; gap: 28px; }
   .ll-incluye { grid-template-columns: 1fr; }
+  .ll-subir { grid-template-columns: 1fr; gap: 28px; }
 }
 @media (max-width: 600px) {
   .ll > * { padding-left: 16px; padding-right: 16px; }
-  .ll-bloque, .ll-subida { padding-top: 64px; }
+  .ll-bloque { padding-top: 64px; }
   .ll-muestra { grid-template-columns: 1fr; gap: 28px; }
   .ll-cabecera { grid-template-columns: 1fr; }
   .ll-cabecera p { grid-column: 1; }

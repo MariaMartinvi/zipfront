@@ -1,4 +1,4 @@
-// FreemiumPlans.js — página de precios: Gratis, Análisis IA y (en castellano) Juegos para fiestas.
+// FreemiumPlans.js — página de precios: Gratis, Análisis IA y (en castellano) el libro regalo.
 // Solo información verdadera: sin cuentas atrás, stock ni cifras inventadas.
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom';
 import { purchaseAICredits, db } from './firebase_auth';
 import { doc, getDoc } from 'firebase/firestore';
 import './PricingPage.css';
-import { getAiPackPricing, getPaymentHighlightKey, getPorraPricing } from './utils/pricing';
+import { getAiPackPricing, getPaymentHighlightKey } from './utils/pricing';
+import { cargarPreciosLibro, PRECIOS_LIBRO_DEFECTO } from './libro/precioLibro';
 import { trackProductoClick } from './utils/analytics';
 
 const FreemiumPlans = ({ userId }) => {
@@ -16,6 +17,9 @@ const FreemiumPlans = ({ userId }) => {
   const [error, setError] = useState('');
   const [isPurchasing, setIsPurchasing] = useState(false);
   const esCastellano = (i18n.language || 'es').startsWith('es');
+  const [libro, setLibro] = useState(PRECIOS_LIBRO_DEFECTO);
+
+  useEffect(() => { if (esCastellano) cargarPreciosLibro().then(({ labels }) => setLibro(labels)); }, [esCastellano]);
 
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -51,7 +55,6 @@ const FreemiumPlans = ({ userId }) => {
   const aiCredits = userProfile?.aiCredits || 0;
   const isAdmin = userProfile?.is_admin || false;
   const pack = getAiPackPricing();
-  const juego = getPorraPricing();
   const avisoPago = getPaymentHighlightKey();
 
   const botonIA = () => {
@@ -82,7 +85,7 @@ const FreemiumPlans = ({ userId }) => {
 
       {error && <div className="precios-error">{error}</div>}
 
-      <div className={`precios-tarjetas ${esCastellano ? 'cuatro' : 'dos'}`}>
+      <div className={`precios-tarjetas ${esCastellano ? 'tres' : 'dos'}`}>
         <section className="precios-tarjeta">
           <h2>{t('freemium.plans.free_title')}</h2>
           <div className="precios-precio">{t('freemium.plans.free_price')}</div>
@@ -107,17 +110,15 @@ const FreemiumPlans = ({ userId }) => {
         </section>
 
         {esCastellano && (
-          <section className="precios-tarjeta juegos">
-            <h2>{t('freemium.plans.games_title')}</h2>
-            <div className="precios-precio">{juego.price}<span>por juego y chat</span></div>
+          <section className="precios-tarjeta libro">
+            <h2>📖 Libro regalo</h2>
+            <div className="precios-precio">{libro.libro}<span>impreso · envío incluido</span></div>
             <ul>
-              <li>20 preguntas sobre vuestro grupo de WhatsApp</li>
-              <li>Hoja de jugador y acta con las respuestas en PDF</li>
-              <li>Ronda 1 con datos del chat, Ronda 2 con IA</li>
+              <li>Vuestro chat de WhatsApp convertido en libro, con fotos</li>
+              <li>Tapa blanda 20 × 20 cm, papel fotográfico</li>
+              <li>Lo ves entero antes de pagar · solo PDF {libro.pdf}</li>
             </ul>
-            <div className="precios-juegos">
-              <Link to="/porra-navidad" className="precios-boton navidad" onClick={() => trackProductoClick('navidad', 'precios')}>🎄 Navidad</Link>
-            </div>
+            <Link to="/libro-recuerdo" className="precios-boton libro" onClick={() => trackProductoClick('libro', 'precios')}>Ver el libro</Link>
           </section>
         )}
       </div>

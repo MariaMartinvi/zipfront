@@ -953,8 +953,7 @@
       "free_f2": "Perfiles destacados del grupo",
       "free_f3": "Juegos de titulares y personalidad",
       "free_button": "Analizar mi chat gratis",
-      "your_credits": "Tienes {{count}} análisis IA disponibles",
-      "games_title": "Juegos para fiestas"
+      "your_credits": "Tienes {{count}} análisis IA disponibles"
     }
   },
   "payment": {

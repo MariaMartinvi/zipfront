@@ -37,21 +37,24 @@ const CHAT = `02/05/25, 09:12 - Eva: Buenos días ☀️ has dormido algo?
 12/07/25, 23:15 - Eva: Ha sido el mejor día del año
 12/07/25, 23:16 - Marcos: Del año no. De muchos años ❤️`;
 
-const TITULOS = ['Portada', 'Los personajes', 'Capítulo', 'La conversación'];
+const TITULOS = ['Portada', 'Capítulo', 'La conversación', 'Con vuestras fotos'];
 
 /** Las 4 páginas de muestra como documentos HTML independientes (uno por iframe). */
 export function paginasMuestra(foto = '/libro/pareja.jpg') {
   const mensajes = parseChat(CHAT);
-  const roma = mensajes.filter((m) => m.dia === '2025-07-12').map((m) => m.id);
+  const del = (dia) => mensajes.filter((m) => m.dia === dia).map((m) => m.id);
   const man = {
     titulo: 'Eva & Marcos', subtitulo: '2025', portada: { color: '#2f3e46', foto: FOTO },
-    capitulos: [{ titulo: 'Aquel verano en Roma', desde: '2025-07-12', hasta: '2025-07-12', on: true, mensajes: roma }],
+    capitulos: [
+      { titulo: 'El día que salió bien', desde: '2025-05-02', hasta: '2025-05-02', on: true, mensajes: del('2025-05-02') },
+      { titulo: 'Aquel verano en Roma', desde: '2025-07-12', hasta: '2025-07-12', on: true, mensajes: del('2025-07-12') },
+    ],
   };
-  const { css, body } = renderHTML(mensajes, man, { media: { [FOTO]: { uri: foto } }, derecha: 'Marcos', genero: { Eva: 'f' }, conIndice: false });
+  const { css, body } = renderHTML(mensajes, man, { media: { [FOTO]: { uri: foto } }, derecha: 'Marcos', conIndice: false, conPersonajes: false });
   const W = (PAGE.w + 2 * PAGE.bleed) * 96 / 25.4;
   const H = PAGE.h + 2 * PAGE.bleed;
-  // body: portada, blanca, personajes, apertura de capítulo, conversación, números, contraportada
-  const elegir = ['section.cover', 'section.people', 'section.chapter-open', 'section.chapter-body'];
+  // body: portada, blanca, capítulo 1 (apertura y conversación), capítulo 2 (apertura y conversación con foto)…
+  const elegir = ['section.cover', "section.chapter-open[data-cap='1']", "section.chapter-body[data-cap='0']", "section.chapter-body[data-cap='1']"];
   return elegir.map((sel, i) => ({
     titulo: TITULOS[i],
     html: `<!doctype html><html lang="es"><head><meta charset="utf-8">${FONTS}<style>${css}

@@ -992,8 +992,7 @@
       "free_f2": "Top profiles of the group",
       "free_f3": "Headlines and personality games",
       "free_button": "Analyze my chat for free",
-      "your_credits": "You have {{count}} AI analyses available",
-      "games_title": "Party games"
+      "your_credits": "You have {{count}} AI analyses available"
     }
   },
   "weekdays": {

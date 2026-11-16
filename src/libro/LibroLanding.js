@@ -4,39 +4,34 @@
 // El zip se lee en el navegador: ni el chat ni las fotos salen de aquí.
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UploadBox from '../UploadBox';
+import { detectPlatform } from '../WhatsappInstructions';
 import { libroStore } from './store';
 import { paginasMuestra } from './muestra';
 import { COMPARATIVA, FECHA_COMPARATIVA } from './comparativa';
+import { cargarPreciosLibro, PRECIOS_LIBRO_DEFECTO } from './precioLibro';
 import './LibroLanding.css';
-
-const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
-
-function region() {
-  let tz = '';
-  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { /* nada */ }
-  if (/^America\/(Mexico_City|Cancun|Merida|Monterrey|Matamoros|Chihuahua|Ciudad_Juarez|Ojinaga|Mazatlan|Bahia_Banderas|Hermosillo|Tijuana)$/.test(tz)) return 'mx';
-  if (/^America\/(Caracas|Bogota|Lima|Guayaquil|La_Paz|Asuncion|Montevideo|Santiago|Buenos_Aires|Cordoba|Argentina\/|Guatemala|Tegucigalpa|El_Salvador|Managua|Costa_Rica|Panama|Santo_Domingo|Havana|Sao_Paulo)/.test(tz)) return 'latam';
-  if (/^(Europe\/Madrid|Atlantic\/Canary|Africa\/Ceuta)$/.test(tz)) return 'es';
-  if (/^America\//.test(tz)) return 'us';
-  return 'default';
-}
 
 const irASubir = () => document.getElementById('subir')?.scrollIntoView({ behavior: 'smooth' });
 
+// Cómo exportar CON fotos (el componente de subida de la portada explica exportar sin medios, para el análisis)
+const EXPORTAR = {
+  android: { nombre: 'Android', pasos: ['Abre el chat en WhatsApp y toca ⋮ → Más → Exportar chat.', 'Elige Incluir archivos.', 'Guárdalo en Archivos o en Drive y súbelo aquí.'] },
+  ios: { nombre: 'iPhone', pasos: ['Abre el chat y toca el nombre de arriba.', 'Baja hasta Exportar chat y elige Adjuntar archivos.', 'Guárdalo en Archivos y súbelo aquí.'] },
+  desktop: { nombre: 'Ordenador', pasos: ['WhatsApp de escritorio no exporta chats: hazlo en el móvil, con archivos.', 'Envíate el zip por email o Drive.', 'Descárgalo y arrástralo aquí.'] },
+};
+
 export default function LibroLanding() {
   const navigate = useNavigate();
-  const [precios, setPrecios] = useState({ libro: '29 €', pdf: '12,99 €' });
+  const [precios, setPrecios] = useState(PRECIOS_LIBRO_DEFECTO);
   const [moneda, setMoneda] = useState('EUR');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
+  const [plataforma, setPlataforma] = useState(detectPlatform);
+  const [arrastrando, setArrastrando] = useState(false);
   const paginas = useMemo(() => paginasMuestra(), []);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/book/config?region=${region()}`).then(r => r.json()).then(c => {
-      if (c && c.labels) setPrecios(c.labels);
-      if (c && c.currency) setMoneda(c.currency);
-    }).catch(() => {});
+    cargarPreciosLibro().then(({ labels, currency }) => { setPrecios(labels); setMoneda(currency); });
     window.scrollTo(0, 0);
   }, []);
 
@@ -121,15 +116,32 @@ export default function LibroLanding() {
         )}
       </section>
 
-      <section className="ll-subida" id="subir">
-        <UploadBox onFileUpload={subir} titulo="Sube tu chat y mira tu libro gratis" subtitulo="Exporta el chat CON archivos (para que salgan las fotos) y sube el zip. No pagas nada hasta que lo veas entero y te guste." sinPrivacidad avisoMedios={<>📸 Para el libro, exporta <b>CON medios</b> si quieres incluir fotos.</>} />
-        {cargando && <p className="ll-nota">Leyendo el chat…</p>}
+      <section className="ll-bloque" id="subir">
+        <header className="ll-cabecera"><span>04</span><h2>Empieza</h2><p>Sube el chat y mira tu libro entero, gratis. No pagas nada hasta que te guste.</p></header>
+        <div className="ll-subir">
+          <div className="ll-exportar">
+            <div className="ll-plataformas" role="tablist">
+              {Object.entries(EXPORTAR).map(([p, { nombre }]) => (
+                <button key={p} type="button" role="tab" aria-selected={plataforma === p} className={plataforma === p ? 'on' : ''} onClick={() => setPlataforma(p)}>{nombre}</button>
+              ))}
+            </div>
+            <ol>{EXPORTAR[plataforma].pasos.map(p => <li key={p}>{p}</li>)}</ol>
+            <p className="ll-nota">Con archivos, para que salgan las fotos. Los chats muy grandes tardan un poco en exportarse.</p>
+          </div>
+          <label className={`ll-soltar ${arrastrando ? 'arrastrando' : ''}`}
+            onDragOver={e => { e.preventDefault(); setArrastrando(true); }} onDragLeave={() => setArrastrando(false)}
+            onDrop={e => { e.preventDefault(); setArrastrando(false); subir({ target: { files: e.dataTransfer.files } }); }}>
+            <input type="file" accept=".zip,application/zip" onChange={subir} />
+            <b>{cargando ? 'Leyendo el chat…' : 'Suelta aquí el zip'}</b>
+            <span className="ll-boton-cta">Elegir archivo</span>
+            <small>El chat y las fotos se quedan en tu navegador. Para imprimir solo viaja el PDF, cifrado, y se borra a los pocos días.</small>
+          </label>
+        </div>
         {error && <p className="ll-error">{error}</p>}
-        <p className="ll-nota">El chat y las fotos se quedan en tu navegador. Para imprimir solo viaja el PDF, cifrado, y se borra al cabo de unos días.</p>
       </section>
 
       <section className="ll-bloque">
-        <header className="ll-cabecera"><span>04</span><h2>Qué hay dentro</h2></header>
+        <header className="ll-cabecera"><span>05</span><h2>Qué hay dentro</h2></header>
         <dl className="ll-incluye">
           <div><dt>Capítulos</dt><dd>Los días más intensos de la conversación, tal cual fueron, sin cortes.</dd></div>
           <div><dt>Vuestras fotos</dt><dd>Dentro de la conversación, donde las mandasteis.</dd></div>
@@ -140,9 +152,9 @@ export default function LibroLanding() {
       </section>
 
       <section className="ll-bloque">
-        <header className="ll-cabecera"><span>05</span><h2>Preguntas</h2></header>
+        <header className="ll-cabecera"><span>06</span><h2>Preguntas</h2></header>
         <div className="ll-faq">
-          <details><summary>¿Cómo exporto el chat con las fotos?</summary><p>En WhatsApp, abre el chat → menú → Más → Exportar chat → <b>Incluir archivos</b>. Te genera un zip; súbelo aquí tal cual. Los chats muy grandes pueden tardar en exportarse; si WhatsApp falla, exporta sin archivos y tendrás el libro sin fotos.</p></details>
+          <details><summary>¿Y si WhatsApp no consigue exportar con archivos?</summary><p>Pasa con chats muy grandes. Exporta sin archivos y tendrás el libro sin fotos; puedes poner una foto tuya en la portada.</p></details>
           <details><summary>¿Quién elige lo que sale?</summary><p>Las reglas eligen los días más intensos; dentro de cada capítulo va la conversación entera de esos días, sin cortes. Tú quitas capítulos o mensajes sueltos antes de pedir. No usamos IA para decidir ni para escribir nada.</p></details>
           <details><summary>¿Y los vídeos y audios?</summary><p>En esta versión no van en el libro. Estamos preparando códigos QR para verlos desde el papel.</p></details>
           <details><summary>¿Guardáis mi chat?</summary><p>No. Todo se procesa en tu navegador. Solo el PDF final se guarda cifrado, unos días, para imprimirlo o descargarlo, y luego se borra.</p></details>

@@ -551,8 +551,7 @@
       "free_f2": "Profils marquants du groupe",
       "free_f3": "Jeux des titres et de personnalité",
       "free_button": "Analyser mon chat gratuitement",
-      "your_credits": "Vous avez {{count}} analyses IA disponibles",
-      "games_title": "Jeux de fête"
+      "your_credits": "Vous avez {{count}} analyses IA disponibles"
     }
   },
   "weekdays": {
