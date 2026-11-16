@@ -2,6 +2,7 @@
 // en imprenta. No guardamos nada: la referencia es el id de sesión de Stripe.
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { trackEvent } from '../utils/analytics';
 import './libro.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://zipcd-backend-andand-gunicorn-app-app.onrender.com';
@@ -23,6 +24,13 @@ export default function LibroPedido() {
         if (r.status === 402 && intentos++ < 5) return setTimeout(confirmar, 2000); // Stripe aún no ha marcado el pago
         if (!r.ok) throw new Error(d.error || 'No se pudo confirmar el pedido');
         setDatos(d); setEstado('ok');
+        // compra confirmada: una sola vez por pago, aunque recargue esta página
+        try {
+          if (!sessionStorage.getItem('libro_comprado_' + sid)) {
+            sessionStorage.setItem('libro_comprado_' + sid, '1');
+            if (d.product === 'pdf') trackEvent('libro_comprado_pdf'); else trackEvent('libro_comprado_impreso');
+          }
+        } catch (e2) { /* sin sessionStorage */ }
       } catch (e) { setError(e.message); setEstado('error'); }
     };
     confirmar();

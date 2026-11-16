@@ -8,6 +8,7 @@ const GTM_ACTIVADOR =
   'juego_ver_titulares|juego_ver_personalidad|juego_compartir_titulares|juego_compartir_personalidad|' +
   'juego_jugado|juego_resultado_compartir|compartir_top_perfiles|compartir_analisis_ia|' +
   'porra_click|porra_descargada|porra_pagina_cta|pareja_paywall|pareja_click|pareja_resultado|' +
+  'libro_creado|libro_(pago|comprado)_(pdf|impreso)|' +
   'click_(halloween|navidad|doctor_amor|libro)_(menu|banda|precios|landing|footer|resultados)';
 
 const eventosEnElCodigo = () => {
@@ -40,7 +41,7 @@ const permitido = (nombre) => new RegExp(`^(${GTM_ACTIVADOR})$`).test(nombre);
 
 test('todos los eventos del código están en el activador de GTM', () => {
   const usados = eventosEnElCodigo();
-  expect(usados.size).toBe(13);
+  expect(usados.size).toBe(18);
   [...usados].forEach((nombre) => expect(permitido(nombre)).toBe(true));
 });
 

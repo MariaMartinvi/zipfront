@@ -10,6 +10,7 @@ import { renderHTML, PAGE, FONTS } from './render';
 import { etiquetaImpreso, puedeImprimir, PAISES_IMPRESION_DEFECTO } from './precioLibro';
 import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds, tienePersona, imageUriFromFile } from './media';
 import { libroStore } from './store';
+import { trackEvent } from '../utils/analytics';
 import QRCode from 'qrcode';
 import { isSpainTimeZone, isMexicoTimeZone, isLatamTimeZone } from '../utils/pricing';
 import './libro.css';
@@ -120,6 +121,7 @@ export default function LibroPage() {
         }
         retomado.current = !!g;
         setEstado('listo');
+        trackEvent('libro_creado');  // ha subido un chat y ve su libro en el editor
         // 2) cargar media en segundo plano: primero las fotos de los capítulos elegidos, luego
         //    unas cuantas más como candidatas a portada. Progresivo: la vista previa se va rellenando.
         const man = montar(ms, props);
@@ -372,6 +374,7 @@ export default function LibroPage() {
   // entrega la descarga (y, si es impreso, se manda a imprenta). Nadie descarga nada sin pagar.
   async function pedir(product = 'libro') {
     if (pidiendo || demasiadas || pocas) return;
+    if (product === 'pdf') trackEvent('libro_pago_pdf'); else trackEvent('libro_pago_impreso');  // pulsa el botón de pagar
     setPidiendo(true);
     try {
       await subirMediaConQR();
