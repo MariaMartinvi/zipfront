@@ -1,4 +1,12 @@
 {
+  "results_nav": {
+    "label": "Abschnitte der Analyse",
+    "resumen": "Überblick",
+    "perfiles": "Profile",
+    "psicologico": "Psychologisch",
+    "graficos": "Diagramme",
+    "libro": "Buch"
+  },
   "ai_analysis": {
     "starting": "Starte Analyse mit einheitlichem KI-System",
     "success": "KI-Antwort erfolgreich erhalten",

@@ -6,6 +6,8 @@ import './Analisis_primer_chat.css';
 import { detectarFormatoArchivo } from './formatDetector.js';
 import { parseDateTime } from './dateUtils.js';
 import { useAuth } from './AuthContext';
+import { FaCrown, FaRegClock, FaRegCalendarAlt, FaRegCommentDots, FaRegFlag } from 'react-icons/fa';
+import './ResumenWrapped.css';
 
 // Reutilizar la misma función analizarChat del componente original
 const analizarChat = (contenido, formatoForzado = null) => {
@@ -358,67 +360,30 @@ const AnalisisResumenGeneral = ({ operationId, chatData }) => {
     timestamp: 0
   };
 
+  const dia = resumen.dia_semana_mas_activo.dia;
+  const diaTraducido = { Lunes: 'monday', Martes: 'tuesday', 'Miércoles': 'wednesday', Jueves: 'thursday', Viernes: 'friday', 'Sábado': 'saturday', Domingo: 'sunday' }[dia];
+
+  // Arranque de los resultados: el dato estrella en grande y a todo color (pensado para el móvil y para captura)
   return (
-    <div className="modern-analysis-container">
-      {/* Summary Section - RESUMEN GENERAL */}
-      <section className="summary-section">
-        <div className="summary-container">
-          <span className="summary-badge">{t('analysis_summary.badge')}</span>
-          <h2 className="summary-title">{t('app.primer_chat.title')}</h2>
-          <p className="summary-description">{t('analysis_summary.description')}</p>
-          
-          <div className="summary-content">
-            <div className="stat-highlight-card">
-              <div className="stat-icon">📅</div>
-              <div className="stat-value">{formatearFecha(primer_mensaje.fecha, t)}</div>
-              <div className="stat-label">{t('app.primer_chat.date_start')}</div>
-            </div>
-            
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-value">{resumen.total_mensajes.toLocaleString()}</div>
-                <div className="stat-label">{t('app.primer_chat.total_messages')}</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-value">{resumen.promedio_mensajes_diarios}</div>
-                <div className="stat-label">{t('app.primer_chat.messages_per_day')}</div>
-              </div>
-            </div>
-            
-            <div className="highlight-card">
-              <div className="highlight-icon">👑</div>
-              <div className="highlight-content">
-                <div className="highlight-title">{t('app.primer_chat.most_active_user')}</div>
-                <div className="highlight-value">{resumen.usuario_mas_activo.nombre}</div>
-                <div className="highlight-detail">{t('app.primer_chat.with_messages', { count: resumen.usuario_mas_activo.mensajes.toLocaleString() })}</div>
-              </div>
-            </div>
-            
-            <div className="activity-grid">
-              <div className="activity-card">
-                <div className="activity-icon">📊</div>
-                <div className="activity-label">{t('app.primer_chat.most_active_day')} ({t('messages')})</div>
-                <div className="activity-value">
-                  {resumen.dia_semana_mas_activo.dia === "Lunes" ? t('weekdays.monday') :
-                   resumen.dia_semana_mas_activo.dia === "Martes" ? t('weekdays.tuesday') :
-                   resumen.dia_semana_mas_activo.dia === "Miércoles" ? t('weekdays.wednesday') :
-                   resumen.dia_semana_mas_activo.dia === "Jueves" ? t('weekdays.thursday') :
-                   resumen.dia_semana_mas_activo.dia === "Viernes" ? t('weekdays.friday') :
-                   resumen.dia_semana_mas_activo.dia === "Sábado" ? t('weekdays.saturday') :
-                   resumen.dia_semana_mas_activo.dia === "Domingo" ? t('weekdays.sunday') :
-                   resumen.dia_semana_mas_activo.dia}
-                </div>
-              </div>
-              <div className="activity-card">
-                <div className="activity-icon">🕒</div>
-                <div className="activity-label">{t('app.primer_chat.most_active_hour')} ({t('messages')})</div>
-                <div className="activity-value">{resumen.hora_mas_activa.hora ? `${resumen.hora_mas_activa.hora}:00` : "00:00"}</div>
-              </div>
-            </div>
-          </div>
+    <section className="rw">
+      <p className="rw-kicker">{t('analysis_summary.badge')}</p>
+      <p className="rw-numero">{resumen.total_mensajes.toLocaleString()}</p>
+      <p className="rw-numero-label">{t('app.primer_chat.total_messages')}</p>
+      <ul className="rw-chips">
+        <li><FaRegCommentDots aria-hidden="true" /><b>{resumen.promedio_mensajes_diarios}</b> {t('app.primer_chat.messages_per_day')}</li>
+        <li><FaRegClock aria-hidden="true" />{t('app.primer_chat.most_active_hour')}: <b>{resumen.hora_mas_activa.hora ? `${resumen.hora_mas_activa.hora}:00` : '00:00'}</b></li>
+        <li><FaRegCalendarAlt aria-hidden="true" />{t('app.primer_chat.most_active_day')}: <b>{diaTraducido ? t(`weekdays.${diaTraducido}`) : dia}</b></li>
+        <li><FaRegFlag aria-hidden="true" />{t('app.primer_chat.date_start')}: <b>{formatearFecha(primer_mensaje.fecha, t)}</b></li>
+      </ul>
+      <div className="rw-activo">
+        <span className="rw-activo-icono"><FaCrown aria-hidden="true" /></span>
+        <div>
+          <p className="rw-activo-titulo">{t('app.primer_chat.most_active_user')}</p>
+          <p className="rw-activo-nombre">{resumen.usuario_mas_activo.nombre}</p>
+          <p className="rw-activo-detalle">{t('app.primer_chat.with_messages', { count: resumen.usuario_mas_activo.mensajes.toLocaleString() })}</p>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 };
 

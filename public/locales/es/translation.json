@@ -1,4 +1,12 @@
 {
+  "results_nav": {
+    "label": "Secciones del análisis",
+    "resumen": "Resumen",
+    "perfiles": "Perfiles",
+    "psicologico": "Psicológico",
+    "graficos": "Gráficos",
+    "libro": "Libro"
+  },
   "ai_analysis": {
     "starting": "Iniciando análisis con sistema unificado de IA",
     "success": "Respuesta de IA recibida con éxito",

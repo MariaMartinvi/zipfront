@@ -1,4 +1,12 @@
 {
+  "results_nav": {
+    "label": "Sezioni dell'analisi",
+    "resumen": "Riepilogo",
+    "perfiles": "Profili",
+    "psicologico": "Psicologico",
+    "graficos": "Grafici",
+    "libro": "Libro"
+  },
   "header": {
     "home": "Analizza la tua chat",
     "features": "Caratteristiche",

@@ -51,6 +51,7 @@ const LibroPage = lazy(() => import('./libro/LibroPage'));
 const LibroLanding = lazy(() => import('./libro/LibroLanding'));
 const LibroPedido = lazy(() => import('./libro/LibroPedido'));
 const LibroCard = lazy(() => import('./libro/LibroCard'));
+const ResultadosIndice = lazy(() => import('./ResultadosIndice'));
 
 // Tras login/registro: a la página que lo pidió (p. ej. chat de pareja) o, por defecto, al cajón de subir el chat
 const destinoTrasLogin = (navigate) => {
@@ -2035,9 +2036,10 @@ const tryDeleteFiles = async (operationId) => {
                 )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
+                {operationId && user && chatData && <Suspense fallback={null}><ResultadosIndice /></Suspense>}
                 {operationId && user && (
-                  <div className="analysis-container" ref={analysisRef}>
-                    <h2 className="analysis-special-title">{t('app.analysis.statistical')}</h2>
+                  <div className="analysis-container" ref={analysisRef} data-ri="resumen">
+                    {!chatData && <h2 className="analysis-special-title">{t('app.analysis.statistical')}</h2>}
                     
                     {/* RESUMEN GENERAL - Primera parte del análisis */}
                     {/* Mostrar el resumen general inmediatamente cuando chatData esté disponible */}
@@ -2064,7 +2066,7 @@ const tryDeleteFiles = async (operationId) => {
 
                 {/* ANÁLISIS TOP - Segunda parte */}
                 {operationId && user && chatData && (
-                  <div className="additional-analysis">
+                  <div className="additional-analysis" data-ri="perfiles">
                     <div className="analysis-module">
                       <AnalisisTop chatData={chatData} />
                     </div>
@@ -2073,7 +2075,7 @@ const tryDeleteFiles = async (operationId) => {
 
                 {/* Análisis psicológico de Azure */}
                 {operationId && user && (
-                  <div className="chat-analysis-section">
+                  <div className="chat-analysis-section" data-ri="psicologico">
                     <h2 className="analysis-special-title">{t('app.analysis.psychological')}</h2>
                     
                     {isFetchingMistral ? (
@@ -2305,12 +2307,12 @@ const tryDeleteFiles = async (operationId) => {
                 {/* Tras el análisis psicológico y antes de los gráficos (a mitad de página, no pegada al pie):
                     como opción, convertir este chat en un libro (solo en castellano) */}
                 {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
-                  <Suspense fallback={<div style={{ minHeight: 252 }} />}><LibroCard /></Suspense>
+                  <div data-ri="libro"><Suspense fallback={<div style={{ minHeight: 252 }} />}><LibroCard /></Suspense></div>
                 )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
                 {operationId && user && chatData && (
-                  <div className="statistical-analysis-section">
+                  <div className="statistical-analysis-section" data-ri="graficos">
                     <div className="analysis-module">
                       <Suspense fallback={null}><AnalisisEstadistico chatData={chatData} /></Suspense>
                     </div>
