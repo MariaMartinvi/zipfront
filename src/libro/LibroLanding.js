@@ -60,7 +60,7 @@ export default function LibroLanding() {
           <p className="ll-entradilla">Vuestro chat de WhatsApp convertido en un libro de verdad: los mejores días de la conversación, tal cual fueron, con vuestras fotos y los personajes de cada uno.</p>
           <div className="ll-acciones">
             <button className="ll-boton-cta" onClick={irASubir}>Crea tu libro gratis</button>
-            <span>Lo ves entero antes de pagar · impreso {precios.libro}</span>
+            <span>Lo ves entero antes de pagar · PDF {precios.pdf} · impreso {precios.libro}</span>
           </div>
         </div>
         <figure className="ll-hero-libro">
@@ -95,8 +95,8 @@ export default function LibroLanding() {
       <section className="ll-bloque">
         <header className="ll-cabecera"><span>03</span><h2>Precio</h2></header>
         <div className="ll-precios">
+          <div><em>En PDF</em><b>{precios.pdf}</b><p>Descarga inmediata, para leerlo ya o imprimirlo donde quieras</p></div>
           <div><em>El libro impreso</em><b>{precios.libro}</b><p>Tapa blanda 20 × 20 cm · papel fotográfico · envío incluido · PDF incluido</p></div>
-          <div><em>Solo el PDF</em><b>{precios.pdf}</b><p>Descarga inmediata, para leerlo ya o imprimirlo donde quieras</p></div>
         </div>
         {moneda === 'EUR' && COMPARATIVA.length > 0 && (
           <div className="ll-comparativa">

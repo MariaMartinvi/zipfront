@@ -112,11 +112,11 @@ const FreemiumPlans = ({ userId }) => {
         {esCastellano && (
           <section className="precios-tarjeta libro">
             <h2>📖 Libro regalo</h2>
-            <div className="precios-precio">{libro.libro}<span>impreso · envío incluido</span></div>
+            <div className="precios-precio">{libro.pdf}<span>en PDF · impreso {libro.libro}, envío incluido</span></div>
             <ul>
               <li>Vuestro chat de WhatsApp convertido en libro, con fotos</li>
-              <li>Tapa blanda 20 × 20 cm, papel fotográfico</li>
-              <li>Lo ves entero antes de pagar · solo PDF {libro.pdf}</li>
+              <li>Impreso: tapa blanda 20 × 20 cm, papel fotográfico, PDF incluido</li>
+              <li>Lo ves entero antes de pagar</li>
             </ul>
             <Link to="/libro-recuerdo" className="precios-boton libro" onClick={() => trackProductoClick('libro', 'precios')}>Ver el libro</Link>
           </section>
