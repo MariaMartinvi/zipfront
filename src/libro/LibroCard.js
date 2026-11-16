@@ -14,13 +14,14 @@ export default function LibroCard() {
 
   return (
     <div className="libro-card">
-      <div className="libro-card-book"><span className="libro-card-pareja" aria-hidden="true">📖</span><b>Nuestro chat</b><span>en un libro</span></div>
+      <div className="libro-card-book" style={{ backgroundImage: 'url(/libro/pareja.jpg)' }} aria-hidden="true"><b>Vuestro chat</b></div>
       <div className="libro-card-text">
+        <span className="libro-card-nuevo">Nuevo</span>
         <h2>¿Y si este chat fuera un libro?</h2>
         <p>Si te apetece, convertimos los mejores días de la conversación en un libro para guardar o regalar. Lo ves entero gratis y quitas lo que quieras antes de decidir.</p>
         <p className="libro-card-small">PDF {precios.pdf}{puedeImprimir(paises) && <> · impreso desde {precios.libro}, envío incluido</>} · Para que salgan las fotos, exporta el chat con archivos</p>
       </div>
-      <button className="libro-card-btn" onClick={() => { trackProductoClick('libro', 'resultados'); navigate('/libro'); }}>Ver mi libro</button>
+      <button className="libro-card-btn" onClick={() => { trackProductoClick('libro', 'resultados'); navigate('/libro'); }}>Ver mi libro gratis →</button>
     </div>
   );
 }

@@ -44,19 +44,6 @@
 .libro-spinner { width: 32px; height: 32px; border: 3px solid #ddd; border-top-color: #1d1d1b; border-radius: 50%; margin: 20px auto; animation: libro-spin 1s linear infinite; }
 @keyframes libro-spin { to { transform: rotate(360deg); } }
 @media (max-width: 900px) { .libro-wrap { grid-template-columns: 1fr; } .libro-side { position: static; height: auto; border-left: 0; border-top: 1px solid #ddd; } .libro-vista { height: 70vh; } }
-.libro-card { display: flex; align-items: center; gap: 28px; margin: 32px auto; max-width: 900px; padding: 26px 30px; border-radius: 18px; background: #fff !important; border: 1px solid #e6e9e8; box-shadow: 0 8px 30px rgba(0,0,0,.06); color: #1d1d1b !important; font-family: 'Poppins', system-ui, sans-serif; text-align: left !important; }
-.libro-card-book { flex: none; width: 92px; height: 128px; border-radius: 3px 8px 8px 3px; background: linear-gradient(135deg, #2f3e46, #1d1d1b); color: #fff !important; box-shadow: 6px 6px 0 #d9ded9, 0 10px 20px rgba(0,0,0,.18); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; position: relative; }
-.libro-card-book::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.25); }
-.libro-card-pareja { font-size: 34px; line-height: 1; margin-bottom: auto; align-self: center; margin-top: 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
-.libro-card-book b { font-family: Georgia, 'Lora', serif; font-size: 13px; line-height: 1.15; font-weight: 600; color: #fff !important; }
-.libro-card-book span { font-size: 8px; letter-spacing: .1em; text-transform: uppercase; opacity: .7; margin-top: 4px; color: #fff !important; }
-.libro-card-text { flex: 1; }
-.libro-card h2 { margin: 0 0 6px !important; font-size: 20px !important; line-height: 1.25 !important; font-weight: 700 !important; color: #1d1d1b !important; text-align: left !important; }
-.libro-card p { margin: 0 !important; font-size: 14px !important; line-height: 1.5 !important; color: #444 !important; text-align: left !important; }
-.libro-card-small { margin-top: 8px !important; font-size: 12px !important; color: #128C7E !important; font-weight: 500 !important; }
-.libro-card-btn { flex: none; padding: 14px 26px; border-radius: 999px; border: 0; background: #25D366 !important; color: #fff !important; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 18px rgba(37,211,102,.35); transition: transform .15s; }
-.libro-card-btn:hover { transform: translateY(-1px); background: #1fbf5b !important; }
-@media (max-width: 700px) { .libro-card { flex-direction: column; align-items: center; text-align: center !important; } .libro-card h2, .libro-card p { text-align: center !important; } }
 .libro-nota { font-size: 12px; color: #777; }
 .libro-descarga { display: inline-block; padding: 14px 26px; border-radius: 999px; background: #25D366; color: #fff !important; font-weight: 600; text-decoration: none; }
 .libro .portada-btns { display: flex; gap: 6px; margin: 4px 0 8px; }
@@ -105,3 +92,19 @@
 .libro .portada-subir { flex: 1; padding: 7px; border-radius: 8px; border: 1px dashed #bbb; background: #fff; cursor: pointer; font-size: 12px; text-align: center; }
 .libro .portada-subir input { display: none; }
 .libro .portada-elegida { width: 100%; max-height: 140px; object-fit: cover; border-radius: 8px; margin: 2px 0 8px; }
+
+/* Tarjeta del libro al final del análisis: llamativa, con los colores de ChatSalsa (que no parezca el pie) */
+.libro-card { position: relative; display: flex; align-items: center; gap: 32px; margin: 48px auto; max-width: 940px; padding: 34px 38px; border-radius: 24px; overflow: hidden; font-family: 'Poppins', system-ui, sans-serif; text-align: left !important;
+  background: linear-gradient(135deg, #128C7E 0%, #6a2bd8 55%, #8A2BE2 100%) !important; box-shadow: 0 24px 50px -18px rgba(106,43,216,.6); }
+.libro-card::before { content: ''; position: absolute; right: -80px; top: -80px; width: 260px; height: 260px; border-radius: 50%; background: rgba(255,255,255,.1); }
+.libro-card-book { position: relative; flex: none; width: 132px; height: 132px; border-radius: 3px 8px 8px 3px; background-size: cover; background-position: center top; transform: rotate(-6deg); box-shadow: 8px 8px 0 rgba(255,255,255,.85), 14px 18px 30px rgba(0,0,0,.35); display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; box-sizing: border-box; overflow: hidden; }
+.libro-card-book::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.7), rgba(0,0,0,0) 60%); }
+.libro-card-book b { position: relative; z-index: 1; font-family: Georgia, 'Lora', serif; font-size: 13px; line-height: 1.15; font-weight: 600; color: #fff !important; }
+.libro-card-text { position: relative; flex: 1; }
+.libro-card-nuevo { display: inline-block; margin-bottom: 8px; padding: 3px 10px; border-radius: 999px; background: #fff; color: #6a2bd8; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.libro-card h2 { margin: 0 0 8px !important; font-size: 26px !important; line-height: 1.15 !important; font-weight: 800 !important; color: #fff !important; text-align: left !important; }
+.libro-card p { margin: 0 !important; font-size: 15px !important; line-height: 1.5 !important; color: rgba(255,255,255,.92) !important; text-align: left !important; }
+.libro-card .libro-card-small { margin-top: 10px !important; font-size: 12.5px !important; color: rgba(255,255,255,.8) !important; }
+.libro-card .libro-card-btn { position: relative; flex: none; padding: 16px 30px; border-radius: 999px; border: 0; background: #fff !important; color: #6a2bd8 !important; font: inherit; font-size: 16px !important; font-weight: 700; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,.25); transition: transform .15s; white-space: nowrap; }
+.libro-card .libro-card-btn:hover { transform: translateY(-2px) scale(1.03); }
+@media (max-width: 700px) { .libro-card { flex-direction: column; align-items: center; text-align: center !important; padding: 30px 22px; gap: 24px; margin: 32px 12px; } .libro-card h2, .libro-card p { text-align: center !important; } .libro-card .libro-card-btn { width: 100%; } }

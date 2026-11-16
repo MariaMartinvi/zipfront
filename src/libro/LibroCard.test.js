@@ -8,5 +8,5 @@ test('la tarjeta del final del análisis ofrece el libro como opción, con preci
   expect(html).toContain('¿Y si este chat fuera un libro?');
   expect(html).toContain('Si te apetece');
   expect(html).toContain('PDF 12,99 €');
-  expect(html).toContain('Ver mi libro');
+  expect(html).toContain('Ver mi libro gratis');
 });
