@@ -8,7 +8,7 @@ const GTM_ACTIVADOR =
   'juego_ver_titulares|juego_ver_personalidad|juego_compartir_titulares|juego_compartir_personalidad|' +
   'juego_jugado|juego_resultado_compartir|compartir_top_perfiles|compartir_analisis_ia|' +
   'porra_click|porra_descargada|porra_pagina_cta|pareja_paywall|pareja_click|pareja_resultado|' +
-  'click_(halloween|navidad|doctor_amor|libro)_(menu|banda|precios|landing|footer)';
+  'click_(halloween|navidad|doctor_amor|libro)_(menu|banda|precios|landing|footer|resultados)';
 
 const eventosEnElCodigo = () => {
   const src = path.join(__dirname, '..');

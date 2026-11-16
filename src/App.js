@@ -50,6 +50,7 @@ const PoliticaCookies = lazy(() => import('./Paginasextra/PoliticaCookies'));
 const LibroPage = lazy(() => import('./libro/LibroPage'));
 const LibroLanding = lazy(() => import('./libro/LibroLanding'));
 const LibroPedido = lazy(() => import('./libro/LibroPedido'));
+const LibroCard = lazy(() => import('./libro/LibroCard'));
 
 // Tras login/registro: a la página que lo pidió (p. ej. chat de pareja) o, por defecto, al cajón de subir el chat
 const destinoTrasLogin = (navigate) => {
@@ -2311,6 +2312,11 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
                 
+
+                {/* Al final del análisis, como opción: convertir este chat en un libro (solo en castellano) */}
+                {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
+                  <Suspense fallback={null}><LibroCard /></Suspense>
+                )}
 
                 {/* Botón para compartir juego al final del análisis - MOVIDO A CHATGPTRESULTADOS.JS */}
 

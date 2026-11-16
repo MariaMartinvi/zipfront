@@ -1,19 +1,26 @@
-// Tarjeta "Tu chat en un libro" en la página de resultados.
-import React from 'react';
+// Tarjeta "Tu chat en un libro" al final de los resultados del análisis: una opción más, sin compromiso.
+// El chat ya está en memoria (libroStore), así que "Ver mi libro" abre el editor directamente.
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { cargarPreciosLibro, puedeImprimir, PRECIOS_LIBRO_DEFECTO, PAISES_IMPRESION_DEFECTO } from './precioLibro';
+import { trackProductoClick } from '../utils/analytics';
 import './libro.css';
 
 export default function LibroCard() {
   const navigate = useNavigate();
+  const [precios, setPrecios] = useState(PRECIOS_LIBRO_DEFECTO);
+  const [paises, setPaises] = useState(PAISES_IMPRESION_DEFECTO);
+  useEffect(() => { cargarPreciosLibro().then(({ labels, paises: p }) => { setPrecios(labels); setPaises(p); }); }, []);
+
   return (
     <div className="libro-card">
-      <div className="libro-card-book"><span className="libro-card-pareja" aria-hidden="true">👩‍❤️‍👨</span><b>Nuestro chat</b><span>2024 – 2026</span></div>
+      <div className="libro-card-book"><span className="libro-card-pareja" aria-hidden="true">📖</span><b>Nuestro chat</b><span>en un libro</span></div>
       <div className="libro-card-text">
-        <h2>¿Quieres convertir el análisis en un libro recuerdo que regalar?</h2>
-        <p>Elegimos los mejores momentos del chat, los ordenamos en capítulos con vuestras fotos y los personajes de cada uno, y lo imprimimos en un libro de verdad. Tú quitas o añades lo que quieras antes de pedirlo.</p>
-        <p className="libro-card-small">Desde 29 € con envío incluido · Tu chat no se guarda en ningún servidor</p>
+        <h2>¿Y si este chat fuera un libro?</h2>
+        <p>Si te apetece, convertimos los mejores días de la conversación en un libro para guardar o regalar. Lo ves entero gratis y quitas lo que quieras antes de decidir.</p>
+        <p className="libro-card-small">PDF {precios.pdf}{puedeImprimir(paises) && <> · impreso desde {precios.libro}, envío incluido</>} · Para que salgan las fotos, exporta el chat con archivos</p>
       </div>
-      <button className="libro-card-btn" onClick={() => navigate('/libro')}>Ver mi libro</button>
+      <button className="libro-card-btn" onClick={() => { trackProductoClick('libro', 'resultados'); navigate('/libro'); }}>Ver mi libro</button>
     </div>
   );
 }
