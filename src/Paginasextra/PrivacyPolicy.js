@@ -129,8 +129,7 @@ const PrivacyPolicy = () => {
           "Los datos personales, login, se conservarán mientras mantengas una cuenta activa.",
           "Datos del chat:",
           "En chatsalsa no guardamos ningún dato del chat, de hecho nunca recibimos el chat. Todo se proceso en tu ordenador. No contamos con ningún dato personal más allá de los necesarios para el login.",
-          "Los fragmentos anonimizados enviados a Azure se eliminan automáticamente tras un máximo de 30 días.",
-          "Chat de pareja (seguimiento): si usas esta función, guardamos en tu cuenta la fecha, la puntuación y el plan de tu último análisis para poder compararlos en el siguiente. Se guardan bajo un identificador cifrado de las dos personas, sin nombres ni mensajes, y se conservan mientras mantengas tu cuenta activa."
+          "Los fragmentos anonimizados enviados a Azure se eliminan automáticamente tras un máximo de 30 días."
         ]
       },
       changes: {

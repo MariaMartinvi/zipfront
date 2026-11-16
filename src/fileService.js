@@ -586,52 +586,6 @@ export const getPorraResponse = async (chatContent, tema = 'navidad') => {
 };
 
 /**
- * Chat de pareja: prepara el chat (anonimizado, con fechas, últimos ~120.000 caracteres) y devuelve
- * el texto procesado, el mapeo nombre → "Participante N" y la lista de participantes que escriben.
- */
-export const prepararChatPareja = (chatContent) => {
-  anonymizationService.reset();
-  const { processedContent, nameMapping } = processContentForAzure(chatContent, 'es', { maxChars: 120000, conservarFechas: true });
-  const participantes = Object.entries(nameMapping)
-    .filter(([, id]) => processedContent.includes(`${id}:`))
-    .map(([nombre]) => nombre);
-  return { procesado: processedContent, mapping: nameMapping, participantes };
-};
-
-const restaurarNombres = (valor, mapping) => {
-  if (typeof valor === 'string') return reconstructNames(valor, mapping);
-  if (Array.isArray(valor)) return valor.map((v) => restaurarNombres(v, mapping));
-  if (valor && typeof valor === 'object') {
-    return Object.fromEntries(Object.entries(valor).map(([k, v]) => [k, restaurarNombres(v, mapping)]));
-  }
-  return valor;
-};
-
-/** Chat de pareja: análisis con objetivo (y seguimiento opcional). Devuelve { success, analisis } con nombres reales. */
-export const getParejaAnalysis = async ({ procesado, mapping, usuarioNombre, otraNombre, objetivo, seguimiento = null }) => {
-  try {
-    const usuario = mapping[usuarioNombre];
-    const otra = mapping[otraNombre];
-    if (!usuario || !otra || !procesado.includes(`${usuario}:`)) {
-      return { success: false, error: 'No se ha reconocido el formato del chat, así que no se ha enviado a la IA para proteger tu privacidad.' };
-    }
-    const { auth } = await import('./firebase_auth');
-    const token = await auth.currentUser.getIdToken();
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-    const response = await fetch(`${API_URL}/api/pareja-analysis`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ textContent: procesado, usuario, otra, objetivo, seguimiento })
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data.success) throw new Error(data.error || `Error del servidor (${response.status})`);
-    return { success: true, analisis: restaurarNombres(data.analisis, mapping) };
-  } catch (error) {
-    return { success: false, error: error.message || 'Error generando el análisis' };
-  }
-};
-
-/**
  * Función para registro de depuración, compatible con el sistema de debug de la App
  * @param {Function} addDebugMessage - Función para añadir mensajes de debug
  * @param {string} message - Mensaje a registrar

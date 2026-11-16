@@ -6,9 +6,9 @@ export const trackEvent = (name) => {
 };
 
 // Clics hacia los productos de pago, para comparar en GA4 qué se pulsa más y desde dónde.
-// Nombre del evento: click_<producto>_<origen>, p. ej. click_doctor_amor_menu.
-export const PRODUCTOS = ['halloween', 'navidad', 'doctor_amor'];
-export const ORIGENES = ['menu', 'banda', 'precios', 'landing'];
+// Nombre del evento: click_<producto>_<origen>, p. ej. click_halloween_menu.
+export const PRODUCTOS = ['halloween', 'navidad', 'libro'];
+export const ORIGENES = ['menu', 'banda', 'precios', 'landing', 'footer'];
 export const trackProductoClick = (producto, origen) => {
   if (!PRODUCTOS.includes(producto) || !ORIGENES.includes(origen)) return;
   trackEvent(`click_${producto}_${origen}`);

@@ -11,8 +11,7 @@ const SimplePaymentSuccess = () => {
     // Just redirect to plans after a short delay
     // La porra se compra desde los resultados: volver ahí (el chat sigue en localStorage)
     const product = new URLSearchParams(window.location.search).get('product');
-    const destino = (product || '').startsWith('pareja') ? '/pareja'
-      : (product || '').startsWith('porra') ? `/?payment_success=true&product=${product}`
+    const destino = (product || '').startsWith('porra') ? `/?payment_success=true&product=${product}`
       : '/plans?payment_success=true';
     setTimeout(() => {
       navigate(destino, { replace: true });

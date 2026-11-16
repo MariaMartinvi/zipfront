@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { purchaseAICredits, db } from './firebase_auth';
 import { doc, getDoc } from 'firebase/firestore';
 import './PricingPage.css';
-import { getAiPackPricing, getPaymentHighlightKey, getPorraPricing, getParejaPricing } from './utils/pricing';
+import { getAiPackPricing, getPaymentHighlightKey, getPorraPricing } from './utils/pricing';
 import { trackProductoClick } from './utils/analytics';
 
 const FreemiumPlans = ({ userId }) => {
@@ -52,7 +52,6 @@ const FreemiumPlans = ({ userId }) => {
   const isAdmin = userProfile?.is_admin || false;
   const pack = getAiPackPricing();
   const juego = getPorraPricing();
-  const pareja = getParejaPricing();
   const avisoPago = getPaymentHighlightKey();
 
   const botonIA = () => {
@@ -106,19 +105,6 @@ const FreemiumPlans = ({ userId }) => {
           </ul>
           {botonIA()}
         </section>
-
-        {esCastellano && (
-          <section className="precios-tarjeta pareja-tarjeta-precio">
-            <h2>💘 Doctor Amor</h2>
-            <div className="precios-precio">{pareja.price}<span>por análisis · seguimiento 1 mes {pareja.pack}</span></div>
-            <ul>
-              <li>Lo cerca que estás de tu objetivo, de 0 a 100</li>
-              <li>Tus mejores momentos y los que podrías haber dicho mejor</li>
-              <li>Plan de 2 semanas y mensajes listos para enviar</li>
-            </ul>
-            <Link to="/pareja" className="precios-boton pareja" onClick={() => trackProductoClick('doctor_amor', 'precios')}>Empezar</Link>
-          </section>
-        )}
 
         {esCastellano && (
           <section className="precios-tarjeta juegos">

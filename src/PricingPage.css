@@ -29,7 +29,6 @@
 .precios-juegos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .precios .precios-boton.halloween { background: linear-gradient(135deg, #ff7a00, #8A2BE2); }
 .precios .precios-boton.navidad { background: linear-gradient(135deg, #c62828, #2e7d32); }
-.precios .precios-boton.pareja { background: linear-gradient(135deg, #e91e63, #8A2BE2); }
 
 .precios-garantias { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; margin: 24px 0 8px; color: #4a5568; font-size: 0.92rem; }
 

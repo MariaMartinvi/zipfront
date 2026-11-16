@@ -51,7 +51,6 @@ const LibroPage = lazy(() => import('./libro/LibroPage'));
 const LibroLanding = lazy(() => import('./libro/LibroLanding'));
 const LibroPedido = lazy(() => import('./libro/LibroPedido'));
 const PorraPage = lazy(() => import('./PorraPage'));
-const ParejaPage = lazy(() => import('./ParejaPage'));
 
 // Tras login/registro: a la página que lo pidió (p. ej. chat de pareja) o, por defecto, al cajón de subir el chat
 const destinoTrasLogin = (navigate) => {
@@ -2410,7 +2409,7 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/demo" element={<DemoExample />} />
         <Route path="/porra-halloween" element={<PorraPage tema="halloween" />} />
         <Route path="/porra-navidad" element={<PorraPage tema="navidad" />} />
-        <Route path="/pareja" element={<ParejaPage />} />
+        <Route path="/pareja" element={<Navigate to="/" replace />} />
         </Routes>
         </Suspense>
         
