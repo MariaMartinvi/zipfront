@@ -10,7 +10,6 @@
 .libro-wrap { display: grid; grid-template-columns: 1fr 360px; min-height: calc(100vh - 57px); }
 .libro-vista { display: flex; flex-direction: column; height: calc(100vh - 57px); min-width: 0; }
 .libro-aviso { margin: 0; padding: 10px 20px; font-size: 13px; line-height: 1.45; color: #4a3a12; background: #fff6d8; border-bottom: 1px solid #f0e2b0; }
-.libro-aviso span { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: #b3261e; color: #fff; text-align: center; line-height: 18px; font-size: 13px; }
 .libro-pages { width: 100%; flex: 1; min-height: 0; border: 0; background: #ecebe7; }
 .libro .cap .t b { display: block; font-size: 13px; padding: 3px 6px; text-align: left; }
 .libro .cap .t b + span { text-align: left; padding-left: 6px; }

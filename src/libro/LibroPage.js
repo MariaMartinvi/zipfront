@@ -403,7 +403,7 @@ export default function LibroPage() {
       </div>
       <div className="libro-wrap">
         <div className="libro-vista">
-          <p className="libro-aviso">✏️ <b>Tu libro se puede editar:</b> toca un mensaje y pulsa la <span>×</span> para quitarlo, y en el panel apaga capítulos o la página de personajes y cambia título, portada y dedicatoria.</p>
+          <p className="libro-aviso">✏️ <b>Tu libro se puede editar:</b> toca un mensaje y le saldrá una cruz roja; púlsala para quitarlo. En el panel apaga capítulos o la página de personajes y cambia título, portada y dedicatoria.</p>
           <iframe ref={iframeRef} title="libro" className="libro-pages" />
         </div>
         <aside className="libro-side">
