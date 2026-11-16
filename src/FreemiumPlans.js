@@ -118,7 +118,7 @@ const FreemiumPlans = ({ userId }) => {
               <li>Impreso: tapa blanda 20 × 20 cm, papel fotográfico, PDF incluido</li>
               <li>Lo ves entero antes de pagar</li>
             </ul>
-            <Link to="/libro-recuerdo" className="precios-boton libro" onClick={() => trackProductoClick('libro', 'precios')}>Ver el libro</Link>
+            <Link to="/libro-recuerdo" className="precios-boton" onClick={() => trackProductoClick('libro', 'precios')}>Ver el libro</Link>
           </section>
         )}
       </div>
