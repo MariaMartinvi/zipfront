@@ -177,7 +177,7 @@ export function renderHTML(mensajes, man, opts = {}) {
   .cat { display: flex; justify-content: space-between; gap: 3mm; border-top: 1px solid #e3e1db; padding: 1.4mm 0; font-size: 9pt; }
   .cat b { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 8.5pt; } .cat span { color: #666; text-align: right; }
   .pmeta { font-family: 'Poppins', sans-serif; font-size: 7.5pt; color: #777; margin-top: 1.5mm; }
-  .pnote { position: absolute; bottom: ${M}mm; left: 0; right: 0; text-align: center; font-family: 'Poppins', sans-serif; font-size: 6.5pt; color: #aaa; letter-spacing: .08em; text-transform: uppercase; }
+  .pnote { margin-top: 8mm; text-align: center; font-family: 'Poppins', sans-serif; font-size: 6.5pt; color: #aaa; letter-spacing: .08em; text-transform: uppercase; }
   .stats { page-break-before: always; break-before: page; }
   .stats .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6mm 3mm; margin-bottom: 8mm; text-align: center; }
   .stats .grid b { display: block; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 18pt; }

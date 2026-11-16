@@ -441,7 +441,7 @@ export default function LibroPage() {
           <h2>Páginas</h2>
           <div className={`cap ${conPersonajes ? '' : 'off'}`}>
             <div className={`sw ${conPersonajes ? 'on' : ''}`} onClick={() => setConPersonajes(v => !v)} role="switch" aria-checked={conPersonajes} />
-            <div className="t"><b>Los personajes</b><span>Quién es quién en el chat · 1 pág</span></div>
+            <div className="t"><b>Los personajes</b><span>Quién es quién en el chat</span></div>
           </div>
           <h2>Capítulos</h2>
           {caps.map((c, k) => (
@@ -457,12 +457,13 @@ export default function LibroPage() {
   );
 }
 
-// Parte cada capítulo en páginas de verdad: va metiendo burbujas en una sección de altura fija y,
-// cuando se desborda, pasa la última (y su cabecera de día, si quedó sola) a una sección nueva.
+// Parte cada capítulo (y la página de personajes, que en chats de grupo no cabe en una) en páginas de verdad:
+// va metiendo elementos en una sección de altura fija y, cuando se desborda, pasa el último (y su cabecera de
+// día, si quedó sola) a una sección nueva.
 function paginar(doc) {
-  for (const body of [...doc.querySelectorAll('section.chapter-body')]) {
+  for (const body of [...doc.querySelectorAll('section.chapter-body, section.people')]) {
     const kids = [...body.children];
-    const nueva = () => { const s = doc.createElement('section'); s.className = 'chapter-body'; s.dataset.cap = body.dataset.cap; body.parentNode.insertBefore(s, body); return s; };
+    const nueva = () => { const s = doc.createElement('section'); s.className = body.className; if (body.dataset.cap) s.dataset.cap = body.dataset.cap; body.parentNode.insertBefore(s, body); return s; };
     let cur = nueva();
     for (const k of kids) {
       cur.appendChild(k);
