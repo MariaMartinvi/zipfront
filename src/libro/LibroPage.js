@@ -7,7 +7,7 @@ import { parseChat, participantes } from './parser';
 import { puntuar } from './scorer';
 import { proponer, montar } from './propuesta';
 import { renderHTML, PAGE, FONTS } from './render';
-import { etiquetaImpreso } from './precioLibro';
+import { etiquetaImpreso, puedeImprimir, PAISES_IMPRESION_DEFECTO } from './precioLibro';
 import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds, tienePersona, imageUriFromFile } from './media';
 import { libroStore } from './store';
 import QRCode from 'qrcode';
@@ -51,6 +51,8 @@ export default function LibroPage() {
   const [paginasReales, setPaginasReales] = useState(0);
   const [paginasImprenta, setPaginasImprenta] = useState(0);
   const [tramos, setTramos] = useState(null);
+  const [paises, setPaises] = useState(PAISES_IMPRESION_DEFECTO);
+  const [enviarIgual, setEnviarIgual] = useState(false);  // vive en un país donde imprimimos aunque su zona horaria no lo diga
   const [precios, setPrecios] = useState(LABELS_DEFECTO);
   const [galeria, setGaleria] = useState(false);
   const [qrs, setQrs] = useState({});
@@ -62,7 +64,7 @@ export default function LibroPage() {
 
   // precios de la región (el servidor manda)
   useEffect(() => {
-    fetch(`${API_URL}/api/book/config?region=${REGION}`).then(r => r.json()).then(c => { if (c && c.labels) setPrecios(c.labels); if (c && c.tramos) setTramos(c.tramos); }).catch(() => {});
+    fetch(`${API_URL}/api/book/config?region=${REGION}`).then(r => r.json()).then(c => { if (c && c.labels) setPrecios(c.labels); if (c && c.tramos) setTramos(c.tramos); if (c && c.countries) setPaises(c.countries); }).catch(() => {});
   }, []);
 
   // 1) cargar chat + media del store (lo deja App al subir el zip)
@@ -154,6 +156,7 @@ export default function LibroPage() {
 
   const encendidos = caps.filter(c => c.on).length;
   const paginas = paginasReales || (man ? man.paginasTotales : 0);
+  const imprime = enviarIgual || puedeImprimir(paises);
   const demasiadas = paginas > 200, pocas = encendidos === 0;
 
   // vista previa en iframe: mismo HTML que el PDF, y las páginas se parten de verdad midiendo en el navegador
@@ -402,8 +405,13 @@ export default function LibroPage() {
         {cargandoFotos && <span className="pill ghost">Cargando fotos {cargandoFotos}</span>}
         <span className={`pill ${demasiadas ? 'warn' : ''}`}>{paginas} páginas</span>
         <button className="pill ghost" disabled={pidiendo || pocas} onClick={muestra} title="Las 8 primeras páginas en PDF, con marca de agua, para ver la calidad">PDF de muestra</button>
-        <button className="pill ghost" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF, sin marca de agua">{`Solo PDF · ${precios.pdf}`}</button>
-        <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${etiquetaImpreso(precios, tramos, paginasImprenta)} · PDF incluido`}</button>
+        {imprime ? <>
+          <button className="pill ghost" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF, sin marca de agua">{`Solo PDF · ${precios.pdf}`}</button>
+          <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('libro')}>{pidiendo ? progreso : `Pedir libro impreso · ${etiquetaImpreso(precios, tramos, paginasImprenta)} · PDF incluido`}</button>
+        </> : <>
+          <button className="pill go" disabled={pidiendo || demasiadas || pocas} onClick={() => pedir('pdf')} title="Descarga inmediata del libro en PDF, sin marca de agua">{pidiendo ? progreso : `Descargar el libro en PDF · ${precios.pdf}`}</button>
+          <button className="pill ghost" onClick={() => setEnviarIgual(true)} title={`El libro impreso se envía a: ${paises.join(', ')}`}>Pedirlo impreso (solo España, PT, FR, IT, DE, UK y EE. UU.)</button>
+        </>}
       </div>
       <div className="libro-wrap">
         <div className="libro-vista">

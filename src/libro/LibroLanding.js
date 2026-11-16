@@ -8,7 +8,7 @@ import { detectPlatform } from '../WhatsappInstructions';
 import { libroStore } from './store';
 import { paginasMuestra } from './muestra';
 import { COMPARATIVA, FECHA_COMPARATIVA } from './comparativa';
-import { cargarPreciosLibro, PRECIOS_LIBRO_DEFECTO } from './precioLibro';
+import { cargarPreciosLibro, puedeImprimir, PRECIOS_LIBRO_DEFECTO, PAISES_IMPRESION_DEFECTO } from './precioLibro';
 import './LibroLanding.css';
 
 const irASubir = () => document.getElementById('subir')?.scrollIntoView({ behavior: 'smooth' });
@@ -25,6 +25,7 @@ export default function LibroLanding() {
   const [precios, setPrecios] = useState(PRECIOS_LIBRO_DEFECTO);
   const [moneda, setMoneda] = useState('EUR');
   const [tramos, setTramos] = useState(null);
+  const [paises, setPaises] = useState(PAISES_IMPRESION_DEFECTO);
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
   const [plataforma, setPlataforma] = useState(detectPlatform);
@@ -32,9 +33,11 @@ export default function LibroLanding() {
   const paginas = useMemo(() => paginasMuestra(), []);
 
   useEffect(() => {
-    cargarPreciosLibro().then(({ labels, currency, tramos: t }) => { setPrecios(labels); setMoneda(currency); setTramos(t); });
+    cargarPreciosLibro().then(({ labels, currency, tramos: t, paises: p }) => { setPrecios(labels); setMoneda(currency); setTramos(t); setPaises(p); });
     window.scrollTo(0, 0);
   }, []);
+
+  const imprime = puedeImprimir(paises);  // fuera de los países donde imprime Gelato, solo el PDF
 
   async function subir(e) {
     const file = e.target.files && e.target.files[0];
@@ -61,7 +64,7 @@ export default function LibroLanding() {
           <p className="ll-entradilla">Vuestro chat de WhatsApp convertido en un libro de verdad: los mejores días de la conversación, tal cual fueron, con vuestras fotos y los personajes de cada uno.</p>
           <div className="ll-acciones">
             <button className="ll-boton-cta" onClick={irASubir}>Crea tu libro gratis</button>
-            <span>Lo ves entero antes de pagar · PDF {precios.pdf} · impreso desde {precios.libro}</span>
+            <span>Lo ves entero antes de pagar · PDF {precios.pdf}{imprime && <> · impreso desde {precios.libro}</>}</span>
           </div>
         </div>
         <figure className="ll-hero-libro">
@@ -102,10 +105,11 @@ export default function LibroLanding() {
         <header className="ll-cabecera"><span>03</span><h2>Precio</h2></header>
         <div className="ll-precios">
           <div><em>En PDF</em><b>{precios.pdf}</b><p>Descarga inmediata, para leerlo ya o imprimirlo donde quieras</p></div>
-          <div><em>El libro impreso, desde</em><b>{precios.libro}</b><p>Tapa blanda 20 × 20 cm · papel fotográfico · envío incluido · PDF incluido</p>
+          {imprime ? <div><em>El libro impreso, desde</em><b>{precios.libro}</b><p>Tapa blanda 20 × 20 cm · papel fotográfico · envío incluido · PDF incluido</p>
             {tramos && <ul className="ll-tramos">{tramos.map(t => <li key={t.hasta}><span>Hasta {t.hasta} páginas</span><span>{t.label}</span></li>)}</ul>}</div>
+            : <div><em>El libro impreso</em><p>Por ahora solo lo enviamos a España, Portugal, Francia, Italia, Alemania, Reino Unido y Estados Unidos. Desde tu país puedes descargarlo en PDF e imprimirlo donde quieras.</p></div>}
         </div>
-        {moneda === 'EUR' && COMPARATIVA.length > 0 && (
+        {imprime && moneda === 'EUR' && COMPARATIVA.length > 0 && (
           <div className="ll-comparativa">
             <h3>¿Y en una tienda de fotolibros?</h3>
             <p>Un fotolibro parecido (tapa blanda, unos 21 × 21 cm, unas 60 páginas, un ejemplar) cuesta esto en otras tiendas. Y ahí tendrías que elegir, copiar y maquetar tú cada mensaje.</p>
@@ -165,7 +169,7 @@ export default function LibroLanding() {
           <details><summary>¿Quién elige lo que sale?</summary><p>Las reglas eligen los días más intensos; dentro de cada capítulo va la conversación entera de esos días, sin cortes. Tú quitas capítulos o mensajes sueltos antes de pedir. No usamos IA para decidir ni para escribir nada.</p></details>
           <details><summary>¿Y los vídeos y audios?</summary><p>En esta versión no van en el libro. Estamos preparando códigos QR para verlos desde el papel.</p></details>
           <details><summary>¿Guardáis mi chat?</summary><p>No. Todo se procesa en tu navegador. Solo el PDF final se guarda cifrado, unos días, para imprimirlo o descargarlo, y luego se borra.</p></details>
-          <details><summary>¿A dónde enviáis?</summary><p>España, México, Estados Unidos, Colombia, Argentina, Perú y varios países de Europa. En Venezuela y otros, el PDF.</p></details>
+          <details><summary>¿A dónde enviáis?</summary><p>El libro impreso, a España, Portugal, Francia, Italia, Alemania, Reino Unido y Estados Unidos. Desde cualquier otro país, el PDF: lo descargas al momento y lo imprimes donde quieras.</p></details>
         </div>
       </section>
 

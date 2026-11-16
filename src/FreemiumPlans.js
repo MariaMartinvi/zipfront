@@ -7,7 +7,7 @@ import { purchaseAICredits, db } from './firebase_auth';
 import { doc, getDoc } from 'firebase/firestore';
 import './PricingPage.css';
 import { getAiPackPricing, getPaymentHighlightKey } from './utils/pricing';
-import { cargarPreciosLibro, PRECIOS_LIBRO_DEFECTO } from './libro/precioLibro';
+import { cargarPreciosLibro, puedeImprimir, PRECIOS_LIBRO_DEFECTO, PAISES_IMPRESION_DEFECTO } from './libro/precioLibro';
 import { trackProductoClick } from './utils/analytics';
 
 const FreemiumPlans = ({ userId }) => {
@@ -18,8 +18,9 @@ const FreemiumPlans = ({ userId }) => {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const esCastellano = (i18n.language || 'es').startsWith('es');
   const [libro, setLibro] = useState(PRECIOS_LIBRO_DEFECTO);
+  const [paisesLibro, setPaisesLibro] = useState(PAISES_IMPRESION_DEFECTO);
 
-  useEffect(() => { if (esCastellano) cargarPreciosLibro().then(({ labels }) => setLibro(labels)); }, [esCastellano]);
+  useEffect(() => { if (esCastellano) cargarPreciosLibro().then(({ labels, paises }) => { setLibro(labels); setPaisesLibro(paises); }); }, [esCastellano]);
 
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -112,10 +113,10 @@ const FreemiumPlans = ({ userId }) => {
         {esCastellano && (
           <section className="precios-tarjeta libro">
             <h2>📖 Libro regalo</h2>
-            <div className="precios-precio">{libro.pdf}<span>en PDF · impreso desde {libro.libro}, envío incluido</span></div>
+            <div className="precios-precio">{libro.pdf}<span>{puedeImprimir(paisesLibro) ? `en PDF · impreso desde ${libro.libro}, envío incluido` : 'en PDF, descarga inmediata'}</span></div>
             <ul>
               <li>Vuestro chat de WhatsApp convertido en libro, con fotos</li>
-              <li>Impreso: tapa blanda 20 × 20 cm, papel fotográfico, PDF incluido</li>
+              {puedeImprimir(paisesLibro) && <li>Impreso: tapa blanda 20 × 20 cm, papel fotográfico, PDF incluido</li>}
               <li>Lo ves entero antes de pagar</li>
             </ul>
             <Link to="/libro-recuerdo" className="precios-boton" onClick={() => trackProductoClick('libro', 'precios')}>Ver el libro</Link>
