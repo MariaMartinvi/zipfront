@@ -6,7 +6,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { detectPlatform } from '../WhatsappInstructions';
 import { libroStore } from './store';
-import { paginasMuestra, portadasEjemplo } from './muestra';
+import { librosEjemplo } from './muestra';
+import LibroAbierto from './LibroAbierto';
 import { COMPARATIVA, FECHA_COMPARATIVA } from './comparativa';
 import { cargarPreciosLibro, puedeImprimir, PRECIOS_LIBRO_DEFECTO, PAISES_IMPRESION_DEFECTO } from './precioLibro';
 import './LibroLanding.css';
@@ -30,8 +31,8 @@ export default function LibroLanding() {
   const [cargando, setCargando] = useState(false);
   const [plataforma, setPlataforma] = useState(detectPlatform);
   const [arrastrando, setArrastrando] = useState(false);
-  const paginas = useMemo(() => paginasMuestra(), []);
-  const portadas = useMemo(() => portadasEjemplo(), []);
+  const libros = useMemo(() => librosEjemplo(), []);
+  const [abierto, setAbierto] = useState(null);  // índice del libro de ejemplo abierto
 
   useEffect(() => {
     cargarPreciosLibro().then(({ labels, currency, tramos: t, paises: p }) => { setPrecios(labels); setMoneda(currency); setTramos(t); setPaises(p); });
@@ -69,36 +70,25 @@ export default function LibroLanding() {
           </div>
         </div>
         <figure className="ll-hero-libro">
-          <div className="ll-libros">
-            {portadas.map((p, n) => (
-              <div key={p.titulo} className={`ll-libro3d l${n + 1}`}>
-                <div className="ll-libro3d-tapa">
-                  <iframe title={`Libro de ejemplo: ${p.titulo}`} srcDoc={p.html} tabIndex={-1} loading="lazy" />
-                </div>
-                <div className="ll-libro3d-canto" />
-              </div>
+          <div className={`ll-libros ${abierto !== null ? 'con-abierto' : ''}`}>
+            {libros.map((l, n) => (
+              <button type="button" key={l.titulo} className={`ll-libro3d l${n + 1}`} onClick={() => setAbierto(n)} aria-label={`Abrir el libro de ejemplo ${l.titulo}`}>
+                <span className="ll-libro3d-tapa">
+                  <iframe title={`Libro de ejemplo: ${l.titulo}`} srcDoc={l.portada} tabIndex={-1} loading="lazy" />
+                </span>
+                <span className="ll-libro3d-canto" />
+              </button>
             ))}
+            {abierto !== null && <LibroAbierto key={abierto} libro={libros[abierto]} onCerrar={() => setAbierto(null)} />}
           </div>
-          <figcaption>Libros de ejemplo · tapa blanda 20 × 20 cm · papel fotográfico</figcaption>
+          <figcaption>{abierto === null ? 'Pulsa un libro para abrirlo' : 'Chat inventado'} · tapa blanda 20 × 20 cm · papel fotográfico</figcaption>
         </figure>
       </section>
 
       <p className="ll-ocasiones">Para un aniversario · San Valentín · un cumpleaños · una boda · Navidad · el Día de la Madre · una despedida · <em>o porque sí</em></p>
 
       <section className="ll-bloque">
-        <header className="ll-cabecera"><span>01</span><h2>Así es por dentro</h2><p>Cuatro páginas de un libro de ejemplo, hechas con la misma plantilla que el tuyo. El chat es inventado.</p></header>
-        <div className="ll-muestra">
-          {paginas.map((p, i) => (
-            <figure key={p.titulo}>
-              <iframe title={`Página de ejemplo: ${p.titulo}`} srcDoc={p.html} tabIndex={-1} loading="lazy" />
-              <figcaption><span>{String(i + 1).padStart(2, '0')}</span>{p.titulo}</figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
-
-      <section className="ll-bloque">
-        <header className="ll-cabecera"><span>02</span><h2>Cómo funciona</h2></header>
+        <header className="ll-cabecera"><span>01</span><h2>Cómo funciona</h2></header>
         <ol className="ll-pasos">
           <li><b>Sube el chat</b><p>Expórtalo desde WhatsApp con archivos (para que salgan las fotos). Dos minutos.</p></li>
           <li><b>Edítalo a tu gusto</b><p>Te proponemos capítulos con los mejores días, enteros. Quita capítulos o mensajes sueltos y pon título, portada y dedicatoria.</p></li>
@@ -107,7 +97,7 @@ export default function LibroLanding() {
       </section>
 
       <section className="ll-bloque">
-        <header className="ll-cabecera"><span>03</span><h2>Precio</h2></header>
+        <header className="ll-cabecera"><span>02</span><h2>Precio</h2></header>
         <div className="ll-precios">
           <div><em>En PDF</em><b>{precios.pdf}</b><p>Descarga inmediata, para leerlo ya o imprimirlo donde quieras</p></div>
           {imprime ? <div><em>El libro impreso, desde</em><b>{precios.libro}</b><p>Tapa blanda 20 × 20 cm · papel fotográfico · envío incluido · PDF incluido</p>
@@ -133,7 +123,7 @@ export default function LibroLanding() {
       </section>
 
       <section className="ll-bloque" id="subir">
-        <header className="ll-cabecera"><span>04</span><h2>Empieza</h2><p>Sube el chat y mira tu libro entero, gratis. No pagas nada hasta que te guste.</p></header>
+        <header className="ll-cabecera"><span>03</span><h2>Empieza</h2><p>Sube el chat y mira tu libro entero, gratis. No pagas nada hasta que te guste.</p></header>
         <div className="ll-subir">
           <div className="ll-exportar">
             <div className="ll-plataformas" role="tablist">
@@ -157,7 +147,7 @@ export default function LibroLanding() {
       </section>
 
       <section className="ll-bloque">
-        <header className="ll-cabecera"><span>05</span><h2>Qué hay dentro</h2></header>
+        <header className="ll-cabecera"><span>04</span><h2>Qué hay dentro</h2></header>
         <dl className="ll-incluye">
           <div><dt>Capítulos</dt><dd>Los días más intensos de la conversación, tal cual fueron, sin cortes.</dd></div>
           <div><dt>Vuestras fotos</dt><dd>Dentro de la conversación, donde las mandasteis.</dd></div>
@@ -168,7 +158,7 @@ export default function LibroLanding() {
       </section>
 
       <section className="ll-bloque">
-        <header className="ll-cabecera"><span>06</span><h2>Preguntas</h2></header>
+        <header className="ll-cabecera"><span>05</span><h2>Preguntas</h2></header>
         <div className="ll-faq">
           <details><summary>¿Y si WhatsApp no consigue exportar con archivos?</summary><p>Pasa con chats muy grandes. Exporta sin archivos y tendrás el libro sin fotos; puedes poner una foto tuya en la portada.</p></details>
           <details><summary>¿Quién elige lo que sale?</summary><p>Las reglas eligen los días más intensos; dentro de cada capítulo va la conversación entera de esos días, sin cortes. Tú quitas capítulos o mensajes sueltos antes de pedir. No usamos IA para decidir ni para escribir nada.</p></details>
