@@ -69,16 +69,19 @@ export function paginasMuestra(foto = '/libro/pareja.jpg') {
   return elegir.map((sel, i) => ({ titulo: TITULOS[i], html: pagina(css, body, sel) }));
 }
 
-/** El libro de ejemplo abierto: la portada y las dobles páginas que se van pasando. */
-export function libroAbierto(foto = '/libro/pareja.jpg') {
-  const { css, body } = libroEjemplo(foto);
-  const p = (sel) => pagina(css, body, sel);
-  return {
-    portada: p('section.cover'),
-    dobles: [
-      { izq: p("section.chapter-open[data-cap='0']"), dcha: p("section.chapter-body[data-cap='0']") },
-      { izq: p("section.chapter-open[data-cap='1']"), dcha: p("section.chapter-body[data-cap='1']") },
-      { izq: p('section.stats'), dcha: p('section.back') },
-    ],
-  };
+// Portadas de los libros de ejemplo de la landing (fotos de ejemplo, no de clientes).
+const PORTADAS = [
+  { titulo: 'Familia Pérez', subtitulo: '2019 – 2026', color: '#5b3a4a', foto: '/libro/familia.jpg' },
+  { titulo: 'Te echaremos de menos', subtitulo: 'Para Carmen, después de 32 años', color: '#2b4a6f', foto: '/libro/companeras.jpg' },
+  { titulo: 'Eva & Marcos', subtitulo: '2024 – 2026', color: '#2f3e46', foto: '/libro/pareja.jpg' },
+];
+
+/** Portadas de los libros de ejemplo, cada una como documento HTML para su iframe. */
+export function portadasEjemplo() {
+  const mensajes = parseChat(CHAT);
+  return PORTADAS.map(({ titulo, subtitulo, color, foto }) => {
+    const { css, body } = renderHTML(mensajes, { titulo, subtitulo, portada: { color, foto: 'portada' }, capitulos: [] },
+      { media: { portada: { uri: foto } }, conIndice: false, conPersonajes: false, conStats: false });
+    return { titulo, html: pagina(css, body, 'section.cover') };
+  });
 }

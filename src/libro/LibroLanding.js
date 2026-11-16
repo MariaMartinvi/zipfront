@@ -2,16 +2,14 @@
 // reales de muestra, precios por región y una comparación con lo que cuesta un fotolibro en otras tiendas.
 // Tiene su propia caja de subida que lleva directamente al editor (/libro), sin pasar por el análisis.
 // El zip se lee en el navegador: ni el chat ni las fotos salen de aquí.
-import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { detectPlatform } from '../WhatsappInstructions';
 import { libroStore } from './store';
-import { paginasMuestra } from './muestra';
+import { paginasMuestra, portadasEjemplo } from './muestra';
 import { COMPARATIVA, FECHA_COMPARATIVA } from './comparativa';
 import { cargarPreciosLibro, puedeImprimir, PRECIOS_LIBRO_DEFECTO, PAISES_IMPRESION_DEFECTO } from './precioLibro';
 import './LibroLanding.css';
-
-const LibroAbierto = lazy(() => import('./LibroAbierto'));
 
 const irASubir = () => document.getElementById('subir')?.scrollIntoView({ behavior: 'smooth' });
 
@@ -32,8 +30,8 @@ export default function LibroLanding() {
   const [cargando, setCargando] = useState(false);
   const [plataforma, setPlataforma] = useState(detectPlatform);
   const [arrastrando, setArrastrando] = useState(false);
-  const [verLibro, setVerLibro] = useState(false);
   const paginas = useMemo(() => paginasMuestra(), []);
+  const portadas = useMemo(() => portadasEjemplo(), []);
 
   useEffect(() => {
     cargarPreciosLibro().then(({ labels, currency, tramos: t, paises: p }) => { setPrecios(labels); setMoneda(currency); setTramos(t); setPaises(p); });
@@ -71,20 +69,19 @@ export default function LibroLanding() {
           </div>
         </div>
         <figure className="ll-hero-libro">
-          <button type="button" className="ll-abrir" onClick={() => setVerLibro(true)} aria-label="Abrir el libro de ejemplo">
-            <span className="ll-libro3d">
-              <span className="ll-libro3d-tapa">
-                <iframe title="Portada de un libro de ejemplo" srcDoc={paginas[0].html} tabIndex={-1} loading="lazy" />
-              </span>
-              <span className="ll-libro3d-canto" />
-            </span>
-            <span className="ll-abrir-chip">📖 Ábrelo</span>
-          </button>
-          <figcaption>Pulsa para abrirlo · tapa blanda 20 × 20 cm · papel fotográfico</figcaption>
+          <div className="ll-libros">
+            {portadas.map((p, n) => (
+              <div key={p.titulo} className={`ll-libro3d l${n + 1}`}>
+                <div className="ll-libro3d-tapa">
+                  <iframe title={`Libro de ejemplo: ${p.titulo}`} srcDoc={p.html} tabIndex={-1} loading="lazy" />
+                </div>
+                <div className="ll-libro3d-canto" />
+              </div>
+            ))}
+          </div>
+          <figcaption>Libros de ejemplo · tapa blanda 20 × 20 cm · papel fotográfico</figcaption>
         </figure>
       </section>
-
-      {verLibro && <Suspense fallback={null}><LibroAbierto onCerrar={() => setVerLibro(false)} /></Suspense>}
 
       <p className="ll-ocasiones">Para un aniversario · San Valentín · un cumpleaños · una boda · Navidad · el Día de la Madre · una despedida · <em>o porque sí</em></p>
 
