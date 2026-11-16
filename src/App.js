@@ -2302,21 +2302,21 @@ const tryDeleteFiles = async (operationId) => {
                 )}
 
 
+                {/* Tras el análisis psicológico y antes de los gráficos (a mitad de página, no pegada al pie):
+                    como opción, convertir este chat en un libro (solo en castellano) */}
+                {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
+                  <Suspense fallback={<div style={{ minHeight: 252 }} />}><LibroCard /></Suspense>
+                )}
+
                 {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
                 {operationId && user && chatData && (
                   <div className="statistical-analysis-section">
-                    <h2 className="analysis-special-title">{t('app.analysis.statistical_continuation')}</h2>
                     <div className="analysis-module">
                       <Suspense fallback={null}><AnalisisEstadistico chatData={chatData} /></Suspense>
                     </div>
                   </div>
                 )}
                 
-
-                {/* Al final del análisis, como opción: convertir este chat en un libro (solo en castellano) */}
-                {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
-                  <Suspense fallback={null}><LibroCard /></Suspense>
-                )}
 
                 {/* Botón para compartir juego al final del análisis - MOVIDO A CHATGPTRESULTADOS.JS */}
 

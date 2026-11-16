@@ -3101,3 +3101,5 @@ button {
     padding: 6px 12px;
   }
 } 
+/* Las tarjetas de la portada llevan a subir el chat (la gente las pulsaba y no pasaba nada) */
+.feature-card, .process-card { cursor: pointer; }

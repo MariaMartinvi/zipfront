@@ -61,7 +61,7 @@ const AppPreview = () => {
           <p className="features-description">{t('features_page.description')}</p>
           
           <div className="features-grid">
-            <div className="feature-card">
+            <div className="feature-card" onClick={scrollToUpload}>
               <div className="feature-icon-new gradient-bg rotate-left">
                 <span className="feature-icon-large">🧠</span>
               </div>
@@ -69,7 +69,7 @@ const AppPreview = () => {
               <p>{t('features_page.psychological.description')}</p>
             </div>
             
-            <div className="feature-card">
+            <div className="feature-card" onClick={scrollToUpload}>
               <div className="feature-icon-new gradient-bg rotate-right">
                 <span className="feature-icon-large">📊</span>
               </div>
@@ -77,7 +77,7 @@ const AppPreview = () => {
               <p>{t('features_page.statistics.description')}</p>
             </div>
             
-            <div className="feature-card">
+            <div className="feature-card" onClick={scrollToUpload}>
               <div className="feature-icon-new gradient-bg rotate-left">
                 <span className="feature-icon-large">😀</span>
               </div>
@@ -85,7 +85,7 @@ const AppPreview = () => {
               <p>{t('features_page.emotional.description')}</p>
             </div>
             
-            <div className="feature-card">
+            <div className="feature-card" onClick={scrollToUpload}>
               <div className="feature-icon-new gradient-bg rotate-right">
                 <span className="feature-icon-large">🎮</span>
               </div>
@@ -93,7 +93,7 @@ const AppPreview = () => {
               <p>{t('features_page.games.description')}</p>
             </div>
             
-            <div className="feature-card">
+            <div className="feature-card" onClick={scrollToUpload}>
               <div className="feature-icon-new gradient-bg rotate-left">
                 <span className="feature-icon-large">🔒</span>
               </div>
@@ -101,7 +101,7 @@ const AppPreview = () => {
               <p>{t('features_page.privacy.description')} <a href="/privacy" className="privacy-link">{t('features_page.privacy.link')}</a></p>
             </div>
             
-            <div className="feature-card">
+            <div className="feature-card" onClick={scrollToUpload}>
               <div className="feature-icon-new gradient-bg rotate-right">
                 <span className="feature-icon-large">⚡</span>
               </div>
@@ -120,7 +120,7 @@ const AppPreview = () => {
           <p className="process-description">{t('process.description')}</p>
           
           <div className="process-grid">
-            <div className="process-card">
+            <div className="process-card" onClick={scrollToUpload}>
               <div className="process-number">1</div>
               <div className="process-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" className="process-svg" fill="none" viewBox="0 0 24 24" stroke="#22c55e">
@@ -131,7 +131,7 @@ const AppPreview = () => {
               <p>{t('process.steps.export.description')}</p>
             </div>
             
-            <div className="process-card">
+            <div className="process-card" onClick={scrollToUpload}>
               <div className="process-number">2</div>
               <div className="process-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" className="process-svg" fill="none" viewBox="0 0 24 24" stroke="#a855f7">
@@ -142,7 +142,7 @@ const AppPreview = () => {
               <p>{t('process.steps.upload.description')}</p>
             </div>
             
-            <div className="process-card">
+            <div className="process-card" onClick={scrollToUpload}>
               <div className="process-number">3</div>
               <div className="process-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" className="process-svg" fill="none" viewBox="0 0 24 24" stroke="#22c55e">
