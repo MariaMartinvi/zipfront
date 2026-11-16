@@ -79,11 +79,3 @@ export const getPaymentHighlightKey = (timeZone = getUserTimeZone()) => {
   if (isLatamTimeZone(timeZone)) return 'hero.ai_purchase.paypal_badge';
   return null;
 };
-
-/** "La Porra del Grupo" (juego para la cena de Navidad): 2,99 € en todas partes, en US$ para Latam, $59 MXN en México. */
-export const getPorraPricing = (timeZone = getUserTimeZone(), latamActive = LATAM_PRICE_ACTIVE, mxActive = MX_PRICE_ACTIVE) => {
-  if (mxActive && isMexicoTimeZone(timeZone)) return { region: 'mx', price: '$59 MXN' };
-  if (latamActive && isLatamTimeZone(timeZone)) return { region: 'latam', price: '2,99 US$' };
-  if (isSpainTimeZone(timeZone)) return { region: 'es', price: '2,99€' };
-  return { region: 'default', price: '2,99€' };
-};

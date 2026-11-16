@@ -40,7 +40,7 @@ const permitido = (nombre) => new RegExp(`^(${GTM_ACTIVADOR})$`).test(nombre);
 
 test('todos los eventos del código están en el activador de GTM', () => {
   const usados = eventosEnElCodigo();
-  expect(usados.size).toBe(16);
+  expect(usados.size).toBe(13);
   [...usados].forEach((nombre) => expect(permitido(nombre)).toBe(true));
 });
 

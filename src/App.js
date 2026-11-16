@@ -10,7 +10,7 @@ import AnalisisResumenGeneral from './AnalisisResumenGeneral';
 import AnalisisTop from './Analisis_top';
 import { Login, Register, PasswordReset } from './AuthComponents';
 import FreemiumPlans from './FreemiumPlans';
-import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits, purchasePorra } from './firebase_auth';
+import { getCurrentUser, getUserProfile, incrementChatUsage, canUploadChat, canUseAI, decrementAICredits, purchaseAICredits } from './firebase_auth';
 import Header from './Header';
 import Footer from './Footer';
 import SimplePaymentSuccess from './SimplePaymentSuccess';
@@ -50,7 +50,6 @@ const PoliticaCookies = lazy(() => import('./Paginasextra/PoliticaCookies'));
 const LibroPage = lazy(() => import('./libro/LibroPage'));
 const LibroLanding = lazy(() => import('./libro/LibroLanding'));
 const LibroPedido = lazy(() => import('./libro/LibroPedido'));
-const PorraPage = lazy(() => import('./PorraPage'));
 
 // Tras login/registro: a la página que lo pidió (p. ej. chat de pareja) o, por defecto, al cajón de subir el chat
 const destinoTrasLogin = (navigate) => {
@@ -881,19 +880,6 @@ function AppContent() {
     timer = setTimeout(bajar, 250);
     return () => clearTimeout(timer);
   }, [location.state]);
-
-  // Flujo desde la landing de un juego sin sesión: tras registrarse, abrir el pago de ese juego automáticamente.
-  useEffect(() => {
-    if (!user?.uid) return;
-    let pendiente = null;
-    try { pendiente = localStorage.getItem('porra_pendiente'); localStorage.removeItem('porra_pendiente'); } catch (e) { /* sin localStorage */ }
-    if (pendiente === 'halloween' || pendiente === 'navidad') {
-      // El botón atrás del navegador desde Stripe vuelve a la landing del juego, no a la portada
-      window.history.replaceState({}, document.title, `/porra-${pendiente}`);
-      trackEvent('porra_click');
-      purchasePorra(user.uid, pendiente).catch(() => {});
-    }
-  }, [user?.uid]);
 
   // Embudo de pago: el bloque IA bloqueado ha entrado en pantalla de verdad (una vez por chat)
   useTrackOnceVisible(
@@ -2407,8 +2393,8 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/analysis" element={<AnalysisViewer />} />
         {/* DEMO ANALYSIS */}
         <Route path="/demo" element={<DemoExample />} />
-        <Route path="/porra-halloween" element={<PorraPage tema="halloween" />} />
-        <Route path="/porra-navidad" element={<PorraPage tema="navidad" />} />
+        <Route path="/porra-halloween" element={<Navigate to="/" replace />} />
+        <Route path="/porra-navidad" element={<Navigate to="/" replace />} />
         <Route path="/pareja" element={<Navigate to="/" replace />} />
         </Routes>
         </Suspense>

@@ -1,4 +1,4 @@
-import { getAiPackPricing, getPorraPricing, isLatamTimeZone, isSpainTimeZone, isMexicoTimeZone, getPaymentHighlightKey } from './pricing';
+import { getAiPackPricing, isLatamTimeZone, isSpainTimeZone, isMexicoTimeZone, getPaymentHighlightKey } from './pricing';
 
 test.each([
   'America/Caracas', 'America/Bogota', 'America/Lima',
@@ -13,18 +13,15 @@ test.each(['America/Mexico_City', 'America/Tijuana', 'America/Monterrey', 'Ameri
   expect(isMexicoTimeZone(tz)).toBe(true);
   expect(isLatamTimeZone(tz)).toBe(true);
   expect(getAiPackPricing(tz, true, true, true)).toMatchObject({ region: 'mx', price: '$39 MXN', original: '$99 MXN', perAnalysis: '$3.90 MXN' });
-  expect(getPorraPricing(tz, true, true)).toEqual({ region: 'mx', price: '$59 MXN' });
 });
 
 test('con el precio de México apagado, Ciudad de México paga en US$ como el resto de Latam', () => {
   expect(getAiPackPricing('America/Mexico_City', true, true, false)).toMatchObject({ region: 'latam', price: '1,99 US$' });
-  expect(getPorraPricing('America/Mexico_City', true, false)).toEqual({ region: 'latam', price: '2,99 US$' });
 });
 
 test('México no cambia el precio de Colombia ni de España', () => {
   expect(getAiPackPricing('America/Bogota', true, true, true).region).toBe('latam');
   expect(getAiPackPricing('Europe/Madrid', true, true, true).region).toBe('es');
-  expect(getPorraPricing('Europe/Madrid', true, true).price).toBe('2,99€');
 });
 
 test.each([
@@ -64,16 +61,4 @@ test('aviso de pago destacado: Bizum en España, PayPal en Latam, nada en el res
   expect(getPaymentHighlightKey('America/Sao_Paulo')).toBe('hero.ai_purchase.paypal_badge');
   expect(getPaymentHighlightKey('Europe/Paris')).toBeNull();
   expect(getPaymentHighlightKey('America/New_York')).toBeNull();
-});
-
-describe('precio de La Porra del Grupo', () => {
-  const { getPorraPricing } = require('./pricing');
-  test('España y resto pagan 2,99 €', () => {
-    expect(getPorraPricing('Europe/Madrid', true)).toEqual({ region: 'es', price: '2,99€' });
-    expect(getPorraPricing('Europe/Paris', true)).toEqual({ region: 'default', price: '2,99€' });
-  });
-  test('Latam paga 2,99 US$ y cae a euros si Latam está desactivado', () => {
-    expect(getPorraPricing('America/Bogota', true)).toEqual({ region: 'latam', price: '2,99 US$' });
-    expect(getPorraPricing('America/Bogota', false)).toEqual({ region: 'default', price: '2,99€' });
-  });
 });

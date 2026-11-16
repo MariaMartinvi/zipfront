@@ -46,16 +46,6 @@ const Footer = () => {
               <Link to="/contact" className="footer-link">
                 <span>{t('footer.contact')}</span>
               </Link>
-              {esCastellano && (
-                <Link to="/porra-navidad" className="footer-link" onClick={() => trackProductoClick('navidad', 'footer')}>
-                  <span>🎄 Juego de Navidad</span>
-                </Link>
-              )}
-              {esCastellano && (
-                <Link to="/porra-halloween" className="footer-link" onClick={() => trackProductoClick('halloween', 'footer')}>
-                  <span>🎃 Juego de Halloween</span>
-                </Link>
-              )}
             </div>
           </div>
           
