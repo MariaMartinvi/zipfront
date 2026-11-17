@@ -28,6 +28,18 @@ test('récords: racha, silencio, mensaje largo y madrugada', () => {
   expect(r.diasHablando).toBe(5);
 });
 
+test('un solo día sin hablar no cuenta como silencio', () => {
+  expect(records([msg('2025-01-01', '10:00', 'Eva'), msg('2025-01-03', '10:00', 'Marcos')]).silencio).toBeNull();
+});
+
+test('equilibrio y grupos: quien casi no escribe no cuenta', () => {
+  const ms = [];
+  for (let d = 1; d <= 9; d++) for (let i = 0; i < 12; i++) ms.push(msg(`2025-03-0${d}`, `10:${String(i * 2).padStart(2, '0')}`, i % 2 ? 'Eva' : 'Marcos'));
+  ms.push(msg('2025-03-09', '23:00', 'evita'));
+  expect(equilibrio(ms).map((p) => p.nombre)).toEqual(['Marcos', 'Eva']);
+  expect(dinamicaGrupo(ms)).toBeNull();
+});
+
 test('récords: sin silencios ni mensajes largos no inventa nada', () => {
   const r = records([msg('2025-01-01', '10:00', 'Eva'), msg('2025-01-02', '11:00', 'Marcos')]);
   expect(r.silencio).toBeNull();

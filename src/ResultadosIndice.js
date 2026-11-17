@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './ResumenWrapped.css';
 
-export const SECCIONES = ['resumen', 'perfiles', 'psicologico', 'graficos', 'libro'];
+export const SECCIONES = ['resumen', 'perfiles', 'momentos', 'psicologico', 'libro', 'graficos'];
 
 export default function ResultadosIndice() {
   const { t } = useTranslation();

@@ -1,0 +1,51 @@
+/* Estadísticas nuevas de los resultados (días intensos, récords, equilibrio…), con el estilo de ResultadosTema.css */
+.ax { max-width: 1040px; margin: 56px auto 0; padding: 0 16px; text-align: left; }
+.ax-rejilla { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.ax-tarjeta { background: #fff; border: 1px solid #ebe5f7; border-radius: 20px; padding: 24px; box-shadow: 0 14px 30px -22px rgba(106,43,216,.45); min-width: 0; }
+.ax-ancha { grid-column: 1 / -1; }
+.ax .ax-tarjeta h3 { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400 !important; font-size: 1.7rem !important; line-height: 1.1; color: #0e1318; margin: 0 0 16px; text-align: left; }
+.ax .ax-tarjeta h4 { font-size: .8rem !important; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #8A2BE2; margin: 18px 0 6px; }
+.ax ul, .ax ol { list-style: none; padding: 0; margin: 0; }
+.ax li { list-style: none; }
+.ax-barra { height: 8px; border-radius: 999px; background: #f1ecfb; overflow: hidden; }
+.ax-barra i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #25D366, #8A2BE2); }
+
+.ax-dias li { display: grid; grid-template-columns: minmax(180px, 1.1fr) 2fr auto; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1ecfb; }
+.ax-dias li:last-child { border-bottom: 0; }
+.ax-dias b { display: block; font-size: 1rem; color: #0e1318; }
+.ax-dias span { font-size: .82rem; color: #656b73; }
+.ax-dias strong { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 1.8rem; color: #0e1318; min-width: 64px; text-align: right; }
+.ax .ax-libro { all: unset; cursor: pointer; display: inline-block; margin-top: 14px; font-size: .95rem !important; font-weight: 600; color: #6a2bd8; }
+.ax .ax-libro:hover { text-decoration: underline; }
+
+.ax-records li { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1ecfb; }
+.ax-records li:last-child { border-bottom: 0; }
+.ax-records strong { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 2.4rem; line-height: 1; color: #6a2bd8; }
+.ax-records b { display: block; font-size: .98rem; color: #0e1318; }
+.ax-records span { font-size: .82rem; color: #656b73; }
+
+.ax-equilibrio li { padding: 10px 0; }
+.ax-eq-nombre { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+.ax-eq-nombre b { font-size: 1rem; color: #0e1318; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ax-eq-nombre span { font-size: .85rem; color: #656b73; white-space: nowrap; }
+.ax .ax-equilibrio p { margin: 6px 0 0; font-size: .85rem; color: #656b73; text-align: left; }
+
+.ax-aya { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.ax-aya > div { background: #faf7ff; border-radius: 16px; padding: 16px; }
+.ax-aya span { font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #8A2BE2; }
+.ax-aya strong { display: block; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 2.6rem; line-height: 1.05; color: #0e1318; margin-top: 6px; }
+.ax .ax-aya p { margin: 2px 0 0; font-size: .88rem; color: #656b73; text-align: left; }
+
+.ax-lista li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #f1ecfb; font-size: .95rem; color: #333a41; }
+.ax-lista li:last-child { border-bottom: 0; }
+.ax-lista span { color: #656b73; white-space: nowrap; }
+
+@media (max-width: 760px) {
+  .ax { margin-top: 40px; padding: 0 12px; }
+  .ax-rejilla { grid-template-columns: 1fr; }
+  .ax-tarjeta { padding: 18px 16px; }
+  .ax-dias li { grid-template-columns: 1fr auto; }
+  .ax-dias .ax-barra { grid-column: 1 / -1; order: 3; }
+  .ax-records li { grid-template-columns: 76px 1fr; }
+  .ax-records strong { font-size: 2rem; }
+}

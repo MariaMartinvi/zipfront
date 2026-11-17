@@ -37,7 +37,7 @@ export function records(mensajes) {
   let silencio = null;
   for (let i = 1; i < dias.length; i++) {
     const hueco = diasEntre(dias[i - 1], dias[i]) - 1;
-    if (hueco > 0 && (!silencio || hueco > silencio.dias)) silencio = { dias: hueco, desde: dias[i - 1], hasta: dias[i] };
+    if (hueco >= 2 && (!silencio || hueco > silencio.dias)) silencio = { dias: hueco, desde: dias[i - 1], hasta: dias[i] };  // 1 día sin hablar no es un récord
   }
 
   // Mensaje más largo (en palabras)
@@ -71,7 +71,8 @@ export function equilibrio(mensajes) {
     prev = m;
   }
   const inicios = Object.values(p).reduce((a, x) => a + x.inicia, 0) || 1;
-  return Object.values(p).sort((a, b) => b.mensajes - a.mensajes).map((x) => ({
+  // Fuera quien casi no escribe (menos del 1 %: un número que mandó un mensaje suelto)
+  return Object.values(p).filter((x) => x.mensajes / ms.length >= 0.01).sort((a, b) => b.mensajes - a.mensajes).map((x) => ({
     nombre: x.nombre, mensajes: x.mensajes,
     pctMensajes: Math.round((x.mensajes / ms.length) * 100),
     pctInicia: Math.round((x.inicia / inicios) * 100),
@@ -99,7 +100,9 @@ export function antesYAhora(mensajes) {
 /** Solo grupos (3 o más personas): quién contesta a quién y quién reaviva el grupo tras un día de silencio. */
 export function dinamicaGrupo(mensajes) {
   const ms = validos(mensajes);
-  if (new Set(ms.map((m) => m.autor)).size < 3) return null;
+  // Grupo de verdad: al menos 3 personas que escriben cada una un 2 % o más de los mensajes
+  const porAutor = contar(ms, (m) => m.autor);
+  if (Object.values(porAutor).filter((x) => x / ms.length >= 0.02).length < 3) return null;
   const pares = {}, reaviva = {};
   let prev = null;
   for (const m of ms) {
