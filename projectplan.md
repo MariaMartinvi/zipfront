@@ -691,3 +691,32 @@ Notas de A/B (hecho, sin commit):
 - [x] Subida propia en la landing (en vez de `UploadBox`, que explica exportar SIN medios y enseña capturas
       del análisis): pasos para exportar CON archivos por plataforma y zona para soltar el zip.
       Verificado en móvil: subir el zip lleva a `/libro`.
+
+## 2026-11-17 — Página de resultados: rediseño y análisis nuevos (plan acordado con Maria)
+
+Orden que pide Maria: **primero que quede más bonito y moderno**; los análisis nuevos y la IA, después.
+Antes de subir a producción, se mira en local. Versión anterior: etiqueta `resultados-antes-del-rediseno`.
+
+### 1. Rediseño (en curso)
+- [x] R1. Arranque con los datos en grande (`ResumenWrapped.css`, `AnalisisResumenGeneral.js`) e índice fijo
+      (`ResultadosIndice.js`). En producción desde el 16-11; comprobado con sesión real y un chat inventado.
+- [ ] R2. Mismo estilo en perfiles, análisis psicológico, juegos y gráficos (`ResultadosTema.css`, ya
+      importada en `App.js`, sin subir). Falta verla sobre un análisis real (hace falta la sesión de Maria)
+      y ajustar. → verificar: capturas en ordenador y móvil; Maria da el OK antes de subir.
+- [ ] R3. Números y fechas pulidos: "146 al día" (no "145.62"), "30 de enero de 2026" (no "enero 30, 26").
+- [ ] R4. Análisis psicológico: abrir con la nota en grande y una frase resumen; quitar los "---" sueltos.
+- No se toca: los perfiles se muestran todos (los vacíos casi no pasan); el género de los perfiles se queda.
+
+### 2. Análisis nuevos, en la parte gratis (después del rediseño)
+Cálculos ya hechos y probados en `src/utils/analisisExtra.js` (7 tests); falta la sección en pantalla.
+- [ ] N1. Vuestros días más intensos (enlaza con el libro: "conviértelos en capítulos").
+- [ ] N2. Récords del chat: racha más larga, silencio más largo, mensaje más largo, madrugada más tardía.
+- [ ] N3. El equilibrio: % de mensajes, quién empieza y cuánto tarda cada uno en contestar.
+- [ ] N4. Antes y ahora: primeros 90 días frente a los últimos 90 (chats de 180 días o más).
+- [ ] N5. Grupos: quién contesta a quién y quién reaviva el grupo.
+- Por decidir al hacerlo: textos en los 6 idiomas o solo en castellano al principio.
+
+### 3. IA (después)
+- [ ] I1. Mejorar el análisis psicológico actual: revisar prompt y modelo (hoy GPT-4.1 con Mistral de reserva).
+- [ ] I2. Probar SIN publicar, con chats de Maria: "de qué habláis" y "momentos memorables". Solo se
+      publican si quedan bien (su miedo es que queden mal). Descartados: premios, frase del año, mejor excusa.
