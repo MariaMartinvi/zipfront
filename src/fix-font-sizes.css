@@ -16,15 +16,15 @@ body {
 /* También excluimos todo AppPreview para que use sus propios estilos */
 
 /* Títulos con tamaños apropiados - Excluir AppPreview */
-h1:not(.modern-preview-container h1):not(.ll h1) {
+h1:not(.modern-preview-container h1):not(.ll h1):not([data-ri] h1) {
   font-size: max(28px, 1.75rem) !important;
 }
 
-h2:not(.modern-preview-container h2):not(.ll h2) {
+h2:not(.modern-preview-container h2):not(.ll h2):not([data-ri] h2) {
   font-size: max(24px, 1.5rem) !important;
 }
 
-h3:not(.modern-preview-container h3):not(.ll h3) {
+h3:not(.modern-preview-container h3):not(.ll h3):not([data-ri] h3) {
   font-size: max(20px, 1.25rem) !important;
 }
 

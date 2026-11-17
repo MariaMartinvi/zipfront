@@ -1,0 +1,75 @@
+/* Estilo común de la página de resultados (perfiles, análisis psicológico, juegos, gráficos), a juego con el
+   arranque (.rw) y la landing del libro: títulos en serif grande a la izquierda, tarjetas blancas con borde
+   lila suave, acentos en el verde y lila de ChatSalsa. Solo afecta a lo que está dentro de [data-ri].
+   Muchos !important: las hojas antiguas de cada sección también los usan. */
+[data-ri] { --tinta: #0e1318; --gris: #656b73; --linea: #ebe5f7; --lila: #8A2BE2; --lila-osc: #6a2bd8; --verde: #128C7E;
+  --serif: 'Instrument Serif', Georgia, serif; --degradado: linear-gradient(135deg, #25D366, #8A2BE2); }
+
+/* Contenedores: fuera las cajas grises anidadas; una columna centrada */
+[data-ri].analysis-container, [data-ri].additional-analysis, [data-ri].chat-analysis-section, [data-ri].statistical-analysis-section,
+[data-ri] .analysis-module, [data-ri] .modern-analysis-container, [data-ri] .modern-analysis-top-container,
+[data-ri] .analysis-top-section, [data-ri] .charts-section, [data-ri] .trends-section, [data-ri] .chat-analysis-container {
+  background: none !important; border: 0 !important; box-shadow: none !important; }
+[data-ri].additional-analysis, [data-ri].chat-analysis-section, [data-ri].statistical-analysis-section { max-width: 1040px; margin: 56px auto 0 !important; padding: 0 16px !important; }
+[data-ri] .analysis-top-container, [data-ri] .charts-container, [data-ri] .trends-container { max-width: none !important; padding: 0 !important; }
+
+/* Cabeceras de sección: etiqueta lila pequeña, título en serif grande, todo a la izquierda */
+[data-ri] .analysis-special-title, [data-ri] .analysis-title, [data-ri] .charts-title, [data-ri] .trends-title, [data-ri] .psychology-section-title, [data-ri] .chat-analysis-container > h2 {
+  font-family: var(--serif) !important; font-weight: 400 !important; font-size: clamp(2rem, 5vw, 3rem) !important; line-height: 1.05 !important; letter-spacing: 0 !important; text-transform: none !important;
+  text-align: left !important; color: var(--tinta) !important; background: none !important; -webkit-text-fill-color: currentColor !important; margin: 0 0 10px !important; padding: 0 !important; }
+[data-ri] .analysis-special-title { border-top: 1px solid #d9ccf2; padding-top: 22px !important; }
+[data-ri] .analysis-special-title::after, [data-ri] .psychology-section-title::after { display: none !important; }
+[data-ri] .chat-analysis-container > h2 { font-size: clamp(1.7rem, 4vw, 2.3rem) !important; margin-top: 44px !important; }
+[data-ri] .analysis-badge, [data-ri] .charts-badge, [data-ri] .trends-badge { display: block !important; text-align: left !important; background: none !important; padding: 0 !important; margin: 0 0 6px !important;
+  font-size: 12px !important; font-weight: 600 !important; letter-spacing: .16em !important; text-transform: uppercase !important; color: var(--lila) !important; }
+[data-ri] .analysis-description, [data-ri] .charts-description, [data-ri] .trends-description { text-align: left !important; max-width: 620px !important; margin: 0 0 26px !important; color: var(--gris) !important; font-size: 1rem !important; line-height: 1.55 !important; }
+[data-ri] .trends-section { margin-top: 56px !important; }
+
+/* Tarjetas */
+[data-ri] .profile-card, [data-ri] .chart-card, [data-ri] .trend-card, [data-ri] .psychology-item, [data-ri] .subsection-item, [data-ri] .profile-detail-container {
+  background: #fff !important; border: 1px solid var(--linea) !important; border-radius: 20px !important; box-shadow: 0 14px 30px -22px rgba(106,43,216,.45) !important; }
+
+/* Perfiles */
+[data-ri] .profile-detail-container { border: 0 !important; background: linear-gradient(135deg, #f1fbf5, #f4eeff) !important; padding: 24px !important; }
+[data-ri] .profile-detail-title { font-family: var(--serif) !important; font-weight: 400 !important; font-size: 1.9rem !important; line-height: 1.1 !important; color: var(--tinta) !important; }
+[data-ri] .usuario-destacado { background: #fff !important; border-radius: 14px !important; }
+[data-ri] .usuario-destacado .nombre { font-family: var(--serif) !important; font-size: 1.5rem !important; color: var(--lila-osc) !important; }
+[data-ri] .estadistica { background: #fff !important; border: 0 !important; border-radius: 14px !important; }
+[data-ri] .estadistica .valor { font-family: var(--serif) !important; font-size: 2.2rem !important; font-weight: 400 !important; color: var(--tinta) !important; background: none !important; -webkit-text-fill-color: currentColor !important; }
+[data-ri] .profile-card { padding: 20px 14px 16px !important; transition: transform .15s, border-color .15s !important; }
+[data-ri] .profile-card:hover { transform: translateY(-3px) !important; border-color: #cdb4f3 !important; }
+[data-ri] .profile-card.selected { border-color: var(--lila) !important; background: #faf7ff !important; }
+[data-ri] .profile-title { font-family: var(--serif) !important; font-weight: 400 !important; font-size: 1.45rem !important; line-height: 1.1 !important; color: var(--tinta) !important; }
+[data-ri] .profile-description { color: var(--gris) !important; }
+[data-ri] .profile-user { color: var(--lila-osc) !important; font-weight: 700 !important; background: none !important; -webkit-text-fill-color: currentColor !important; }
+[data-ri] .profile-share { background: none !important; border: 1px solid #d9ccf2 !important; color: var(--lila-osc) !important; border-radius: 999px !important; box-shadow: none !important; }
+[data-ri] .profile-share:hover { background: #f4eeff !important; }
+
+/* Botones de compartir de cada sección: como el botón principal de la web */
+[data-ri] .share-top-profiles-button, [data-ri] .share-analysis-button { background: var(--degradado) !important; color: #fff !important; border: 0 !important; border-radius: 999px !important; padding: 14px 28px !important; font-weight: 600 !important;
+  box-shadow: 0 10px 26px -10px rgba(138,43,226,.55) !important; }
+
+/* Análisis psicológico: texto a la izquierda y más legible */
+[data-ri] .psychology-item, [data-ri] .subsection-item { padding: 22px 24px !important; margin: 0 0 16px !important; text-align: left !important; }
+[data-ri] .psychology-content h4 { font-family: var(--serif) !important; font-weight: 400 !important; font-size: 1.7rem !important; line-height: 1.1 !important; color: var(--tinta) !important; margin: 0 0 8px !important; }
+[data-ri] .psychology-content p, [data-ri] .psychology-content li, [data-ri] .subsection-content p, [data-ri] .subsection-content li { font-size: 1rem !important; line-height: 1.6 !important; color: #333a41 !important; text-align: left !important; }
+[data-ri] .subsection-header, [data-ri] .subsection-header h4 { text-align: left !important; justify-content: flex-start !important; }
+[data-ri] .subsection-header h4 { font-family: var(--serif) !important; font-weight: 400 !important; font-size: 1.6rem !important; color: var(--tinta) !important; margin: 0 0 10px !important; }
+[data-ri] .subsection-content, [data-ri] .subsection-content ul { text-align: left !important; }
+[data-ri] .subsection-item.alert-section { border-left: 4px solid #e0455a !important; }
+[data-ri] .subsection-item.evaluation-section { border-left: 4px solid var(--lila) !important; }
+[data-ri] .subsection-item.recommendations-section { border-left: 4px solid #25D366 !important; }
+[data-ri] .psychology-tags { justify-content: flex-start !important; }
+[data-ri] .psychology-tags .tag { border-radius: 999px !important; padding: 6px 14px !important; font-size: .85rem !important; font-weight: 600 !important; box-shadow: none !important; background: #f4eeff !important; color: var(--lila-osc) !important; }
+[data-ri] .psychology-tags .tag.red { background: #fdecef !important; color: #b3243a !important; }
+[data-ri] .psychology-tags .tag.orange { background: #fff3e6 !important; color: #a8540a !important; }
+[data-ri] .avatar { box-shadow: none !important; }
+
+/* Gráficos y tendencias */
+[data-ri] .chart-card, [data-ri] .trend-card { padding: 22px !important; }
+[data-ri] .chart-card h3, [data-ri] .trend-card h3, [data-ri] .chart-title, [data-ri] .trend-title { font-family: var(--serif) !important; font-weight: 400 !important; font-size: 1.45rem !important; color: var(--tinta) !important; text-align: left !important; }
+
+@media (max-width: 600px) {
+  [data-ri].additional-analysis, [data-ri].chat-analysis-section, [data-ri].statistical-analysis-section { margin-top: 40px !important; padding: 0 12px !important; }
+  [data-ri] .psychology-item, [data-ri] .subsection-item { padding: 18px 16px !important; }
+}

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavig
 import './App.css';
 import './fix-font-sizes.css';
 import './ResultadosCompacto.css';
+import './ResultadosTema.css';
 import ProtectedRoute from './ProtectedRoute';
 import InstallPWA from './InstallPWA';
 import AndroidAppPrompt from './AndroidAppPrompt';
