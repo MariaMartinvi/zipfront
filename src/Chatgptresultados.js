@@ -7,7 +7,7 @@ import './styles/Analisis.css';
 import { useAuth } from './AuthContext';
 // Las constantes ahora están en el backend
 import { ShareAnalysisButton } from './shareAnalysisResults'; // NUEVO: importar botón de compartir
-import { eliminarGameDataDelTexto } from './gameDataUtils';
+import { frasesEnLugarDeGameData } from './gameDataUtils';
 
 function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-default" }) {
   // TODOS los hooks deben ir ANTES de cualquier return condicional
@@ -122,7 +122,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
 
       // Procesar la respuesta una sola vez
       // (quitando primero el bloque GAME_DATA, que es solo para el juego)
-      let processedResponse = eliminarGameDataDelTexto(chatGptResponse);
+      let processedResponse = frasesEnLugarDeGameData(chatGptResponse);
 
       // NUEVO: Aplicar mapeo de nombres a toda la respuesta antes del procesamiento
       if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {
@@ -182,7 +182,8 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
   useEffect(() => {
     if (chatGptResponse && headlinesGameData && Array.isArray(headlinesGameData) && headlinesGameData.length >= 2) {
       try {
-        let processedResponse = processHeadlinesSection(chatGptResponse, headlinesGameData);
+        // (este segundo pintado no quitaba el bloque GAME_DATA: salía en crudo en "Frases descriptivas-literales")
+        let processedResponse = processHeadlinesSection(frasesEnLugarDeGameData(chatGptResponse), headlinesGameData);
         
         // NUEVO: Aplicar mapeo de nombres a toda la respuesta antes del procesamiento (también aquí)
         if (window.lastNameMapping && Object.keys(window.lastNameMapping).length > 0) {

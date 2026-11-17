@@ -14,12 +14,19 @@
 [data-ri] .analysis-top-container, [data-ri] .charts-container, [data-ri] .trends-container { max-width: none !important; padding: 0 !important; }
 
 /* Cabeceras de sección: etiqueta lila pequeña, título en serif grande, todo a la izquierda */
-[data-ri] .analysis-special-title, [data-ri] .analysis-title, [data-ri] .charts-title, [data-ri] .trends-title, [data-ri] .psychology-section-title, [data-ri] .chat-analysis-container > h2 {
+[data-ri] .analysis-special-title, [data-ri] .analysis-title, [data-ri] .charts-title, [data-ri] .trends-title, [data-ri] .psychology-section-title, [data-ri] .chat-analysis-container h2 {
   font-family: var(--serif) !important; font-weight: 400 !important; font-size: clamp(2rem, 5vw, 3rem) !important; line-height: 1.05 !important; letter-spacing: 0 !important; text-transform: none !important;
   text-align: left !important; color: var(--tinta) !important; background: none !important; -webkit-text-fill-color: currentColor !important; margin: 0 0 10px !important; padding: 0 !important; }
 [data-ri] .analysis-special-title { border-top: 1px solid #d9ccf2; padding-top: 22px !important; }
 [data-ri] .analysis-special-title::after, [data-ri] .psychology-section-title::after { display: none !important; }
-[data-ri] .chat-analysis-container > h2 { font-size: clamp(1.7rem, 4vw, 2.3rem) !important; margin-top: 44px !important; }
+[data-ri] .chat-analysis-container h2:not(.psychology-section-title) { font-size: clamp(1.7rem, 4vw, 2.3rem) !important; margin-top: 44px !important; }
+[data-ri] .chat-analysis-container > p, [data-ri] .chat-analysis-container > p strong { text-align: left !important; }
+[data-ri] .chat-analysis-container hr { border: 0 !important; border-top: 1px solid var(--linea) !important; margin: 28px 0 !important; }
+/* Frases de cada persona (antes salía el bloque GAME_DATA en crudo): tarjetas de cita */
+[data-ri] .chat-analysis-container blockquote { margin: 0 0 12px !important; padding: 18px 22px !important; border: 0 !important; border-left: 4px solid var(--lila) !important; border-radius: 0 18px 18px 0 !important;
+  background: #faf7ff !important; text-align: left !important; font-family: var(--serif) !important; font-size: 1.35rem !important; line-height: 1.35 !important; color: var(--tinta) !important; }
+[data-ri] .chat-analysis-container blockquote p { margin: 0 !important; text-align: left !important; font: inherit !important; color: inherit !important; }
+[data-ri] .chat-analysis-container blockquote strong { display: block; font-family: var(--font-family-base, 'Poppins', sans-serif) !important; font-size: .8rem !important; letter-spacing: .08em; text-transform: uppercase; color: var(--lila-osc) !important; margin-bottom: 4px; }
 [data-ri] .analysis-badge, [data-ri] .charts-badge, [data-ri] .trends-badge { display: block !important; text-align: left !important; background: none !important; padding: 0 !important; margin: 0 0 6px !important;
   font-size: 12px !important; font-weight: 600 !important; letter-spacing: .16em !important; text-transform: uppercase !important; color: var(--lila) !important; }
 [data-ri] .analysis-description, [data-ri] .charts-description, [data-ri] .trends-description { text-align: left !important; max-width: 620px !important; margin: 0 0 26px !important; color: var(--gris) !important; font-size: 1rem !important; line-height: 1.55 !important; }
@@ -73,3 +80,12 @@
   [data-ri].additional-analysis, [data-ri].chat-analysis-section, [data-ri].statistical-analysis-section { margin-top: 40px !important; padding: 0 12px !important; }
   [data-ri] .psychology-item, [data-ri] .subsection-item { padding: 18px 16px !important; }
 }
+
+/* Títulos del análisis psicológico: la hoja antigua los fuerza con un id (#analysisResults), así que aquí
+   también se usa el id para ganarle. Serif grande a la izquierda, en tinta (no degradado en mayúsculas). */
+[data-ri] #analysisResults.chat-analysis-container h2 {
+  font-family: var(--serif) !important; font-weight: 400 !important; font-size: clamp(1.7rem, 4vw, 2.3rem) !important; line-height: 1.1 !important;
+  letter-spacing: 0 !important; text-transform: none !important; text-align: left !important;
+  background: none !important; -webkit-background-clip: border-box !important; background-clip: border-box !important;
+  -webkit-text-fill-color: var(--tinta) !important; color: var(--tinta) !important; margin: 44px 0 12px !important; }
+[data-ri] #analysisResults.chat-analysis-container h2.psychology-section-title { margin-top: 8px !important; font-size: clamp(2rem, 5vw, 3rem) !important; }

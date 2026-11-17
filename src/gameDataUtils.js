@@ -41,3 +41,29 @@ export const eliminarGameDataDelTexto = (texto) => {
 
   return resultado.trim();
 };
+
+// En lugar de esconder el bloque GAME_DATA, lo convierte en las frases de cada persona, en el mismo sitio
+// (sección "Frases descriptivas-literales"). Si el bloque no se puede leer, lo quita como siempre.
+export const frasesEnLugarDeGameData = (texto) => {
+  const idx = texto.indexOf('GAME_DATA:');
+  if (idx === -1) return texto;
+  const inicio = texto.indexOf('[', idx);
+  let fin = -1;
+  if (inicio !== -1) {
+    let nivel = 0;
+    for (let i = inicio; i < texto.length; i++) {
+      if (texto[i] === '[') nivel++;
+      else if (texto[i] === ']' && --nivel === 0) { fin = i + 1; break; }
+    }
+  }
+  let frases = null;
+  try {
+    const datos = JSON.parse(texto.slice(inicio, fin));
+    frases = (datos[1] || []).filter((f) => f && f.nombre && f.frase)
+      .map((f) => `> **${f.nombre}:** «${String(f.frase).trim().replace(/^['"«]+|['"»]+$/g, '').trim()}»`);
+  } catch (e) { frases = null; }
+  if (!frases || !frases.length || fin === -1) return eliminarGameDataDelTexto(texto);
+  const antes = texto.slice(0, idx).replace(/```(?:json)?\s*$/i, '');
+  const despues = texto.slice(fin).replace(/^\s*```/, '');
+  return eliminarGameDataDelTexto(`${antes}\n${frases.join('\n\n')}\n\n${despues}`);
+};
