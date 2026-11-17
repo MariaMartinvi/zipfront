@@ -31,6 +31,58 @@ export const muestrearChat = (texto, maxChars, bloques = 30) => {
   return trozos.join('\n...\n');
 };
 
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const FECHA_LINEA = /^\u200e?\[?(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})/;
+
+// Para los "momentos memorables" del análisis IA (castellano): delante, trozos repartidos de los `n` días con más
+// mensajes de toda la historia, con su fecha; detrás, la conversación más reciente. Todo cabe en maxChars.
+// `limpiar` quita horas y fechas de cada línea (las fechas de los días van en la cabecera, escritas en letra).
+export const conDiasDestacados = (texto, limpiar, maxChars, { n = 5, porDia = 2000, trozos = 4 } = {}) => {
+  const lineas = texto.split('\n');
+  const dias = new Map();
+  let dia = null;
+  const diaDe = lineas.map((l) => {
+    const m = l.match(FECHA_LINEA);
+    if (m) {
+      const a = m[3].length === 2 ? `20${m[3]}` : m[3];
+      dia = `${Number(m[1])} de ${MESES[Number(m[2]) - 1] || m[2]} de ${a}`;
+    }
+    if (dia) { if (!dias.has(dia)) dias.set(dia, []); dias.get(dia).push(l); }
+    return dia;
+  });
+
+  // La conversación reciente, desde el final hacia atrás, hasta llenar lo que dejan los días destacados
+  const reciente = [];
+  const diasRecientes = new Set();
+  let usados = 0;
+  for (let i = lineas.length - 1; i >= 0 && usados < maxChars - n * porDia; i -= 1) {
+    const l = limpiar(lineas[i]);
+    usados += l.length + 1;
+    reciente.unshift(l);
+    if (diaDe[i]) diasRecientes.add(diaDe[i]);
+  }
+
+  const orden = [...dias.keys()];
+  const elegidos = orden.filter((d) => !diasRecientes.has(d))
+    .sort((a, b) => dias.get(b).length - dias.get(a).length).slice(0, n)
+    .sort((a, b) => orden.indexOf(a) - orden.indexOf(b));
+  const muestra = (ls) => {
+    const partes = [];
+    for (let k = 0; k < trozos; k += 1) {
+      const trozo = [];
+      let largo = 0;
+      for (let i = Math.floor((k * ls.length) / trozos); i < ls.length && largo < porDia / trozos; i += 1) {
+        const l = limpiar(ls[i]);
+        trozo.push(l); largo += l.length + 1;
+      }
+      partes.push(trozo.join('\n'));
+    }
+    return partes.join('\n[…]\n').slice(0, porDia);
+  };
+  const bloques = elegidos.map((d) => `=== DÍA DESTACADO (${d}) ===\n${muestra(dias.get(d))}`);
+  return `${bloques.join('\n\n')}\n\n=== CONVERSACIÓN RECIENTE ===\n${reciente.join('\n')}`.slice(-maxChars);
+};
+
 const processContentForAzure = (content, userLanguage = 'es', { maxChars = 20000, muestreo = false, conservarFechas = false } = {}) => {
   try {
     let processedContent = content;
@@ -40,23 +92,31 @@ const processContentForAzure = (content, userLanguage = 'es', { maxChars = 20000
     processedContent = anonymizationService.anonymizeParticipants(processedContent, userLanguage);
 
     // 2. Limpiar el texto (eliminar fechas, timestamps, etc.) DESPUÉS de identificar participantes
-    if (!conservarFechas) {
-      // Eliminar fechas en formato MM/DD/YY o DD/MM/YY
-      processedContent = processedContent.replace(/\d{1,2}\/\d{1,2}\/\d{2}/g, '');
-    }
-    processedContent = processedContent
-      // Eliminar timestamps en formato HH:mm o HH:mm:ss
-      .replace(/\d{1,2}:\d{2}(:\d{2})?/g, '')
-      // Eliminar corchetes
-      .replace(/[\[\]]/g, '')
-      // Eliminar guiones
-      .replace(/\s*-\s*/g, ' ');
+    const limpiar = (texto) => {
+      let t = texto;
+      if (!conservarFechas) {
+        // Eliminar fechas en formato MM/DD/YY o DD/MM/YY
+        t = t.replace(/\d{1,2}\/\d{1,2}\/\d{2}/g, '');
+      }
+      return t
+        // Eliminar timestamps en formato HH:mm o HH:mm:ss
+        .replace(/\d{1,2}:\d{2}(:\d{2})?/g, '')
+        // Eliminar corchetes
+        .replace(/[\[\]]/g, '')
+        // Eliminar guiones
+        .replace(/\s*-\s*/g, ' ');
+    };
+    const anonimizado = processedContent;
+    processedContent = limpiar(processedContent);
 
     // 3. Limitar tamaño del contenido después de limpiar fechas
     console.log(`Longitud después de limpiar fechas: ${processedContent.length} caracteres`);
     
     const MAX_CHARS = maxChars;
-    if (muestreo && processedContent.length > MAX_CHARS) {
+    if (!muestreo && String(userLanguage || '').startsWith('es') && processedContent.length > MAX_CHARS) {
+      // Castellano: los días más intensos de toda la historia + lo reciente (para los momentos memorables)
+      processedContent = conDiasDestacados(anonimizado, limpiar, MAX_CHARS);
+    } else if (muestreo && processedContent.length > MAX_CHARS) {
       processedContent = muestrearChat(processedContent, MAX_CHARS);
     } else if (processedContent.length > MAX_CHARS) {
       console.log(`Contenido del chat demasiado largo (${processedContent.length} caracteres), limitando a los últimos ${MAX_CHARS} caracteres`);

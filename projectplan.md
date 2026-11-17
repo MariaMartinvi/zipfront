@@ -709,14 +709,58 @@ Antes de subir a producción, se mira en local. Versión anterior: etiqueta `res
 
 ### 2. Análisis nuevos, en la parte gratis (después del rediseño)
 Cálculos ya hechos y probados en `src/utils/analisisExtra.js` (7 tests); falta la sección en pantalla.
-- [ ] N1. Vuestros días más intensos (enlaza con el libro: "conviértelos en capítulos").
-- [ ] N2. Récords del chat: racha más larga, silencio más largo, mensaje más largo, madrugada más tardía.
-- [ ] N3. El equilibrio: % de mensajes, quién empieza y cuánto tarda cada uno en contestar.
-- [ ] N4. Antes y ahora: primeros 90 días frente a los últimos 90 (chats de 180 días o más).
-- [ ] N5. Grupos: quién contesta a quién y quién reaviva el grupo.
-- Por decidir al hacerlo: textos en los 6 idiomas o solo en castellano al principio.
+- [x] N1. Vuestros días más intensos (enlaza con el libro: "conviértelos en capítulos").
+- [x] N2. Récords del chat: racha más larga, silencio más largo, mensaje más largo, madrugada más tardía.
+- [x] N3. El equilibrio: % de mensajes, quién empieza y cuánto tarda cada uno en contestar.
+- [x] N4. Antes y ahora: primeros 90 días frente a los últimos 90 (chats de 180 días o más).
+- [x] N5. Grupos: quién contesta a quién y quién reaviva el grupo.
+- En producción desde el 17-11 (`AnalisisExtra.js`, commit ba16c25), solo en castellano. Sin silencios de 1 día
+  y sin quien escribe menos del 1 %.
 
 ### 3. IA (después)
-- [ ] I1. Mejorar el análisis psicológico actual: revisar prompt y modelo (hoy GPT-4.1 con Mistral de reserva).
+- [x] I1. Prompt v2 (serio, sin citas salvo en el juego) y modelo gpt-6.1-terra, activos en Render.
 - [ ] I2. Probar SIN publicar, con chats de Maria: "de qué habláis" y "momentos memorables". Solo se
       publican si quedan bien (su miedo es que queden mal). Descartados: premios, frase del año, mejor excusa.
+
+### 4. Pack de pago: "De qué habláis" y "Momentos memorables" (plan, 17-11)
+
+**Cómo funciona hoy:** el análisis psicológico ya es de pago. Se desbloquea con el Pack Análisis IA
+(10 análisis: 2,99 € en España, 1,99 US$ Latam, 39 MX$ México). Antes de pagar se ve una vista previa
+borrosa, con botones "Desbloquear". Lo que hace la IA lo decide el prompt del servidor (`prompt_v2.py`).
+
+**Propuesta (la más simple):** no crear un producto nuevo. Las dos secciones pasan a formar parte del
+análisis IA que ya se paga: mismo precio, mismo botón, más contenido. Solo castellano, como el prompt v2.
+
+**Probado sin publicar** con el chat de Eva y uno de familia (`scripts/comparar_prompts.py --pack`).
+Funciona bien si la IA recibe trozos repartidos de los 5 días con más mensajes de toda la historia,
+además del final del chat. El tamaño enviado es el mismo de siempre (20.000 caracteres), así que el coste
+no sube.
+
+TODOs (en orden; cada uno se prueba antes de pasar al siguiente):
+- [x] P1. Web: al preparar el texto para la IA (`fileService.js`, `processContentForAzure`, solo castellano),
+      poner delante los 5 días más intensos con su fecha (4 trozos repartidos por día, unos 2.000 caracteres
+      cada día) y después la conversación reciente.
+      → verificar: test con un chat inventado (salen los días, con fecha y anonimizados, y en total ≤ 20.000).
+- [x] P2. Servidor: las dos secciones dentro de `PROMPT_V2_ES` (hoy están aparte, en `SECCIONES_PACK_ES`).
+      → verificar: test de Python que comprueba que el prompt pide las dos secciones y sin citas.
+- [x] P3. Web: pintar "De qué habláis" y "Momentos memorables" en el análisis (`Chatgptresultados.js`), como
+      tarjetas con el estilo nuevo.
+      → verificar: test con una respuesta de ejemplo; captura en local.
+- [x] P4. Vista previa de pago: añadir las dos secciones borrosas, para que se vea que entran en el pack.
+      → verificar: captura en local sin créditos.
+- [ ] P5. Subir el servidor primero (P2) y la web después (P1, P3 y P4), juntos. Comprobar en producción
+      con un análisis real de Maria y en los logs de Render.
+
+**Riesgos:**
+- Si la web nueva sale antes que el servidor, el análisis llega sin las secciones. No se rompe nada:
+  simplemente no aparecen.
+- Con el prompt v1 (vuelta atrás), las secciones no aparecen.
+- Otros idiomas: siguen igual hasta que se traduzca el prompt v2.
+
+**Decidido por Maria (17-11):** van dentro del pack actual, al mismo precio, y se enseñan borrosas en la
+vista previa de pago.
+
+Hecho: `conDiasDestacados` en `fileService.js`, `utils/seccionesPack.js` (tarjetas `.pk-*` en
+`ResultadosTema.css`), sección 5 de la vista previa en `App.js`. Tests: `conDiasDestacados.test.js`,
+`seccionesPack.test.js`, `Chatgptresultados.pack.test.js` y `tests/test_prompt_v2.py`. En local, las tarjetas se
+han comprobado con la respuesta real del chat de Eva, en ordenador y en móvil.

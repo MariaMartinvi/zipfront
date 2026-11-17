@@ -2292,6 +2292,29 @@ const tryDeleteFiles = async (operationId) => {
                               <p className="unlock-note">{t('hero.ai_preview.unlock_note', getAiPackPricing())}</p>
                             </div>
                           </div>
+
+                          {/* SECCIÓN 5: De qué habláis y momentos memorables (solo castellano, como el prompt) */}
+                          {(i18n.language || 'es').startsWith('es') && (
+                            <div className="preview-section">
+                              <h4>🗂️ De qué habláis y vuestros momentos memorables</h4>
+                              <div className="preview-item">
+                                <div className="blurred-content">
+                                  <p><strong>Los temas que más os ocupan:</strong> los cuatro o cinco asuntos que vuelven una y otra vez a la conversación, de más a menos, y quién suele sacar cada uno.</p>
+                                  <p><strong>Vuestros momentos memorables:</strong> los momentos importantes de toda vuestra historia, sacados de los días en que más hablasteis, con su fecha: celebraciones, noticias, planes y conversaciones que marcaron algo.</p>
+                                </div>
+                              </div>
+                              <div className="unlock-section">
+                                <button
+                                  className="unlock-ai-button"
+                                  onClick={startAIAnalysis}
+                                  disabled={isLoading}
+                                >
+                                  {t('hero.ai_preview.unlock_button', getAiPackPricing())}
+                                </button>
+                                <p className="unlock-note">{t('hero.ai_preview.unlock_note', getAiPackPricing())}</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ) : null}

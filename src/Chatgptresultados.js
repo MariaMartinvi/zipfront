@@ -8,6 +8,7 @@ import { useAuth } from './AuthContext';
 // Las constantes ahora están en el backend
 import { ShareAnalysisButton } from './shareAnalysisResults'; // NUEVO: importar botón de compartir
 import { frasesEnLugarDeGameData } from './gameDataUtils';
+import { seccionesPackEnTarjetas } from './utils/seccionesPack';
 
 function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-default" }) {
   // TODOS los hooks deben ir ANTES de cualquier return condicional
@@ -158,6 +159,9 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
         console.error('Error procesando subsecciones:', error);
       }
 
+      // "De qué habláis" y "Momentos memorables", en tarjetas
+      processedResponse = seccionesPackEnTarjetas(processedResponse);
+
       // Convertir markdown a HTML
       const htmlContent = marked.parse(processedResponse);
       
@@ -222,6 +226,7 @@ function Chatgptresultados({ chatGptResponse, promptInput, usuarioId = "user-def
           console.error('Error procesando subsecciones:', error);
         }
         
+        processedResponse = seccionesPackEnTarjetas(processedResponse);
         const htmlContent = marked.parse(processedResponse);
         const sanitizedContent = DOMPurify.sanitize(htmlContent);
         
