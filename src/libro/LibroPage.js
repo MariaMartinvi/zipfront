@@ -10,6 +10,8 @@ import { renderHTML, PAGE, FONTS } from './render';
 import { etiquetaImpreso, puedeImprimir, PAISES_IMPRESION_DEFECTO } from './precioLibro';
 import { loadMediaIndex, imageUri, videoFrame, isScreenshot, videoSeconds, tienePersona, imageUriFromFile } from './media';
 import { libroStore } from './store';
+import LibroEntrada from './LibroEntrada';
+import { paginasLibro } from './muestra';
 import { trackEvent } from '../utils/analytics';
 import QRCode from 'qrcode';
 import { isSpainTimeZone, isMexicoTimeZone, isLatamTimeZone } from '../utils/pricing';
@@ -57,6 +59,7 @@ export default function LibroPage() {
   const [precios, setPrecios] = useState(LABELS_DEFECTO);
   const [galeria, setGaleria] = useState(false);
   const [qrs, setQrs] = useState({});
+  const [entrada, setEntrada] = useState(true);  // primero, su libro (LibroEntrada); luego, el editor
   const renderListo = useRef(null); // promesa que se resuelve cuando la vista previa termina de paginar
   const cssRef = useRef('');
   const iframeRef = useRef(null);
@@ -120,6 +123,7 @@ export default function LibroPage() {
           setDerecha(nombres.find(n => /^(tú|you|yo)$/i.test(n)) || nombres[0]);
         }
         retomado.current = !!g;
+        if (g) setEntrada(false);  // ya lo estaba editando: directo al editor
         setEstado('listo');
         trackEvent('libro_creado');  // ha subido un chat y ve su libro en el editor
         // 2) cargar media en segundo plano: primero las fotos de los capítulos elegidos, luego
@@ -155,6 +159,14 @@ export default function LibroPage() {
     const m = montar(mensajes, caps, { quitados });
     return { ...m, titulo, subtitulo, dedicatoria, portada: { color, foto: portadaFoto } };
   }, [mensajes, caps, quitados, titulo, subtitulo, dedicatoria, color, portadaFoto]);
+
+  // La entrada: portada y los 3 primeros capítulos encendidos, con la misma plantilla que el libro impreso
+  const libroEntrada = useMemo(() => {
+    if (!man || !entrada) return null;
+    const { css, body } = renderHTML(mensajes, man, { media, videos, derecha, conIndice: false, conPersonajes: false, conStats: false });
+    const ks = man.capitulos.map((c, k) => (c.on ? k : -1)).filter(k => k >= 0).slice(0, 3);
+    return ks.length ? paginasLibro(css, body, ks) : null;
+  }, [man, entrada, mensajes, media, videos, derecha]);
 
   const encendidos = caps.filter(c => c.on).length;
   const paginas = paginasReales || (man ? man.paginasTotales : 0);
@@ -204,7 +216,7 @@ export default function LibroPage() {
     // esperar a las fuentes (si tardan más de 2 s, paginamos igual)
     Promise.race([doc.fonts ? doc.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 2000))]).then(acabar);
     return () => { cancelado = true; };
-  }, [man, mensajes, media, videos, qrs, derecha, conPersonajes, caps]);
+  }, [man, mensajes, media, videos, qrs, derecha, conPersonajes, caps, entrada]);
 
   async function subirPortada(e) {
     const f = e.target.files && e.target.files[0]; if (!f) return;
@@ -402,6 +414,16 @@ export default function LibroPage() {
   if (estado === 'cargando') return <div className="libro-empty"><h2>Montando tu libro…</h2><p>{progreso}</p><div className="libro-spinner" /></div>;
 
   const autores = participantes(mensajes).map(p => p.nombre);
+  if (entrada && libroEntrada) {
+    const primero = caps.find(c => c.on);
+    return (
+      <LibroEntrada libro={libroEntrada} titulo={titulo || 'Vuestro libro'} paginas={paginasReales ? paginas : `unas ${Math.max(10, Math.round(paginas / 10) * 10)}`} capitulos={encendidos}
+        desde={primero && primero.desde} sinFotos={sinFotos} precioPdf={precios.pdf}
+        onAbrir={() => trackEvent('libro_abierto')}
+        onEditar={() => { trackEvent('libro_editor'); setEntrada(false); window.scrollTo(0, 0); }}
+        onSubir={() => navigate('/libro-recuerdo')} />
+    );
+  }
   return (
     <div className="libro">
       <div className="libro-top">
@@ -420,8 +442,7 @@ export default function LibroPage() {
       </div>
       <div className="libro-wrap">
         <div className="libro-vista">
-          <p className="libro-aviso">✏️ <b>Tu libro se puede editar:</b> toca un mensaje y le saldrá una cruz roja; púlsala para quitarlo. En el panel apaga capítulos o la página de personajes y cambia título, portada y dedicatoria.</p>
-          {sinFotos && <p className="libro-aviso sin-fotos">📸 <b>Este libro sale sin fotos</b> porque el chat se exportó sin archivos. Para que salgan, expórtalo de nuevo desde WhatsApp eligiendo «Incluir archivos» y <button type="button" onClick={() => navigate('/libro-recuerdo')}>súbelo aquí</button>.</p>}
+          <p className="libro-aviso">✏️ Toca un mensaje para quitarlo · en el panel, capítulos, título, portada y dedicatoria{sinFotos && <> · 📸 ¿Con fotos? Exporta el chat con archivos y <button type="button" onClick={() => navigate('/libro-recuerdo')}>súbelo aquí</button></>}</p>
           <iframe ref={iframeRef} title="libro" className="libro-pages" />
         </div>
         <aside className="libro-side">

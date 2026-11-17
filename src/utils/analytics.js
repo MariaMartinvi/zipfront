@@ -3,6 +3,8 @@ export const trackEvent = (name) => {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: name });
   if (window.gtag) window.gtag('event', name);
+  // También a Clarity, para poder filtrar las grabaciones por evento
+  if (typeof window.clarity === 'function') window.clarity('event', name);
 };
 
 // Clics hacia los productos de pago, para comparar en GA4 qué se pulsa más y desde dónde.

@@ -95,17 +95,24 @@ function renderLibro({ titulo, subtitulo, color, foto, derecha, capitulos, chat 
 }
 
 /**
+ * Portada y dobles páginas (apertura + conversación) de los capítulos `ks` de un libro ya pintado con renderHTML.
+ * Lo usan los ejemplos de la landing y la entrada del libro de cada uno.
+ */
+export function paginasLibro(css, body, ks) {
+  const p = (sel) => pagina(css, body, sel);
+  return {
+    portada: p('section.cover'),
+    dobles: ks.map((k) => ({ izq: p(`section.chapter-open[data-cap='${k}']`), dcha: p(`section.chapter-body[data-cap='${k}']`) })),
+  };
+}
+
+/**
  * Los libros de ejemplo: { titulo, portada, dobles: [{ izq, dcha }] }. Cada doble página es un capítulo:
  * a la izquierda su apertura y a la derecha su conversación (el segundo, con la foto). Solo chat.
  */
 export function librosEjemplo() {
   return LIBROS.map((libro) => {
     const { css, body } = renderLibro(libro);
-    const p = (sel) => pagina(css, body, sel);
-    return {
-      titulo: libro.titulo,
-      portada: p('section.cover'),
-      dobles: libro.capitulos.map((_, k) => ({ izq: p(`section.chapter-open[data-cap='${k}']`), dcha: p(`section.chapter-body[data-cap='${k}']`) })),
-    };
+    return { titulo: libro.titulo, ...paginasLibro(css, body, libro.capitulos.map((_, k) => k)) };
   });
 }

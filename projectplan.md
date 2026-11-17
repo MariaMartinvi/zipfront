@@ -764,3 +764,44 @@ Hecho: `conDiasDestacados` en `fileService.js`, `utils/seccionesPack.js` (tarjet
 `ResultadosTema.css`), sección 5 de la vista previa en `App.js`. Tests: `conDiasDestacados.test.js`,
 `seccionesPack.test.js`, `Chatgptresultados.pack.test.js` y `tests/test_prompt_v2.py`. En local, las tarjetas se
 han comprobado con la respuesta real del chat de Eva, en ordenador y en móvil.
+
+## 2026-11-17 — Libro: que no se vayan al llegar desde los resultados (hecho el 17-11)
+
+**Lo que dice Clarity (16 y 17 de noviembre):**
+- Llegan más personas al libro: ~8 % de las visitas a la portada, frente a ~0,5 % en los 5 días anteriores.
+  Sin contar las pruebas desde España con ordenador, son 4 personas reales en día y medio (EE. UU., Chile, Perú
+  y Nicaragua), frente a ~3 en los 10 días anteriores. Todas entran por «Ver mi libro gratis →» de los
+  resultados. El menú superior no trae a nadie.
+- Nadie interactúa con el libro: no hay clics en el mapa de calor y nadie empieza un libro. Se van enseguida.
+- Grabación de EE. UU., en móvil: al pulsar ve su título, 4 botones de compra seguidos, un aviso amarillo («se
+  puede editar…») y otro azul («sale sin fotos…»). El libro queda por debajo y no llega a bajar. Un minuto
+  después vuelve a los resultados.
+
+**Diagnóstico:** en el móvil, la primera pantalla es un formulario de compra con avisos y no un libro. Lo que les
+llevó hasta ahí (ver *su* libro) no aparece sin bajar.
+
+**Propuesta: primera pantalla = su libro, bonito; las herramientas, después**
+- [x] L1. Arriba, su libro cerrado (portada con sus nombres, como los libros de muestra de /libro-recuerdo)
+      y, al tocarlo, se abre en el sitio y enseña 3 o 4 páginas de su chat (lo mismo que gustó en la landing).
+      → verificar: captura en móvil con un chat inventado; el libro se ve sin bajar.
+- [x] L2. Debajo, una sola línea con lo que contiene: «N páginas · M capítulos · desde el 13 de febrero de 2026».
+      Los capítulos, con los días más intensos que ya calculamos (enlaza con las estadísticas gratis).
+- [x] L3. Un único botón principal: «Ver y editar el libro entero» (abre el editor de ahora). La compra
+      (PDF / impreso) se queda en el editor y en una barra fija abajo, más discreta: no es lo primero que ven.
+- [x] L4. Los dos avisos, en una sola línea pequeña: «Puedes quitar mensajes y capítulos · ¿Con fotos? Exporta
+      con archivos». Sin el tono de «sale sin fotos».
+- [x] L5. Medir: eventos de GA `libro_abierto` (toca el libro) y `libro_editor` (entra al editor), para comparar
+      con `libro_creado` y los pagos.
+      → verificar: los eventos se ven en tiempo real en GA.
+
+**Fuera de esta propuesta (lo apunto, no lo toco):** en los resultados, en el 41 % de las sesiones hay clics que
+no hacen nada, sobre todo en las etiquetas del análisis psicológico («Áreas de mejora», «Tendencia a la
+sobrecarga»…).
+
+**Hecho (17-11):** `LibroEntrada.js` (entrada con su libro 3D, que se abre en el sitio con `LibroAbierto`, y un solo
+botón). Quien ya estaba editando un libro va directo al editor. Los dos avisos del editor están ahora en una sola
+línea. Los eventos `libro_abierto` y `libro_editor` llegan a Clarity (`trackEvent` también los manda allí). Para
+que lleguen a GA, hay que cambiar en el activador de GTM `libro_creado` por `libro_(creado|abierto|editor)`.
+El número de páginas de la entrada es aproximado («unas 30») hasta que el editor pagina de verdad.
+Comprobado en local con un chat inventado, en móvil y en ordenador. Tests: `LibroEntrada.test.js` y
+`analytics.test.js`.
