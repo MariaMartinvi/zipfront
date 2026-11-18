@@ -142,6 +142,8 @@ button.cta-primary:hover {
   border: 1px solid rgba(255, 255, 255, 0.25) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  font-family: inherit;
+  cursor: pointer;
 }
 
 /* Título principal - Especificidad alta para evitar sobrescritura */
