@@ -6,10 +6,12 @@ import { AuthProvider } from './AuthContext';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 // Importar i18n
-import './i18n';
+import i18n from './i18n';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+// Montar con las traducciones ya cargadas: hasta entonces sigue en pantalla la portada que viene en el
+// HTML (scripts/shell.js) en vez de pasar por una pantalla en blanco.
+const montar = () => root.render(
   <React.StrictMode>
     <Suspense fallback="">
       <AuthProvider>
@@ -18,6 +20,7 @@ root.render(
     </Suspense>
   </React.StrictMode>
 );
+if (i18n.isInitialized) montar(); else i18n.on('initialized', montar);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. This comes with some pitfalls.

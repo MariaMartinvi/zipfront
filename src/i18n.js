@@ -18,7 +18,7 @@ i18n
     supportedLngs: ['it', 'es', 'fr', 'de', 'pt', 'en'], // Definir todos los idiomas soportados
     fallbackLng: 'es',
     // lng: 'en', // Forzar inglés temporalmente para testing
-    debug: true, // Activar debug para ver logs en la consola
+    debug: false,
     interpolation: {
       escapeValue: false, // No es necesario escapar los valores con React
     },

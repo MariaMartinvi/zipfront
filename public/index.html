@@ -183,7 +183,9 @@
       });
       window.setTimeout(function () {
         var root = document.getElementById('root');
-        if (root && root.children.length === 0) {
+        // También si sigue puesta la portada del HTML (data-shell): React no ha llegado a montar
+        if (root && (root.children.length === 0 || root.querySelector('[data-shell]'))) {
+          root.innerHTML = '';
           var aviso = document.createElement('div');
           aviso.style.cssText = 'padding:24px;font-family:-apple-system,Arial,sans-serif;max-width:520px;margin:40px auto;text-align:center;color:#0e1318;';
           aviso.innerHTML = '<h2 style="margin:0 0 12px">No se ha podido cargar ChatSalsa</h2>' +

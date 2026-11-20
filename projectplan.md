@@ -805,3 +805,42 @@ que lleguen a GA, hay que cambiar en el activador de GTM `libro_creado` por `lib
 El número de páginas de la entrada es aproximado («unas 30») hasta que el editor pagina de verdad.
 Comprobado en local con un chat inventado, en móvil y en ordenador. Tests: `LibroEntrada.test.js` y
 `analytics.test.js`.
+
+## 2026-11-20 — Portada: LCP de 3 s en móvil (Core Web Vitals «No superada»)
+
+**Lo que dice PageSpeed (usuarios reales, 28 días, móvil):** LCP 3 s, FCP 3 s, TTFB 0,8 s. INP y CLS, bien.
+Solo falla el LCP (el límite es 2,5 s).
+
+**Diagnóstico:** FCP y LCP son iguales, así que el problema es que la página tarda en pintar *lo primero*:
+- El HTML llega vacío (`<div id="root">`). No se ve nada hasta bajar y ejecutar 273 KB de JS (921 KB sin
+  comprimir) y el JSON de traducciones. El elemento LCP es el título del hero (texto).
+- `ResumenWrapped.css` y `LibroLanding.css` hacen `@import` de Instrument Serif desde Google Fonts. Acaba dentro
+  de `main.css`, que bloquea el pintado: en un móvil es una conexión más (DNS + TLS) antes de ver nada.
+- El TTFB desde aquí es de 40 ms (Cloudflare lo tiene en caché). Los 0,8 s reales son red móvil y redirecciones
+  (`chatsalsa.com` → `www`, enlaces de anuncios); desde el código no se puede tocar.
+
+**Plan**
+- [x] P1. Instrument Serif alojada en `public/fonts/` (como Inter) y fuera los `@import` a Google.
+      → verificar: en la portada no sale ninguna petición a fonts.googleapis.com.
+- [x] P2. Cabecera y hero pintados desde el HTML, sin esperar al JS: `scripts/shell.js` los genera tras el build
+      con los textos de `locales/es`. Solo en `/`, en español y sin sesión guardada.
+      → verificar: test que compara ese HTML con el de `HeroSection` de verdad; con el JS bloqueado se ve el hero.
+- [x] P3. React se monta cuando las traducciones están cargadas, para no pasar por una pantalla en blanco
+      entre el hero del HTML y el de React. De paso, `debug: false` en i18n (escribía en consola cada clave).
+      → verificar: FCP/LCP medidos en el navegador antes y después; captura.
+
+**Fuera de este plan (lo apunto, no lo toco):** el bundle principal carga de entrada Firebase, los juegos y los
+componentes de resultados; partirlo mejoraría el tiempo hasta poder tocar, no el LCP. El píxel de TikTok y el
+iframe de Firebase Auth se cargan en la portada para visitantes sin sesión.
+
+### Review (20-11)
+- Hecho: P1, P2 y P3. `scripts/shell.js` se ejecuta tras `react-scripts build` (en `build` y `build:render`).
+- Comprobado con el build en local: el HTML servido ya trae el titular; cabecera y hero del HTML ocupan
+  exactamente lo mismo que los de React a 375, 1024 y 1440 px (sin salto al montar); en `/plans` y con
+  `?lang=en` no se coloca; ninguna petición a Google Fonts. Tests: `src/shell.test.js` (28 suites en verde).
+- No medido: FCP/LCP en milisegundos (el navegador de pruebas no da tiempos de pintado y en local no hay
+  red móvil). El dato real de PageSpeed es una media de 28 días: tardará unas semanas en reflejarlo; el
+  apartado «Diagnostica problemas de rendimiento» (laboratorio) sí cambia al momento.
+- Aprendizaje: si se cambia el marcado de `HeroSection.js`, hay que cambiarlo también en `scripts/shell.js`
+  (el test falla si no coinciden). Los textos no: salen del JSON de traducciones.
+- Los botones del hero no responden hasta que React monta (1-2 s en móvil); antes en ese rato no se veía nada.

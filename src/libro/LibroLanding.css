@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
-
 /* Landing /libro-recuerdo: maqueta editorial (serif grande, filetes, mucho aire) con los colores de ChatSalsa. */
 .ll { --tinta: #0e1318; --gris: #656b73; --linea: #ebe5f7; --lila: #8A2BE2; --verde: #25D366; --verde-osc: #128C7E;
   --degradado: linear-gradient(135deg, #25D366, #8A2BE2); --serif: 'Instrument Serif', Georgia, serif;
