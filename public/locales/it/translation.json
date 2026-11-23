@@ -19,12 +19,12 @@
     "free_trial": "Registrati"
   },
   "hero": {
-    "badge": "SCOPRI LA VERITÀ 🕵️",
+    "badge": "COPPIA, AMICI O FAMIGLIA 🕵️",
     "title": {
       "discover": "Chi è il più tossico",
-      "conversations": "del tuo gruppo WhatsApp?"
+      "conversations": "della tua chat WhatsApp?"
     },
-    "description": "💀 Scopri chi domina, chi fa drammi e chi non risponde mai. Analisi psicologica completa del tuo gruppo in 2 minuti.",
+    "description": "💬 Con il tuo partner, i tuoi amici o la tua famiglia: chi scrive di più, chi risponde prima e chi ti lascia in visualizzato. Statistiche gratis in 2 minuti.",
     "buttons": {
       "analyze": "🔥 Analizza GRATIS ora",
       "how_it_works": "Vedi esempio reale"
@@ -81,8 +81,8 @@
     },
     "mockup": {
       "title": "Risultati istantanei",
-      "profile": "Estroversa, leader naturale del gruppo.",
-      "description": "Di solito inizia la maggior parte delle conversazioni.",
+      "profile": "Lucía risponde in 2 min; Marcos in 25.",
+      "description": "E Lucía inizia 7 conversazioni su 10.",
       "view_analysis": "Visualizza analisi completa"
     },
     "share_analysis": {

@@ -540,14 +540,14 @@
     ]
   },
   "hero": {
-    "badge": "DESCUBRE LA VERDAD 🕵️",
+    "badge": "PAREJA, AMIGOS O FAMILIA 🕵️",
     "title": {
       "discover": "¿Quién es el más tóxico",
-      "conversations": "de tu grupo de",
+      "conversations": "de tu chat de",
       "whatsapp": "WhatsApp?",
       "conversations_suffix": ""
     },
-    "description": "💀 Descubre quién domina, quién es el dramático y quién nunca responde. Análisis psicológico completo de tu grupo en 2 minutos.",
+    "description": "💬 Con tu pareja, tus amigos o tu familia: quién escribe más, quién contesta antes y quién deja en visto. Estadísticas gratis en 2 minutos.",
     "buttons": {
       "analyze": "🔥 Analizar GRATIS ahora",
       "how_it_works": "Ver ejemplo real"
@@ -738,8 +738,8 @@
     },
     "mockup": {
       "title": "Resultados instantáneos",
-      "profile": "Extrovertida, líder natural del grupo.",
-      "description": "Suele iniciar la mayoría de las conversaciones.",
+      "profile": "Lucía contesta en 2 min; Marcos, en 25.",
+      "description": "Y Lucía empieza 7 de cada 10 conversaciones.",
       "view_analysis": "Ver análisis completo"
     }
   },

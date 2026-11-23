@@ -507,14 +507,14 @@
     ]
   },
   "hero": {
-    "badge": "DISCOVER THE TRUTH 🕵️",
+    "badge": "COUPLES, FRIENDS OR FAMILY 🕵️",
     "title": {
       "discover": "Who's the most toxic",
       "conversations": "in your",
       "whatsapp": "WhatsApp",
-      "conversations_suffix": "group?"
+      "conversations_suffix": "chat?"
     },
-    "description": "💀 Discover who dominates, who's the drama queen and who never replies. Complete psychological analysis of your group in 2 minutes.",
+    "description": "💬 With your partner, friends or family: who texts more, who replies faster and who leaves you on read. Free stats in 2 minutes.",
     "buttons": {
       "analyze": "🔥 Analyze FREE now",
       "how_it_works": "See real example"
@@ -768,8 +768,8 @@
     },
     "mockup": {
       "title": "Instant results",
-      "profile": "Extroverted, natural group leader.",
-      "description": "Usually starts most conversations.",
+      "profile": "Lucía replies in 2 min; Marcos, in 25.",
+      "description": "And Lucía starts 7 out of 10 conversations.",
       "view_analysis": "View complete analysis"
     }
   },
