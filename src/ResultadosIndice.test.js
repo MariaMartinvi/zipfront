@@ -24,3 +24,12 @@ test('sin la función, no sale el botón', async () => {
   const nav = await pintar({});
   expect(nav.textContent).not.toContain('Subir otro chat');
 });
+
+test('«Comparativa» sale al final del menú solo si la sección tiene contenido', async () => {
+  document.body.innerHTML = '<div data-ri="resumen"></div><div data-ri="graficos"></div><div data-ri="comparativa"></div><div id="raiz"></div>';
+  await act(async () => { createRoot(document.getElementById('raiz')).render(<ResultadosIndice />); });
+  expect(document.querySelector('nav.ri').textContent).not.toContain('comparativa');
+  document.querySelector('[data-ri="comparativa"]').innerHTML = '<div class="ax cmp">…</div>';
+  await act(async () => { window.dispatchEvent(new Event('scroll')); });
+  expect([...document.querySelectorAll('nav.ri button')].map((b) => b.textContent)).toEqual(['results_nav.resumen', 'results_nav.graficos', 'results_nav.comparativa']);
+});

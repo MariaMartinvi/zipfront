@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './ResumenWrapped.css';
 
-export const SECCIONES = ['resumen', 'perfiles', 'momentos', 'psicologico', 'libro', 'graficos'];
+export const SECCIONES = ['resumen', 'perfiles', 'momentos', 'psicologico', 'libro', 'graficos', 'comparativa'];
+// La comparativa siempre deja su caja, pero vacía hasta que hay chats suficientes: solo cuenta si tiene algo dentro
+const esta = (s) => { const el = document.querySelector(`[data-ri="${s}"]`); return el && (s !== 'comparativa' || el.firstElementChild); };
 
 export default function ResultadosIndice({ onSubirOtro }) {
   const { t } = useTranslation();
@@ -13,7 +15,7 @@ export default function ResultadosIndice({ onSubirOtro }) {
   useEffect(() => {
     // Las secciones van apareciendo según carga el análisis: se revisa cuáles hay y cuál está en pantalla
     const revisar = () => {
-      const hay = SECCIONES.filter((s) => document.querySelector(`[data-ri="${s}"]`));
+      const hay = SECCIONES.filter(esta);
       setPresentes((p) => (p.join() === hay.join() ? p : hay));
       const limite = window.innerHeight * 0.4;
       let actual = hay[0];
