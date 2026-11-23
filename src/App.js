@@ -32,6 +32,7 @@ import TopProfilesViewer from './components/TopProfilesViewer';
 import AnalysisViewer from './components/AnalysisViewer';
 import DemoExample from './components/DemoExample';
 import { libroStore } from './libro/store';
+import BarraBlackFriday from './libro/BarraBlackFriday';
 import UploadDone from './UploadDone';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
@@ -1991,6 +1992,7 @@ const tryDeleteFiles = async (operationId) => {
 
   return (
     <div className="App">
+      <BarraBlackFriday />
       <Header user={user} />
       
       <main className="App-main">
