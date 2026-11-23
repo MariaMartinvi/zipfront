@@ -1,6 +1,6 @@
 // «Tu chat frente al resto»: compara este chat con todos los analizados en ChatSalsa (gratis, sin IA).
 // Manda la ficha anónima de este chat (una vez) y pinta la comparación con los totales agregados.
-// Solo se enseña cada dato cuando hay chats suficientes (20, también para chico/chica). De momento solo en castellano.
+// Solo se enseña cada dato cuando hay chats suficientes (10, también para chico/chica; lo decide el servidor). De momento solo en castellano.
 // La parte de IA sale de la línea COMPARATIVA_DATA del análisis IA: solo la ve quien lo tiene (ha pagado), desde 10 chats.
 import React, { useEffect, useMemo, useState } from 'react';
 import { parseChat } from './libro/parser';

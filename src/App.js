@@ -2090,7 +2090,7 @@ const tryDeleteFiles = async (operationId) => {
 
                 {/* Estadísticas gratis nuevas (días intensos, récords, equilibrio…), de momento solo en castellano */}
                 {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
-                  <div data-ri="momentos"><Suspense fallback={null}><AnalisisExtra chatData={chatData} /><ComparativaChats chatData={chatData} aiResponse={chatGptResponse} /></Suspense></div>
+                  <div data-ri="momentos"><Suspense fallback={null}><AnalisisExtra chatData={chatData} /></Suspense></div>
                 )}
 
                 {/* Análisis psicológico de Azure */}
@@ -2360,6 +2360,11 @@ const tryDeleteFiles = async (operationId) => {
                       <Suspense fallback={null}><AnalisisEstadistico chatData={chatData} /></Suspense>
                     </div>
                   </div>
+                )}
+
+                {/* Tu chat frente al resto: al final de todo (Maria, 23-11-2026). De momento solo en castellano */}
+                {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
+                  <div data-ri="comparativa"><Suspense fallback={null}><ComparativaChats chatData={chatData} aiResponse={chatGptResponse} /></Suspense></div>
                 )}
                 
 
