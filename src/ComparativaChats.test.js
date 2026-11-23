@@ -63,3 +63,11 @@ test('IA: con 10 chats, cada fila compara lo vuestro con el total', () => {
 test('IA: momento «ninguno» no se enseña', () => {
   expect(filasIA({ ...fichaIa, momento: 'ninguno' }, ia(10)).map((f) => f.clave)).not.toContain('momento');
 });
+
+// Maria, 23-11-2026: con 0 palabrotas el punto salía a mitad de barra (empate con los demás chats de 0) y la frase
+// «Más finos que el 84 %» confundía. El tramo más bajo es «casi ninguna», así que decimos en qué % de chats más finos estáis.
+test('0 palabrotas: punto al inicio de la barra y frase de los más finos', () => {
+  const t = totales(20, { palabrotas100: [8, 12] });
+  const fila = filasComparativa({ v: 1, numeros: { palabrotas100: 0 }, genero: {} }, t).numeros[0];
+  expect(fila).toMatchObject({ pct: 0, frase: 'Ni una palabrota: estáis en el 40 % de chats más finos' });
+});

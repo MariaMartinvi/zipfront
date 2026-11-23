@@ -44,6 +44,10 @@ export function filasComparativa(ficha, totales) {
     const cuentas = totales.numeros[k] || [];
     const total = cuentas.reduce((a, b) => a + b, 0);
     if (v == null || total < totales.minimos.numeros) return [];
+    if (k === 'palabrotas100' && v === 0) {
+      // Empatáis con todos los chats del tramo más bajo: el punto va al inicio y decimos qué % de chats está ahí
+      return [{ clave: k, titulo, valor: valor(v), pct: 0, frase: `Ni una palabrota: estáis en el ${Math.round((cuentas[0] / total) * 100)} % de chats más finos` }];
+    }
     const p = percentil(v, totales.tramos[k], cuentas);
     const arriba = p >= 50;
     return [{ clave: k, titulo, valor: valor(v), pct: p, frase: `${arriba ? mas : menos} ${arriba ? p : 100 - p} % de los chats` }];
