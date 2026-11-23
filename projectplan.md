@@ -1021,3 +1021,15 @@ Aprendizaje: «El Profesor» se decide por palabras únicas por mensaje, no por 
 total hacía que el ganador saliera con menos. Cada duelo usa el mismo campo que decide el perfil.
 Sin duelo (falta el dato de la otra persona): Chismoso, Cómico, Disculpón cuando la otra no tiene
 casos, y Mala Influencia (mezcla vicios y palabrotas).
+
+# Aviso de pago con datos de la pareja (2026-11-23)
+
+Por qué: en Clarity, 79 de 84 sesiones con chat subido ven el aviso de pago y compran 4; el texto era
+genérico («personalidad de cada uno…»). En chats de dos personas (web en castellano), el aviso abre
+ahora con datos reales y gratis de su chat (`src/utils/ganchoPareja.js`): quién escribe más, quién
+empieza las conversaciones y cuánto tarda cada uno, y luego qué desbloquea la IA. «Relación» y no
+«pareja»: un chat de dos también puede ser de madre e hija o de amigos.
+
+Sin verificar en pantalla: el aviso solo sale con sesión iniciada y sin créditos. Para medir el
+efecto, comparar en Clarity `paywall_click` y `checkout_iniciado` frente a `paywall_visto`
+antes y después del 23-11-2026.

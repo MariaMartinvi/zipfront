@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 import './fix-font-sizes.css';
@@ -35,6 +35,8 @@ import { libroStore } from './libro/store';
 import UploadDone from './UploadDone';
 import BlogFrame from './BlogFrame';
 import { getAiPackPricing } from './utils/pricing';
+import { parseChat } from './libro/parser';
+import { ganchoPareja } from './utils/ganchoPareja';
 import { trackEvent } from './utils/analytics';
 import { useTrackOnceVisible } from './utils/useTrackOnceVisible';
 import UploadBox from './UploadBox';
@@ -120,6 +122,8 @@ function AppContent() {
   const [isDeleting, setIsDeleting] = useState(false);
   // Nuevo estado para los datos extraídos del chat
   const [chatData, setChatData] = useState(null);
+  // Aviso de pago en parejas: un adelanto con datos reales y gratis de su chat (solo castellano)
+  const gancho = useMemo(() => { try { return chatData ? ganchoPareja(parseChat(chatData)) : null; } catch (e) { return null; } }, [chatData]);
   // Estado para controlar si mostrar el botón de ver análisis
   const [showViewAnalysisButton, setShowViewAnalysisButton] = useState(false);
   // Estado para mensajes de progreso
@@ -2062,7 +2066,11 @@ const tryDeleteFiles = async (operationId) => {
                 {/* Gancho discreto tras el resumen: lo gratis primero, el candado después */}
                 {chatData && userCredits && !userCredits.canUse && !chatGptResponse && !isFetchingMistral && (
                   <div className="ai-teaser" onClick={() => aiLockedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} role="button" tabIndex={0}>
-                    <span>🧠 {t('unlock_bar.teaser', 'La IA ya ha leído vuestro chat: personalidad de cada uno, señales de alerta y nota de la relación.')}</span>
+                    {gancho && (i18n.language || 'es').startsWith('es') ? (
+                      <span>🧠 {gancho} ¿Qué dice esto de vosotros? La IA ya ha leído vuestro chat: cómo es cada uno en la relación, señales de alerta y la nota de vuestra relación.</span>
+                    ) : (
+                      <span>🧠 {t('unlock_bar.teaser', 'La IA ya ha leído vuestro chat: personalidad de cada uno, señales de alerta y nota de la relación.')}</span>
+                    )}
                     <b>{t('unlock_bar.unlock', 'Desbloquear · {{price}}', { price: getAiPackPricing().price })} ↓</b>
                   </div>
                 )}
