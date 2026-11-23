@@ -15,10 +15,17 @@
 .cmp-reparto { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: #f1ecfb; }
 .cmp-reparto .chico { background: #25D366; }
 .cmp-reparto .chica { background: #8A2BE2; }
+.cmp-ia { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 32px; }
+.cmp-ia li { padding: 12px 0; border-bottom: 1px solid #f1ecfb; }
+.cmp-ia .cmp-titulo strong { font-size: 1.35rem; white-space: normal; text-align: right; }
+.ax .cmp-ia p { margin: 4px 0 0; font-size: .85rem; color: #656b73; text-align: left; }
+.ax .cmp-ia .cmp-frase { color: #333a41; font-weight: 500; }
 .ax .cmp-nota { margin: -8px 0 8px; font-size: .85rem; color: #656b73; text-align: left; }
 .ax .cmp-pie { margin: 14px 4px 0; font-size: .82rem; color: #656b73; text-align: left; }
 .cmp-pie a { color: #6a2bd8; }
 
 @media (max-width: 760px) {
-  .cmp-numeros { grid-template-columns: 1fr; }
+  .cmp-numeros, .cmp-ia { grid-template-columns: 1fr; }
+  .cmp-ia .cmp-titulo { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .cmp-ia .cmp-titulo strong { text-align: left; }
 }

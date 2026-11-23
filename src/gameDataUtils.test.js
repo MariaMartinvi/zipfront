@@ -1,4 +1,5 @@
 import { eliminarGameDataDelTexto } from './gameDataUtils';
+import { quitarComparativaData } from './gameDataUtils';
 
 describe('eliminarGameDataDelTexto', () => {
   test('elimina el bloque completo con encabezado "🎯 Datos juego" y cerca ```json (caso real)', () => {
@@ -88,5 +89,14 @@ Fin.`;
 
   test('sin bloque, el texto no cambia', () => {
     expect(frasesEnLugarDeGameData('Nada que cambiar.')).toBe('Nada que cambiar.');
+  });
+});
+
+describe('quitarComparativaData', () => {
+  test('quita la línea del final, con o sin bloque de código, y deja lo demás', () => {
+    const datos = 'COMPARATIVA_DATA:{"temas":["planes"],"nota":8,"rasgos":["divertido","organizador"]}';
+    expect(quitarComparativaData(`## Análisis\nTexto.\n\n${datos}`)).toBe('## Análisis\nTexto.\n');
+    expect(quitarComparativaData(`Texto.\n\`\`\`json\n${datos}\n\`\`\``)).toBe('Texto.');
+    expect(quitarComparativaData('Sin datos.')).toBe('Sin datos.');
   });
 });

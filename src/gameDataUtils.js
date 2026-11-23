@@ -42,9 +42,14 @@ export const eliminarGameDataDelTexto = (texto) => {
   return resultado.trim();
 };
 
+// Línea COMPARATIVA_DATA:{...} del final (para «Tu chat frente al resto»): no se pinta.
+export const quitarComparativaData = (texto) =>
+  texto.replace(/\n?[ \t]*(?:```(?:json)?\s*)?COMPARATIVA_DATA:\s*\{[^{}]*\}[ \t]*(?:\n?```)?/g, '');
+
 // En lugar de esconder el bloque GAME_DATA, lo convierte en las frases de cada persona, en el mismo sitio
 // (sección "Frases descriptivas-literales"). Si el bloque no se puede leer, lo quita como siempre.
-export const frasesEnLugarDeGameData = (texto) => {
+export const frasesEnLugarDeGameData = (textoOriginal) => {
+  const texto = quitarComparativaData(textoOriginal);
   const idx = texto.indexOf('GAME_DATA:');
   if (idx === -1) return texto;
   const inicio = texto.indexOf('[', idx);

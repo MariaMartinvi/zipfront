@@ -849,7 +849,7 @@ iframe de Firebase Auth se cargan en la portada para visitantes sin sesión.
 
 # Plan: «Tu chat frente al resto» — comparativa con el conjunto de chats (2026-11-23)
 
-Estado: **fase 1 subida a producción el 2026-11-23**. Fase 2 (IA) pendiente.
+Estado: **fases 1 y 2 subidas a producción el 2026-11-23**.
 
 ## Objetivo
 
@@ -946,7 +946,7 @@ cuentan los chats de pago.
       → verificar: test con 19 y con 20 chats; captura en local.
 - [x] 6. Párrafo en la política de privacidad (la página solo tiene castellano e inglés) y en la FAQ en castellano.
 - [x] 7. Security Gate del endpoint nuevo.
-- [ ] 8. (Fase 2) Prompt con listas cerradas + contadores de IA.
+- [x] 8. (Fase 2) Prompt con listas cerradas + contadores de IA.
 
 ## Dudas abiertas para Maria
 
@@ -989,7 +989,15 @@ Aprendizajes:
 - Los cortes de los tramos no se pueden cambiar sin descuadrar los contadores ya guardados:
   para cambiar una métrica, crear otra con nombre nuevo.
 
+Fase 2 (IA, mismo día):
+- El prompt en castellano (v1 y v2, también Mistral) acaba con `COMPARATIVA_DATA:{...}`: temas (1-3),
+  tipo de momento, recomendación, rasgo de cada persona, nota y dinámica, de listas cerradas
+  (`LISTAS_IA` en zipback `services/comparativa.py`, copiadas en `src/utils/comparativa.js`).
+- La web quita esa línea antes de pintar el análisis (`quitarComparativaData`), la lee, se queda solo
+  con valores de las listas y la manda a `POST /api/comparativa/ia` (documento `totales_ia`).
+- Tarjeta «Según el análisis IA» solo si el chat tiene análisis IA (la IA solo se ejecuta con créditos,
+  o sea, pagando) y hay 10 chats con IA.
+
 Pendiente:
-- Fase 2 (IA, de pago, con 10 chats): el prompt tiene que devolver tema, tipo de momento,
-  recomendación, rasgo, nota y dinámica de listas cerradas. Depende de cerrar el prompt v2.
+- Si se toca una lista de IA, cambiarla en los dos repos (no hay test que lo cruce).
 - Cualquiera puede mandar fichas falsas (hasta 20 por hora y IP). Aceptado: son contadores sin datos.

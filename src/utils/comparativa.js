@@ -120,15 +120,15 @@ const CLAVE_ENVIADOS = 'cs_comparativa_enviados';
  * Manda la ficha una sola vez por chat y navegador. Devuelve true si la ha mandado ahora.
  * Si falla la red no se marca, así que se reintenta la próxima vez que se vea el chat.
  */
-export async function enviarFicha(ficha, textoChat, { apiUrl, fetchFn = fetch, storage = window.localStorage } = {}) {
+export async function enviarFicha(ficha, textoChat, { apiUrl, ia = false, fetchFn = fetch, storage = window.localStorage } = {}) {
   if (!ficha) return false;
-  const h = huella(textoChat);
+  const h = (ia ? 'ia-' : '') + huella(textoChat);
   let enviados = [];
   try { enviados = JSON.parse(storage.getItem(CLAVE_ENVIADOS) || '[]'); } catch (e) { enviados = []; }
   if (enviados.includes(h) || enCurso.has(h)) return false;
   enCurso.add(h); // si la sección se monta dos veces seguidas, el segundo envío no sale
   try {
-    const r = await fetchFn(`${apiUrl}/api/comparativa`, {
+    const r = await fetchFn(`${apiUrl}/api/comparativa${ia ? '/ia' : ''}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ficha),
     });
     if (!r.ok) return false;
@@ -137,6 +137,35 @@ export async function enviarFicha(ficha, textoChat, { apiUrl, fetchFn = fetch, s
   return true;
 }
 const enCurso = new Set();
+
+// Listas cerradas de la parte de IA: las mismas que zipback/services/comparativa.py (LISTAS_IA)
+export const LISTAS_IA = {
+  temas: ['planes', 'trabajo_estudios', 'familia', 'amor_pareja', 'amistad', 'humor', 'cotilleo', 'ocio', 'comida', 'viajes', 'dinero_compras', 'desahogo'],
+  momento: ['celebracion', 'viaje', 'reencuentro', 'noticia_importante', 'plan_especial', 'reconciliacion', 'apoyo', 'broma', 'declaracion', 'ninguno'],
+  recomendacion: ['escuchar_mas', 'repartir_iniciativa', 'expresar_carino', 'hablar_claro', 'resolver_conflictos', 'mas_planes_juntos', 'respetar_espacio', 'responder_antes'],
+  rasgos: ['divertido', 'carinoso', 'organizador', 'protector', 'ironico', 'reflexivo', 'impulsivo', 'positivo', 'critico', 'reservado', 'hablador', 'detallista', 'independiente', 'empatico', 'competitivo'],
+  dinamica: ['apoyo_mutuo', 'complicidad', 'cooperacion', 'rutina', 'tension', 'desconexion'],
+};
+
+/**
+ * Ficha de la parte de IA a partir de la línea COMPARATIVA_DATA:{...} de la respuesta del análisis.
+ * Se queda solo con valores de las listas (lo demás se descarta); null si no hay nada aprovechable.
+ */
+export function fichaIA(respuesta) {
+  const m = typeof respuesta === 'string' && respuesta.match(/COMPARATIVA_DATA:\s*(\{[^{}]*\})/);
+  if (!m) return null;
+  let d;
+  try { d = JSON.parse(m[1]); } catch (e) { return null; }
+  const ficha = { v: 1 };
+  const enLista = (k, x) => typeof x === 'string' && LISTAS_IA[k].includes(x.trim().toLowerCase());
+  const norm = (x) => x.trim().toLowerCase();
+  if (Array.isArray(d.temas)) { const t = [...new Set(d.temas.filter((x) => enLista('temas', x)).map(norm))].slice(0, 3); if (t.length) ficha.temas = t; }
+  if (Array.isArray(d.rasgos)) { const r = d.rasgos.filter((x) => enLista('rasgos', x)).map(norm).slice(0, 20); if (r.length) ficha.rasgos = r; }
+  ['momento', 'recomendacion', 'dinamica'].forEach((k) => { if (enLista(k, d[k])) ficha[k] = norm(d[k]); });
+  const nota = Number(d.nota);
+  if (Number.isInteger(nota) && nota >= 1 && nota <= 10) ficha.nota = nota;
+  return Object.keys(ficha).length > 1 ? ficha : null;
+}
 
 /** Huella local del chat para no contarlo dos veces desde el mismo navegador. No sale del dispositivo. */
 export function huella(texto) {

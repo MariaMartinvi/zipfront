@@ -1,4 +1,4 @@
-import { fichaAnonima, tramoDe, percentil, huella, enviarFicha, MINIMO_MENSAJES } from './comparativa';
+import { fichaAnonima, tramoDe, percentil, huella, enviarFicha, fichaIA, MINIMO_MENSAJES } from './comparativa';
 
 // Mensajes con la forma de libro/parser.js
 const msg = (dia, hhmm, autor, texto = 'hola qué tal') => ({ fecha: new Date(`${dia}T${hhmm}:00`), dia, autor, tipo: 'text', texto });
@@ -104,4 +104,26 @@ test('dos envíos a la vez del mismo chat: solo sale uno', async () => {
 test('huella: igual para el mismo chat, distinta si cambia', () => {
   expect(huella('abc')).toBe(huella('abc'));
   expect(huella('abc')).not.toBe(huella('abd'));
+});
+
+test('ficha de IA: solo valores de las listas, sin nada del texto', () => {
+  const respuesta = '## Análisis\nEva es muy divertida.\n\nCOMPARATIVA_DATA:{"temas":["planes","Humor","boda de Eva","planes"],"momento":"celebracion","recomendacion":"inventada","rasgos":["divertido","Eva"],"nota":8,"dinamica":"complicidad"}';
+  expect(fichaIA(respuesta)).toEqual({ v: 1, temas: ['planes', 'humor'], momento: 'celebracion', rasgos: ['divertido'], nota: 8, dinamica: 'complicidad' });
+});
+
+test('ficha de IA: sin bloque, roto o vacío → null', () => {
+  expect(fichaIA('## Análisis sin datos')).toBeNull();
+  expect(fichaIA('COMPARATIVA_DATA:{roto')).toBeNull();
+  expect(fichaIA('COMPARATIVA_DATA:{"nota":15,"temas":["nada"]}')).toBeNull();
+  expect(fichaIA(null)).toBeNull();
+});
+
+test('la ficha de IA va a su propia ruta y no choca con la ficha normal del mismo chat', async () => {
+  const memoria = {};
+  const storage = { getItem: (k) => memoria[k] ?? null, setItem: (k, v) => { memoria[k] = v; } };
+  const ok = jest.fn().mockResolvedValue({ ok: true });
+  expect(await enviarFicha({ v: 1, nota: 8 }, 'chat E', { apiUrl: 'https://api', ia: true, fetchFn: ok, storage })).toBe(true);
+  expect(await enviarFicha(fichaAnonima(chatEjemplo()), 'chat E', { apiUrl: 'https://api', fetchFn: ok, storage })).toBe(true);
+  expect(await enviarFicha({ v: 1, nota: 8 }, 'chat E', { apiUrl: 'https://api', ia: true, fetchFn: ok, storage })).toBe(false);
+  expect(ok.mock.calls.map((c) => c[0])).toEqual(['https://api/api/comparativa/ia', 'https://api/api/comparativa']);
 });

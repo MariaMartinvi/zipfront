@@ -48,3 +48,12 @@ test('el análisis pinta "De qué habláis" y "Momentos memorables" como tarjeta
   expect(html).toContain('Imaginando las casitas');
   expect(div.querySelector('.pk-tarjeta small').textContent).toBe('febrero de 2026');
 });
+
+test('la línea COMPARATIVA_DATA del final no se pinta', async () => {
+  const div = document.createElement('div');
+  document.body.appendChild(div);
+  const conDatos = `${respuesta}\n\nCOMPARATIVA_DATA:{"temas":["planes"],"nota":8}`;
+  await act(async () => { createRoot(div).render(<Chatgptresultados chatGptResponse={conDatos} />); });
+  expect(div.innerHTML).not.toContain('COMPARATIVA_DATA');
+  expect(div.innerHTML).toContain('Imaginando las casitas');
+});
