@@ -156,6 +156,8 @@ function AppContent() {
   }, []);
   const [subirOtro, setSubirOtro] = useState(false); // tras analizar, la caja de subida se pliega hasta pulsar "Subir otro chat"
   useEffect(() => { setSubirOtro(false); }, [chatData]);
+  // «Subir otro chat» (al final de los resultados y en el menú de secciones): abre la caja de subida y lleva a ella
+  const pedirOtroChat = () => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); };
   
   // NUEVO: Estado para datos del juego de titulares
   const [headlinesGameData, setHeadlinesGameData] = useState(null);
@@ -2043,7 +2045,7 @@ const tryDeleteFiles = async (operationId) => {
                 )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Primera parte */}
-                {operationId && user && chatData && <Suspense fallback={null}><ResultadosIndice /></Suspense>}
+                {operationId && user && chatData && <Suspense fallback={null}><ResultadosIndice onSubirOtro={pedirOtroChat} /></Suspense>}
                 {operationId && user && (
                   <div className="analysis-container" ref={analysisRef} data-ri="resumen">
                     {!chatData && <h2 className="analysis-special-title">{t('app.analysis.statistical')}</h2>}
@@ -2381,7 +2383,7 @@ const tryDeleteFiles = async (operationId) => {
                 )}
 
                 {user && chatData && !subirOtro && (
-                  <UploadDone onAnother={() => { setSubirOtro(true); setTimeout(() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }} />
+                  <UploadDone onAnother={pedirOtroChat} />
                 )}
 
                 {error && (

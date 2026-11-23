@@ -5,7 +5,7 @@ import './ResumenWrapped.css';
 
 export const SECCIONES = ['resumen', 'perfiles', 'momentos', 'psicologico', 'libro', 'graficos'];
 
-export default function ResultadosIndice() {
+export default function ResultadosIndice({ onSubirOtro }) {
   const { t } = useTranslation();
   const [presentes, setPresentes] = useState([]);
   const [activa, setActiva] = useState('resumen');
@@ -35,6 +35,9 @@ export default function ResultadosIndice() {
           {t(`results_nav.${s}`)}
         </button>
       ))}
+      {onSubirOtro && (
+        <button type="button" className="ri-btn ri-otro" onClick={onSubirOtro}>＋ {t('app.upload.done_another')}</button>
+      )}
     </nav>
   );
 }

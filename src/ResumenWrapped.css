@@ -22,5 +22,7 @@
 .ri .ri-btn { all: unset; cursor: pointer; padding: 7px 14px; border-radius: 999px; font-size: 13.5px !important; color: #656b73; }
 .ri .ri-btn.on { background: #8A2BE2; color: #fff; }
 .ri .ri-btn:focus-visible { outline: 2px solid #8A2BE2; outline-offset: 2px; }
+.ri .ri-btn.ri-otro { margin-left: 10px; border: 1px solid #c6f0d6; color: #128C7E; font-weight: 600; }
+.ri .ri-btn.ri-otro:hover { background: #f3fdf7; }
 @media (max-width: 600px) { .ri { justify-content: flex-start; } }
 [data-ri] { scroll-margin-top: 140px; }
