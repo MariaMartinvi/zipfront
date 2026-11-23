@@ -34,6 +34,8 @@ const SISTEMA = [
   /se unió usando|joined using|añadió a|added|salió del grupo|left/i,
   /cambió el asunto|changed the subject|cambió la imagen del grupo|changed this group's icon/i,
   /mensajes temporales|disappearing messages/i,
+  // «Noemí creó este grupo.» va firmado por quien lo creó, con la fecha de creación (p. ej. 2011).
+  /cre[óo] (este|el) grupo|created (this |the )?group|ha creat (aquest|el) grup|criou (este|o) grupo/i,
 ];
 const BORRADO = /^(este mensaje fue eliminado|se eliminó este mensaje|you deleted this message|this message was deleted|eliminaste este mensaje|has eliminat aquest missatge|aquest missatge s'ha eliminat|esta mensagem foi apagada|você apagou esta mensagem|has eliminado este mensaje)\.?$/i;
 const REENVIADO = /^‎?\[?(reenviado|forwarded|reenviat|encaminhada)\]?\s*/i;

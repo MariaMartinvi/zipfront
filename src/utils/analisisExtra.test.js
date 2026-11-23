@@ -1,4 +1,5 @@
 import { diasIntensos, records, equilibrio, antesYAhora, dinamicaGrupo } from './analisisExtra';
+import { parseChat } from '../libro/parser';
 
 const msg = (dia, hhmm, autor, texto = 'hola') => ({ fecha: new Date(`${dia}T${hhmm}:00`), dia, autor, tipo: 'text', texto });
 
@@ -84,4 +85,21 @@ test('grupos: quién contesta a quién y quién reaviva; en parejas no sale', ()
   const r = dinamicaGrupo(ms);
   expect(r.pares[0]).toEqual({ quien: 'Marcos', aQuien: 'Eva', veces: 2 });
   expect(r.reaviva[0]).toEqual({ nombre: 'Sara', veces: 2 });
+});
+
+// Grupo de iPhone creado en 2011 y exportado en 2026: la línea «X creó el grupo» lleva la fecha de 2011
+// y salía «5171 días de silencio, el más largo» (23-11-2026). Los avisos del grupo no son conversación.
+test('los avisos de creación del grupo no cuentan para el silencio más largo', () => {
+  const L = '‎';
+  const chat = [
+    `[3/12/11, 17:02:51] Amigas: ${L}Los mensajes y las llamadas están cifrados de extremo a extremo.`,
+    `[3/12/11, 17:02:51] Noemí: ${L}Noemí creó este grupo.`,
+    `[3/12/11, 17:02:51] Amigas: ${L}Se te añadió al grupo.`,
+    `[3/12/11, 17:02:52] Eva Pan: ${L}Eva Pan creó el grupo “Amigas”`,
+    '[14/4/26, 10:00:00] Eva Pan: Hola',
+    '[15/4/26, 10:00:00] Noemí: Hola!',
+    '[20/4/26, 10:00:00] Maria: Ey',
+  ].join('\n');
+  const rec = records(parseChat(chat));
+  expect(rec.silencio).toEqual({ dias: 4, desde: '2026-04-15', hasta: '2026-04-20' });
 });
