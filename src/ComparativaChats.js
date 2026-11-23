@@ -3,7 +3,6 @@
 // Solo se enseña cada dato cuando hay chats suficientes (20, también para chico/chica). De momento solo en castellano.
 // La parte de IA sale de la línea COMPARATIVA_DATA del análisis IA: solo la ve quien lo tiene (ha pagado), desde 10 chats.
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { parseChat } from './libro/parser';
 import { fichaAnonima, fichaIA, enviarFicha, percentil } from './utils/comparativa';
 import { duracion } from './AnalisisExtra';
@@ -187,9 +186,6 @@ export default function ComparativaChats({ chatData, aiResponse }) {
           </section>
         )}
       </div>
-      <p className="cmp-pie">
-        Basado en {n(totales.chats)} chats{ia.length > 0 && <> ({n(totales.ia.chats)} con análisis IA)</>}. Solo guardamos contadores anónimos, nunca nombres ni mensajes. <Link to="/privacy">Más información</Link>
-      </p>
     </div>
   );
 }

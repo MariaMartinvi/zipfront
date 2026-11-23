@@ -21,8 +21,6 @@
 .ax .cmp-ia p { margin: 4px 0 0; font-size: .85rem; color: #656b73; text-align: left; }
 .ax .cmp-ia .cmp-frase { color: #333a41; font-weight: 500; }
 .ax .cmp-nota { margin: -8px 0 8px; font-size: .85rem; color: #656b73; text-align: left; }
-.ax .cmp-pie { margin: 14px 4px 0; font-size: .82rem; color: #656b73; text-align: left; }
-.cmp-pie a { color: #6a2bd8; }
 
 @media (max-width: 760px) {
   .cmp-numeros, .cmp-ia { grid-template-columns: 1fr; }
