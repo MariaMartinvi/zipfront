@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { limpiarLineaChat, PATRON_IOS, PATRON_ANDROID, PATRON_INICIO_MENSAJE } from './formatDetector';
+import { quitarAutoresSistema } from './utils/autoresSistema';
 import { useTranslation } from 'react-i18next';
 import './styles/Analisis.css';
 import './Analisis_top.css';
@@ -237,9 +238,9 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
     const mensajes = extraerMensajes(lineas, formato);
     
     // Filtrar mensajes del grupo solo para chats grupales de iOS
-    const mensajesFiltrados = (formato === "ios" && esChatGrupal && nombreGrupo)
+    const mensajesFiltrados = quitarAutoresSistema((formato === "ios" && esChatGrupal && nombreGrupo)
       ? mensajes.filter(m => m.nombre !== nombreGrupo)
-      : mensajes;
+      : mensajes);
     
     if (mensajesFiltrados.length === 0) {
       return { error: "no_valid_messages", success: false };
