@@ -8,7 +8,7 @@ const PrivacyPolicy = () => {
 
   const spanishContent = {
     title: "Política de Privacidad de chatsalsa.com",
-    lastUpdate: "Fecha de entrada en vigor: 27/05/2025",
+    lastUpdate: "Fecha de entrada en vigor: 23/11/2026",
     introduction: "En ChatSalsa, nos tomamos muy en serio la privacidad de nuestros usuarios. Esta Política de Privacidad describe cómo recopilamos, usamos y protegemos tu información personal cuando accedes y utilizas nuestro sitio web y servicios (en adelante, el \"Servicio\").",
     sections: {
       responsible: {
@@ -25,7 +25,10 @@ const PrivacyPolicy = () => {
         subsections: {
           stats: {
             title: "Para el análisis estadístico de tus chats:",
-            items: ["Tus chats no salen de tu dispositivo(ordenador o teléfono)."]
+            items: [
+              "Tus chats no salen de tu dispositivo(ordenador o teléfono).",
+              "Para la comparativa «Tu chat frente al resto», tu dispositivo envía una ficha con números del chat (por ejemplo, mensajes al día o palabrotas cada 100 mensajes) y si quien más escribe, más ríe, etc. es un chico o una chica, deducido del nombre en tu dispositivo. La ficha no lleva nombres, mensajes ni ningún dato que te identifique a ti o a tu chat: nuestro servidor solo suma 1 a unos contadores generales y la descarta."
+            ]
           },
           psych: {
             title: "Para el análisis sicológico de tus chats:",
@@ -147,7 +150,7 @@ const PrivacyPolicy = () => {
 
   const englishContent = {
     title: "ChatSalsa.com Privacy Policy",
-    lastUpdate: "Effective Date: 05/27/2025",
+    lastUpdate: "Effective Date: 11/23/2026",
     introduction: "At ChatSalsa, we take your privacy very seriously. This Privacy Policy describes how we collect, use, and protect your personal information when you access and use our website and services (hereinafter, the \"Service\").",
     sections: {
       responsible: {
@@ -164,7 +167,10 @@ const PrivacyPolicy = () => {
         subsections: {
           stats: {
             title: "For chat statistical analysis:",
-            items: ["Your chats never leave your device (computer or phone)."]
+            items: [
+              "Your chats never leave your device (computer or phone).",
+              "For the \"Your chat vs. the rest\" comparison, your device sends a summary with numbers from the chat (for example, messages per day or swear words per 100 messages) and whether whoever writes or laughs the most, etc. is male or female, guessed from the name on your device. The summary contains no names, messages or anything that identifies you or your chat: our server only adds 1 to some overall counters and discards it."
+            ]
           },
           psych: {
             title: "For psychological chat analysis:",

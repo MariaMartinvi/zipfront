@@ -1,0 +1,24 @@
+/* «Tu chat frente al resto». Usa las tarjetas de AnalisisExtra.css (.ax, .ax-tarjeta…) */
+.cmp-numeros { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 32px; }
+.cmp-numeros li, .cmp-genero li { padding: 12px 0; border-bottom: 1px solid #f1ecfb; }
+.cmp-titulo { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.cmp-titulo b { font-size: .98rem; color: #0e1318; }
+.cmp-titulo strong { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 1.7rem; line-height: 1; color: #6a2bd8; white-space: nowrap; }
+.cmp-titulo span { font-size: .85rem; color: #656b73; white-space: nowrap; }
+.cmp-titulo span b { font-size: .85rem; color: #6a2bd8; }
+.ax .cmp-numeros p, .ax .cmp-genero p { margin: 6px 0 0; font-size: .85rem; color: #656b73; text-align: left; }
+
+/* Escala de 0 a 100 %: el punto marca dónde queda vuestro chat */
+.cmp-escala { position: relative; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #f1ecfb, #d9c7f7); }
+.cmp-escala i { position: absolute; top: 50%; width: 16px; height: 16px; margin-left: -8px; transform: translateY(-50%); border-radius: 50%; background: #6a2bd8; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(106,43,216,.4); }
+
+.cmp-reparto { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: #f1ecfb; }
+.cmp-reparto .chico { background: #25D366; }
+.cmp-reparto .chica { background: #8A2BE2; }
+.ax .cmp-nota { margin: -8px 0 8px; font-size: .85rem; color: #656b73; text-align: left; }
+.ax .cmp-pie { margin: 14px 4px 0; font-size: .82rem; color: #656b73; text-align: left; }
+.cmp-pie a { color: #6a2bd8; }
+
+@media (max-width: 760px) {
+  .cmp-numeros { grid-template-columns: 1fr; }
+}

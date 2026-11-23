@@ -844,3 +844,152 @@ iframe de Firebase Auth se cargan en la portada para visitantes sin sesión.
 - Aprendizaje: si se cambia el marcado de `HeroSection.js`, hay que cambiarlo también en `scripts/shell.js`
   (el test falla si no coinciden). Los textos no: salen del JSON de traducciones.
 - Los botones del hero no responden hasta que React monta (1-2 s en móvil); antes en ese rato no se veía nada.
+
+---
+
+# Plan: «Tu chat frente al resto» — comparativa con el conjunto de chats (2026-11-23)
+
+Estado: **fase 1 subida a producción el 2026-11-23**. Fase 2 (IA) pendiente.
+
+## Objetivo
+
+Enseñar en los resultados cómo queda tu chat frente a todos los chats subidos
+(«habláis 43 mensajes al día; la media es 18»; «el más malhablado es un chico; en el
+80 % de los chats es una chica»). Ninguna app de la competencia revisada lo anuncia.
+
+## Cómo funciona (alto nivel)
+
+1. El navegador ya calcula las estadísticas. Al terminar, rellena una **ficha anónima**:
+   solo números y casillas (sin nombres, sin texto, sin usuario, sin id de chat).
+2. La ficha se envía a un endpoint nuevo de zipback, que **solo suma contadores** en
+   Firestore (un documento de totales por tipo de chat). La ficha no se guarda.
+3. Otro endpoint devuelve los totales; el navegador pinta la comparativa.
+
+Los valores numéricos se guardan en **tramos** (p. ej. 0-5, 5-10, 10-20… mensajes al día),
+no como media suelta. Con tramos se puede decir «habláis más que el 82 % de los chats»,
+que engancha más que una media y no la distorsiona un chat gigante.
+
+## Suposiciones
+
+- Las estadísticas gratis se calculan en el navegador (`src/utils/analisisExtra.js`,
+  `src/Analisis_top.js`), así que hace falta backend nuevo: hoy no se guarda nada.
+- Parejas (2 personas) y grupos se comparan **por separado**; mezclarlos no tiene sentido
+  (un grupo de 30 siempre gana en mensajes al día). El umbral de 20 chats es por tipo.
+- Si el usuario marca «Sólo análisis local», **no se envía ficha**.
+- El género se deduce en el navegador con una lista de nombres; al servidor solo llega
+  «chico / chica». Nombre ambiguo o desconocido → ese chat no cuenta para esa métrica.
+- El mismo chat subido dos veces en el mismo dispositivo cuenta una vez (marca en
+  localStorage; la huella del chat no sale del dispositivo).
+
+## Estadísticas propuestas
+
+### Fase 1 — sin IA (todo se calcula ya, o casi)
+
+| Bloque | Métrica | Cómo se enseña |
+|---|---|---|
+| Ritmo | Mensajes al día (media) | «Más que el X % de los chats» |
+| Ritmo | Récord de mensajes en un día | Percentil |
+| Ritmo | Días seguidos hablando (racha) | Percentil |
+| Ritmo | Silencio más largo | Percentil |
+| Ritmo | Hora punta y % de mensajes de madrugada | «El X % de los chats son más nocturnos» |
+| Equilibrio | % de mensajes de quien más escribe | «En el chat medio, quien más escribe pone el X %» |
+| Equilibrio | Tiempo medio de respuesta | Percentil |
+| Estilo | Palabras por mensaje | Percentil |
+| Estilo | Emojis por cada 100 mensajes | Percentil |
+| Estilo | Palabrotas por cada 100 mensajes | «Más malhablados que el X %» |
+| Estilo | Risas por cada 100 mensajes | «Os reís más que el X %» |
+| Chico/chica | Quién es el más malhablado | «En el X % de los chats es una chica» |
+| Chico/chica | Quién escribe más | ídem |
+| Chico/chica | Quién empieza las conversaciones | ídem |
+| Chico/chica | Quién es el cómico (provoca más risas) | ídem |
+| Chico/chica | Quién es el más cariñoso | ídem |
+| Chico/chica | Quién deja en visto / tarda más en contestar | ídem |
+| Chico/chica | Quién trasnocha más | ídem |
+
+### Fase 2 — con IA (solo chats con análisis de pago)
+
+Hoy la IA escribe texto libre, que no se puede contar. Hay que cambiar el prompt para
+que además elija de **listas cerradas**:
+
+- Tema principal del chat (planes, trabajo, familia, amor, cotilleo, humor, dinero…) → % por tema
+- Tipo de momento memorable (reconciliación, viaje, celebración, bronca, confesión…)
+- Tipo de recomendación más habitual (escuchar más, repartir la iniciativa…)
+- Rasgo principal de cada persona (lista de ~15 etiquetas)
+- Nota de la relación (1-10): «vuestra nota es 8; la media es 6,7»
+- Dinámica predominante (cooperación, apoyo mutuo, tensión…)
+
+Va después porque depende del prompt (6 idiomas) y la muestra crece despacio: solo
+cuentan los chats de pago.
+
+## Privacidad
+
+- Contadores agregados sin identificador = no son datos personales. Aun así, se añade
+  un párrafo a la política de privacidad (hoy dice que nada sale del dispositivo salvo
+  el análisis IA; dejará de ser exacto).
+- No se muestra ninguna métrica con menos de 20 chats de ese tipo; debajo de cada dato,
+  «basado en N chats» (cifra real).
+- Endpoint público: límite de peticiones y validación de rangos para que nadie infle
+  los contadores.
+
+## TODOs (se detallan tras el OK)
+
+- [x] 1. `fichaAnonima(mensajes)` en el navegador: devuelve solo números y casillas.
+      → verificar: test con un chat de ejemplo; la ficha no contiene ningún nombre ni texto.
+- [x] 2. Detector chico/chica por nombre (lista por idioma, ambiguos fuera).
+      → verificar: tests con nombres claros, ambiguos y apodos.
+- [x] 3. zipback: `POST /api/comparativa` suma contadores por tramos; `GET` los devuelve.
+      → verificar: tests de suma, de rangos inválidos (400) y de límite de peticiones.
+- [x] 4. Envío de la ficha al terminar el análisis (una vez por chat y dispositivo;
+      nunca en «Sólo análisis local»).
+      → verificar: test de que no se envía dos veces ni en modo local.
+- [x] 5. Sección «Tu chat frente al resto» en resultados, oculta con menos de 20 chats.
+      → verificar: test con 19 y con 20 chats; captura en local.
+- [x] 6. Párrafo en la política de privacidad (la página solo tiene castellano e inglés) y en la FAQ en castellano.
+- [x] 7. Security Gate del endpoint nuevo.
+- [ ] 8. (Fase 2) Prompt con listas cerradas + contadores de IA.
+
+## Dudas abiertas para Maria
+
+1. ¿Parejas y grupos por separado? (recomendado: sí)
+2. ¿La comparativa es gratis? (recomendado: sí; es el gancho y cada subida gratis alimenta los datos)
+3. ¿Empezamos por la fase 1 y dejamos la IA para después? (recomendado: sí)
+4. Umbral: 20 chats para las métricas numéricas; ¿50 para las de chico/chica? Con 20,
+   un «80 %» son 16 chats y baila mucho.
+
+## Decisiones de Maria (2026-11-23) — sustituyen a lo anterior donde choquen
+
+- Parejas y grupos **no** se separan: un solo conjunto. Las métricas de volumen se
+  normalizan por miembro (mensajes al día / miembros).
+- El bloque «Estilo» no convence tal como está: pendiente de concretar qué se queda.
+- Comparativa sin IA: gratis. Comparativa de IA: solo pagando.
+- Umbrales: 20 chats (numéricas), 50 (chico/chica), 10 (IA).
+- Género no reconocido: el chat se descarta solo para esas métricas, no entero.
+- La ficha se envía siempre, también en «Sólo análisis local» (solo lleva datos anónimos).
+- Chats repetidos: marca en el navegador.
+- Base de datos: Firestore (la que ya usa zipback), colección `comparativa`.
+- **No empezar a programar hasta que Maria dé el OK a la arquitectura.**
+
+## Review (2026-11-23)
+
+Hecho (fase 1, gratis, solo con la web en castellano, igual que «Vuestros momentos»):
+- Navegador: `src/utils/comparativa.js` (ficha anónima, tramos, percentil, envío una vez por chat),
+  `src/utils/generoNombre.js` (chico/chica por la primera palabra del nombre; ambiguo → no cuenta),
+  `src/ComparativaChats.js` (sección debajo de «Vuestros momentos»).
+- zipback: `services/comparativa.py` (validación, tramos, contadores) y `routes/comparativa.py`
+  (`POST`/`GET /api/comparativa`, 20 envíos/hora por IP en el POST, caché de 10 min en el GET).
+- Firestore: colección `comparativa`, documento `totales`. Se crea solo con el primer chat.
+- Privacidad: párrafo nuevo en la política (es/en) y la FAQ en castellano.
+
+Métricas: 10 numéricas (se ven con 20 chats) y 7 de chico/chica (con 50 chats con género reconocido).
+«% de mensajes de quien más escribe» se quitó: no se compara bien entre parejas y grupos.
+
+Aprendizajes:
+- En desarrollo React monta los efectos dos veces y la ficha salía dos veces: hace falta marcar
+  el envío «en curso» antes de la petición, no solo guardar la huella al terminar.
+- Los cortes de los tramos no se pueden cambiar sin descuadrar los contadores ya guardados:
+  para cambiar una métrica, crear otra con nombre nuevo.
+
+Pendiente:
+- Fase 2 (IA, de pago, con 10 chats): el prompt tiene que devolver tema, tipo de momento,
+  recomendación, rasgo, nota y dinámica de listas cerradas. Depende de cerrar el prompt v2.
+- Cualquiera puede mandar fichas falsas (hasta 20 por hora y IP). Aceptado: son contadores sin datos.

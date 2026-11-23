@@ -1038,7 +1038,7 @@
         },
         {
           "question": "¿Es seguro subir mis chats?",
-          "answer": "Sí, la privacidad es nuestra prioridad. Los datos personales de los chats no salen de tu dispositivo. El análisis estadístico se realiza en tu dispositivo al 100%. Para el análisis psicológico los chats se anonimizan y fragmentan en tu dispositivo antes de mandarlos a Microsoft Azure. Solo mandamos un fragmento de alrededor 20-50k caracteres. Mandamos los chats sin datos personales. Puedes revisar nuestra política de privacidad para obtener más detalles. Si aún así prefieres que ningún dato salga de tu dispositivo puedes elegir la opción 'sin análisis psicológico' al subir el archivo.",
+          "answer": "Sí, la privacidad es nuestra prioridad. Los datos personales de los chats no salen de tu dispositivo. El análisis estadístico se realiza en tu dispositivo al 100%. Para el análisis psicológico los chats se anonimizan y fragmentan en tu dispositivo antes de mandarlos a Microsoft Azure. Solo mandamos un fragmento de alrededor 20-50k caracteres. Mandamos los chats sin datos personales. Puedes revisar nuestra política de privacidad para obtener más detalles. Si aún así prefieres que el chat no salga de tu dispositivo puedes elegir la opción 'sin análisis psicológico' al subir el archivo (solo se enviarán contadores anónimos para la comparativa con el resto de chats).",
           "icon": "🔒"
         },
         {

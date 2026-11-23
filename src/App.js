@@ -54,6 +54,7 @@ const LibroPedido = lazy(() => import('./libro/LibroPedido'));
 const LibroCard = lazy(() => import('./libro/LibroCard'));
 const ResultadosIndice = lazy(() => import('./ResultadosIndice'));
 const AnalisisExtra = lazy(() => import('./AnalisisExtra'));
+const ComparativaChats = lazy(() => import('./ComparativaChats'));
 
 // Tras login/registro: a la página que lo pidió (p. ej. chat de pareja) o, por defecto, al cajón de subir el chat
 const destinoTrasLogin = (navigate) => {
@@ -2077,7 +2078,7 @@ const tryDeleteFiles = async (operationId) => {
 
                 {/* Estadísticas gratis nuevas (días intensos, récords, equilibrio…), de momento solo en castellano */}
                 {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
-                  <div data-ri="momentos"><Suspense fallback={null}><AnalisisExtra chatData={chatData} /></Suspense></div>
+                  <div data-ri="momentos"><Suspense fallback={null}><AnalisisExtra chatData={chatData} /><ComparativaChats chatData={chatData} /></Suspense></div>
                 )}
 
                 {/* Análisis psicológico de Azure */}
