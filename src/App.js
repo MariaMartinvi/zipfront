@@ -2067,9 +2067,9 @@ const tryDeleteFiles = async (operationId) => {
                 {chatData && userCredits && !userCredits.canUse && !chatGptResponse && !isFetchingMistral && (
                   <div className="ai-teaser" onClick={() => aiLockedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} role="button" tabIndex={0}>
                     {gancho && (i18n.language || 'es').startsWith('es') ? (
-                      <span>🧠 {gancho} ¿Qué dice esto de vosotros? La IA ya ha leído vuestro chat: cómo es cada uno en la relación, señales de alerta y la nota de vuestra relación.</span>
+                      <span>🧠 {gancho} ¿Qué dice esto de vosotros? El análisis IA os lo explica: cómo es cada uno en la relación, las señales de alerta y la nota de vuestra relación.</span>
                     ) : (
-                      <span>🧠 {t('unlock_bar.teaser', 'La IA ya ha leído vuestro chat: personalidad de cada uno, señales de alerta y nota de la relación.')}</span>
+                      <span>🧠 {t('unlock_bar.teaser', 'Con el análisis IA: la personalidad de cada uno, las señales de alerta y la nota de vuestra relación.')}</span>
                     )}
                     <b>{t('unlock_bar.unlock', 'Desbloquear · {{price}}', { price: getAiPackPricing().price })} ↓</b>
                   </div>
