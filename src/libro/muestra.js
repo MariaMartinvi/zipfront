@@ -75,13 +75,38 @@ const LIBROS = [
   },
 ];
 
+/**
+ * Dentro del iframe de la vista previa: esconde lo que no cabe entero en la página. Un capítulo largo no
+ * cabe en una página (impreso se reparte en varias) y el último mensaje salía cortado por la mitad.
+ * Se inyecta en el iframe con toString(): sin sintaxis que Babel convierta en ayudantes externos.
+ */
+export function recortar(doc) {
+  var vista = doc.defaultView;
+  var secciones = Array.prototype.slice.call(doc.querySelectorAll('section'));
+  var s = null;
+  for (var i = 0; i < secciones.length; i++) if (vista.getComputedStyle(secciones[i]).display !== 'none') { s = secciones[i]; break; }
+  if (!s) return;
+  var hijos = Array.prototype.slice.call(s.children);
+  for (var j = 0; j < hijos.length; j++) hijos[j].style.visibility = '';
+  // Solo se esconde lo que corta el borde de la página. Lo que entra en el margen de abajo se veía bien y se queda
+  // (con 2 px de tolerancia: la foto de un ejemplo pasa 1 px y se ve entera).
+  var limite = s.getBoundingClientRect().bottom + 2;
+  var fuera = false, ultimo = null;
+  for (var k = 0; k < hijos.length; k++) {
+    if (!fuera && hijos[k].getBoundingClientRect().bottom > limite) fuera = true;
+    if (fuera) hijos[k].style.visibility = 'hidden'; else ultimo = hijos[k];
+  }
+  // una fecha suelta al final de la página, sin mensajes debajo, también fuera
+  if (fuera && ultimo && ultimo.classList.contains('day')) ultimo.style.visibility = 'hidden';
+}
+
 // HTML de una sola página del libro (la sección que cumple `sel`), para pintarla en su propio iframe.
 function pagina(css, body, sel) {
   const W = (PAGE.w + 2 * PAGE.bleed) * 96 / 25.4;
   const H = PAGE.h + 2 * PAGE.bleed;
   return `<!doctype html><html lang="es"><head><meta charset="utf-8">${FONTS}<style>${css}
       html,body{background:#fff;overflow:hidden} section{height:${H}mm;min-height:${H}mm;overflow:hidden} section:not(${sel}){display:none !important}</style></head>
-      <body>${body}<script>(()=>{const z=()=>{document.documentElement.style.zoom=innerWidth/${W.toFixed(1)}};z();addEventListener('resize',z)})()</script></body></html>`;
+      <body>${body}<script>var recortar=${recortar.toString()};(()=>{const z=()=>{document.documentElement.style.zoom=innerWidth/${W.toFixed(1)};recortar(document)};z();addEventListener('resize',z);addEventListener('load',()=>recortar(document));if(document.fonts)document.fonts.ready.then(()=>recortar(document))})()</script></body></html>`;
 }
 
 function renderLibro({ titulo, subtitulo, color, foto, derecha, capitulos, chat }) {
