@@ -242,7 +242,21 @@
       "analysis_failed": "Échec de l'analyse des données",
       "no_data": "Aucune donnée disponible"
     },
-    "analysis_title": "Analyse de Chat WhatsApp"
+    "analysis_title": "Analyse de Chat WhatsApp",
+    "stats_labels": {
+      "vice_mentions": "Mentions de vices",
+      "vice_percentage": "% messages avec vices",
+      "profanity_mentions": "Mentions de gros mots",
+      "profanity_percentage": "% messages avec gros mots",
+      "questions_asked": "Questions posées",
+      "questions_percentage": "% de messages avec questions",
+      "apologies_count": "Fois où il s'excuse",
+      "apologies_percentage": "% de messages avec excuses",
+      "thanks_count": "Fois où il remercie",
+      "thanks_percentage": "% de messages avec remerciements",
+      "funny_messages": "Messages qui font rire",
+      "funny_percentage": "% de messages qui font rire"
+    }
   },
   "header": {
     "home": "Analyse ton chat",
@@ -1375,20 +1389,6 @@
       "no_analysis_data": "Aucune donnée d'analyse à partager. Veuillez vous assurer que l'analyse statistique est complète.",
       "personality_error": "Erreur lors de la génération de l'URL du jeu de personnalité"
     }
-  },
-  "stats_labels": {
-    "vice_mentions": "Mentions de vices",
-    "vice_percentage": "% messages avec vices",
-    "profanity_mentions": "Mentions de gros mots",
-    "profanity_percentage": "% messages avec gros mots",
-    "questions_asked": "Questions posées",
-    "questions_percentage": "% de messages avec questions",
-    "apologies_count": "Fois où il s'excuse",
-    "apologies_percentage": "% de messages avec excuses",
-    "thanks_count": "Fois où il remercie",
-    "thanks_percentage": "% de messages avec remerciements",
-    "funny_messages": "Messages qui font rire",
-    "funny_percentage": "% de messages qui font rire"
   },
   "offline": {
     "mode_title": "⚠️ Mode hors ligne",

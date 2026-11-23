@@ -634,6 +634,12 @@
         "self_mentions": "Menzioni di Sé",
         "percentage": "Percentuale"
       },
+      "gossip": {
+        "title": "Il Pettegolo",
+        "description": "Parla di più delle altre persone",
+        "others_mentions": "Menzioni di altre persone",
+        "percentage": "Dei suoi messaggi menzionano altri"
+      },
       "finisher": {
         "title": "Il Concluditore",
         "description": "Termina più conversazioni",

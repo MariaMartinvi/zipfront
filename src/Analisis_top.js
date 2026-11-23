@@ -9,6 +9,7 @@ import { detectarFormatoArchivo } from './formatDetector.js';
 // Importar utilidades de fecha
 import { parseDateTime, esDateValido } from './dateUtils.js';
 import { formatMinutesToHoursAndMinutes } from './utils/timeUtils';
+import { duelo, otroDeLaPareja, duracionCorta } from './utils/duelos';
 import { useAuth } from './AuthContext';
 import { ShareButton } from './shareTopProfiles';
 import { compartirPersonaje } from './sharePersonaje';
@@ -1776,12 +1777,33 @@ const AnalisisTop = ({ operationId, chatData }) => {
     );
   }
 
+  // Pareja: los dos, uno frente al otro, con el dato del perfil
+  const renderDuelo = (categoria) => {
+    const d = duelo(datos, categoria);
+    if (!d) return null;
+    const fmt = (v) => {
+      if (d.formato === 'texto') return v;
+      if (d.formato === 'minutos') return duracionCorta(v);
+      if (d.formato === 'entero') return Math.round(v);
+      return `${Number(v).toFixed(1)}${d.formato === 'pct' ? ' %' : ''}`;
+    };
+    return (
+      <div className="profile-duelo">
+        <span className="profile-duelo-label">{t(d.etiqueta)}</span>
+        <span className="profile-duelo-fila gana"><span>{d.gana.nombre}</span><b>{fmt(d.gana.valor)}</b></span>
+        <span className="profile-duelo-fila"><span>{d.otro.nombre}</span><b>{fmt(d.otro.valor)}</b></span>
+      </div>
+    );
+  };
+
   const renderDetalleCategoria = (categoria) => {
     if (!datos || !datos.categorias || !datos.categorias[categoria]) {
       return <p>{t('app.errors.no_category_data')}</p>;
     }
 
     const catData = datos.categorias[categoria];
+    // En una pareja, «los otros» es la otra persona: mejor su nombre
+    const etiquetaOtros = otroDeLaPareja(datos, catData.nombre) || t('app.top_profiles.group_average');
     let detalleEspecifico = null;
 
     const formatNumber = (num) => {
@@ -1794,12 +1816,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.palabras_unicas || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_palabras_unicas_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_palabras_unicas_resto)}</span></span>
               <span className="label">{t('app.top_profiles.professor.unique_words')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.ratio)}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_ratio_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_ratio_resto)}</span></span>
               <span className="label">{t('app.top_profiles.professor.unique_ratio')}</span>
             </div>
           </>
@@ -1809,7 +1831,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.palabras_por_mensaje)}</span>
-            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_palabras_por_mensaje_resto)}</span></span>
+            <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_palabras_por_mensaje_resto)}</span></span>
             <span className="label">{t('app.top_profiles.verbose.words_per_message')}</span>
           </div>
         );
@@ -1818,7 +1840,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatMinutesToHoursAndMinutes(catData.tiempo_respuesta_promedio)}</span>
-            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatMinutesToHoursAndMinutes(catData.media_tiempo_respuesta_resto)}</span></span>
+            <span className="media-resto">{etiquetaOtros}: <span>{formatMinutesToHoursAndMinutes(catData.media_tiempo_respuesta_resto)}</span></span>
             <span className="label">{t('app.top_profiles.gunslinger.response_time')}</span>
           </div>
         );
@@ -1828,12 +1850,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.mensajes_noche || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_noche_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_mensajes_noche_resto)}</span></span>
               <span className="label">{t('app.top_profiles.vampire.night_messages')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{catData.porcentaje !== undefined && !isNaN(catData.porcentaje) ? formatNumber(catData.porcentaje) : '0.0'}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.top_profiles.vampire.percentage')}</span>
             </div>
           </>
@@ -1843,7 +1865,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{catData.hora_formateada && catData.hora_formateada !== 'NaN:NaN' ? catData.hora_formateada : '00:00'}</span>
-            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{catData.hora_formateada_resto || '00:00'}</span></span>
+            <span className="media-resto">{etiquetaOtros}: <span>{catData.hora_formateada_resto || '00:00'}</span></span>
             <span className="label">{t('app.top_profiles.morning.avg_time')}</span>
           </div>
         );
@@ -1852,7 +1874,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatMinutesToHoursAndMinutes(catData.tiempo_respuesta_promedio)}</span>
-            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatMinutesToHoursAndMinutes(catData.media_tiempo_respuesta_resto)}</span></span>
+            <span className="media-resto">{etiquetaOtros}: <span>{formatMinutesToHoursAndMinutes(catData.media_tiempo_respuesta_resto)}</span></span>
             <span className="label">{t('app.top_profiles.ghost.response_time')}</span>
           </div>
         );
@@ -1862,12 +1884,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.menciones_yo || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_menciones_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_menciones_resto)}</span></span>
               <span className="label">{t('app.top_profiles.narcissist.self_mentions')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.top_profiles.narcissist.percentage')}</span>
             </div>
           </>
@@ -1878,12 +1900,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.menciones_otros || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_menciones_otros_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_menciones_otros_resto)}</span></span>
               <span className="label">{t('app.top_profiles.gossip.others_mentions')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.top_profiles.gossip.percentage')}</span>
             </div>
           </>
@@ -1894,12 +1916,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.emojis_totales || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_emojis_totales_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_emojis_totales_resto)}</span></span>
               <span className="label">{t('app.top_profiles.emoji.total_emojis')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.emojis_por_mensaje)}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_emojis_por_mensaje_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_emojis_por_mensaje_resto)}</span></span>
               <span className="label">{t('app.top_profiles.emoji.emojis_per_message')}</span>
             </div>
           </>
@@ -1910,12 +1932,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.emojis_amor || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_emojis_amor_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_emojis_amor_resto)}</span></span>
               <span className="label">{t('app.top_profiles.amoroso.love_emojis')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje_amor)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_amor_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_amor_resto)}%</span></span>
               <span className="label">{t('app.top_profiles.amoroso.percentage')}</span>
             </div>
           </>
@@ -1925,7 +1947,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{catData.conversaciones_terminadas || 0}</span>
-            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_conversaciones_terminadas_resto)}</span></span>
+            <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_conversaciones_terminadas_resto)}</span></span>
             <span className="label">{t('app.top_profiles.finisher.conversations_ended')}</span>
           </div>
         );
@@ -1934,7 +1956,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{catData.conversaciones_iniciadas || 0}</span>
-            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_conversaciones_iniciadas_resto)}</span></span>
+            <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_conversaciones_iniciadas_resto)}</span></span>
             <span className="label">{t('app.top_profiles.initiator.conversations_started')}</span>
           </div>
         );
@@ -1943,7 +1965,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         detalleEspecifico = (
           <div className="estadistica">
             <span className="valor">{formatNumber(catData.longitud_promedio)}</span>
-            <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_longitud_resto)}</span></span>
+            <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_longitud_resto)}</span></span>
             <span className="label">{t('app.top_profiles.concise.avg_length')}</span>
           </div>
         );
@@ -1953,12 +1975,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.max_mensajes_seguidos || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_seguidos_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_mensajes_seguidos_resto)}</span></span>
               <span className="label">{t('app.top_profiles.bombardero.consecutive_messages')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{catData.max_mensajes_seguidos || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_seguidos_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_mensajes_seguidos_resto)}</span></span>
               <span className="label">{t('app.top_profiles.bombardero.record')}</span>
             </div>
           </>
@@ -1969,12 +1991,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.mensajes_risa || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_risa_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_mensajes_risa_resto)}</span></span>
               <span className="label">{t('app.stats_labels.funny_messages')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.stats_labels.funny_percentage')}</span>
             </div>
           </>
@@ -1985,12 +2007,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.mensajes_agradece || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_agradecimiento_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_mensajes_agradecimiento_resto)}</span></span>
               <span className="label">{t('app.stats_labels.thanks_count')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.stats_labels.thanks_percentage')}</span>
             </div>
           </>
@@ -2001,12 +2023,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.mensajes_disculpa || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_disculpa_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_mensajes_disculpa_resto)}</span></span>
               <span className="label">{t('app.stats_labels.apologies_count')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.stats_labels.apologies_percentage')}</span>
             </div>
           </>
@@ -2017,12 +2039,12 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.mensajes_pregunta || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_mensajes_pregunta_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_mensajes_pregunta_resto)}</span></span>
               <span className="label">{t('app.stats_labels.questions_asked')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_resto)}%</span></span>
               <span className="label">{t('app.stats_labels.questions_percentage')}</span>
             </div>
           </>
@@ -2033,22 +2055,22 @@ const AnalisisTop = ({ operationId, chatData }) => {
           <>
             <div className="estadistica">
               <span className="valor">{catData.menciones_vicios || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_menciones_vicios_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_menciones_vicios_resto)}</span></span>
               <span className="label">{t('app.stats_labels.vice_mentions')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje_vicios)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_vicios_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_vicios_resto)}%</span></span>
               <span className="label">{t('app.stats_labels.vice_percentage')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{catData.menciones_palabrotas || 0}</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_menciones_palabrotas_resto)}</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_menciones_palabrotas_resto)}</span></span>
               <span className="label">{t('app.stats_labels.profanity_mentions')}</span>
             </div>
             <div className="estadistica">
               <span className="valor">{formatNumber(catData.porcentaje_palabrotas)}%</span>
-              <span className="media-resto">{t('app.top_profiles.group_average')}: <span>{formatNumber(catData.media_porcentaje_palabrotas_resto)}%</span></span>
+              <span className="media-resto">{etiquetaOtros}: <span>{formatNumber(catData.media_porcentaje_palabrotas_resto)}%</span></span>
               <span className="label">{t('app.stats_labels.profanity_percentage')}</span>
             </div>
           </>
@@ -2159,6 +2181,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
                         <div className="profile-title">{categoriaIconos[categoria].titulo()}</div>
                         <div className="profile-description">{categoriaIconos[categoria].descripcion()}</div>
                         <div className="profile-user">{datos.categorias[categoria].nombre}</div>
+                        {renderDuelo(categoria)}
                       </div>
                       <button
                         type="button"

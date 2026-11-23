@@ -140,6 +140,14 @@
   text-align: center;
 }
 
+/* Pareja: los dos, uno frente al otro (utils/duelos.js) */
+.profile-duelo { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #f1ecfb; width: 100%; }
+.profile-duelo-label { font-size: 11px; color: #8a8f96; text-transform: uppercase; letter-spacing: .04em; }
+.profile-duelo-fila { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: #656b73; }
+.profile-duelo-fila span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+.profile-duelo-fila b { font-weight: 600; white-space: nowrap; }
+.profile-duelo-fila.gana { color: #6a2bd8; }
+
 /* Profile Detail Container */
 .profile-detail-container {
   grid-column: 1 / -1;

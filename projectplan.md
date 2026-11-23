@@ -1001,3 +1001,23 @@ Fase 2 (IA, mismo día):
 Pendiente:
 - Si se toca una lista de IA, cambiarla en los dos repos (no hay test que lo cruce).
 - Cualquiera puede mandar fichas falsas (hasta 20 por hora y IP). Aceptado: son contadores sin datos.
+
+---
+
+# Perfiles en modo pareja (2026-11-23)
+
+Por qué: en Clarity (84 sesiones con chat subido, 17-23 nov.) el 93 % de los chats con dato eran de
+2 personas, y las tarjetas de perfiles son lo más pulsado después de la subida (99 de 432 clics).
+
+Hecho:
+- En chats de exactamente dos personas, cada tarjeta de perfil enseña a los dos con el dato del perfil
+  (`src/utils/duelos.js`). Usa la «media del resto» que ya calculaba `Analisis_top.js`, que en una
+  pareja es el valor de la otra persona: no se recalcula nada y el ganador siempre cuadra.
+- En el detalle de cada perfil, «Los otros» pasa a ser el nombre de la otra persona.
+- Arreglos de traducción que salieron al probar: en francés las etiquetas `stats_labels` estaban
+  fuera de `app` (salían en castellano) y en italiano faltaba el perfil «El Chismoso».
+
+Aprendizaje: «El Profesor» se decide por palabras únicas por mensaje, no por el total; comparar el
+total hacía que el ganador saliera con menos. Cada duelo usa el mismo campo que decide el perfil.
+Sin duelo (falta el dato de la otra persona): Chismoso, Cómico, Disculpón cuando la otra no tiene
+casos, y Mala Influencia (mezcla vicios y palabrotas).
