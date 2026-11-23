@@ -111,7 +111,7 @@ const FreemiumPlans = ({ userId }) => {
         </section>
 
         {esCastellano && (
-          <section className="precios-tarjeta libro">
+          <section className="precios-tarjeta precios-tarjeta-libro">
             <h2>📖 Libro regalo</h2>
             <div className="precios-precio">{libro.pdf}<span>{puedeImprimir(paisesLibro) ? `en PDF · impreso desde ${libro.libro}, envío incluido` : 'en PDF, descarga inmediata'}</span></div>
             <ul>
