@@ -162,7 +162,16 @@ export const registerUser = async (email, password, displayName) => {
     } catch (firebaseError) {
       if (firebaseError.code === 'auth/email-already-in-use') {
         console.log("Usuario ya existe en Firebase, intentando iniciar sesión...");
-        const loginCredential = await signInWithEmailAndPassword(auth, email, password);
+        let loginCredential;
+        try {
+          loginCredential = await signInWithEmailAndPassword(auth, email, password);
+        } catch (loginError) {
+          // Otra contraseña: decir que la cuenta ya existe, no «credenciales inválidas»
+          if (loginError.code === 'auth/invalid-credential' || loginError.code === 'auth/wrong-password') {
+            throw firebaseError;
+          }
+          throw loginError;
+        }
         user = loginCredential.user;
         isNewUser = false;
         console.log("Login exitoso para usuario existente:", user.uid);
