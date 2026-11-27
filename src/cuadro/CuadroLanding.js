@@ -74,7 +74,7 @@ export default function CuadroLanding() {
         </ul>
         <div className="ll-acciones cl-final">
           {precio.payments !== false && <button type="button" className="ll-boton-cta" onClick={comprar}>Crear mi cuadro · {precio.label}</button>}
-          <span>Pago único, para un chat (puedes subirlo las veces que necesites). Es una lámina digital para descargar e imprimir: no enviamos nada a casa. La lámina se crea en tu dispositivo y te la descargas en el momento: no la guardamos ni pasa por nuestro servidor. Tienes 24 horas desde el pago. El chat se envía anonimizado, sin nombres ni teléfonos, y no se guarda.</span>
+          <span>Pago único. Es una lámina digital para descargar e imprimir: no enviamos nada a casa. La lámina se crea en tu dispositivo y te la descargas en el momento: no la guardamos ni pasa por nuestro servidor. Tienes 24 horas desde el pago. El chat se envía anonimizado, sin nombres ni teléfonos, y no se guarda.</span>
         </div>
       </section>
     </div>
