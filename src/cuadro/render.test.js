@@ -5,9 +5,9 @@ import { EJEMPLOS, EJEMPLOS_LISTA } from './ejemplos';
 const frases = (n, texto = 'Contigo hasta los lunes molan') => Array.from({ length: n }, (_, i) => ({ texto: `${texto} ${i}`, autor: i % 2 ? 'Eva Pan' : 'marcos' }));
 const cuantas = (html) => (html.match(/<li class="b[ "]|<li><span class="l">/g) || []).length;
 
-test('se ofrecen tres estilos: Moderno, Tipográfico y Tierno, cada uno con sus ejemplos inventados', () => {
-  expect(IDS_PLANTILLAS).toEqual(['moderno', 'tipografico', 'tierno']);
-  expect(IDS_PLANTILLAS.map((id) => PLANTILLAS[id].nombre)).toEqual(['Moderno', 'Tipográfico', 'Tierno']);
+test('se ofrecen tres estilos, en este orden: Tipográfico, Moderno y Tierno, cada uno con sus ejemplos inventados', () => {
+  expect(IDS_PLANTILLAS).toEqual(['tipografico', 'moderno', 'tierno']);
+  expect(IDS_PLANTILLAS.map((id) => PLANTILLAS[id].nombre)).toEqual(['Tipográfico', 'Moderno', 'Tierno']);
   IDS_PLANTILLAS.forEach((id) => {
     expect(htmlCuadro(EJEMPLOS[id])).toContain(`p-${id}`);
     expect(EJEMPLOS[id].frases.length).toBeLessThan(LISTA_DESDE);

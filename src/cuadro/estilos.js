@@ -243,7 +243,8 @@ function cuerpoTierno(cuadro, frases, modo) {
 }
 
 export const ESTILOS = {
-  moderno: { nombre: 'Moderno', fuentes: ['Jost:wght@400;500'], cuerpo: cuerpoModerno },
+  // El orden de aquí es el orden en que se ofrecen (Maria, 27-11-2026: primero Tipográfico)
   tipografico: { nombre: 'Tipográfico', fuentes: ['Archivo:wght@500;900'], cuerpo: cuerpoTipografico },
+  moderno: { nombre: 'Moderno', fuentes: ['Jost:wght@400;500'], cuerpo: cuerpoModerno },
   tierno: { nombre: 'Tierno', fuentes: ['Pacifico', 'Fredoka:wght@500;700'], cuerpo: cuerpoTierno },
 };

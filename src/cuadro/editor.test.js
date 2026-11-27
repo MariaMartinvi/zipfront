@@ -41,7 +41,7 @@ test('el cuadro lleva solo las marcadas, en orden, y las opciones', () => {
   const c = cuadroDe(l, { plantilla: 'tierno', autores: 'inicial', titulo: 'Eva y Marcos', pie: '2024' }, [{ a: 0, p: 1 }]);
   expect(c).toMatchObject({ plantilla: 'tierno', autores: 'inicial', titulo: 'Eva y Marcos', pie: '2024', oscuro: false, datos: [{ a: 0, p: 1 }] });
   expect(c.frases).toEqual([{ texto: 'Frase 0', autor: 'Marcos' }, { texto: 'Frase 1', autor: 'Eva Pan' }, { texto: 'Frase 2', autor: 'Marcos' }]);
-  expect(cuadroDe(l, { plantilla: 'inventada' }).plantilla).toBe('moderno');
+  expect(cuadroDe(l, { plantilla: 'inventada' }).plantilla).toBe('tipografico');  // el primero que se ofrece
 });
 
 test('el trabajo se guarda en el navegador (sin el chat) y se recupera', () => {
