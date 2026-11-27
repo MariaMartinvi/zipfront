@@ -1,14 +1,12 @@
-// Página para crear el cuadro (/cuadro/crear).
-//  - Con ?session_id=… de un pago hecho: sube el chat, la IA propone las frases, elige, edita y descarga el PDF.
-//  - Sin pago: modo ejemplo, con frases inventadas, para trastear con los estilos antes de comprar.
+// Página para crear el cuadro (/cuadro/crear?session_id=…), a la que se llega después del pago:
+// sube el chat, la IA propone las frases, el usuario elige, edita y descarga el PDF. Sin pago, vuelve a /cuadro.
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import CuadroVista from './CuadroVista';
 import { htmlCuadro, PLANTILLAS, IDS_PLANTILLAS, MAX_FRASES } from './render';
-import { EJEMPLOS_LISTA } from './ejemplos';
 import { listaInicial, activas, alternar, anadir, editar, quitar, mover, cuadroDe, guardar, cargar, OPCIONES_INICIALES } from './editor';
 import { leerArchivoChat, mensajesDeTexto, buscarFrases, datosModerno, titulosPropuestos } from './chat';
-import { cargarPrecio, pagar, estadoPago, pedirFrases, descargarPdf, PRECIO_DEFECTO } from './api';
+import { estadoPago, pedirFrases, descargarPdf } from './api';
 import { trackEvent } from '../utils/analytics';
 import '../libro/LibroLanding.css';
 import './CuadroCrear.css';
@@ -18,21 +16,19 @@ const AUTORES = [['nombre', 'Nombre'], ['inicial', 'Inicial'], ['ninguno', 'Sin 
 export default function CuadroCrear() {
   const [params] = useSearchParams();
   const sid = params.get('session_id') || '';
-  const demo = !sid;
-  const [fase, setFase] = useState(demo ? 'editar' : 'comprobando'); // comprobando | sinpago | subir | leyendo | editar
-  const [lista, setLista] = useState(() => (demo ? listaInicial(EJEMPLOS_LISTA.moderno.frases) : []));
-  const [opciones, setOpciones] = useState(() => (demo ? { ...OPCIONES_INICIALES, titulo: 'Las de siempre', pie: '2019 – 2026' } : OPCIONES_INICIALES));
+  const [fase, setFase] = useState('comprobando'); // comprobando | sinpago | subir | leyendo | editar
+  const [lista, setLista] = useState([]);
+  const [opciones, setOpciones] = useState(OPCIONES_INICIALES);
   const [mensajes, setMensajes] = useState(null); // el chat, solo en memoria
   const [consiente, setConsiente] = useState(false);
   const [archivo, setArchivo] = useState(null);
   const [error, setError] = useState('');
   const [busca, setBusca] = useState('');
   const [bajando, setBajando] = useState('');
-  const [precio, setPrecio] = useState(PRECIO_DEFECTO);
 
   // Al llegar del pago: comprobarlo y recuperar el trabajo guardado en este navegador, si lo hay
   useEffect(() => {
-    if (demo) { cargarPrecio().then(setPrecio); return; }
+    if (!sid) return undefined;
     let vivo = true;
     estadoPago(sid).then(() => {
       if (!vivo) return;
@@ -40,9 +36,9 @@ export default function CuadroCrear() {
       if (previo) { setLista(previo.lista); setOpciones({ ...OPCIONES_INICIALES, ...previo.opciones }); setFase('editar'); } else { trackEvent('cuadro_comprado'); setFase('subir'); }
     }).catch(() => vivo && setFase('sinpago'));
     return () => { vivo = false; };
-  }, [sid, demo]);
+  }, [sid]);
 
-  useEffect(() => { if (!demo && fase === 'editar') guardar(sid, { lista, opciones }); }, [demo, fase, sid, lista, opciones]);
+  useEffect(() => { if (sid && fase === 'editar') guardar(sid, { lista, opciones }); }, [fase, sid, lista, opciones]);
 
   const datos = useMemo(() => (mensajes ? datosModerno(mensajes) : null), [mensajes]);
   const cuadro = useMemo(() => cuadroDe(lista, opciones, datos), [lista, opciones, datos]);
@@ -81,6 +77,7 @@ export default function CuadroCrear() {
     setBajando('');
   }
 
+  if (!sid) return <Navigate to="/cuadro" replace />;
   if (fase === 'comprobando') return <div className="ll cc"><p className="cc-aviso">Comprobando el pago…</p></div>;
   if (fase === 'sinpago') {
     return (
@@ -113,15 +110,9 @@ export default function CuadroCrear() {
 
   return (
     <div className="ll cc">
-      {demo && (
-        <div className="cc-demo">
-          <span>Esto es un ejemplo con frases inventadas. Para hacerlo con vuestro chat:</span>
-          {precio.payments !== false && <button type="button" className="ll-boton-cta" onClick={() => { trackEvent('cuadro_pago'); pagar().catch((e) => setError(e.message)); }}>Crear mi cuadro · {precio.label}</button>}
-        </div>
-      )}
       <div className="cc-editor">
         <div className="cc-panel">
-          <h1>{demo ? 'Prueba el editor' : 'Vuestro cuadro'}</h1>
+          <h1>Vuestro cuadro</h1>
 
           <h2>Estilo</h2>
           <div className="cc-botones">
@@ -163,8 +154,6 @@ export default function CuadroCrear() {
                 </ul>
               )}
             </>
-          ) : demo ? (
-            <p className="cc-nota">Con vuestro chat podrás buscar cualquier frase y añadirla.</p>
           ) : (
             <p className="cc-nota">Para buscar en el chat, súbelo otra vez (se queda en tu dispositivo, no se envía):{' '}
               <input type="file" accept=".zip,.txt" onChange={(e) => { setArchivo(e.target.files[0] || null); }} aria-label="Archivo del chat" />
@@ -182,13 +171,11 @@ export default function CuadroCrear() {
 
         <div className="cc-vista">
           <figure className="cc-cuadro">{marcadas > 0 ? <CuadroVista cuadro={cuadro} /> : <p className="cc-aviso">Marca al menos una frase.</p>}</figure>
-          {!demo && (
-            <div className="cc-descargar">
+          <div className="cc-descargar">
               <button type="button" className="ll-boton-cta" disabled={!marcadas || !!bajando} onClick={() => bajar('A4')}>{bajando === 'A4' ? 'Generando…' : 'Descargar PDF en A4'}</button>
               <button type="button" className="cc-secundario" disabled={!marcadas || !!bajando} onClick={() => bajar('A3')}>{bajando === 'A3' ? 'Generando…' : 'Descargar en A3'}</button>
-              <p className="cc-nota">Puedes cambiarlo y descargarlo las veces que quieras. Guarda el enlace de esta página para volver.</p>
-            </div>
-          )}
+              <p className="cc-nota">Edítalo hasta que quede perfecto: puedes cambiarlo y descargarlo las veces que quieras. Guarda el enlace de esta página para volver.</p>
+          </div>
           {error && <p className="cc-error" role="alert">{error}</p>}
         </div>
       </div>

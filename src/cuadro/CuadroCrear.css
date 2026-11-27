@@ -12,7 +12,6 @@
 .cc-error { color: #b3261e !important; font-weight: 500; margin: 10px 0 0; }
 .cc-nota { font-size: .86rem; color: var(--gris); margin: 6px 0; }
 
-.cc-demo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; background: #fff; border: 1px solid var(--linea); border-radius: 14px; padding: 14px 20px !important; margin-bottom: 22px; }
 .cc-editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: 44px; align-items: start; padding-bottom: 60px; }
 .cc-vista { position: sticky; top: 16px; }
 .cc-cuadro { margin: 0; box-shadow: 0 30px 60px -28px rgba(14, 19, 24, .45), 0 0 0 10px #fff, 0 0 0 11px #e6e0f2; }

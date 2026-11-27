@@ -1,12 +1,11 @@
 // Landing del cuadro regalo (/cuadro): las plantillas con frases de ejemplo inventadas.
 // Reutiliza la maqueta editorial de la landing del libro (clases .ll de LibroLanding.css).
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import CuadroVista from './CuadroVista';
 import { EJEMPLOS, EJEMPLOS_LISTA } from './ejemplos';
 import { PLANTILLAS, IDS_PLANTILLAS } from './render';
 import { cargarPrecio, pagar, PRECIO_DEFECTO } from './api';
-import { trackEvent, trackProductoClick } from '../utils/analytics';
+import { trackEvent } from '../utils/analytics';
 import '../libro/LibroLanding.css';
 import './CuadroLanding.css';
 
@@ -25,13 +24,13 @@ export default function CuadroLanding() {
           <p className="ll-entradilla">Las frases memorables de vuestro chat de WhatsApp, en un cuadro para regalar. La IA propone las mejores, tú eliges cuáles salen y el estilo, y lo descargas en PDF listo para imprimir y enmarcar.</p>
           <div className="ll-acciones">
             {precio.payments !== false && <button type="button" className="ll-boton-cta" onClick={comprar}>Crear mi cuadro · {precio.label}</button>}
-            <Link to="/cuadro/crear" onClick={() => trackProductoClick('cuadro', 'landing')}>Probarlo antes con un ejemplo</Link>
+            <span>Puedes editarlo hasta que quede perfecto.</span>
           </div>
           {error && <p className="cc-error" role="alert">{error}</p>}
           <ol className="cl-pasos">
             <li><b>Pagas</b> y subes el chat exportado de WhatsApp.</li>
             <li><b>La IA lee la conversación</b> y te propone 15 frases. Puedes añadir las que quieras a mano.</li>
-            <li><b>Eliges de 1 a 12 frases</b>, el estilo y si salen los nombres, y descargas el PDF en A4 y A3.</li>
+            <li><b>Eliges de 1 a 12 frases</b>, el estilo y si salen los nombres. Lo editas hasta que quede perfecto y descargas el PDF en A4 y A3.</li>
           </ol>
         </div>
         <figure className="cl-hero-cuadro"><CuadroVista cuadro={EJEMPLOS[elegida]} /></figure>
