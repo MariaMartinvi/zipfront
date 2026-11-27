@@ -1060,7 +1060,7 @@ Cada chat manda además (sin nombres; el servidor suma en `totales` y en `pais_X
 - [x] Web: `perfilesDelChat` (Analisis_top.js) = el mismo resultado que ve el usuario, calculado una vez por chat
 - [x] Web: `fichaCaracteristicas` + sumas propias en la ficha → comparativa.test.js (incluye test con el cálculo real)
 - [x] Servidor: valida país, sumas y características (listas cerradas, enteros, topes por mensaje, chico+chica ≤ chat) → test_comparativa.py
-- [x] Servidor: scripts/estadisticas_paises.py → tablas por país/LATAM/Europa sin España/Todos ⚠️ si < 100 chats → test_estadisticas_paises.py
+- [x] Servidor: scripts/estadisticas_paises.py → tablas por país/LATAM/Europa sin España/Todos ⚠️ si < 10 chats (Maria: 10 por país es suficiente; antes 100) → test_estadisticas_paises.py
 - [x] Política de privacidad: país, sumas por chico/chica y ganador de cada característica
 - [x] Parte de IA por país (temas, dinámica, momento, recomendación, rasgos, nota): la ficha de IA lleva `pais`,
       el servidor suma también en `pais_XX_ia` y la tabla saca % por país y nota media → tests
