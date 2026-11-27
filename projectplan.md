@@ -1210,3 +1210,9 @@ Maria: «que no se guarde ni un segundo en nuestro servidor, no quiero problemas
 - [ ] Pendiente de Maria: corregir la política de privacidad sobre el análisis de IA (dice que va directo a Azure sin pasar por
       nuestro servidor; hoy pasa por zipback y va a OpenAI/Mistral) y quitar del arranque del servidor el registro de los 8 primeros
       caracteres de la clave de Mistral.
+
+### Cuadro: un pago, un chat (Maria, 27-11-2026)
+- [x] El pago queda atado a un chat cuando las frases salen bien (huella en el servidor, nunca el contenido). Otro chat → rechazado.
+- [x] El mismo chat se puede subir varias veces (hasta 5 peticiones de frases por pago, `CUADRO_MAX_IA`).
+- [x] Si da error o no sale ninguna frase, ese intento no cuenta y se puede probar con otro chat.
+- [x] En el editor, volver a abrir el chat para buscar frases a mano exige que sea el mismo chat.

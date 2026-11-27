@@ -44,3 +44,11 @@ test('los nombres reales se reponen en el navegador', () => {
   expect(nombresReales([{ autor: 'Participante 2', texto: 'Participante 1, eres la mejor.' }], envio)[0].texto).toBe('Eva Pan, eres la mejor.');
   expect(nombresReales(null, envio)).toEqual([]);
 });
+
+test('huella del chat: la misma para el mismo chat, distinta para otro', () => {
+  const { huellaChat } = require('./anonimo');
+  const a = chatParaEnviar(CHAT).lineas;
+  expect(huellaChat(a)).toBe(huellaChat(chatParaEnviar(CHAT).lineas));           // subir el mismo chat otra vez
+  expect(huellaChat(a)).not.toBe(huellaChat(chatParaEnviar(`${CHAT}\n[3/3/23, 09:00:00] Eva Pan: Otra cosa`).lineas));
+  expect(huellaChat(a)).not.toMatch(/Eva|Marcos|desastre/);
+});

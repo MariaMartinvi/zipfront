@@ -45,6 +45,13 @@ export function chatParaEnviar(chatText) {
   return { lineas: pares.map((p) => `${p.a.autor}: ${p.a.texto}`).join('\n'), pares, mapas };
 }
 
+/** Huella corta del chat anonimizado: para saber, en este navegador, si se vuelve a subir el mismo chat del pago. */
+export function huellaChat(lineas) {
+  let h = 2166136261;
+  for (let i = 0; i < lineas.length; i += 1) { h ^= lineas.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return `${lineas.length}-${(h >>> 0).toString(36)}`;
+}
+
 /** Repone los nombres reales en las frases que devuelve el servidor. Solo en el navegador. */
 export function nombresReales(frases, { pares, mapas }) {
   const inverso = Object.entries(mapas || {}).map(([real, alias]) => [alias, real]).sort((x, y) => y[0].length - x[0].length);
