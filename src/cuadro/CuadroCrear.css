@@ -50,8 +50,6 @@
 /* Caja para subir el chat: la misma que la del libro (.ll-soltar de LibroLanding.css) */
 .cc-soltar { align-self: stretch; }
 .cc-soltar b { overflow-wrap: anywhere; }
-.cc-archivo { display: inline-flex; align-items: center; margin: 8px 8px 0 0; cursor: pointer; }
-.cc-archivo input { display: none; }
 
 /* Añadir frases a mano: que se note que se ha añadido y cuáles ya están */
 .cc-resultados button { display: flex; align-items: baseline; gap: 8px; }

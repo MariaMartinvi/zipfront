@@ -10,7 +10,7 @@ import { descargarLamina } from './lamina';
 import { listaInicial, activas, alternar, anadir, editar, quitar, mover, cuadroDe, guardar, cargar, OPCIONES_INICIALES } from './editor';
 import { leerArchivoChat, mensajesDeTexto, buscarFrases, datosModerno, titulosPropuestos } from './chat';
 import { estadoPago, pedirFrases } from './api';
-import { chatParaEnviar, nombresReales, huellaChat } from './anonimo';
+import { chatParaEnviar, nombresReales } from './anonimo';
 import WhatsappInstructions, { detectPlatform } from '../WhatsappInstructions';
 import { useTranslation } from 'react-i18next';
 import { trackEvent } from '../utils/analytics';
@@ -39,7 +39,6 @@ export default function CuadroCrear() {
     setBusca(''); // lista para buscar la siguiente
   };
   const [bajando, setBajando] = useState('');
-  const [huella, setHuella] = useState(''); // del chat con el que se creó el cuadro: un pago, un chat
   const [caduca, setCaduca] = useState(0); // hasta cuándo se puede descargar (24 h desde el pago)
 
   // Al llegar del pago: comprobarlo y recuperar el trabajo guardado en este navegador, si lo hay
@@ -50,12 +49,12 @@ export default function CuadroCrear() {
       if (!vivo) return;
       setCaduca(e.caduca || 0);
       const previo = cargar(sid);
-      if (previo) { setLista(previo.lista); setOpciones({ ...OPCIONES_INICIALES, ...previo.opciones }); setHuella(previo.huella || ''); setFase('editar'); } else { trackEvent('cuadro_comprado'); setFase('subir'); }
+      if (previo) { setLista(previo.lista); setOpciones({ ...OPCIONES_INICIALES, ...previo.opciones }); setFase('editar'); } else { trackEvent('cuadro_comprado'); setFase('subir'); }
     }).catch((e) => vivo && setFase(e.status === 410 ? 'caducado' : 'sinpago'));
     return () => { vivo = false; };
   }, [sid]);
 
-  useEffect(() => { if (sid && fase === 'editar') guardar(sid, { lista, opciones, huella }); }, [fase, sid, lista, opciones, huella]);
+  useEffect(() => { if (sid && fase === 'editar') guardar(sid, { lista, opciones }); }, [fase, sid, lista, opciones]);
 
   const datos = useMemo(() => (mensajes ? datosModerno(mensajes) : null), [mensajes]);
   const cuadro = useMemo(() => cuadroDe(lista, opciones, datos), [lista, opciones, datos]);
@@ -63,7 +62,7 @@ export default function CuadroCrear() {
   const encontradas = useMemo(() => (mensajes ? buscarFrases(mensajes, busca) : []), [mensajes, busca]);
   const opcion = (cambios) => setOpciones((o) => ({ ...o, ...cambios }));
 
-  async function leerChat(conIA) {
+  async function leerChat() {
     if (!archivo) return;
     setError('');
     try {
@@ -71,24 +70,17 @@ export default function CuadroCrear() {
       const ms = mensajesDeTexto(texto);
       if (ms.length < 20) throw new Error('No hemos encontrado mensajes en ese archivo. Sube el .zip del chat exportado de WhatsApp.');
       const envio = chatParaEnviar(texto); // anonimizado aquí: del navegador no salen nombres ni teléfonos
-      const h = huellaChat(envio.lineas);
-      if (!conIA) { // volver a abrir el chat para buscar frases a mano: tiene que ser el mismo
-        if (huella && huella !== h) throw new Error('Ese es otro chat. Este cuadro es del chat con el que lo creaste; para otro chat hace falta otro pago.');
-        setMensajes(ms);
-        return;
-      }
+      setMensajes(ms); // para buscar frases a mano mientras la página siga abierta
       setFase('leyendo');
       const r = await pedirFrases(sid, envio.lineas);
       trackEvent('cuadro_frases');
-      setMensajes(ms);
-      setHuella(h);
       setLista(listaInicial(nombresReales(r.frases, envio)));
       setOpciones((o) => ({ ...o, ...titulosPropuestos(ms) }));
       setFase('editar');
     } catch (e) {
       if (e.code === 'sin_usos') { setFase('editar'); setError('Ya hemos elegido las frases de este chat varias veces. Puedes buscar y añadir más a mano.'); return; }
       setError(e.message || 'No se ha podido leer el chat.');
-      if (conIA) setFase('subir');
+      setFase('subir');
     }
   }
 
@@ -138,7 +130,7 @@ export default function CuadroCrear() {
           <summary>{t('app.upload.how_export')}</summary>
           <WhatsappInstructions platform={detectPlatform()} compact />
         </details>
-        <button type="button" className="ll-boton-cta" disabled={!archivo || fase === 'leyendo'} onClick={() => leerChat(true)}>
+        <button type="button" className="ll-boton-cta" disabled={!archivo || fase === 'leyendo'} onClick={() => leerChat()}>
           {fase === 'leyendo' ? 'Eligiendo las mejores frases…' : 'Elegir mis frases'}
         </button>
         {fase === 'leyendo'
@@ -182,10 +174,10 @@ export default function CuadroCrear() {
             ))}
           </ul>
 
-          <h2>Añadir frases a mano</h2>
-          {anadida && <p className="cc-ok" role="status">✓ Añadida al cuadro: «{anadida}». Puedes buscar y añadir más.</p>}
-          {mensajes ? (
+          {mensajes && ( // solo con el chat cargado en esta página; tras recargar no se pide subirlo otra vez (Maria)
             <>
+              <h2>Añadir frases a mano</h2>
+              {anadida && <p className="cc-ok" role="status">✓ Añadida al cuadro: «{anadida}». Puedes buscar y añadir más.</p>}
               <input type="search" className="cc-busca" value={busca} placeholder="Busca una palabra de la frase…" onChange={(e) => setBusca(e.target.value)} aria-label="Buscar en el chat" />
               {busca.trim().length >= 2 && (
                 <ul className="cc-resultados">
@@ -203,14 +195,6 @@ export default function CuadroCrear() {
                 </ul>
               )}
             </>
-          ) : (
-            <p className="cc-nota">Para buscar en el chat, súbelo otra vez (se queda en tu dispositivo, no se envía):{' '}
-              <label className="cc-secundario cc-archivo">
-                <input type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" onChange={(e) => { setArchivo(e.target.files[0] || null); }} aria-label="Archivo del chat" />
-                {archivo ? archivo.name : 'Elegir archivo'}
-              </label>
-              {archivo && <button type="button" className="cc-secundario" onClick={() => leerChat(false)}>Abrir</button>}
-            </p>
           )}
 
           <h2>Textos del cuadro</h2>
