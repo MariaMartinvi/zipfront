@@ -73,7 +73,7 @@ export default function CuadroCrear() {
     try {
       await descargarPdf(sid, htmlCuadro(cuadro, { formato }), `cuadro-chatsalsa-${formato}.pdf`);
       trackEvent('cuadro_descargado');
-    } catch (e) { setError(e.message || 'No se pudo generar el PDF.'); }
+    } catch (e) { setError(e.message || 'No se pudo generar la lámina.'); }
     setBajando('');
   }
 
@@ -172,7 +172,7 @@ export default function CuadroCrear() {
         <div className="cc-vista">
           <figure className="cc-cuadro">{marcadas > 0 ? <CuadroVista cuadro={cuadro} /> : <p className="cc-aviso">Marca al menos una frase.</p>}</figure>
           <div className="cc-descargar">
-              <button type="button" className="ll-boton-cta" disabled={!marcadas || !!bajando} onClick={() => bajar('A4')}>{bajando === 'A4' ? 'Generando…' : 'Descargar PDF en A4'}</button>
+              <button type="button" className="ll-boton-cta" disabled={!marcadas || !!bajando} onClick={() => bajar('A4')}>{bajando === 'A4' ? 'Generando…' : 'Descargar la lámina (A4)'}</button>
               <button type="button" className="cc-secundario" disabled={!marcadas || !!bajando} onClick={() => bajar('A3')}>{bajando === 'A3' ? 'Generando…' : 'Descargar en A3'}</button>
               <p className="cc-nota">Edítalo hasta que quede perfecto: puedes cambiarlo y descargarlo las veces que quieras. Guarda el enlace de esta página para volver.</p>
           </div>

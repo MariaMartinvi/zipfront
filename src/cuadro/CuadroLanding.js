@@ -30,7 +30,7 @@ export default function CuadroLanding() {
           <ol className="cl-pasos">
             <li><b>Pagas</b> y subes el chat exportado de WhatsApp.</li>
             <li><b>La IA lee la conversación</b> y te propone 15 frases. Puedes añadir las que quieras a mano.</li>
-            <li><b>Eliges de 1 a 12 frases</b>, el estilo y si salen los nombres. Lo editas hasta que quede perfecto y descargas el PDF en A4 y A3.</li>
+            <li><b>Eliges de 1 a 12 frases</b>, el estilo y si salen los nombres. Lo editas hasta que quede perfecto y descargas la lámina en alta resolución, de más de 3000 px (A4, A3).</li>
           </ol>
         </div>
         <figure className="cl-hero-cuadro"><CuadroVista cuadro={EJEMPLOS[elegida]} /></figure>
@@ -57,7 +57,7 @@ export default function CuadroLanding() {
         </ul>
         <div className="ll-acciones cl-final">
           {precio.payments !== false && <button type="button" className="ll-boton-cta" onClick={comprar}>Crear mi cuadro · {precio.label}</button>}
-          <span>Pago único. El chat se envía a la IA sin nombres ni teléfonos y no se guarda.</span>
+          <span>Pago único. Es una lámina digital para descargar e imprimir: no enviamos nada a casa. El chat se envía a la IA sin nombres ni teléfonos y no se guarda.</span>
         </div>
       </section>
     </div>
