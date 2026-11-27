@@ -1176,3 +1176,16 @@ Decisiones tomadas por el camino (cambiables):
 - [ ] **Sin probar con un pago real**: falta una compra de prueba en producción (pago → frases → PDF). El PDF depende del Gotenberg del libro.
 - [ ] Maria: añadir en GTM `cuadro_(pago|comprado|frases|descargado)` y `cuadro` en la regex de `click_(…)`; confirmar el precio.
 - [ ] Más adelante: cuadro impreso con marco (Gelato), más estilos, dos columnas en lista.
+
+### Cuadro — anonimización igual que el análisis (Maria, 27-11-2026)
+Maria: «tiene que ser exactamente la misma manera» que el resto: el chat no puede salir sin anonimizar.
+La primera versión mandaba el chat tal cual a nuestro servidor (que lo anonimizaba antes de la IA). Corregido el mismo día:
+- [x] `src/cuadro/anonimo.js`: en el navegador, con las funciones del análisis (`anonimizarChat`, `anonymizeParticipants`,
+      `anonymizeWithPatterns`), mensaje a mensaje. Solo sale «Participante N: mensaje», sin fechas ni horas.
+- [x] Servidor: rechaza (400) todo chat que no llegue así; devuelve alias y el navegador repone los nombres.
+- [x] Probado en local con un chat real de 21.204 mensajes: todas las líneas con alias, 0 nombres de participantes, 0 teléfonos.
+- [x] Pantalla de subida sin casilla, con las instrucciones de exportación de la portada, solo .zip, y sin «IA» en los textos.
+- Va algo más allá que el análisis: tapa también el nombre de quien escribe cuando aparece dentro de un mensaje.
+- **Hallazgo sobre el análisis de IA (no tocado):** `anonymizeParticipants` no reconoce algunas líneas (3 de 22.863 en la prueba)
+  y `anonymizeWithPatterns` junta a veces una línea con la siguiente; en esas líneas el nombre puede salir sin tapar.
+  Tampoco tapa nombres de participantes dentro de los mensajes. Pendiente de decidir con Maria si se arregla.
