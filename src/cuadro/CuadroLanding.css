@@ -16,4 +16,4 @@ div.cl-tarjeta { cursor: default; text-align: center; }
 .ll .ll-acciones a { color: var(--lila); font-weight: 500; }
 .cc-error { color: #b3261e !important; font-weight: 500; }
 .ll ol.cl-pasos { list-style: decimal outside; padding-left: 22px; }
-.ll ol.cl-pasos li { display: list-item; margin-bottom: 4px; }
+.ll ol.cl-pasos li { display: list-item; list-style: decimal outside; margin-bottom: 4px; }
