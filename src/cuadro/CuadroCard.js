@@ -15,7 +15,7 @@ export default function CuadroCard() {
       <div className="libro-card-text">
         <span className="libro-card-nuevo">Nuevo</span>
         <h2>Un cuadro con vuestras frases memorables</h2>
-        <p>La IA elige las frases míticas de este chat y tú decides cuáles salen. Tres estilos, en una lámina de alta resolución lista para imprimir y enmarcar.</p>
+        <p>Nuestro sistema inteligente elige las frases míticas de este chat y tú decides cuáles salen. Tres estilos, en una lámina de alta resolución lista para imprimir y enmarcar.</p>
       </div>
       <button className="libro-card-btn" onClick={() => { trackProductoClick('cuadro', 'resultados'); navigate('/cuadro'); }}>Ver los cuadros →</button>
     </div>

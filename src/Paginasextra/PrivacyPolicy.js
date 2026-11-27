@@ -28,7 +28,7 @@ const PrivacyPolicy = () => {
             items: [
               "Tus chats no salen de tu dispositivo(ordenador o teléfono).",
               "Para la comparativa «Tu chat frente al resto», tu dispositivo envía una ficha con números del chat (por ejemplo, mensajes al día o palabrotas cada 100 mensajes, también sumados por chicos y por chicas) y si quien más escribe, más ríe, etc. —o quien gana cada característica (Vampiro, Amoroso…)— es un chico o una chica, deducido del nombre en tu dispositivo. Si has pedido el análisis con IA, también envía los temas, la dinámica, los rasgos y la nota que la IA ha elegido de unas listas cerradas. Con todo ello va el país, deducido de la zona horaria de tu dispositivo, para hacer estadísticas por países. La ficha no lleva nombres, mensajes ni ningún dato que te identifique a ti o a tu chat: nuestro servidor solo suma esos números a unos contadores generales y la descarta.",
-              "Si compras el cuadro regalo, después del pago y con tu permiso expreso el texto del chat se envía a nuestro servidor y a la IA para elegir las frases. Va sin nombres ni teléfonos (se sustituyen por «P1», «P2»…), sin fotos ni audios, y no se guarda: solo se te devuelven las frases elegidas."
+              "Si compras el cuadro regalo, después del pago el texto del chat se anonimiza en tu dispositivo, igual que en el análisis con IA (los nombres pasan a ser «Participante 1», «Participante 2»… y se ocultan teléfonos, correos y enlaces), y así se envía a nuestro servidor y a la IA para elegir las frases. No van fotos ni audios, y no se guarda: solo se te devuelven las frases elegidas, y los nombres reales se reponen en tu dispositivo."
             ]
           },
           psych: {

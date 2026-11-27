@@ -1,5 +1,6 @@
 // Página para crear el cuadro (/cuadro/crear?session_id=…), a la que se llega después del pago:
-// sube el chat, la IA propone las frases, el usuario elige, edita y descarga el PDF. Sin pago, vuelve a /cuadro.
+// sube el chat, se le proponen las frases, elige, edita y descarga la lámina. Sin pago, vuelve a /cuadro.
+// El chat se anonimiza en el navegador antes de enviarse, igual que en el análisis (anonimo.js).
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import CuadroVista from './CuadroVista';
@@ -7,20 +8,24 @@ import { htmlCuadro, PLANTILLAS, IDS_PLANTILLAS, MAX_FRASES } from './render';
 import { listaInicial, activas, alternar, anadir, editar, quitar, mover, cuadroDe, guardar, cargar, OPCIONES_INICIALES } from './editor';
 import { leerArchivoChat, mensajesDeTexto, buscarFrases, datosModerno, titulosPropuestos } from './chat';
 import { estadoPago, pedirFrases, descargarPdf } from './api';
+import { chatParaEnviar, nombresReales } from './anonimo';
+import WhatsappInstructions, { detectPlatform } from '../WhatsappInstructions';
+import { useTranslation } from 'react-i18next';
 import { trackEvent } from '../utils/analytics';
+import '../UploadBox.css';
 import '../libro/LibroLanding.css';
 import './CuadroCrear.css';
 
 const AUTORES = [['nombre', 'Nombre'], ['inicial', 'Inicial'], ['ninguno', 'Sin nombre']];
 
 export default function CuadroCrear() {
+  const { t } = useTranslation();
   const [params] = useSearchParams();
   const sid = params.get('session_id') || '';
   const [fase, setFase] = useState('comprobando'); // comprobando | sinpago | subir | leyendo | editar
   const [lista, setLista] = useState([]);
   const [opciones, setOpciones] = useState(OPCIONES_INICIALES);
   const [mensajes, setMensajes] = useState(null); // el chat, solo en memoria
-  const [consiente, setConsiente] = useState(false);
   const [archivo, setArchivo] = useState(null);
   const [error, setError] = useState('');
   const [busca, setBusca] = useState('');
@@ -52,13 +57,14 @@ export default function CuadroCrear() {
     try {
       const texto = await leerArchivoChat(archivo);
       const ms = mensajesDeTexto(texto);
-      if (ms.length < 20) throw new Error('No hemos encontrado mensajes en ese archivo. Sube el chat exportado de WhatsApp (.zip o .txt).');
+      if (ms.length < 20) throw new Error('No hemos encontrado mensajes en ese archivo. Sube el .zip del chat exportado de WhatsApp.');
       setMensajes(ms);
       if (!conIA) return;
       setFase('leyendo');
-      const r = await pedirFrases(sid, texto);
+      const envio = chatParaEnviar(texto); // anonimizado aquí: del navegador no salen nombres ni teléfonos
+      const r = await pedirFrases(sid, envio.lineas);
       trackEvent('cuadro_frases');
-      setLista(listaInicial(r.frases));
+      setLista(listaInicial(nombresReales(r.frases, envio)));
       setOpciones((o) => ({ ...o, ...titulosPropuestos(ms) }));
       setFase('editar');
     } catch (e) {
@@ -93,16 +99,18 @@ export default function CuadroCrear() {
       <div className="ll cc"><div className="cc-caja">
         <p className="ll-kicker">Pago recibido · paso 1 de 2</p>
         <h1>Sube vuestro chat</h1>
-        <p>Exporta el chat desde WhatsApp (sin archivos, pesa menos) y sube aquí el .zip o el .txt.</p>
-        <input type="file" accept=".zip,.txt" disabled={fase === 'leyendo'} onChange={(e) => { setArchivo(e.target.files[0] || null); setError(''); }} aria-label="Archivo del chat" />
-        <label className="cc-consiente">
-          <input type="checkbox" checked={consiente} disabled={fase === 'leyendo'} onChange={(e) => setConsiente(e.target.checked)} />
-          <span>Acepto que el texto del chat se envíe a nuestro servidor y a la IA para elegir las frases. Va sin nombres, teléfonos, fotos ni audios, y no se guarda.</span>
-        </label>
-        <button type="button" className="ll-boton-cta" disabled={!archivo || !consiente || fase === 'leyendo'} onClick={() => leerChat(true)}>
-          {fase === 'leyendo' ? 'Leyendo vuestro chat…' : 'Elegir mis frases'}
+        <p>Sube aquí el archivo .zip del chat exportado desde WhatsApp.</p>
+        <input type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" disabled={fase === 'leyendo'} onChange={(e) => { setArchivo(e.target.files[0] || null); setError(''); }} aria-label="Archivo del chat" />
+        <details className="upload-help">
+          <summary>{t('app.upload.how_export')}</summary>
+          <WhatsappInstructions platform={detectPlatform()} compact />
+        </details>
+        <button type="button" className="ll-boton-cta" disabled={!archivo || fase === 'leyendo'} onClick={() => leerChat(true)}>
+          {fase === 'leyendo' ? 'Eligiendo las mejores frases…' : 'Elegir mis frases'}
         </button>
-        {fase === 'leyendo' && <p className="cc-aviso">La IA está leyendo la conversación. Suele tardar menos de un minuto; no cierres la página.</p>}
+        {fase === 'leyendo'
+          ? <p className="cc-aviso">Estamos eligiendo las mejores frases de vuestro chat. Suele tardar menos de un minuto; no cierres la página.</p>
+          : <p className="cc-nota">Para elegirlas, el texto del chat se envía anonimizado (sin nombres, teléfonos, fotos ni audios) y no se guarda.</p>}
         {error && <p className="cc-error" role="alert">{error}</p>}
       </div></div>
     );
@@ -156,7 +164,7 @@ export default function CuadroCrear() {
             </>
           ) : (
             <p className="cc-nota">Para buscar en el chat, súbelo otra vez (se queda en tu dispositivo, no se envía):{' '}
-              <input type="file" accept=".zip,.txt" onChange={(e) => { setArchivo(e.target.files[0] || null); }} aria-label="Archivo del chat" />
+              <input type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" onChange={(e) => { setArchivo(e.target.files[0] || null); }} aria-label="Archivo del chat" />
               {archivo && <button type="button" onClick={() => leerChat(false)}>Abrir</button>}
             </p>
           )}
