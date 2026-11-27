@@ -44,6 +44,7 @@ const Header = ({ user }) => {
           <nav className="desktop-nav">
             <Link to="/" className="nav-link">{t('header.home')}</Link>
             {esCastellano && <Link to="/libro-recuerdo" className="nav-link" onClick={() => trackProductoClick('libro', 'menu')}><span className="nav-nuevo">Nuevo</span> Libro regalo</Link>}
+            {esCastellano && <Link to="/cuadro" className="nav-link" onClick={() => trackProductoClick('cuadro', 'menu')}><span className="nav-nuevo">Nuevo</span> Cuadro regalo</Link>}
             <Link to="/plans" className="nav-link">{t('header.pricing')}</Link>
             {user ? (
               <>
@@ -93,6 +94,7 @@ const Header = ({ user }) => {
           <Link to="/" className="mobile-nav-link" onClick={toggleMenu}>{t('header.home')}</Link>
           <Link to="/plans" className="mobile-nav-link" onClick={toggleMenu}>{t('header.pricing')}</Link>
           {esCastellano && <Link to="/libro-recuerdo" className="mobile-nav-link" onClick={() => { trackProductoClick('libro', 'menu'); toggleMenu(); }}><span className="nav-nuevo">Nuevo</span> Libro regalo</Link>}
+          {esCastellano && <Link to="/cuadro" className="mobile-nav-link" onClick={() => { trackProductoClick('cuadro', 'menu'); toggleMenu(); }}><span className="nav-nuevo">Nuevo</span> Cuadro regalo</Link>}
           {user ? (
             <>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

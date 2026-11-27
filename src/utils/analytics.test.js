@@ -9,7 +9,8 @@ const GTM_ACTIVADOR =
   'juego_jugado|juego_resultado_compartir|compartir_top_perfiles|compartir_analisis_ia|' +
   'porra_click|porra_descargada|porra_pagina_cta|pareja_paywall|pareja_click|pareja_resultado|' +
   'libro_(creado|abierto|editor)|libro_(pago|comprado)_(pdf|impreso)|' +
-  'click_(halloween|navidad|doctor_amor|libro)_(menu|banda|precios|landing|footer|resultados)';
+  'cuadro_(pago|comprado|frases|descargado)|' +
+  'click_(halloween|navidad|doctor_amor|libro|cuadro)_(menu|banda|precios|landing|footer|resultados)';
 
 const eventosEnElCodigo = () => {
   const src = path.join(__dirname, '..');
@@ -48,7 +49,7 @@ const permitido = (nombre) => new RegExp(`^(${GTM_ACTIVADOR})$`).test(nombre);
 
 test('todos los eventos del código están en el activador de GTM', () => {
   const usados = eventosEnElCodigo();
-  expect(usados.size).toBe(20);
+  expect(usados.size).toBe(24); // 20 + los 4 del cuadro regalo (27-11-2026)
   [...usados].forEach((nombre) => expect(permitido(nombre)).toBe(true));
 });
 

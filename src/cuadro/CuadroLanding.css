@@ -1,0 +1,17 @@
+/* Landing /cuadro: galería de plantillas. La maqueta general viene de LibroLanding.css (.ll). */
+.cl-hero-cuadro { margin: 0; justify-self: center; width: min(100%, 380px); box-shadow: 0 30px 60px -28px rgba(14, 19, 24, .45), 0 0 0 10px #fff, 0 0 0 11px #e6e0f2; }
+.cl-plantillas { padding-top: 24px; padding-bottom: 56px; }
+.cl-rejilla { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+.cl-tarjeta { display: block; width: 100%; padding: 8px 8px 12px; background: #fff; border: 1px solid var(--linea); border-radius: 10px; cursor: pointer; font: inherit; color: var(--tinta); transition: transform .15s, box-shadow .15s; }
+.cl-tarjeta:hover { transform: translateY(-3px); box-shadow: 0 16px 30px -18px rgba(14, 19, 24, .4); }
+.cl-tarjeta.cl-elegida { border-color: var(--lila); box-shadow: 0 0 0 2px var(--lila); }
+.cl-tarjeta iframe { pointer-events: none; border-radius: 4px; }
+.cl-tarjeta span { display: block; margin-top: 10px; font-weight: 600; font-size: .95rem; }
+@media (max-width: 860px) { .cl-rejilla { grid-template-columns: 1fr; gap: 18px; } }
+.cl-plantillas > p { margin-top: 34px; }
+div.cl-tarjeta { cursor: default; text-align: center; }
+.cl-pasos { margin: 26px 0 0; padding-left: 20px; color: var(--gris); line-height: 1.6; font-size: .98rem; max-width: 520px; }
+.cl-pasos b { color: var(--tinta); }
+.cl-final { margin-top: 40px; }
+.ll .ll-acciones a { color: var(--lila); font-weight: 500; }
+.cc-error { color: #b3261e !important; font-weight: 500; }

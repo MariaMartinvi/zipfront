@@ -55,6 +55,9 @@ const LibroPage = lazy(() => import('./libro/LibroPage'));
 const LibroLanding = lazy(() => import('./libro/LibroLanding'));
 const LibroPedido = lazy(() => import('./libro/LibroPedido'));
 const LibroCard = lazy(() => import('./libro/LibroCard'));
+const CuadroLanding = lazy(() => import('./cuadro/CuadroLanding'));
+const CuadroCrear = lazy(() => import('./cuadro/CuadroCrear'));
+const CuadroCard = lazy(() => import('./cuadro/CuadroCard'));
 const ResultadosIndice = lazy(() => import('./ResultadosIndice'));
 const AnalisisExtra = lazy(() => import('./AnalisisExtra'));
 const ComparativaChats = lazy(() => import('./ComparativaChats'));
@@ -2350,7 +2353,7 @@ const tryDeleteFiles = async (operationId) => {
                 {/* Tras el análisis psicológico y antes de los gráficos (a mitad de página, no pegada al pie):
                     como opción, convertir este chat en un libro (solo en castellano) */}
                 {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
-                  <div data-ri="libro"><Suspense fallback={<div style={{ minHeight: 252 }} />}><LibroCard /></Suspense></div>
+                  <div data-ri="libro"><Suspense fallback={<div style={{ minHeight: 252 }} />}><LibroCard /></Suspense>{(i18n.language || 'es').startsWith('es') && <Suspense fallback={null}><CuadroCard /></Suspense>}</div>
                 )}
 
                 {/* ANÁLISIS ESTADÍSTICO - Cuarta parte (al final) */}
@@ -2447,6 +2450,8 @@ const tryDeleteFiles = async (operationId) => {
         <Route path="/libro-recuerdo" element={<LibroLanding />} />
         <Route path="/libro" element={<LibroPage />} />
         <Route path="/libro/pedido" element={<LibroPedido />} />
+        <Route path="/cuadro" element={<CuadroLanding />} />
+        <Route path="/cuadro/crear" element={<CuadroCrear />} />
         <Route path="/analysis" element={<AnalysisViewer />} />
         {/* DEMO ANALYSIS */}
         <Route path="/demo" element={<DemoExample />} />

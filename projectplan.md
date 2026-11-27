@@ -1083,3 +1083,96 @@ Cada chat manda además (sin nombres; el servidor suma en `totales` y en `pais_X
 - Límites a decir en las notas: género según el nombre; país según la zona horaria de quien sube el chat;
   solo chats analizados en ChatSalsa desde el día de la subida.
 - Riesgo que queda: fichas inventadas pero coherentes (límite 20/hora por IP; topes por mensaje).
+
+## Plan: cuadro regalo con las frases míticas del chat (Maria, 27-11-2026) — PENDIENTE DE OK
+
+Producto nuevo: un cuadro para regalar con las frases míticas de un chat. Decidido con Maria:
+1. El usuario ve las plantillas con **frases de ejemplo inventadas** (nunca de chats de usuarios).
+2. **Paga.**
+3. **La IA lee su chat** y le propone 15 frases (Maria: la selección por estadísticas no vale; la hace la IA).
+4. El usuario marca cuáles salen, puede **buscar y añadir frases a mano** y editar el texto; nombre, inicial o sin nombre.
+5. Se genera su cuadro. Si no le gustan las frases de la IA, elige a mano (no se vuelve a pedir a la IA).
+
+**Supuestos (cambiables):**
+- Formato: solo **PDF descargable** al principio (A4 y A3 vertical). Cuadro impreso con marco (Gelato), más adelante si se vende.
+- Precio provisional 4,99–6,99 € (y su equivalente Latam/México), a fijar tras medir el coste de IA por chat (fase 0).
+- Empezamos con **4 plantillas** (moderna amorosa, clásica, minimalista, divertida) y ampliamos a 10 si funciona.
+- Solo usuarios con sesión iniciada (como el pack de IA).
+
+**Qué se reaprovecha:** lector de chats (`src/libro/parser.js`), HTML → PDF del libro (`/api/book/pdf`, Gotenberg),
+pago con Stripe como en el libro (`book_routes.py`, precios por región de `pricing.py`), y el servicio de IA de zipback.
+
+### Fase 0 — Comprobar que la IA elige bien (antes de construir nada)
+- [x] Script de prueba en zipback (`services/cuadro_frases.py`, `scripts/probar_frases_cuadro.py`, 6 tests): chat de prueba → 15 frases con IA (chat casi entero: solo se quitan multimedia,
+      enlaces y mensajes del sistema; en trozos si es muy largo) → verificar: salida con 15 frases literales que existen en el chat
+- [ ] Probar con 2-3 chats de Maria con modelo grande y pequeño; apuntar coste y tiempo por chat → verificar: Maria da el OK a la calidad
+      - 27-11-2026, chat «Eva Pan» (1,4 MB, 22.346 mensajes, 14 llamadas, ~278.000 tokens de entrada):
+        gpt-4.1 → 15 frases cortas y buenas en 41 s; gpt-4.1-mini → 13 frases, más flojas y con textos pegados (un anuncio), 91 s.
+        Coste estimado con las tarifas que conozco (a confirmar): ~0,55 € con gpt-4.1, ~0,11 € con mini. Conclusión provisional: modelo grande.
+      - Criterios de Maria ya en el prompt: graciosas, bonitas/amorosas, ingeniosas o filosóficas; cortas (3-15 palabras); memorables, «dignas de un cuadro».
+      - Falta: probar otro tipo de chat (pareja, familia) y que Maria dé el OK a la calidad.
+- [ ] Fijar el precio con ese coste → verificar: Maria lo confirma
+
+### Fase 1 — Plantillas y landing (sin pago)
+**Cambio de Maria (27-11-2026), tras ver las primeras plantillas y enseñar su lienzo «Cuadros de chats — muestra geométrica»:**
+tres estilos, **todos de 1 a 4 frases**:
+1. **Kandinsky-Miró**: composición geométrica abstracta generada con el chat (como su lienzo), con las frases debajo.
+2. **Tipográfico**: las frases tal cual, en letra enorme tipo póster (como su tercer diseño).
+3. **Alegre** («rollo Mr. Wonderful», con diseño propio: no se copian sus dibujos ni su letra): pastel, letra a mano, corazones y dibujitos.
+Las cuatro plantillas de lista del primer intento (amorosa, clásica, minimalista, divertida; 5-12 frases) quedan aparcadas en el código, sin enseñarse.
+**Ajuste posterior de Maria (mismo día):** los estilos se llaman **Moderno, Tipográfico y Tierno**; admiten **de 1 a 12 frases**.
+Con 1-4 frases manda el dibujo o la letra enorme; con 5-12 (chats de grupo) el mismo estilo pasa a lista y el texto gana protagonismo.
+En chats de grupo la IA elige al menos una frase de cada persona (ya en el prompt de `cuadro_frases.py`).
+- [x] Estilo Moderno (Kandinsky-Miró; `arteKandinsky` en src/cuadro/estilos.js) → tests (mismo chat = mismo dibujo) + visto en /cuadro
+- [x] Estilo Tipográfico → tests de ajuste de letra + visto en /cuadro
+- [x] Estilo Tierno → tests + visto en /cuadro
+- [x] Los tres en formato lista (9 frases) → vistos en /cuadro. 9 tests de src/cuadro, 233 en total.
+- [ ] Maria da el OK a los tres estilos (verlos en localhost:3005/cuadro)
+- [ ] El dibujo del Moderno con datos reales del chat (un círculo por tramo, color por persona): hoy sale de una semilla
+(lo de abajo es el plan inicial de esta fase)
+- [ ] Plantilla 1 «moderna amorosa» en HTML/CSS, A4 y A3, con frases inventadas (emojis como imagen) → test de render + captura
+- [ ] Plantillas 2-4 (clásica, minimalista, divertida) → test de render + capturas para Maria
+- [ ] Reparto automático de 5 a 12 frases sin que se corten ni se salgan → tests con frases cortas y largas
+- [ ] Landing `/cuadro` con la galería de plantillas de ejemplo y el precio → captura en ordenador y móvil
+
+### Fase 2 — Pago
+- [ ] Producto y precios en Stripe (es / latam / mx) y `POST /api/cuadro/checkout` → tests: sin sesión 401, precio según región
+- [ ] Confirmación y webhook: el pago da derecho a **un** cuadro (un chat) → tests: sin pago 403, pago usado no vale dos veces
+
+### Fase 3 — Frases
+- [ ] `POST /api/cuadro/frases` (sesión + pago comprobados): recibe el chat con consentimiento explícito, la IA devuelve 15 frases,
+      el servidor comprueba que cada una existe literalmente en el chat y no guarda el chat → tests (401/403, frase inventada descartada)
+- [ ] Pantalla de selección: marcar/desmarcar, editar texto, nombre / inicial / sin nombre → tests
+- [ ] Buscador en el chat para añadir frases a mano (en el navegador, sin IA) → tests
+
+### Fase 4 — Generar el cuadro
+- [ ] Vista previa con sus frases y cambio de plantilla en directo → captura
+- [ ] PDF final por el generador del libro, descarga y enlace para volver a descargar → test + PDF real revisado por Maria
+
+### Fase 5 — Antes de subir
+- [ ] Security Gate (validación, auth en cada endpoint, límites de uso, sin frases en logs, gitleaks, npm audit)
+- [ ] Política de privacidad: el chat se envía a la IA tras el pago para elegir frases y no se guarda
+- [ ] Eventos de medición (landing vista, pago iniciado, pago hecho, cuadro descargado) y enlace desde resultados y menú
+
+**Dudas abiertas para Maria:**
+- ~~¿Cuántas frases caben en un cuadro?~~ Maria (27-11-2026): de 1 a 4 en los tres estilos.
+- ~~¿Descuento a quien ya pagó el pack de IA?~~ Maria (27-11-2026): **sin descuento**, el cuadro va aparte.
+- Reembolso si alguien paga y su chat es demasiado corto para sacar frases: propuesta, avisar antes del pago si el chat tiene pocos mensajes.
+
+### Cuadro regalo — hecho el 27-11-2026 (Maria: «hazlo todo sin pedir permiso»)
+Decisiones tomadas por el camino (cambiables):
+- **Precio provisional: 5,99 € / 3,99 US$ (Latam) / $99 MXN.** Se cambia sin tocar código con la variable `CUADRO_PRICES` de Render.
+- **Sin cuenta:** el «pase» es la sesión de Stripe pagada (como en el libro). Un pago = dos peticiones a la IA como mucho (la 2.ª por si falla la 1.ª); descargas ilimitadas.
+- **Modelo:** gpt-4.1 (`CUADRO_MODELO`). Tope de coste: de un chat enorme se leen 20 trozos repartidos por su historia (~0,80 US$ como mucho). Los trozos van en paralelo.
+- **Modo ejemplo:** `/cuadro/crear` sin pago enseña el editor con frases inventadas (no deja descargar). Sirve de «pruébalo antes».
+- **Promoción:** se AÑADE el cuadro donde está el libro (menú superior y tarjeta en los resultados); el libro no se quita (Black Friday en marcha hasta el lunes 30).
+- **El dibujo del Moderno ya usa el chat:** un círculo por tramo de tiempo, color por persona y tamaño por lo hablado.
+
+- [x] Servidor (zipback): `cuadro_routes.py` (config, checkout, estado, frases, pdf) + `services/cuadro_frases.py` → 111 tests
+- [x] Web: `/cuadro` (landing con pago), `/cuadro/crear` (subir chat con consentimiento, elegir/editar/ordenar, buscar a mano, PDF A4/A3) → 241 tests
+- [x] Menú superior «Cuadro regalo», tarjeta en resultados, política de privacidad, eventos `cuadro_(pago|comprado|frases|descargado)` y `click_cuadro_*`
+- [x] Security Gate: importe decidido en servidor; frases y PDF solo con pago comprobado en Stripe (400/402/403); consentimiento obligatorio;
+      texto escapado en el cuadro (tests XSS); errores sin detalles internos; sin chat ni frases en logs; límite 40 POST/hora por IP; gitleaks limpio
+- [ ] **Sin probar con un pago real**: falta una compra de prueba en producción (pago → frases → PDF). El PDF depende del Gotenberg del libro.
+- [ ] Maria: añadir en GTM `cuadro_(pago|comprado|frases|descargado)` y `cuadro` en la regex de `click_(…)`; confirmar el precio.
+- [ ] Más adelante: cuadro impreso con marco (Gelato), más estilos, dos columnas en lista.
