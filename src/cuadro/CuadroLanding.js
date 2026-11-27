@@ -24,13 +24,12 @@ export default function CuadroLanding() {
           <p className="ll-entradilla">Nuestro sistema inteligente elige las frases más relevantes de vuestro chat, tú eliges la plantilla y descargas la lámina en alta calidad para impresión, lista para enmarcar.</p>
           <div className="ll-acciones">
             {precio.payments !== false && <button type="button" className="ll-boton-cta" onClick={comprar}>Crear mi cuadro · {precio.label}</button>}
-            <span>Puedes editarlo hasta que quede perfecto.</span>
           </div>
           {error && <p className="cc-error" role="alert">{error}</p>}
           <ol className="cl-pasos">
             <li><b>Pagas</b> y subes el chat exportado de WhatsApp.</li>
             <li><b>La IA lee la conversación</b> y te propone 15 frases. Puedes añadir las que quieras a mano.</li>
-            <li><b>Eliges de 1 a 12 frases</b>, el estilo y si salen los nombres. Lo editas hasta que quede perfecto y descargas la lámina en alta resolución, de más de 3000 px (A4, A3).</li>
+            <li><b>Eliges de 1 a 12 frases</b> y el estilo. Lo editas hasta que quede perfecto y descargas la lámina en alta resolución, de más de 3000 px (A4, A3).</li>
           </ol>
         </div>
         <figure className="cl-hero-cuadro"><CuadroVista cuadro={EJEMPLOS[elegida]} /></figure>
