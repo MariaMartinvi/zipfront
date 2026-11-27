@@ -7,6 +7,17 @@
 // require (no import): este fichero exporta con module.exports y mezclar ambos rompe el bundle
 const { PATRON_IOS, PATRON_ANDROID } = require('../formatDetector');
 
+// Nombres (o apodos de contacto) que también son palabras corrientes: dentro de un mensaje solo se tapan
+// si van con mayúscula inicial, para no convertir «el color rosa» en «el color Participante 1».
+const NOMBRES_AMBIGUOS = new Set(`
+  sol mar luz paz rosa alba cruz pilar dolores angel ángel blanca clara linda bella leon león rey flor mercedes
+  esperanza victoria gloria amor cielo luna estrella consuelo socorro remedios nieves rocio rocío vida dulce
+  barbara bárbara franco justo modesto severo salvador domingo pascual santos marina aurora violeta margarita
+  azucena lila oliva perla celeste alma caridad amparo soledad camino reyes lourdes guadalupe concha lola
+  mama mamá papa papá cari cariño gordi bebe bebé jefe jefa casa trabajo abuela abuelo yaya yayo tia tía tio tío
+  hermana hermano primo prima hijo hija nene nena peque guapa guapo
+`.trim().split(/\s+/));
+
 // Importación dinámica de Transformer.js para evitar problemas de bundle
 let pipeline = null;
 
@@ -452,7 +463,39 @@ class AnonymizationService {
     });
 
     console.log('Mapeo de participantes creado:', Object.fromEntries(this.participantMapping));
-    return processedLines.join('\n');
+    return this.maskParticipantMentions(processedLines).join('\n');
+  }
+
+  /**
+   * Tapa el nombre de los participantes cuando aparece DENTRO de un mensaje («Eva, ven» → «Participante 1, ven»).
+   * Antes solo se tapaba en la cabecera de cada línea, así que el nombre salía igualmente hacia la IA.
+   * Se busca el nombre entero y el de pila, como palabra completa y sin distinguir mayúsculas; los nombres que
+   * también son palabras corrientes (Rosa, Sol, Mamá…) solo se tapan si están escritos con mayúscula inicial.
+   * La respuesta de la IA ya se traduce de «Participante N» al nombre real (reconstructNames).
+   */
+  maskParticipantMentions(lines) {
+    const nombres = [];
+    this.participantMapping.forEach((alias, real) => {
+      const entero = String(real).trim();
+      if (!entero || /^[+\d\s().xX-]+$/.test(entero)) return; // contacto sin guardar: es un teléfono
+      const pila = entero.split(/\s+/)[0];
+      [...new Set([entero, pila])].forEach((n) => {
+        if ([...n].length >= 3 && !/^[+\d]/.test(n)) nombres.push([n, alias, NOMBRES_AMBIGUOS.has(n.toLowerCase())]);
+      });
+    });
+    if (!nombres.length) return lines;
+    nombres.sort((a, b) => b[0].length - a[0].length); // «Eva Pan» antes que «Eva»
+    const patrones = nombres.map(([n, alias, ambiguo]) => [
+      new RegExp(`(^|[^\\p{L}\\p{N}])${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\p{L}\\p{N}])`, ambiguo ? 'gu' : 'giu'),
+      `$1${alias}`,
+    ]);
+    const tapar = (t) => patrones.reduce((res, [re, alias]) => res.replace(re, alias), t);
+    // La cabecera («[fecha] Participante N: » o «fecha - Participante N: ») no se toca: solo el mensaje
+    const CABECERA = /^((?:\[[^\]]*\]|\S+ -) [^:]*\d: ?)(.*)$/;
+    return lines.map((line) => {
+      const m = line.match(CABECERA);
+      return m ? m[1] + tapar(m[2]) : tapar(line);
+    });
   }
 
   /**
@@ -632,6 +675,11 @@ class AnonymizationService {
    * @returns {string} - Contenido anonimizado
    */
   anonymizeWithPatterns(content, language) {
+    // Línea a línea: varios patrones admiten espacios «\s» y, aplicados al texto entero, se comían el salto
+    // de línea y juntaban un mensaje con el siguiente (27-11-2026).
+    if (typeof content === 'string' && content.includes('\n')) {
+      return content.split('\n').map((linea) => this.anonymizeWithPatterns(linea, language)).join('\n');
+    }
     let processedContent = content;
 
     // Patrones de nombres comunes por idioma

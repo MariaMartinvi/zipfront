@@ -11,25 +11,22 @@ const unaLinea = (s) => String(s || '').replace(/\s+/g, ' ').trim();
 export function anonimizar(chatText) {
   anonymizationService.reset(); // cada chat, sus propios alias
   let t = anonimizarChat(chatText);                                    // 1. teléfonos, correos y enlaces
-  t = anonymizationService.anonymizeParticipants(t, 'es');             // 2. quien escribe → «Participante N»
-  // 3. personas mencionadas. Línea a línea: aplicado al texto entero, a veces junta una línea con la siguiente
-  const idioma = anonymizationService.detectLanguage(t);
-  t = t.split('\n').map((l) => anonymizationService.anonymizeWithPatterns(l, idioma)).join('\n');
+  t = anonymizationService.anonymizeParticipants(t, 'es');             // 2. quien escribe → «Participante N» (también dentro de los mensajes)
+  t = anonymizationService.anonymizeWithPatterns(t, anonymizationService.detectLanguage(t)); // 3. personas mencionadas
   const m = anonymizationService.getAllMappings();
   return { texto: t, mapas: { ...m.locations, ...m.mentionedPeople, ...m.participants } };
 }
 
 // Línea de un mensaje tal como la deja anonymizeParticipants: «[fecha] Participante N: texto».
 const LINEA_ANONIMA = /^\[[^\]]*\]\s*(Participante \d+): ?(.*)$/;
-const escapar = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
  * Lo que se envía y lo que hace falta para deshacerlo después.
  * lineas: «Participante N: mensaje», una por mensaje de texto. pares: cada mensaje enviado con su original.
  *
  * Cada mensaje de texto se pone primero en una línea limpia y con el mismo formato, y a ese texto se le pasan
- * las funciones del análisis. Así ninguna línea se queda sin reconocer (en un chat real, 3 de 22.863 mensajes
- * se quedaban con su nombre). Y por si acaso: solo se envía lo que ha quedado como «Participante N: …».
+ * las funciones del análisis, las mismas para toda la web. Y por si acaso: solo se envía lo que ha quedado
+ * como «Participante N: …».
  */
 export function chatParaEnviar(chatText) {
   const orig = parseChat(chatText).filter((m) => m.fecha && m.autor && m.tipo === 'text' && unaLinea(m.texto));
@@ -38,22 +35,11 @@ export function chatParaEnviar(chatText) {
   const salida = texto.split('\n');
   const alineado = salida.length === orig.length; // una línea por mensaje: la i-ésima es el i-ésimo original
 
-  // Además: el nombre de quien escribe (entero o de pila) también se tapa cuando aparece dentro de un mensaje
-  const nombres = [];
-  Object.entries(mapas).filter(([, alias]) => /^Participante \d+$/.test(alias)).forEach(([real, alias]) => {
-    nombres.push([real, alias]);
-    const pila = real.trim().split(/\s+/)[0];
-    if (pila.length >= 3 && pila !== real && !/^\+?\d/.test(pila)) nombres.push([pila, alias]);
-  });
-  nombres.sort((x, y) => y[0].length - x[0].length);
-  const patrones = nombres.map(([real, alias]) => [new RegExp(`(^|[^\\p{L}\\p{N}])${escapar(real)}(?![\\p{L}\\p{N}])`, 'giu'), `$1${alias}`]);
-  const tapar = (t) => patrones.reduce((r, [re, alias]) => r.replace(re, alias), t);
-
   const pares = [];
   salida.forEach((l, i) => {
     const m = l.match(LINEA_ANONIMA);
     if (!m) return; // lo que no ha quedado con alias no se envía
-    const a = { autor: m[1], texto: unaLinea(tapar(m[2])) };
+    const a = { autor: m[1], texto: unaLinea(m[2]) };
     if (a.texto) pares.push({ a, o: alineado ? { autor: orig[i].autor, texto: unaLinea(orig[i].texto) } : null });
   });
   return { lineas: pares.map((p) => `${p.a.autor}: ${p.a.texto}`).join('\n'), pares, mapas };

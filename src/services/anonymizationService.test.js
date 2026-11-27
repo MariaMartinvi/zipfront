@@ -94,3 +94,44 @@ describe('anonymizeParticipants: formatos reales que hoy fallan (bug de los 3 pa
     expect(Object.keys(anonymizationService.getAllMappings().participants)).toEqual(['Maria']);
   });
 });
+
+describe('nombres de los participantes dentro de los mensajes (27-11-2026)', () => {
+  beforeEach(() => anonymizationService.reset());
+
+  test('el nombre de quien escribe también se tapa cuando otro lo nombra', () => {
+    const [l1, l2, l3] = anonimizar([
+      '[1/3/23, 10:00:00] Eva Pan: Hola, soy Eva',
+      '[1/3/23, 10:01:00] Marcos Ruiz: eva pan, eres la mejor. Y evaluar no es Eva',
+      'y dile a Marcos que venga',
+    ]);
+    expect(l1).toBe('[1/3/23] Participante 1: Hola, soy Participante 1');
+    expect(l2).toBe('[1/3/23] Participante 2: Participante 1, eres la mejor. Y evaluar no es Participante 1'); // «evaluar» no se toca
+    expect(l3).toBe('y dile a Participante 2 que venga');                                                    // línea de continuación
+    expect([l1, l2, l3].join(' ')).not.toMatch(/\b(Eva|Pan|Marcos|Ruiz)\b/i);
+  });
+
+  test('nombres que también son palabras corrientes: solo se tapan escritos con mayúscula', () => {
+    const [l1, l2] = anonimizar([
+      '[1/3/23, 10:00:00] Rosa: me gusta el color rosa',
+      '[1/3/23, 10:01:00] Mamá: Dile a Rosa que su mamá la espera',
+    ]);
+    expect(l1).toBe('[1/3/23] Participante 1: me gusta el color rosa');
+    expect(l2).toBe('[1/3/23] Participante 2: Dile a Participante 1 que su mamá la espera');
+  });
+
+  test('un contacto que es un número de teléfono no se usa como nombre', () => {
+    const [l1] = anonimizar(['[1/3/23, 10:00:00] +34 600 123 456: tengo 34 años y 600 euros']);
+    expect(l1).toBe('[1/3/23] Participante 1: tengo 34 años y 600 euros');
+  });
+});
+
+describe('anonymizeWithPatterns no junta un mensaje con el siguiente (27-11-2026)', () => {
+  beforeEach(() => anonymizationService.reset());
+
+  test('una dirección al final de un mensaje no se come el salto de línea', () => {
+    const texto = '[1/3/23] Participante 1: quedamos en la plaza mayor\n[1/3/23] Participante 2: vale\n[1/3/23] Participante 1: en Calle Luna\n[1/3/23] Participante 2: ok';
+    const salida = anonymizationService.anonymizeWithPatterns(texto, 'spa').split('\n');
+    expect(salida).toHaveLength(4);
+    salida.forEach((l) => expect(l).toMatch(/^\[1\/3\/23\] Participante \d: /));
+  });
+});
