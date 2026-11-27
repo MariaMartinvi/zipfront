@@ -148,41 +148,42 @@ const PrivacyPolicy = () => {
 
   const englishContent = {
     title: "ChatSalsa.com Privacy Policy",
-    lastUpdate: "Effective Date: 11/23/2026",
-    introduction: "At ChatSalsa, we take your privacy very seriously. This Privacy Policy describes how we collect, use, and protect your personal information when you access and use our website and services (hereinafter, the \"Service\").",
+    lastUpdate: "Effective Date: 11/27/2026",
+    introduction: "At ChatSalsa, we take your privacy very seriously. This Privacy Policy describes how we collect, use and protect your personal information when you access and use our website and services (the \"Service\").",
     sections: {
       responsible: {
         title: "1. Data Controller",
         description: "The controller of your personal data is:",
         details: [
-          "ChatSalsa",
-          "Avenida Roma 153, 08011 Barcelona",
+          "Comartinvi (Owner of Chatsalsa.com)",
+          "Avinguda Roma 153, 08011 Barcelona, Spain",
           "Email: info@comartinvi.com"
         ]
       },
       important: {
-        title: "Important",
+        title: "Important: what leaves your device",
         subsections: {
           stats: {
-            title: "For chat statistical analysis:",
+            title: "Statistics, profiles, games and comparison (free):",
             items: [
-              "Your chats never leave your device (computer or phone).",
-              "For the \"Your chat vs. the rest\" comparison, your device sends a summary with numbers from the chat (for example, messages per day or swear words per 100 messages) and whether whoever writes or laughs the most, etc. is male or female, guessed from the name on your device. The summary contains no names, messages or anything that identifies you or your chat: our server only adds 1 to some overall counters and discards it."
+              "Statistics, profiles and games are calculated on your device (computer or phone). Your chat does not leave it.",
+              "For the \"Your chat vs. the rest\" comparison, your device sends a card with numbers from the chat (for example, messages per day or swear words per 100 messages, also added up for men and for women), whether the winner of each profile is a man or a woman (worked out from the name on your device), and the country (worked out from your device's time zone). If you have the AI analysis, it also sends the topics, dynamic, traits and score the AI chose from closed lists. The card contains no names, messages or anything that identifies you or your chat: our server adds those numbers to general counters and discards it."
             ]
           },
           psych: {
-            title: "For psychological chat analysis:",
+            title: "AI analysis, poster and book (paid):",
             items: [
-              "Chat anonymization is done on your device.",
-              "Chats are anonymized on your device before being sent to Microsoft Azure. We only send a fragment of about 20-50k characters. We send chats without personal data.",
-              "Anonymized chats go directly from your device to Microsoft Azure, without passing through a Chatsalsa server or being processed along the way."
+              "AI analysis: before leaving your device, the chat is anonymised on it. The names of the people writing become \"Participant 1\", \"Participant 2\"…, also when they appear inside messages; phone numbers, emails and links are hidden, and dates and times are removed. A fragment of about 20,000 characters is sent to our server, which passes it to our artificial intelligence provider and returns the result. Our server does not store it or write it to its logs. The real names are put back on your device when the result is shown.",
+              "Poster with quotes from the chat: as with the analysis, the chat is anonymised on your device and sent to our server and to the AI to choose the quotes, and it is not stored. For each payment we only keep a count of attempts and a fingerprint of the chat (a code from which no word can be recovered), so that one payment is valid for one chat. The poster is created and downloaded on your device: neither the quotes you choose nor the names go through our server.",
+              "Book of your chat: the book is put together on your device. To turn it into a PDF, its content goes through our server and our PDF conversion service, in memory and without being stored, and the PDF is downloaded to your device. If you buy it as a PDF, it is not stored anywhere.",
+              "Printed book: the PDF is stored encrypted on our server only until the printer receives it (24 hours at most) and is then deleted. The printer receives the PDF and your shipping address to make and send the book."
             ]
           },
           conclusion: {
-            title: "In conclusion:",
+            title: "In summary:",
             items: [
-              "No personal data from your chat files is stored or processed on our servers or by third parties.",
-              "All personal data processing is done on your device."
+              "We do not store your chats.",
+              "What leaves your device is anonymised or, for the printed book, encrypted, and is not stored except in the cases and for the periods described in this policy."
             ]
           }
         }
@@ -193,65 +194,60 @@ const PrivacyPolicy = () => {
           user: {
             title: "a) User Information",
             description: "When you register or log in, we collect basic information such as your email address and username.",
-            note: "We use Firebase as our authentication and secure user storage provider."
+            note: "We use an authentication provider to store user accounts securely."
           },
           payments: {
             title: "b) Payments",
-            description: "Payments are processed through Stripe. We do not directly store payment card information. Stripe manages and protects this information according to their own privacy policy: https://stripe.com/privacy"
+            description: "Payments are processed by our payment provider. We do not store payment card information. For the printed book, the payment provider also collects the shipping address."
           }
         }
       },
       chatProcessing: {
-        title: "3. Chat Data Processing",
-        description: "Important: Non-anonymized chat data never leaves your device. When uploading a chat, it is only sent to Azure (Microsoft) for the \"psychological analysis\" section; the rest is processed locally on your computer/device, and personal chat data never leaves your device.",
+        title: "3. Processing of Chat Data",
+        description: "Your chat is analysed on your device. Only what is described in the \"Important\" section of this policy leaves it: anonymised for the AI analysis and the poster, and for the book the content needed to turn it into a PDF and, if printed, send it to the printer.",
         important: {
           title: "Important about chats:",
           items: [
-            "We do NOT store any chats on the Chatsalsa server.",
-            "We do NOT process any chats on the Chatsalsa server.",
-            "All data is processed and anonymized directly on your device/computer.",
-            "We ONLY send anonymized chat data, without personal information, to AZURE. This sending is direct without passing through our server."
+            "We do NOT store any chat on the Chatsalsa server.",
+            "What goes through our server (the anonymised fragment for the analysis and the poster, and the book to turn it into a PDF) is processed in memory and not stored, except the PDF of the printed book until the printer receives it.",
+            "Anonymisation happens on your device, before anything is sent."
           ]
         },
         additional: {
-          description: "Additional: You have the option to keep the chat on your device by clicking the \"Local analysis only\" option. If the user decides to perform psychological analysis, we use Azure OpenAI for chat processing. Before sending the chat text to Azure, we implement strong anonymization measures to ensure personal data doesn't leave the user's device, consisting of 4 main layers:"
+          description: "If you do not want anything from the chat to leave your device, use only the free statistics, which are calculated entirely on it."
         },
         anonymization: {
-          title: "a) Anonymization before external processing",
-          description: "Before sending text fragments to external services (see next section), we apply the following anonymization process:",
+          title: "a) Anonymisation before external processing",
+          description: "Before sending chat fragments to our artificial intelligence provider, the following process is applied on your device:",
           items: [
-            "All participant names are removed, replaced with \"Participant 1\", \"Participant 2\", etc.",
-            "Specific dates, emails, and URLs are removed.",
-            "Numbers are processed to be unrecognizable:",
-            "Single-digit numbers: completely removed.",
-            "Two-digit numbers: one digit preserved.",
-            "Three-digit numbers: one digit preserved.",
-            "Four or more digits: half of the digits preserved.",
-            "Places, relationships, and other personal data are removed using transformer-based language models (AI for browser anonymization), the Compromise library, and custom rules with regular expressions (RegEx)."
+            "Participants' names are replaced with \"Participant 1\", \"Participant 2\", etc., also when they appear inside messages.",
+            "Phone numbers, email addresses and links are hidden.",
+            "Message dates and times are removed.",
+            "Common names of people and places mentioned in the conversation are hidden, using lists and rules."
           ]
         }
       },
       azure: {
-        title: "4. Data Sending to Azure",
-        description: "Only a limited fragment of 20k-50k characters from the chat is sent.",
+        title: "4. Providers",
+        description: "To provide the service we use providers for server hosting, artificial intelligence (which only receive already anonymised chat fragments), payments, printing and shipping of the book (which receive the book PDF and the shipping address), user accounts and email. None of them stores your chat on our behalf.",
         important: {
-          title: "Important in Microsoft Azure OpenAI privacy policy:",
+          title: "About our artificial intelligence providers:",
           items: [
-            "Your chats are not used to train AI.",
-            "Your chats remain stored in European data centers.",
-            "Your chats may be stored encrypted for 30 days. (For debugging and misuse audit purposes). They are deleted after 30 days."
+            "According to their terms, they do not use the data they receive to train their models.",
+            "They may keep it for a limited time to monitor abuse, under their own policies."
           ]
         },
-        link: "You can find more details in Microsoft Azure's policy: https://learn.microsoft.com/en-us/legal/cognitive-services/openai/data-privacy?tabs=azure-portal"
+        link: ""
       },
       purposes: {
-        title: "5. Processing Purposes",
+        title: "5. Purposes of Processing",
         description: "We use your data to:",
         items: [
-          "Provide you access to the service.",
-          "Manage your payments and authentication (Login).",
-          "Improve system operation and user experience (anonymized analysis).",
-          "Ensure service security and stability."
+          "Give you access to the service.",
+          "Manage your payments and authentication (login).",
+          "Make and ship the printed book, if you order it.",
+          "Improve how the system works and the user experience (anonymised analysis).",
+          "Ensure the security and stability of the service."
         ]
       },
       rights: {
@@ -260,30 +256,31 @@ const PrivacyPolicy = () => {
         items: [
           "Access your personal data.",
           "Rectify incorrect or incomplete data.",
-          "Request deletion of your data.",
-          "Limit or object to processing.",
+          "Request the deletion of your data.",
+          "Restrict or object to processing.",
           "Port your data in a structured format."
         ],
-        contact: "To exercise any of these rights, you can write to us at: info@comartinvi.com"
+        contact: "To exercise any of these rights, write to us at: info@comartinvi.com"
       },
       retention: {
         title: "7. Data Retention",
         items: [
-          "Personal data, login, will be kept while you maintain an active account.",
-          "Chat data:",
-          "We don't store any chat data at Chatsalsa; in fact, we never receive the chat. Everything is processed on your computer. We don't have any personal data beyond what's necessary for login.",
-          "Anonymized fragments sent to Azure are automatically deleted after a maximum of 30 days.",
-          "Couple chat (follow-up): if you use this feature, we store in your account the date, score and plan of your last analysis so we can compare them in the next one. They are stored under an encrypted identifier of the two people, without names or messages, and are kept while you maintain an active account."
+          "Account data (login): while you keep it active.",
+          "Chats: we do not store them.",
+          "Printed book: the PDF, encrypted, until the printer receives it (24 hours at most).",
+          "Poster: the attempt count and chat fingerprint for each payment.",
+          "Comparison: only aggregated counters, with no personal data.",
+          "Payments and shipping: kept by our payment providers and, for the printed book, our printing provider, as required by law."
         ]
       },
       changes: {
         title: "8. Changes to This Policy",
-        description: "We reserve the right to modify this Privacy Policy at any time. We will notify you of any significant changes through the website or by email."
+        description: "We reserve the right to modify this Privacy Policy at any time. We will notify any important change through the website or by email."
       },
       contact: {
         title: "9. Contact",
         description: "If you have questions about this policy, contact us at:",
-        email: "📧 info@tiendeo.com"
+        email: "📧 info@comartinvi.com"
       }
     },
     securityBadge: "100% Private and Secure"

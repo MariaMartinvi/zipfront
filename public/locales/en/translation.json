@@ -1147,7 +1147,7 @@
     },
     "terms": {
       "title": "Terms of Service",
-      "updated": "Last updated: April 2024",
+      "updated": "Last updated: 27 November 2026",
       "subtitle": "These terms set out the conditions under which you may use our WhatsApp conversation analysis service.",
       "badge": "TERMS AND CONDITIONS",
       "section_title": "Conditions of Use",
@@ -1176,7 +1176,7 @@
         {
           "title": "4. Privacy and Data",
           "icon": "🔒",
-          "content": "We are committed to protecting your privacy. Files you upload are processed temporarily and automatically deleted after analysis. See our Privacy Policy for more details."
+          "content": "Your chat is analysed on your device. What leaves it, when and to whom is explained in our Privacy Policy."
         },
         {
           "title": "5. Intellectual Property Rights",
@@ -1211,7 +1211,27 @@
         {
           "title": "11. Contact",
           "icon": "📧",
-          "content": "If you have any questions about these terms, please contact us."
+          "content": "If you have any questions about these terms, write to us at info@comartinvi.com."
+        },
+        {
+          "title": "12. Paid products: book and poster",
+          "icon": "📖",
+          "content": "",
+          "items": [
+            "The poster and the PDF book are digital files. They are created and downloaded on your device when the payment is complete. We do not store them, so we cannot send them again: save them when you download them.",
+            "After payment you have 24 hours to create and download the poster or the book. After that, write to us and we will look into it.",
+            "One poster payment is valid for one chat. That chat can be uploaded again several times; another chat needs another payment.",
+            "The printed book is made with the content you choose and sent to the address you give at payment."
+          ]
+        },
+        {
+          "title": "13. Right of withdrawal",
+          "icon": "↩️",
+          "content": "",
+          "items": [
+            "The book (printed or PDF) and the poster are custom-made with the content of your chat and the options you choose, so they cannot be returned, unless they are defective.",
+            "If something goes wrong (it is not generated, does not download or arrives defective), write to us at info@comartinvi.com and we will fix it or refund you."
+          ]
         }
       ],
       "important_notice": {

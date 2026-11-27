@@ -1111,7 +1111,7 @@
     },
     "terms": {
       "title": "Nutzungsbedingungen",
-      "updated": "Letzte Aktualisierung: April 2024",
+      "updated": "Letzte Aktualisierung: 27. November 2026",
       "subtitle": "Diese Bedingungen legen die Konditionen fest, unter denen Sie unseren WhatsApp-Gesprächsanalysedienst nutzen können.",
       "badge": "ALLGEMEINE GESCHÄFTSBEDINGUNGEN",
       "section_title": "Nutzungsbedingungen",
@@ -1140,7 +1140,7 @@
         {
           "title": "4. Datenschutz und Daten",
           "icon": "🔒",
-          "content": "Wir verpflichten uns, Ihre Privatsphäre zu schützen. Dateien, die Sie hochladen, werden vorübergehend verarbeitet und nach der Analyse automatisch gelöscht. Weitere Einzelheiten finden Sie in unserer Datenschutzrichtlinie."
+          "content": "Dein Chat wird auf deinem Gerät analysiert. Was es verlässt, wann und an wen, erklärt unsere Datenschutzerklärung."
         },
         {
           "title": "5. Rechte an geistigem Eigentum",
@@ -1175,7 +1175,27 @@
         {
           "title": "11. Kontakt",
           "icon": "📧",
-          "content": "Wenn Sie Fragen zu diesen Bedingungen haben, kontaktieren Sie uns bitte."
+          "content": "Bei Fragen zu diesen Bedingungen schreib uns an info@comartinvi.com."
+        },
+        {
+          "title": "12. Kostenpflichtige Produkte: Buch und Poster",
+          "icon": "📖",
+          "content": "",
+          "items": [
+            "Das Poster und das PDF-Buch sind digitale Dateien. Sie werden nach Abschluss der Zahlung auf deinem Gerät erstellt und heruntergeladen. Wir speichern sie nicht und können sie daher nicht erneut senden: Speichere sie beim Herunterladen.",
+            "Nach der Zahlung hast du 24 Stunden Zeit, das Poster oder das Buch zu erstellen und herunterzuladen. Danach schreib uns und wir schauen es uns an.",
+            "Eine Poster-Zahlung gilt für einen einzigen Chat. Dieser Chat kann mehrmals hochgeladen werden; für einen anderen Chat ist eine neue Zahlung nötig.",
+            "Das gedruckte Buch wird mit den von dir gewählten Inhalten hergestellt und an die bei der Zahlung angegebene Adresse geschickt."
+          ]
+        },
+        {
+          "title": "13. Widerrufsrecht",
+          "icon": "↩️",
+          "content": "",
+          "items": [
+            "Das Buch (gedruckt oder als PDF) und das Poster werden mit dem Inhalt deines Chats und den von dir gewählten Optionen individuell angefertigt und sind daher vom Widerruf ausgeschlossen, außer sie sind fehlerhaft.",
+            "Wenn etwas schiefgeht (es wird nicht erstellt, lässt sich nicht herunterladen oder kommt fehlerhaft an), schreib uns an info@comartinvi.com und wir lösen es oder erstatten dir das Geld."
+          ]
         }
       ],
       "important_notice": {

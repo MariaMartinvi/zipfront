@@ -703,7 +703,7 @@
     },
     "terms": {
       "title": "Conditions d'Utilisation",
-      "updated": "Dernière mise à jour : Avril 2024",
+      "updated": "Dernière mise à jour : 27 novembre 2026",
       "subtitle": "Ces conditions établissent les conditions dans lesquelles vous pouvez utiliser notre service d'analyse de conversations WhatsApp.",
       "badge": "CONDITIONS GÉNÉRALES",
       "section_title": "Conditions d'Utilisation",
@@ -732,7 +732,7 @@
         {
           "title": "4. Confidentialité et Données",
           "icon": "🔒",
-          "content": "Nous nous engageons à protéger votre vie privée. Les fichiers que vous téléchargez sont traités temporairement et supprimés automatiquement après l'analyse. Consultez notre Politique de Confidentialité pour plus de détails."
+          "content": "Ta conversation est analysée sur ton appareil. Ce qui en sort, quand et vers qui est expliqué dans notre Politique de confidentialité."
         },
         {
           "title": "5. Droits de Propriété Intellectuelle",
@@ -767,7 +767,27 @@
         {
           "title": "11. Contact",
           "icon": "📧",
-          "content": "Si vous avez des questions sur ces conditions, veuillez nous contacter."
+          "content": "Pour toute question sur ces conditions, écris-nous à info@comartinvi.com."
+        },
+        {
+          "title": "12. Produits payants : livre et affiche",
+          "icon": "📖",
+          "content": "",
+          "items": [
+            "L'affiche et le livre en PDF sont des fichiers numériques. Ils sont créés et téléchargés sur ton appareil à la fin du paiement. Nous ne les conservons pas, nous ne pouvons donc pas te les renvoyer : enregistre-les en les téléchargeant.",
+            "Après le paiement, tu as 24 heures pour créer et télécharger l'affiche ou le livre. Passé ce délai, écris-nous et nous verrons.",
+            "Un paiement de l'affiche vaut pour une seule conversation. Elle peut être téléversée plusieurs fois ; pour une autre conversation, il faut un autre paiement.",
+            "Le livre imprimé est fabriqué avec le contenu que tu choisis et envoyé à l'adresse indiquée lors du paiement."
+          ]
+        },
+        {
+          "title": "13. Droit de rétractation",
+          "icon": "↩️",
+          "content": "",
+          "items": [
+            "Le livre (imprimé ou en PDF) et l'affiche sont faits sur mesure avec le contenu de ta conversation et les options que tu choisis ; ils ne peuvent donc pas faire l'objet d'une rétractation, sauf s'ils sont défectueux.",
+            "En cas de problème (il ne se génère pas, ne se télécharge pas ou arrive défectueux), écris-nous à info@comartinvi.com et nous le réglerons ou te rembourserons."
+          ]
         }
       ],
       "important_notice": {

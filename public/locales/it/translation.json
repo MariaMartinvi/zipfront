@@ -944,7 +944,7 @@
     },
     "terms": {
       "title": "Termini di Servizio",
-      "updated": "Ultimo aggiornamento: Aprile 2024",
+      "updated": "Ultimo aggiornamento: 27 novembre 2026",
       "subtitle": "Questi termini stabiliscono le condizioni sotto le quali puoi utilizzare il nostro servizio di analisi delle conversazioni WhatsApp.",
       "badge": "TERMINI E CONDIZIONI",
       "section_title": "Condizioni d'Uso",
@@ -973,7 +973,7 @@
         {
           "title": "4. Privacy e Dati",
           "icon": "🔒",
-          "content": "Ci impegniamo a proteggere la tua privacy. I file che carichi vengono elaborati temporaneamente ed eliminati automaticamente dopo l'analisi. Consulta la nostra Informativa sulla Privacy per maggiori dettagli."
+          "content": "La tua chat viene analizzata sul tuo dispositivo. Cosa ne esce, quando e verso chi è spiegato nella nostra Informativa sulla privacy."
         },
         {
           "title": "5. Diritti di Proprietà Intellettuale",
@@ -1008,7 +1008,27 @@
         {
           "title": "11. Contatto",
           "icon": "📧",
-          "content": "Se hai domande su questi termini, ti preghiamo di contattarci."
+          "content": "Per qualsiasi domanda su questi termini, scrivici a info@comartinvi.com."
+        },
+        {
+          "title": "12. Prodotti a pagamento: libro e poster",
+          "icon": "📖",
+          "content": "",
+          "items": [
+            "Il poster e il libro in PDF sono file digitali. Vengono creati e scaricati sul tuo dispositivo al termine del pagamento. Non li conserviamo, quindi non possiamo inviarteli di nuovo: salvali quando li scarichi.",
+            "Dopo il pagamento hai 24 ore per creare e scaricare il poster o il libro. Trascorso questo termine, scrivici e vedremo.",
+            "Un pagamento del poster vale per una sola chat. Quella chat si può caricare più volte; per un’altra chat serve un altro pagamento.",
+            "Il libro stampato viene realizzato con i contenuti che scegli e spedito all’indirizzo indicato nel pagamento."
+          ]
+        },
+        {
+          "title": "13. Diritto di recesso",
+          "icon": "↩️",
+          "content": "",
+          "items": [
+            "Il libro (stampato o in PDF) e il poster sono realizzati su misura con il contenuto della tua chat e le opzioni che scegli, quindi non è previsto il recesso, salvo che siano difettosi.",
+            "Se qualcosa non va (non si genera, non si scarica o arriva difettoso), scrivici a info@comartinvi.com e lo risolveremo o ti rimborseremo."
+          ]
         }
       ],
       "important_notice": {
