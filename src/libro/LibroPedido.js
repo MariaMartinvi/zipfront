@@ -67,7 +67,7 @@ export default function LibroPedido() {
       )}
 
       {datos.downloadUrl && <a className="pedido-descarga" href={datos.downloadUrl} download="libro.pdf">⬇ Descargar el PDF</a>}
-      {datos.downloadUrl && <p className="pedido-nota">El enlace funciona durante {datos.downloadDays || 7} días; guárdate el archivo.</p>}
+      {datos.downloadUrl && <p className="pedido-nota">Descárgalo y guárdalo ya: el enlace funciona durante {(datos.downloadDays || 1) === 1 ? '24 horas' : `${datos.downloadDays} días`} y después el archivo se borra.</p>}
 
       <div className="pedido-datos">
         {datos.email && <p>📧 Te hemos enviado el recibo a <b>{datos.email}</b>{!esPdf && ' y te avisaremos cuando salga de camino'}.</p>}

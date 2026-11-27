@@ -1,5 +1,6 @@
 // Los tres estilos del cuadro regalo (Maria, 27-11-2026), todos de 1 a 12 frases:
 //  - moderno:     composición geométrica abstracta (Kandinsky-Miró) generada con el chat, con las frases debajo
+// `letras` son las fuentes que hay que tener cargadas antes de dibujar la lámina (lamina.js).
 //  - tipografico: las frases tal cual, en letra enorme tipo póster
 //  - tierno:      pastel, letra a mano y dibujitos (corazones, destellos, arcoíris). Diseño propio.
 // Con pocas frases (1 a 4) manda el dibujo o la letra enorme; con muchas (5 a 12, chats de grupo) el mismo
@@ -244,7 +245,7 @@ function cuerpoTierno(cuadro, frases, modo) {
 
 export const ESTILOS = {
   // El orden de aquí es el orden en que se ofrecen (Maria, 27-11-2026: primero Tipográfico)
-  tipografico: { nombre: 'Tipográfico', fuentes: ['Archivo:wght@500;900'], cuerpo: cuerpoTipografico },
-  moderno: { nombre: 'Moderno', fuentes: ['Jost:wght@400;500'], cuerpo: cuerpoModerno },
-  tierno: { nombre: 'Tierno', fuentes: ['Pacifico', 'Fredoka:wght@500;700'], cuerpo: cuerpoTierno },
+  tipografico: { nombre: 'Tipográfico', fuentes: ['Archivo:wght@500;900'], letras: ['900 20px Archivo', '500 20px Archivo'], cuerpo: cuerpoTipografico },
+  moderno: { nombre: 'Moderno', fuentes: ['Jost:wght@400;500'], letras: ['500 20px Jost', '400 20px Jost'], cuerpo: cuerpoModerno },
+  tierno: { nombre: 'Tierno', fuentes: ['Pacifico', 'Fredoka:wght@500;700'], letras: ['400 20px Pacifico', '700 20px Fredoka', '500 20px Fredoka'], cuerpo: cuerpoTierno },
 };

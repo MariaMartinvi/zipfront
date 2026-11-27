@@ -9,6 +9,24 @@ import { trackEvent } from '../utils/analytics';
 import '../libro/LibroLanding.css';
 import './CuadroLanding.css';
 
+// Solo en desarrollo: para comprobar a mano cómo sale la lámina dibujada en el navegador (no va al build de producción)
+if (process.env.NODE_ENV === 'development') {
+  window.__laminaPrueba = async (id, lista) => {
+    const { dibujarLamina } = await import('./lamina');
+    return dibujarLamina((lista ? EJEMPLOS_LISTA : EJEMPLOS)[id]);
+  };
+  window.__laminaArchivo = async (id, formato) => { // tamaño del archivo final, sin descargarlo
+    const { dibujarLamina } = await import('./lamina');
+    const { jsPDF } = await import('jspdf');
+    const lienzo = await dibujarLamina(EJEMPLOS[id]);
+    const [w, h] = formato === 'A3' ? [297, 420] : [210, 297];
+    const pdf = new jsPDF({ unit: 'mm', format: [w, h], orientation: 'portrait', compress: true });
+    pdf.addImage(lienzo.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, w, h, undefined, 'FAST');
+    const b = pdf.output('blob');
+    return { bytes: b.size, tipo: b.type, paginas: pdf.getNumberOfPages(), ancho: pdf.internal.pageSize.getWidth(), alto: pdf.internal.pageSize.getHeight() };
+  };
+}
+
 export default function CuadroLanding() {
   const [elegida, setElegida] = useState(IDS_PLANTILLAS[0]);
   const [precio, setPrecio] = useState(PRECIO_DEFECTO);
@@ -56,7 +74,7 @@ export default function CuadroLanding() {
         </ul>
         <div className="ll-acciones cl-final">
           {precio.payments !== false && <button type="button" className="ll-boton-cta" onClick={comprar}>Crear mi cuadro · {precio.label}</button>}
-          <span>Pago único. Es una lámina digital para descargar e imprimir: no enviamos nada a casa. El chat se envía anonimizado, sin nombres ni teléfonos, y no se guarda.</span>
+          <span>Pago único. Es una lámina digital para descargar e imprimir: no enviamos nada a casa. La lámina se crea en tu dispositivo y te la descargas en el momento: no la guardamos ni pasa por nuestro servidor. Tienes 24 horas desde el pago. El chat se envía anonimizado, sin nombres ni teléfonos, y no se guarda.</span>
         </div>
       </section>
     </div>

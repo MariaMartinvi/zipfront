@@ -10,7 +10,8 @@ export const MIN_FRASES = 1;
 export const MAX_FRASES = 12;
 const ALTO = 141.4; // alto de la página en rem (proporción A)
 
-const fuente = (familias) => `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?${familias.map((f) => `family=${f}`).join('&')}&display=block" rel="stylesheet">`;
+export const urlFuentes = (familias) => `https://fonts.googleapis.com/css2?${familias.map((f) => `family=${f}`).join('&')}&display=block`;
+const fuente = (familias) => `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="${urlFuentes(familias)}" rel="stylesheet">`;
 
 // Plantillas de lista del primer intento (27-11-2026): APARCADAS, no se enseñan. Los estilos que se ofrecen
 // son los de estilos.js (Moderno, Tipográfico, Tierno).
@@ -114,15 +115,16 @@ const AJUSTE = `<script>(function(){function a(){var l=document.querySelector('.
 /**
  * HTML completo del cuadro.
  * cuadro: { plantilla, titulo, sobretitulo, pie, frases: [{ texto, autor }], autores: 'nombre' | 'inicial' | 'ninguno' }
- * opts.formato: 'A4' | 'A3' para el PDF; sin formato es la vista previa (ocupa el ancho del iframe).
+ * opts.formato: 'A4' | 'A3' para imprimir desde el navegador; opts.anchoPx: ancho fijo en píxeles, para dibujar la
+ * lámina (lamina.js); sin nada es la vista previa (ocupa el ancho del iframe).
  */
-export function htmlCuadro(cuadro, { formato } = {}) {
+export function htmlCuadro(cuadro, { formato, anchoPx } = {}) {
   const id = PLANTILLAS[cuadro.plantilla] ? cuadro.plantilla : 'moderno';
   const p = PLANTILLAS[id];
   const modo = cuadro.autores || 'nombre';
   const frases = (cuadro.frases || []).filter((f) => f && String(f.texto || '').trim()).slice(0, MAX_FRASES);
   const pagina = FORMATOS[formato];
-  const base = `${pagina ? `@page { size: ${pagina.w}mm ${pagina.h}mm; margin: 0; } html { font-size: ${pagina.w / 100}mm; }` : 'html { font-size: 1vw; }'}
+  const base = `${pagina ? `@page { size: ${pagina.w}mm ${pagina.h}mm; margin: 0; } html { font-size: ${pagina.w / 100}mm; }` : anchoPx ? `html { font-size: ${anchoPx / 100}px; }` : 'html { font-size: 1vw; }'}
     * { box-sizing: border-box; } html, body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .cuadro { position: relative; width: 100rem; height: ${ALTO}rem; overflow: hidden; }
     .marco { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; text-align: center; }

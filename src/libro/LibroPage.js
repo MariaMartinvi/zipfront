@@ -356,10 +356,13 @@ export default function LibroPage() {
     setPidiendo(false);
   }
 
-  // Vídeos y notas de voz de los capítulos elegidos: se suben cifrados (clave solo en la URL, 5 años) y
-  // cada uno recibe un QR que va impreso en el libro. Solo al pedir, nunca antes.
+  // Vídeos y notas de voz con QR en el libro: APAGADO (Maria, 27-11-2026). Para que el QR impreso funcionara
+  // había que guardar esos archivos en el servidor durante años, y no queremos guardar nada: solo viaja el PDF
+  // y se borra al día siguiente. Para volver a encenderlo habría que decidir antes dónde y cuánto se guardan.
+  const QR_MEDIA_ACTIVO = false;
   const MAX_MEDIA_MB = 40, MAX_MEDIA = 30;
   async function subirMediaConQR() {
+    if (!QR_MEDIA_ACTIVO) return;
     const idx = idxRef.current; if (!idx || !man) return;
     const ids = new Set(man.capitulos.filter(c => c.on).flatMap(c => c.mensajes));
     const lista = mensajes.filter(m => ids.has(m.id) && m.archivo && idx.has(m.archivo) && ((m.tipo === 'video' && videos[m.archivo]) || m.tipo === 'audio') && !qrs[m.archivo]).slice(0, MAX_MEDIA);

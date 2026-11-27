@@ -30,15 +30,3 @@ export const estadoPago = async (sid) => json(await fetch(`${API_URL}/api/cuadro
 export const pedirFrases = async (sid, chat) => json(await fetch(`${API_URL}/api/cuadro/frases`, {
   method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: sid, chat, consentimiento: true }),
 }));
-
-export async function descargarPdf(sid, html, nombre) {
-  const r = await fetch(`${API_URL}/api/cuadro/pdf`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: sid, html }),
-  });
-  if (!r.ok) await json(r);
-  const url = URL.createObjectURL(await r.blob());
-  const a = document.createElement('a');
-  a.href = url; a.download = nombre;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
-}

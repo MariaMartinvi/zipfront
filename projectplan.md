@@ -1194,3 +1194,19 @@ La primera versión mandaba el chat tal cual a nuestro servidor (que lo anonimiz
   - Probado en local con un chat real: ~1.500 menciones de nombres dentro de mensajes antes, 0 después; 25.449 líneas antes y después.
   - Aprendizaje: la respuesta de la IA ya traduce «Participante N» al nombre real, así que tapar más no cambia lo que ve el usuario.
   - Sigue igual (limitación conocida): las personas que NO participan en el chat solo se tapan si su nombre está en una lista de nombres frecuentes.
+
+### Nada guardado en el servidor: lámina en el navegador, PDF del libro un día, sin vídeos (Maria, 27-11-2026)
+Maria: «que no se guarde ni un segundo en nuestro servidor, no quiero problemas de seguridad».
+- [x] **Lámina del cuadro: se dibuja y se descarga en el navegador** (`src/cuadro/lamina.js`, html2canvas + jsPDF, 3000 × 4243 px).
+      El servidor ya no tiene `/api/cuadro/pdf`: ni las frases elegidas ni los nombres pasan por él. Comprobado en local con los tres
+      estilos, con pocas frases y en lista, y con el archivo final en A4 y A3.
+      Aprendizaje: html2canvas pinta el texto en un lienzo de la página principal, así que las tipografías tienen que estar cargadas
+      ahí (no basta con que lo estén en el cuadro), y `fonts.ready` se resuelve antes de que llegue la hoja de Google Fonts.
+- [x] El pase del cuadro caduca a las 24 horas del pago (410). El trabajo en curso se guarda solo en el navegador del usuario.
+- [x] **PDF del libro: 24 horas** tras el pago y se borra (antes 7 días). Correo, página del pedido y landing lo dicen.
+- [x] **Vídeos y audios del libro: ya no se suben** (eran para los QR impresos y se guardaban 5 años). Los libros nuevos no llevan QR.
+      Los ya vendidos conservan sus archivos con el plazo que tenían.
+- Límite conocido: la lámina ya no es vectorial, es una imagen de 3000 px dentro del archivo (A4 ≈ 360 ppp, A3 ≈ 257 ppp).
+- [ ] Pendiente de Maria: corregir la política de privacidad sobre el análisis de IA (dice que va directo a Azure sin pasar por
+      nuestro servidor; hoy pasa por zipback y va a OpenAI/Mistral) y quitar del arranque del servidor el registro de los 8 primeros
+      caracteres de la clave de Mistral.

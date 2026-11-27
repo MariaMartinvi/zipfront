@@ -140,7 +140,7 @@ export default function LibroLanding() {
             <input type="file" accept=".zip,application/zip" onChange={subir} />
             <b>{cargando ? 'Leyendo el chat…' : 'Suelta aquí el zip'}</b>
             <span className="ll-boton-cta">Elegir archivo</span>
-            <small>El chat y las fotos se quedan en tu navegador. Para imprimir solo viaja el PDF, cifrado, y se borra a los pocos días.</small>
+            <small>El chat y las fotos se quedan en tu navegador. Para imprimir solo viaja el PDF, cifrado, y se borra al día siguiente.</small>
           </label>
         </div>
         {error && <p className="ll-error">{error}</p>}
@@ -163,7 +163,7 @@ export default function LibroLanding() {
           <details><summary>¿Y si WhatsApp no consigue exportar con archivos?</summary><p>Pasa con chats muy grandes. Exporta sin archivos y tendrás el libro sin fotos; puedes poner una foto tuya en la portada.</p></details>
           <details><summary>¿Quién elige lo que sale?</summary><p>Las reglas eligen los días más intensos; dentro de cada capítulo va la conversación entera de esos días, sin cortes. Tú quitas capítulos o mensajes sueltos antes de pedir. No usamos IA para decidir ni para escribir nada.</p></details>
           <details><summary>¿Y los vídeos y audios?</summary><p>En esta versión no van en el libro. Estamos preparando códigos QR para verlos desde el papel.</p></details>
-          <details><summary>¿Guardáis mi chat?</summary><p>No. Todo se procesa en tu navegador. Solo el PDF final se guarda cifrado, unos días, para imprimirlo o descargarlo, y luego se borra.</p></details>
+          <details><summary>¿Guardáis mi chat?</summary><p>No. Todo se procesa en tu navegador. Solo el PDF final se guarda cifrado, un día, para imprimirlo o descargarlo, y luego se borra: descárgalo en cuanto lo recibas.</p></details>
           <details><summary>¿A dónde enviáis?</summary><p>El libro impreso, a España, Portugal, Francia, Italia, Alemania, Reino Unido y Estados Unidos. Desde cualquier otro país, el PDF: lo descargas al momento y lo imprimes donde quieras.</p></details>
         </div>
       </section>

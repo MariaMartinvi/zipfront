@@ -1,13 +1,15 @@
 // Página para crear el cuadro (/cuadro/crear?session_id=…), a la que se llega después del pago:
 // sube el chat, se le proponen las frases, elige, edita y descarga la lámina. Sin pago, vuelve a /cuadro.
 // El chat se anonimiza en el navegador antes de enviarse, igual que en el análisis (anonimo.js).
+// La lámina se dibuja y se descarga en el navegador (lamina.js): ni las frases elegidas ni los nombres van al servidor.
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import CuadroVista from './CuadroVista';
-import { htmlCuadro, PLANTILLAS, IDS_PLANTILLAS, MAX_FRASES } from './render';
+import { PLANTILLAS, IDS_PLANTILLAS, MAX_FRASES } from './render';
+import { descargarLamina } from './lamina';
 import { listaInicial, activas, alternar, anadir, editar, quitar, mover, cuadroDe, guardar, cargar, OPCIONES_INICIALES } from './editor';
 import { leerArchivoChat, mensajesDeTexto, buscarFrases, datosModerno, titulosPropuestos } from './chat';
-import { estadoPago, pedirFrases, descargarPdf } from './api';
+import { estadoPago, pedirFrases } from './api';
 import { chatParaEnviar, nombresReales } from './anonimo';
 import WhatsappInstructions, { detectPlatform } from '../WhatsappInstructions';
 import { useTranslation } from 'react-i18next';
@@ -30,16 +32,18 @@ export default function CuadroCrear() {
   const [error, setError] = useState('');
   const [busca, setBusca] = useState('');
   const [bajando, setBajando] = useState('');
+  const [caduca, setCaduca] = useState(0); // hasta cuándo se puede descargar (24 h desde el pago)
 
   // Al llegar del pago: comprobarlo y recuperar el trabajo guardado en este navegador, si lo hay
   useEffect(() => {
     if (!sid) return undefined;
     let vivo = true;
-    estadoPago(sid).then(() => {
+    estadoPago(sid).then((e) => {
       if (!vivo) return;
+      setCaduca(e.caduca || 0);
       const previo = cargar(sid);
       if (previo) { setLista(previo.lista); setOpciones({ ...OPCIONES_INICIALES, ...previo.opciones }); setFase('editar'); } else { trackEvent('cuadro_comprado'); setFase('subir'); }
-    }).catch(() => vivo && setFase('sinpago'));
+    }).catch((e) => vivo && setFase(e.status === 410 ? 'caducado' : 'sinpago'));
     return () => { vivo = false; };
   }, [sid]);
 
@@ -77,7 +81,7 @@ export default function CuadroCrear() {
   async function bajar(formato) {
     setError(''); setBajando(formato);
     try {
-      await descargarPdf(sid, htmlCuadro(cuadro, { formato }), `cuadro-chatsalsa-${formato}.pdf`);
+      await descargarLamina(cuadro, formato); // se dibuja y se descarga en este dispositivo: no pasa por el servidor
       trackEvent('cuadro_descargado');
     } catch (e) { setError(e.message || 'No se pudo generar la lámina.'); }
     setBajando('');
@@ -85,6 +89,15 @@ export default function CuadroCrear() {
 
   if (!sid) return <Navigate to="/cuadro" replace />;
   if (fase === 'comprobando') return <div className="ll cc"><p className="cc-aviso">Comprobando el pago…</p></div>;
+  if (fase === 'caducado') {
+    return (
+      <div className="ll cc"><div className="cc-caja">
+        <h1>Este cuadro ha caducado</h1>
+        <p>Había 24 horas para crearlo y descargarlo desde el pago, y no guardamos ninguna lámina. Si no llegaste a descargarla, escríbenos y lo vemos.</p>
+        <p><Link to="/cuadro">Volver al cuadro</Link> · <Link to="/contact">Contacto</Link></p>
+      </div></div>
+    );
+  }
   if (fase === 'sinpago') {
     return (
       <div className="ll cc"><div className="cc-caja">
@@ -99,7 +112,7 @@ export default function CuadroCrear() {
       <div className="ll cc"><div className="cc-caja">
         <p className="ll-kicker">Pago recibido · paso 1 de 2</p>
         <h1>Sube vuestro chat</h1>
-        <p>Sube aquí el archivo .zip del chat exportado desde WhatsApp.</p>
+        <p>Sube aquí el archivo .zip del chat exportado desde WhatsApp. Tienes 24 horas desde el pago para crear y descargar tu lámina.</p>
         <input type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" disabled={fase === 'leyendo'} onChange={(e) => { setArchivo(e.target.files[0] || null); setError(''); }} aria-label="Archivo del chat" />
         <details className="upload-help">
           <summary>{t('app.upload.how_export')}</summary>
@@ -180,9 +193,9 @@ export default function CuadroCrear() {
         <div className="cc-vista">
           <figure className="cc-cuadro">{marcadas > 0 ? <CuadroVista cuadro={cuadro} /> : <p className="cc-aviso">Marca al menos una frase.</p>}</figure>
           <div className="cc-descargar">
-              <button type="button" className="ll-boton-cta" disabled={!marcadas || !!bajando} onClick={() => bajar('A4')}>{bajando === 'A4' ? 'Generando…' : 'Descargar la lámina (A4)'}</button>
-              <button type="button" className="cc-secundario" disabled={!marcadas || !!bajando} onClick={() => bajar('A3')}>{bajando === 'A3' ? 'Generando…' : 'Descargar en A3'}</button>
-              <p className="cc-nota">Edítalo hasta que quede perfecto: puedes cambiarlo y descargarlo las veces que quieras. Guarda el enlace de esta página para volver.</p>
+              <button type="button" className="ll-boton-cta" disabled={!marcadas || !!bajando} onClick={() => bajar('A4')}>{bajando === 'A4' ? 'Creando la lámina…' : 'Descargar la lámina (A4)'}</button>
+              <button type="button" className="cc-secundario" disabled={!marcadas || !!bajando} onClick={() => bajar('A3')}>{bajando === 'A3' ? 'Creando la lámina…' : 'Descargar en A3'}</button>
+              <p className="cc-nota">Edítala hasta que quede perfecta y descárgala ahora: la lámina se crea en tu dispositivo y no la guardamos ni pasa por nuestro servidor. Tienes 24 horas desde el pago{caduca ? ` (hasta las ${new Date(caduca * 1000).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })} del ${new Date(caduca * 1000).toLocaleDateString('es', { day: 'numeric', month: 'long' })})` : ''}; si cambias de dispositivo tendrás que subir el chat otra vez.</p>
           </div>
           {error && <p className="cc-error" role="alert">{error}</p>}
         </div>
