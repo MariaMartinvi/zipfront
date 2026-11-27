@@ -1248,14 +1248,15 @@ y la edición en el navegador del cliente (IndexedDB, `src/libro/store.js`), as�
 - [x] Página del pedido y correos sin enlace de descarga. Landing del libro al día (privacidad y vídeos)
 
 ### Paso 4 — Textos y condiciones
-- [ ] Política de privacidad: libro (qué viaja y cuándo se borra), cuadro, y análisis de IA (hoy dice «directo a Azure sin pasar por
-      nuestro servidor»; en realidad pasa por nuestro servidor, anonimizado y sin guardarse, y va a OpenAI o a Mistral)
-- [ ] Condiciones del servicio: productos digitales que se descargan en el momento, plazo de 24 horas, un pago = un chat (cuadro),
-      qué pasa si no se descarga a tiempo. Leerlas enteras antes y proponer el texto a Maria.
-- [ ] Landing del libro y preguntas frecuentes al día (incluida la de vídeos y audios)
+- [x] Política de privacidad (es + en): qué sale del dispositivo en cada producto, proveedores en general (decisión de Maria),
+      conservación real. Corregido: «directo a Azure», «transformers», «datos en Europa» y el contacto info@tiendeo.com
+- [x] Condiciones del servicio (6 idiomas): apartados 12 (libro y cuadro: descarga en el momento, 24 h, un pago un chat) y
+      13 (desistimiento: productos a medida, salvo defecto). Maria: sin frase de renuncia junto al botón de pagar.
+- [x] Landing del libro y preguntas frecuentes al día (incluida la de vídeos y audios)
 
 ### Paso 5 — Seguridad menor
-- [ ] Quitar del arranque del servidor el registro de los 8 primeros caracteres de la clave de Mistral
+- [x] Quitar del arranque del servidor el registro de los 8 primeros caracteres de la clave de Mistral
+- [x] Encontrado y cerrado: `/api/book/diag` era público y enseñaba trozos de la clave de la imprenta; ahora pide la clave
 
 **Riesgos que acepta este plan**
 - Si alguien paga y no vuelve a la página (cierra el navegador), no tiene su libro: tiene 24 horas para volver al enlace del pago.
