@@ -46,3 +46,9 @@
   .cc-editor { grid-template-columns: 1fr; gap: 26px; }
   .cc-vista { position: static; order: -1; max-width: 340px; margin: 0 auto; }
 }
+
+/* Caja para subir el chat: la misma que la del libro (.ll-soltar de LibroLanding.css) */
+.cc-soltar { align-self: stretch; }
+.cc-soltar b { overflow-wrap: anywhere; }
+.cc-archivo { display: inline-flex; align-items: center; margin: 8px 8px 0 0; cursor: pointer; }
+.cc-archivo input { display: none; }

@@ -31,6 +31,7 @@ export default function CuadroCrear() {
   const [archivo, setArchivo] = useState(null);
   const [error, setError] = useState('');
   const [busca, setBusca] = useState('');
+  const [arrastrando, setArrastrando] = useState(false);
   const [bajando, setBajando] = useState('');
   const [huella, setHuella] = useState(''); // del chat con el que se creó el cuadro: un pago, un chat
   const [caduca, setCaduca] = useState(0); // hasta cuándo se puede descargar (24 h desde el pago)
@@ -120,7 +121,13 @@ export default function CuadroCrear() {
         <p className="ll-kicker">Pago recibido · paso 1 de 2</p>
         <h1>Sube vuestro chat</h1>
         <p>Sube aquí el archivo .zip del chat exportado desde WhatsApp. Tienes 24 horas desde el pago para crear y descargar tu lámina.</p>
-        <input type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" disabled={fase === 'leyendo'} onChange={(e) => { setArchivo(e.target.files[0] || null); setError(''); }} aria-label="Archivo del chat" />
+        <label className={`ll-soltar cc-soltar ${arrastrando ? 'arrastrando' : ''}`}
+          onDragOver={(e) => { e.preventDefault(); setArrastrando(true); }} onDragLeave={() => setArrastrando(false)}
+          onDrop={(e) => { e.preventDefault(); setArrastrando(false); if (fase !== 'leyendo') { setArchivo(e.dataTransfer.files[0] || null); setError(''); } }}>
+          <input type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" disabled={fase === 'leyendo'} onChange={(e) => { setArchivo(e.target.files[0] || null); setError(''); }} aria-label="Archivo del chat" />
+          <b>{archivo ? archivo.name : 'Suelta aquí el zip'}</b>
+          <span className="ll-boton-cta">{archivo ? 'Cambiar archivo' : 'Elegir archivo'}</span>
+        </label>
         <details className="upload-help">
           <summary>{t('app.upload.how_export')}</summary>
           <WhatsappInstructions platform={detectPlatform()} compact />
@@ -184,8 +191,11 @@ export default function CuadroCrear() {
             </>
           ) : (
             <p className="cc-nota">Para buscar en el chat, súbelo otra vez (se queda en tu dispositivo, no se envía):{' '}
-              <input type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" onChange={(e) => { setArchivo(e.target.files[0] || null); }} aria-label="Archivo del chat" />
-              {archivo && <button type="button" onClick={() => leerChat(false)}>Abrir</button>}
+              <label className="cc-secundario cc-archivo">
+                <input type="file" accept=".zip,application/zip,application/x-zip,application/x-zip-compressed,application/octet-stream,*/*" onChange={(e) => { setArchivo(e.target.files[0] || null); }} aria-label="Archivo del chat" />
+                {archivo ? archivo.name : 'Elegir archivo'}
+              </label>
+              {archivo && <button type="button" className="cc-secundario" onClick={() => leerChat(false)}>Abrir</button>}
             </p>
           )}
 
