@@ -21,7 +21,7 @@ export default function CuadroLanding() {
         <div>
           <p className="ll-kicker">Cuadro regalo</p>
           <h1>Vuestras frases, <em>en la pared</em></h1>
-          <p className="ll-entradilla">Las frases memorables de vuestro chat de WhatsApp, en un cuadro para regalar. La IA propone las mejores, tú eliges cuáles salen y el estilo, y lo descargas en PDF listo para imprimir y enmarcar.</p>
+          <p className="ll-entradilla">Nuestro sistema inteligente elige las frases más relevantes de vuestro chat, tú eliges la plantilla y descargas la lámina en alta calidad para impresión, lista para enmarcar.</p>
           <div className="ll-acciones">
             {precio.payments !== false && <button type="button" className="ll-boton-cta" onClick={comprar}>Crear mi cuadro · {precio.label}</button>}
             <span>Puedes editarlo hasta que quede perfecto.</span>
