@@ -1216,3 +1216,49 @@ Maria: «que no se guarde ni un segundo en nuestro servidor, no quiero problemas
 - [x] El mismo chat se puede subir varias veces (hasta 5 peticiones de frases por pago, `CUADRO_MAX_IA`).
 - [x] Si da error o no sale ninguna frase, ese intento no cuenta y se puede probar con otro chat.
 - [x] En el editor, volver a abrir el chat para buscar frases a mano exige que sea el mismo chat.
+
+## Plan: que el servidor no guarde nada del libro (Maria, 27-11-2026) — OK de Maria; pasos 1-3 hechos
+
+Maria: «no quiero problemas guardando cosas en mi servidor». Nadie ha comprado todavía un libro, así que se puede cambiar hoy
+sin afectar a pedidos antiguos. Idea central: **pagar primero y generar después**, como en el cuadro. El libro ya guarda el chat
+y la edición en el navegador del cliente (IndexedDB, `src/libro/store.js`), así que al volver del pago sigue todo ahí.
+
+**Cómo quedará**
+- **Libro en PDF:** paga → vuelve → el libro se genera y se descarga en su dispositivo. No se sube ni se guarda nunca. Sin enlace por correo.
+- **Libro impreso:** paga → vuelve → se genera, se sube cifrado y se manda a la imprenta → se borra en cuanto la imprenta confirma
+  que lo tiene (tope: 24 horas). Su copia en PDF se la descarga en el momento, desde su navegador.
+- **Antes de pagar no se sube nada.** Vídeos y audios: ya no se suben; se borra cualquiera que hubiera.
+
+### Paso 1 — Limpieza (servidor)
+- [x] Borrar del disco los caducados cada pocos minutos, no solo al reiniciar → test: un archivo caducado desaparece
+- [x] `upload` deja de aceptar vídeos/audios y la limpieza borra los que hubiera → test: `kind=media` da 400; un media guardado desaparece
+
+### Paso 2 — Pagar antes de subir (servidor)
+- [x] `checkout` sin archivo: producto, páginas, título y región → test: importe correcto por región y por páginas, sin `fileId`
+- [x] `estado` del pago del libro (pagado, producto, páginas, caduca a las 24 h) → tests 400/402/403/410
+- [x] Impreso: `pedido` = subir el PDF con el pago hecho y mandarlo a la imprenta; un pago, un pedido → tests (sin pago 402, repetido no duplica)
+- [x] Borrar el PDF cuando la imprenta avisa de que lo tiene (aviso del print-service) → test. OJO: sin comprobar qué estados manda de verdad el print-service; si no manda ninguno de `ESTADOS_RECOGIDO`, se borra a las 24 h
+- [x] Si un impreso pagado lleva 1 hora sin PDF, correo de aviso a Maria para escribir al cliente → test. Depende de que el webhook del libro (`BOOK_STRIPE_WEBHOOK_SECRET`) esté configurado en Stripe y Render
+
+### Paso 3 — Pagar antes de subir (web)
+- [x] «Pedir»: guardar la edición en el navegador e ir al pago sin generar ni subir nada → comprobado en el navegador (una sola llamada, al pago)
+- [x] Al volver con el pago hecho: recuperar el libro del navegador; si no está (otro dispositivo), pedir el chat otra vez → comprobado en el navegador
+- [x] PDF: generar y descargar en el momento → comprobado en el navegador con pago y generador simulados; [ ] compra real de prueba
+- [x] Impreso: generar, descargar su copia, subir y confirmar el pedido → comprobado en el navegador con pago, generador e imprenta simulados; [ ] pedido real de prueba
+- [x] Página del pedido y correos sin enlace de descarga. Landing del libro al día (privacidad y vídeos)
+
+### Paso 4 — Textos y condiciones
+- [ ] Política de privacidad: libro (qué viaja y cuándo se borra), cuadro, y análisis de IA (hoy dice «directo a Azure sin pasar por
+      nuestro servidor»; en realidad pasa por nuestro servidor, anonimizado y sin guardarse, y va a OpenAI o a Mistral)
+- [ ] Condiciones del servicio: productos digitales que se descargan en el momento, plazo de 24 horas, un pago = un chat (cuadro),
+      qué pasa si no se descarga a tiempo. Leerlas enteras antes y proponer el texto a Maria.
+- [ ] Landing del libro y preguntas frecuentes al día (incluida la de vídeos y audios)
+
+### Paso 5 — Seguridad menor
+- [ ] Quitar del arranque del servidor el registro de los 8 primeros caracteres de la clave de Mistral
+
+**Riesgos que acepta este plan**
+- Si alguien paga y no vuelve a la página (cierra el navegador), no tiene su libro: tiene 24 horas para volver al enlace del pago.
+  En el impreso, además, el pedido no sale hasta que vuelva; por eso el aviso a Maria del paso 2.
+- Para crear el PDF, el contenido del libro sigue pasando por el servidor y por el servicio de PDF, en memoria y sin guardarse.
+- El pago del libro es el producto principal y hay Black Friday hasta el lunes 30: hace falta una compra real de prueba antes de darlo por bueno.

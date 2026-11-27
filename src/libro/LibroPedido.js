@@ -55,7 +55,7 @@ export default function LibroPedido() {
         <div className="pl-tapa"><span>💬</span></div>
       </div>
       <h2>{esPdf ? '¡Tu libro está listo!' : '¡Tu libro está en marcha!'}</h2>
-      <p className="pedido-sub">{esPdf ? 'Ya puedes descargarlo, leerlo y compartirlo.' : 'Lo estamos imprimiendo. En unos días lo tendrás en casa.'}</p>
+      <p className="pedido-sub">{esPdf ? 'Ya lo tienes en tu dispositivo para leerlo y compartirlo.' : 'Lo estamos imprimiendo. En unos días lo tendrás en casa.'}</p>
 
       {!esPdf && (
         <ol className="pedido-pasos">
@@ -66,15 +66,15 @@ export default function LibroPedido() {
         </ol>
       )}
 
-      {datos.downloadUrl && <a className="pedido-descarga" href={datos.downloadUrl} download="libro.pdf">⬇ Descargar el PDF</a>}
-      {datos.downloadUrl && <p className="pedido-nota">Descárgalo y guárdalo ya: el enlace funciona durante {(datos.downloadDays || 1) === 1 ? '24 horas' : `${datos.downloadDays} días`} y después el archivo se borra.</p>}
+      {esPdf && <p className="pedido-nota">Tu libro se ha descargado en tu dispositivo (mira en Descargas). Guárdalo bien: por privacidad no lo guardamos en ningún sitio.</p>}
+      {!esPdf && <p className="pedido-nota">Tu copia en PDF se ha descargado en tu dispositivo (mira en Descargas).</p>}
 
       <div className="pedido-datos">
         {datos.email && <p>📧 Te hemos enviado el recibo a <b>{datos.email}</b>{!esPdf && ' y te avisaremos cuando salga de camino'}.</p>}
         {!esPdf && datos.orderId && <p>Referencia: <code>{datos.orderId.slice(0, 8).toUpperCase()}</code></p>}
       </div>
 
-      <p className="pedido-nota">🔒 Tu chat no se ha guardado en ningún sitio: solo este PDF, cifrado, hasta que caduque.</p>
+      <p className="pedido-nota">🔒 {esPdf ? 'Ni tu chat ni tu libro han pasado a guardarse en nuestros servidores.' : 'Tu chat no se ha guardado en ningún sitio. El libro se ha enviado cifrado a la imprenta y lo borramos en cuanto ella lo recibe.'}</p>
       <button className="pedido-volver" onClick={() => navigate('/')}>Volver a ChatSalsa</button>
     </div>
   );

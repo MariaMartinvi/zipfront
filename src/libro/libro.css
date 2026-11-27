@@ -108,3 +108,7 @@
 .libro-card .libro-card-btn { position: relative; flex: none; padding: 16px 30px; border-radius: 999px; border: 0; background: #fff !important; color: #6a2bd8 !important; font: inherit; font-size: 16px !important; font-weight: 700; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,.25); transition: transform .15s; white-space: nowrap; }
 .libro-card .libro-card-btn:hover { transform: translateY(-2px) scale(1.03); }
 @media (max-width: 700px) { .libro-card { flex-direction: column; align-items: center; text-align: center !important; padding: 30px 22px; gap: 24px; margin: 32px 12px; } .libro-card h2, .libro-card p { text-align: center !important; } .libro-card .libro-card-btn { width: 100%; } }
+/* Vuelta del pago: el libro se genera aquí (pagar antes de generar, 27-11-2026) */
+.libro-compra { margin: 0 0 14px; padding: 14px 18px; border-radius: 14px; background: #e9f9ef; color: #0e4f2e; font-size: 15px; line-height: 1.5; }
+.libro-compra.error { background: #fdecea; color: #8a1c13; }
+.libro-compra .pill { margin-left: 8px; }

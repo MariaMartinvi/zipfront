@@ -1,6 +1,7 @@
 // "Tu chat en un libro": propuesta automática + editor (capítulos on/off, quitar mensajes, portada,
-// dedicatoria) + vista previa real + pedido. Todo en el navegador; al servidor solo va el HTML del libro
-// para imprimirlo (sin guardarlo) y el PDF cifrado para Gelato.
+// dedicatoria) + vista previa real + pedido. Todo en el navegador. Se paga ANTES de generar (Maria, 27-11-2026):
+// al volver del pago (?pagado=…) el libro se recupera del navegador y se genera aquí. El PDF se descarga en el
+// dispositivo; solo si es impreso se sube cifrado para la imprenta, y el servidor lo borra en cuanto ella lo tiene.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { parseChat, participantes } from './parser';
@@ -13,7 +14,6 @@ import { libroStore } from './store';
 import LibroEntrada from './LibroEntrada';
 import { paginasLibro } from './muestra';
 import { trackEvent } from '../utils/analytics';
-import QRCode from 'qrcode';
 import { isSpainTimeZone, isMexicoTimeZone, isLatamTimeZone } from '../utils/pricing';
 import './libro.css';
 
@@ -29,6 +29,14 @@ function regionLibro() {
   return 'default';
 }
 const REGION = regionLibro();
+const CLAVE_PAGADO = 'libro_pagado'; // pago hecho y libro aún sin generar (por si hay que volver a subir el chat)
+
+function descargar(blob, nombre) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = nombre;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
 const LABELS_DEFECTO = { libro: '29 €', pdf: '12,99 €' };
 const COLORES = ['#2f3e46', '#5b3a4a', '#3a4a3f', '#1d1d1b', '#8c5a2b', '#2b4a6f'];
 
@@ -58,8 +66,14 @@ export default function LibroPage() {
   const [enviarIgual, setEnviarIgual] = useState(false);  // vive en un país donde imprimimos aunque su zona horaria no lo diga
   const [precios, setPrecios] = useState(LABELS_DEFECTO);
   const [galeria, setGaleria] = useState(false);
-  const [qrs, setQrs] = useState({});
-  const [entrada, setEntrada] = useState(true);  // primero, su libro (LibroEntrada); luego, el editor
+  const [qrs] = useState({}); // vídeos con QR: apagados (no se guardan vídeos en el servidor)
+  // Pago hecho: viene en la URL al volver de Stripe; si hubo que volver a subir el chat, se guardó en el navegador
+  const [pagado] = useState(() => {
+    const q = new URLSearchParams(window.location.search).get('pagado');
+    try { if (q) localStorage.setItem(CLAVE_PAGADO, q); return q || localStorage.getItem(CLAVE_PAGADO) || ''; } catch (e) { return q || ''; }
+  });
+  const [compra, setCompra] = useState(null); // { fase: 'comprobando' | 'generando' | 'error', error }
+  const [entrada, setEntrada] = useState(!pagado);  // primero, su libro (LibroEntrada); luego, el editor
   const renderListo = useRef(null); // promesa que se resuelve cuando la vista previa termina de paginar
   const cssRef = useRef('');
   const iframeRef = useRef(null);
@@ -231,15 +245,16 @@ export default function LibroPage() {
   }
 
   // Guardar la edición en el navegador cada vez que cambia algo (con medio segundo de margen)
+  const guardarEdicion = () => {
+    const { fileName } = libroStore.get();
+    return libroStore.guardarEdicion({ fileName, nMensajes: mensajes.length, caps: caps.map(c => ({ on: c.on, titulo: c.titulo })),
+      quitados: [...quitados], titulo, subtitulo, dedicatoria, color, portadaFoto, derecha, conPersonajes });
+  };
   useEffect(() => {
     if (estado !== 'listo' || !mensajes) return undefined;
-    const t = setTimeout(() => {
-      const { fileName } = libroStore.get();
-      libroStore.guardarEdicion({ fileName, nMensajes: mensajes.length, caps: caps.map(c => ({ on: c.on, titulo: c.titulo })),
-        quitados: [...quitados], titulo, subtitulo, dedicatoria, color, portadaFoto, derecha, conPersonajes });
-    }, 500);
+    const t = setTimeout(guardarEdicion, 500);
     return () => clearTimeout(t);
-  }, [estado, mensajes, caps, quitados, titulo, subtitulo, dedicatoria, color, portadaFoto, derecha, conPersonajes]);
+  }, [estado, mensajes, caps, quitados, titulo, subtitulo, dedicatoria, color, portadaFoto, derecha, conPersonajes]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function borrarLibro() {
     if (!window.confirm('¿Borrar este libro y el chat guardado en este navegador?')) return;
@@ -356,54 +371,17 @@ export default function LibroPage() {
     setPidiendo(false);
   }
 
-  // Vídeos y notas de voz con QR en el libro: APAGADO (Maria, 27-11-2026). Para que el QR impreso funcionara
-  // había que guardar esos archivos en el servidor durante años, y no queremos guardar nada: solo viaja el PDF
-  // y se borra al día siguiente. Para volver a encenderlo habría que decidir antes dónde y cuánto se guardan.
-  const QR_MEDIA_ACTIVO = false;
-  const MAX_MEDIA_MB = 40, MAX_MEDIA = 30;
-  async function subirMediaConQR() {
-    if (!QR_MEDIA_ACTIVO) return;
-    const idx = idxRef.current; if (!idx || !man) return;
-    const ids = new Set(man.capitulos.filter(c => c.on).flatMap(c => c.mensajes));
-    const lista = mensajes.filter(m => ids.has(m.id) && m.archivo && idx.has(m.archivo) && ((m.tipo === 'video' && videos[m.archivo]) || m.tipo === 'audio') && !qrs[m.archivo]).slice(0, MAX_MEDIA);
-    if (!lista.length) return;
-    const nuevos = { ...qrs };
-    let n = 0;
-    for (const m of lista) {
-      n++; setProgreso(`Subiendo vídeos y audios ${n}/${lista.length}…`);
-      try {
-        const blob = await idx.get(m.archivo).async('blob');
-        if (blob.size > MAX_MEDIA_MB * 1024 * 1024) continue;
-        const fd = new FormData(); fd.append('kind', 'media'); fd.append('file', blob, m.archivo);
-        const r = await fetch(`${API_URL}/api/book/upload`, { method: 'POST', body: fd });
-        const u = await r.json().catch(() => ({}));
-        if (!r.ok || !u.url) continue;
-        nuevos[m.archivo] = await QRCode.toDataURL(u.url, { margin: 0, width: 360, errorCorrectionLevel: 'M' });
-      } catch (e) { console.warn('media QR', m.archivo, e); }
-    }
-    setProgreso('Colocando los códigos QR…');
-    await new Promise(res => { renderListo.current = res; setQrs(nuevos); setTimeout(res, 15000); });
-  }
-
-  // Pedir (libro impreso o solo PDF): PDF → subida cifrada → Stripe Checkout → /libro/pedido, donde se
-  // entrega la descarga (y, si es impreso, se manda a imprenta). Nadie descarga nada sin pagar.
+  // Pedir: primero se paga, sin generar ni subir nada. La edición ya está guardada en este navegador; al volver
+  // del pago (?pagado=…) se genera el libro aquí mismo (efecto de abajo).
   async function pedir(product = 'libro') {
     if (pidiendo || demasiadas || pocas) return;
     if (product === 'pdf') trackEvent('libro_pago_pdf'); else trackEvent('libro_pago_impreso');  // pulsa el botón de pagar
-    setPidiendo(true);
+    setPidiendo(true); setProgreso('Abriendo el pago…');
     try {
-      await subirMediaConQR();
-      // impreso: PDF con la estructura de Gelato (cubierta en pliego + guardas); solo PDF: el libro tal cual, página a página
-      const { blob: pdf, pageCount } = product === 'pdf' ? { blob: await generarPDFSimple(false), pageCount: paginas } : await generarPDF();
-      setProgreso('Subiendo el libro…');
-      const fd = new FormData(); fd.append('kind', 'pdf'); fd.append('file', pdf, 'libro.pdf');
-      const up = await fetch(`${API_URL}/api/book/upload`, { method: 'POST', body: fd });
-      const u = await up.json().catch(() => ({}));
-      if (!up.ok) throw new Error(u.error || 'No se pudo subir el PDF');
-      const fileToken = u.plainUrl.split('k=')[1];
-      setProgreso('Abriendo el pago…');
+      await guardarEdicion();
+      const pageCount = product === 'pdf' ? paginas : paginasImprenta; // con las páginas que se cobran
       const ck = await fetch(`${API_URL}/api/book/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileId: u.id, fileToken, pageCount, titulo, product, region: REGION }) });
+        body: JSON.stringify({ pageCount, titulo, product, region: REGION }) });
       const c = await ck.json().catch(() => ({}));
       if (!ck.ok || !c.url) throw new Error(c.error || 'No se pudo iniciar el pago');
       window.location.assign(c.url);
@@ -412,6 +390,49 @@ export default function LibroPage() {
     setPidiendo(false);
   }
 
+  // Vuelta del pago: comprobar el pago y generar el libro con el libro recuperado del navegador.
+  //  - PDF: se descarga en el dispositivo y no sale de aquí.
+  //  - Impreso: se descarga su copia y se sube cifrado para la imprenta (el servidor lo borra en cuanto ella lo tiene).
+  async function terminarCompra() {
+    setCompra({ fase: 'comprobando' });
+    try {
+      const r = await fetch(`${API_URL}/api/book/estado?session_id=${encodeURIComponent(pagado)}`);
+      const d = await r.json().catch(() => ({}));
+      if (r.status === 402) { setTimeout(terminarCompra, 2000); return; } // Stripe aún no ha marcado el pago
+      if (!r.ok) throw new Error(d.error || 'No hemos podido comprobar el pago.');
+      if (d.orderId) { try { localStorage.removeItem(CLAVE_PAGADO); } catch (e) { /* nada */ } navigate(`/libro/pedido?session_id=${encodeURIComponent(pagado)}`); return; }
+      const nombre = `${(titulo || 'libro').replace(/[^\w&\- áéíóúñÁÉÍÓÚÑ]/g, '')}.pdf`;
+      if (d.product === 'pdf') {
+        setCompra({ fase: 'generando' }); setProgreso('Generando tu libro…');
+        descargar(await generarPDFSimple(false), nombre);
+      } else {
+        if (paginasImprenta !== d.pageCount) {
+          throw new Error(`El libro tiene ahora ${paginasImprenta} páginas y el pago fue para ${d.pageCount}. Déjalo como estaba (enciende o apaga capítulos) y pulsa «Terminar el pedido».`);
+        }
+        setCompra({ fase: 'generando' });
+        const { blob, pageCount } = await generarPDF();
+        descargar(blob, nombre);  // su copia, en su dispositivo
+        setProgreso('Enviando el libro a la imprenta…');
+        const fd = new FormData(); fd.append('session_id', pagado); fd.append('pageCount', String(pageCount)); fd.append('file', blob, 'libro.pdf');
+        const up = await fetch(`${API_URL}/api/book/pedido`, { method: 'POST', body: fd });
+        const u = await up.json().catch(() => ({}));
+        if (!up.ok) throw new Error(u.error || 'No hemos podido mandar el libro a la imprenta.');
+      }
+      try { localStorage.removeItem(CLAVE_PAGADO); } catch (e) { /* nada */ }
+      navigate(`/libro/pedido?session_id=${encodeURIComponent(pagado)}${d.product === 'pdf' ? '&descargado=1' : ''}`);
+    } catch (e) { setCompra({ fase: 'error', error: e.message }); }
+  }
+  useEffect(() => {
+    // espera a que el libro esté montado y la vista previa paginada
+    if (!pagado || compra || estado !== 'listo' || !paginasImprenta) return;
+    terminarCompra();
+  }, [pagado, compra, estado, paginasImprenta]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (pagado && estado === 'sinchat') return (
+    <div className="libro-empty"><h2>Pago recibido</h2>
+      <p>Para terminar tu libro, sube el mismo chat en este dispositivo (exportado con archivos). Por privacidad, tu libro no se guarda en nuestros servidores, así que se crea aquí.</p>
+      <button onClick={() => navigate('/libro-recuerdo')}>Subir el chat</button></div>
+  );
   if (estado === 'sinchat') return <div className="libro-empty"><h2>Tu chat en un libro</h2><p>Sube tu chat (exportado con archivos) y verás tu libro al momento.</p><button onClick={() => navigate('/libro-recuerdo')}>Subir el chat</button></div>;
   if (estado === 'error') return <div className="libro-empty"><h2>Tu chat en un libro</h2><p>{progreso}</p><button onClick={() => navigate('/')}>Volver</button></div>;
   if (estado === 'cargando') return <div className="libro-empty"><h2>Montando tu libro…</h2><p>{progreso}</p><div className="libro-spinner" /></div>;
@@ -445,6 +466,13 @@ export default function LibroPage() {
       </div>
       <div className="libro-wrap">
         <div className="libro-vista">
+          {pagado && compra && (
+            <div className={`libro-compra ${compra.fase === 'error' ? 'error' : ''}`} role={compra.fase === 'error' ? 'alert' : 'status'}>
+              {compra.fase === 'error'
+                ? <><b>No hemos podido terminar tu libro.</b> {compra.error} <button className="pill go" onClick={() => setCompra(null)}>Terminar el pedido</button></>
+                : <><b>Pago recibido.</b> {compra.fase === 'comprobando' ? 'Comprobando el pago…' : progreso || 'Generando tu libro…'} No cierres la página.</>}
+            </div>
+          )}
           <p className="libro-aviso">✏️ Toca un mensaje para quitarlo · en el panel, capítulos, título, portada y dedicatoria{sinFotos && <> · 📸 ¿Con fotos? Exporta el chat con archivos y <button type="button" onClick={() => navigate('/libro-recuerdo')}>súbelo aquí</button></>}</p>
           <iframe ref={iframeRef} title="libro" className="libro-pages" />
         </div>
