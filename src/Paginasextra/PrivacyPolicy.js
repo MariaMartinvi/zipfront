@@ -8,7 +8,7 @@ const PrivacyPolicy = () => {
 
   const spanishContent = {
     title: "Política de Privacidad de chatsalsa.com",
-    lastUpdate: "Fecha de entrada en vigor: 23/11/2026",
+    lastUpdate: "Fecha de entrada en vigor: 27/11/2026",
     introduction: "En ChatSalsa, nos tomamos muy en serio la privacidad de nuestros usuarios. Esta Política de Privacidad describe cómo recopilamos, usamos y protegemos tu información personal cuando accedes y utilizas nuestro sitio web y servicios (en adelante, el \"Servicio\").",
     sections: {
       responsible: {
@@ -21,29 +21,29 @@ const PrivacyPolicy = () => {
         ]
       },
       important: {
-        title: "Importante",
+        title: "Importante: qué sale de tu dispositivo",
         subsections: {
           stats: {
-            title: "Para el análisis estadístico de tus chats:",
+            title: "Estadísticas, características, juegos y comparativa (gratis):",
             items: [
-              "Tus chats no salen de tu dispositivo(ordenador o teléfono).",
-              "Para la comparativa «Tu chat frente al resto», tu dispositivo envía una ficha con números del chat (por ejemplo, mensajes al día o palabrotas cada 100 mensajes, también sumados por chicos y por chicas) y si quien más escribe, más ríe, etc. —o quien gana cada característica (Vampiro, Amoroso…)— es un chico o una chica, deducido del nombre en tu dispositivo. Si has pedido el análisis con IA, también envía los temas, la dinámica, los rasgos y la nota que la IA ha elegido de unas listas cerradas. Con todo ello va el país, deducido de la zona horaria de tu dispositivo, para hacer estadísticas por países. La ficha no lleva nombres, mensajes ni ningún dato que te identifique a ti o a tu chat: nuestro servidor solo suma esos números a unos contadores generales y la descarta.",
-              "Si compras el cuadro regalo, después del pago el texto del chat se anonimiza en tu dispositivo, igual que en el análisis con IA (los nombres pasan a ser «Participante 1», «Participante 2»… y se ocultan teléfonos, correos y enlaces), y así se envía a nuestro servidor y a la IA para elegir las frases. No van fotos ni audios, y no se guarda: solo se te devuelven las frases elegidas, y los nombres reales se reponen en tu dispositivo. La lámina final se crea y se descarga en tu dispositivo: ni las frases que eliges ni los nombres pasan por nuestro servidor, y no guardamos ninguna lámina."
+              "Las estadísticas, las características y los juegos se calculan en tu dispositivo (ordenador o teléfono). Tu chat no sale de él.",
+              "Para la comparativa «Tu chat frente al resto», tu dispositivo envía una ficha con números del chat (por ejemplo, mensajes al día o palabrotas cada 100 mensajes, también sumados por chicos y por chicas), si quien gana cada característica (Vampiro, Amoroso…) es un chico o una chica, deducido del nombre en tu dispositivo, y el país, deducido de la zona horaria de tu dispositivo. Si tienes el análisis con IA, también los temas, la dinámica, los rasgos y la nota que ha elegido la IA de unas listas cerradas. La ficha no lleva nombres, mensajes ni nada que te identifique a ti o a tu chat: nuestro servidor suma esos números a unos contadores generales y la descarta."
             ]
           },
           psych: {
-            title: "Para el análisis sicológico de tus chats:",
+            title: "Análisis con IA, cuadro y libro (de pago):",
             items: [
-              "La anonimización de tu chat se hace en tu dispositivo.",
-              "Los chats son anonimizados en tu dispositivo antes de mandarlos a Microsoft Azure. Solo mandamos un fragmento de alrededor 20-50k caracteres. Mandamos los chats sin datos personales.",
-              "Los chats anonimizados pasan directamente de tu dispositivo a Microsoft Azure, sin pasar por un servidor de Chatsalsa ni ser tratados por el camino."
+              "Análisis con IA: antes de salir de tu dispositivo, el chat se anonimiza en él. Los nombres de quienes escriben pasan a ser «Participante 1», «Participante 2»…, también cuando aparecen dentro de los mensajes; se ocultan teléfonos, correos y enlaces, y se quitan fechas y horas. Se envía un fragmento de unos 20.000 caracteres a nuestro servidor, que lo pasa a nuestro proveedor de inteligencia artificial y devuelve el resultado. Nuestro servidor no lo guarda ni lo escribe en sus registros. Los nombres reales se reponen en tu dispositivo al enseñarte el resultado.",
+              "Cuadro con las frases del chat: igual que el análisis, el chat se anonimiza en tu dispositivo y se envía a nuestro servidor y a la IA para elegir las frases, y no se guarda. De cada pago solo guardamos un contador de intentos y una huella del chat (un código del que no se puede sacar ninguna palabra), para que un pago valga para un solo chat. La lámina se crea y se descarga en tu dispositivo: ni las frases que eliges ni los nombres pasan por nuestro servidor.",
+              "Libro con vuestro chat: el libro se monta en tu dispositivo. Para convertirlo en PDF, su contenido pasa por nuestro servidor y por nuestro servicio de conversión a PDF, en memoria y sin guardarse, y el PDF se descarga en tu dispositivo. Si lo compras en PDF, no se guarda en ningún sitio.",
+              "Libro impreso: el PDF se guarda cifrado en nuestro servidor solo hasta que la imprenta lo recibe (como mucho 24 horas) y después se borra. La imprenta recibe el PDF y tu dirección de envío para fabricar y enviar el libro."
             ]
           },
           conclusion: {
             title: "En conclusión:",
             items: [
-              "No se almacena, ni tratan en nuestros servidores ni por terceros ningún dato personal presente en tus archivos de chat.",
-              "Todo el tratamiento de datos personales se hace en tu dispositivo."
+              "No guardamos tus chats.",
+              "Lo que sale de tu dispositivo va anonimizado o, en el caso del libro impreso, cifrado, y no se guarda salvo en los casos y plazos descritos en esta política."
             ]
           }
         }
@@ -54,56 +54,50 @@ const PrivacyPolicy = () => {
           user: {
             title: "a) Información de Usuario",
             description: "Cuando te registras o haces login, recopilamos información básica como tu dirección de correo electrónico, nombre de usuario.",
-            note: "Utilizamos Firebase como proveedor de autenticación y almacenamiento seguro de usuarios."
+            note: "Utilizamos un proveedor de autenticación para el almacenamiento seguro de las cuentas de usuario."
           },
           payments: {
             title: "b) Pagos",
-            description: "Los pagos son procesados a través de Stripe. No almacenamos directamente información de tarjetas de pago. Stripe gestiona y protege esta información conforme a sus propias políticas de privacidad: https://stripe.com/privacy"
+            description: "Los pagos se procesan a través de nuestro proveedor de pagos. No almacenamos información de tarjetas de pago. En el libro impreso, el proveedor de pagos recoge también la dirección de envío."
           }
         }
       },
       chatProcessing: {
         title: "3. Tratamiento de Datos de Chat",
-        description: "Importante: Los datos del chat sin anonimizar no salen nunca de tu dispositivo. Al subir un chat sólo se mandan a azure (microsoft) para el apartado \"análisis sicológico\", el resto se procesa en local en tu ordenador, dispositivo y los datos personales de los chats no salen de tu dispositivo.",
+        description: "Tu chat se analiza en tu dispositivo. Solo sale de él lo descrito en el apartado «Importante» de esta política: anonimizado en el análisis con IA y en el cuadro, y en el libro el contenido necesario para convertirlo en PDF y, si es impreso, enviarlo a la imprenta.",
         important: {
           title: "Importante sobre los chats:",
           items: [
             "En el servidor de Chatsalsa NO almacenamos ningún chat.",
-            "En el servidor de Chatsalsa NO tratamos ningún chat.",
-            "Todos los datos son tratados y anonimizados directamente en tu dispositivo, ordenador.",
-            "SOLO mandamos los datos del chat anonimizados, sin datos personales a AZURE. Este envío es directo sin pasar por nuestro servidor."
+            "Lo que pasa por nuestro servidor (el fragmento anonimizado del análisis y del cuadro, y el libro para convertirlo en PDF) se trata en memoria y no se guarda, salvo el PDF del libro impreso hasta que lo recibe la imprenta.",
+            "La anonimización se hace en tu dispositivo, antes de enviar nada."
           ]
         },
         additional: {
-          description: "Adicional: tienes la opción de que el chat no salga de tu dispositivo clicando la opción \"Sólo análisis local\". Si el usuario decide realizar el análisis sicológico, usamos Azure OpenAi para el tratamiento del chat. Antes de mandar el texto del chat a azure, adoptamos fuertes medidas de anonimización para que los datos personales no salgan del dispositivo del usuario que consta de 4 capas principales:"
+          description: "Si no quieres que salga nada del chat de tu dispositivo, usa solo las estadísticas gratuitas, que se calculan íntegramente en él."
         },
         anonymization: {
           title: "a) Anonimización antes del procesamiento externo",
-          description: "Antes de enviar fragmentos de texto a servicios externos (ver sección siguiente), aplicamos el siguiente proceso de anonimización:",
+          description: "Antes de enviar fragmentos del chat a nuestro proveedor de inteligencia artificial, se aplica en tu dispositivo el siguiente proceso:",
           items: [
-            "Se eliminan todos los nombres de los participantes, sustituyéndolos por \"Participante 1\", \"Participante 2\", etc.",
-            "Se eliminan fechas específicas, emails y urls.",
-            "Se procesan números para que sean irreconocibles:",
-            "Números de 1 cifra: eliminados por completo.",
-            "Números de 2 cifras: se conserva 1 cifra.",
-            "Números de 3 cifras: se conserva 1 cifra.",
-            "Números de 4 o más cifras: se conserva la mitad de las cifras.",
-            "Se eliminan lugares, parentescos y otros datos personales, utilizando modelos de lenguaje basados en transformers (IA para la anonimización en browser), la librería Compromise, y reglas personalizadas con expresiones regulares (RegEx)."
+            "Los nombres de los participantes se sustituyen por «Participante 1», «Participante 2», etc., también cuando aparecen dentro de los mensajes.",
+            "Se ocultan teléfonos, correos electrónicos y enlaces.",
+            "Se eliminan las fechas y las horas de los mensajes.",
+            "Se ocultan nombres de personas y lugares frecuentes que se mencionan en la conversación, mediante listas y reglas."
           ]
         }
       },
       azure: {
-        title: "4. Envío de Datos a Azure",
-        description: "Solo se envía un fragmento limitado de entre 20k-50k caracteres del chat.",
+        title: "4. Proveedores",
+        description: "Para dar el servicio usamos proveedores de alojamiento del servidor, de inteligencia artificial (que solo reciben fragmentos del chat ya anonimizados), de pagos, de impresión y envío del libro (que reciben el PDF del libro y la dirección de envío), de cuentas de usuario y de correo electrónico. Ninguno guarda tu chat por encargo nuestro.",
         important: {
-          title: "Importante en la política de privacidad de Microsoft Azure Openai:",
+          title: "Sobre nuestros proveedores de inteligencia artificial:",
           items: [
-            "Tus chats no se usan para entrenar la AI.",
-            "Tus chats permanecen almacenados en centros de datos de Europa",
-            "Tus chats pueden ser almacenados encriptados durante 30 días. (Para fines de depuración y auditoria de mal uso). Al cabo de 30 días se borran."
+            "Según sus condiciones, no usan los datos que reciben para entrenar sus modelos.",
+            "Pueden conservarlos un tiempo limitado para vigilar abusos, según sus propias políticas."
           ]
         },
-        link: "Puedes consultar más detalles en la política de Microsoft Azure: https://learn.microsoft.com/en-us/legal/cognitive-services/openai/data-privacy?tabs=azure-portal"
+        link: ""
       },
       purposes: {
         title: "5. Finalidades del Tratamiento",
@@ -111,6 +105,7 @@ const PrivacyPolicy = () => {
         items: [
           "Proporcionarte acceso al servicio.",
           "Gestionar tus pagos y autenticación.( Login )",
+          "Fabricar y enviar el libro impreso, si lo pides.",
           "Mejorar el funcionamiento del sistema y la experiencia del usuario (análisis anonimizados).",
           "Garantizar la seguridad y estabilidad del servicio."
         ]
@@ -130,10 +125,12 @@ const PrivacyPolicy = () => {
       retention: {
         title: "7. Conservación de los Datos",
         items: [
-          "Los datos personales, login, se conservarán mientras mantengas una cuenta activa.",
-          "Datos del chat:",
-          "En chatsalsa no guardamos ningún dato del chat, de hecho nunca recibimos el chat. Todo se proceso en tu ordenador. No contamos con ningún dato personal más allá de los necesarios para el login.",
-          "Los fragmentos anonimizados enviados a Azure se eliminan automáticamente tras un máximo de 30 días."
+          "Datos de la cuenta (login): mientras la mantengas activa.",
+          "Chats: no los guardamos.",
+          "Libro impreso: el PDF, cifrado, hasta que lo recibe la imprenta (como mucho 24 horas).",
+          "Cuadro: el contador de intentos y la huella del chat de cada pago.",
+          "Comparativa: solo contadores sumados, sin datos personales.",
+          "Pagos y envíos: los conservan nuestros proveedores de pagos y, en el libro impreso, de impresión, según la ley."
         ]
       },
       changes: {
@@ -143,7 +140,7 @@ const PrivacyPolicy = () => {
       contact: {
         title: "9. Contacto",
         description: "Si tienes dudas sobre esta política, contáctanos en:",
-        email: "📧 info@tiendeo.com"
+        email: "📧 info@comartinvi.com"
       }
     },
     securityBadge: "100% Privado y Seguro"
@@ -407,7 +404,7 @@ const PrivacyPolicy = () => {
                   </ul>
                 </div>
                 
-                <p style={{ fontSize: '18px', lineHeight: '1.6' }}><a href={content.sections.azure.link.split(': ')[1]} target="_blank" rel="noopener noreferrer" className="privacy-link">{content.sections.azure.link}</a></p>
+                {content.sections.azure.link && <p style={{ fontSize: '18px', lineHeight: '1.6' }}><a href={content.sections.azure.link.split(': ')[1]} target="_blank" rel="noopener noreferrer" className="privacy-link">{content.sections.azure.link}</a></p>}
               </div>
             </div>
 

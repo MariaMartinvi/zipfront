@@ -1109,7 +1109,7 @@
     },
     "terms": {
       "title": "Términos de Servicio",
-      "updated": "Última actualización: Abril 2024",
+      "updated": "Última actualización: 27 de noviembre de 2026",
       "subtitle": "Estos términos establecen las condiciones bajo las cuales puedes utilizar nuestro servicio de análisis de conversaciones de WhatsApp.",
       "badge": "TÉRMINOS Y CONDICIONES",
       "section_title": "Condiciones de Uso",
@@ -1138,7 +1138,7 @@
         {
           "title": "4. Privacidad y Datos",
           "icon": "🔒",
-          "content": "Nos comprometemos a proteger tu privacidad. Los archivos que subes son procesados temporalmente y eliminados automáticamente después del análisis. Consulta nuestra Política de Privacidad para más detalles."
+          "content": "Tu chat se analiza en tu dispositivo. Lo que sale de él, cuándo y a quién se explica en nuestra Política de Privacidad."
         },
         {
           "title": "5. Derechos de Propiedad Intelectual",
@@ -1173,7 +1173,27 @@
         {
           "title": "11. Contacto",
           "icon": "📧",
-          "content": "Si tienes alguna pregunta sobre estos términos, por favor contáctanos."
+          "content": "Si tienes alguna pregunta sobre estos términos, escríbenos a info@comartinvi.com."
+        },
+        {
+          "title": "12. Productos de pago: libro y cuadro",
+          "icon": "📖",
+          "content": "",
+          "items": [
+            "La lámina del cuadro y el libro en PDF son archivos digitales. Se crean y se descargan en tu dispositivo al terminar el pago. No los guardamos, así que no podemos volver a enviártelos: guárdalos al descargarlos.",
+            "Después del pago hay 24 horas para crear y descargar el cuadro o el libro. Pasado ese plazo, escríbenos y lo vemos.",
+            "Un pago del cuadro vale para un solo chat. Ese chat se puede volver a subir varias veces; para otro chat hace falta otro pago.",
+            "El libro impreso se fabrica con el contenido que eliges y se envía a la dirección que indicas en el pago."
+          ]
+        },
+        {
+          "title": "13. Derecho de desistimiento",
+          "icon": "↩️",
+          "content": "",
+          "items": [
+            "El libro (impreso o en PDF) y la lámina del cuadro se hacen a medida con el contenido de tu chat y las opciones que eliges, por lo que no admiten desistimiento, salvo que lleguen defectuosos.",
+            "Si algo falla (no se genera, no se descarga o llega defectuoso), escríbenos a info@comartinvi.com y lo solucionamos o te devolvemos el dinero."
+          ]
         }
       ],
       "important_notice": {
