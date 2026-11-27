@@ -90,3 +90,12 @@ test('título y pie propuestos', () => {
   const grupo = mensajesDeTexto(`${CHAT}\n[9/12/25, 09:01:00] Noe: Hola`);
   expect(titulosPropuestos(grupo).titulo).toBe('');         // en un grupo el título lo pone el usuario
 });
+
+test('se pueden añadir a mano varias frases seguidas y todas salen en el cuadro', () => {
+  let l = listaInicial(frases(2));
+  l = anadir(l, { texto: 'Si me pierdo, búscame en la nevera', autor: 'Marc' });
+  l = anadir(l, { texto: '¿Peli esta noche?', autor: 'Lucía' });
+  l = anadir(l, { texto: 'Mañana más', autor: 'Marc' });
+  expect(l.filter((f) => f.origen === 'mano').map((f) => f.texto)).toEqual(['Si me pierdo, búscame en la nevera', '¿Peli esta noche?', 'Mañana más']);
+  expect(cuadroDe(l, {}).frases).toHaveLength(5);
+});

@@ -32,6 +32,12 @@ export default function CuadroCrear() {
   const [error, setError] = useState('');
   const [busca, setBusca] = useState('');
   const [arrastrando, setArrastrando] = useState(false);
+  const [anadida, setAnadida] = useState(''); // última frase añadida a mano, para que se note
+  const anadirAMano = (r) => {
+    setLista((l) => anadir(l, r));
+    setAnadida(r.texto.length > 60 ? `${r.texto.slice(0, 57)}…` : r.texto);
+    setBusca(''); // lista para buscar la siguiente
+  };
   const [bajando, setBajando] = useState('');
   const [huella, setHuella] = useState(''); // del chat con el que se creó el cuadro: un pago, un chat
   const [caduca, setCaduca] = useState(0); // hasta cuándo se puede descargar (24 h desde el pago)
@@ -177,15 +183,23 @@ export default function CuadroCrear() {
           </ul>
 
           <h2>Añadir frases a mano</h2>
+          {anadida && <p className="cc-ok" role="status">✓ Añadida al cuadro: «{anadida}». Puedes buscar y añadir más.</p>}
           {mensajes ? (
             <>
               <input type="search" className="cc-busca" value={busca} placeholder="Busca una palabra de la frase…" onChange={(e) => setBusca(e.target.value)} aria-label="Buscar en el chat" />
               {busca.trim().length >= 2 && (
                 <ul className="cc-resultados">
                   {encontradas.length === 0 && <li className="cc-nota">Nada con «{busca}».</li>}
-                  {encontradas.map((r) => (
-                    <li key={r.texto}><button type="button" onClick={() => setLista((l) => anadir(l, r))}><b>{r.autor.split(' ')[0]}:</b> {r.texto}</button></li>
-                  ))}
+                  {encontradas.map((r) => {
+                    const ya = lista.some((f) => f.texto === r.texto);
+                    return (
+                      <li key={r.texto}>
+                        <button type="button" disabled={ya} className={ya ? 'cc-ya' : ''} onClick={() => anadirAMano(r)}>
+                          <b>{r.autor.split(' ')[0]}:</b> {r.texto}<span className="cc-anadir">{ya ? '✓ Añadida' : '+ Añadir'}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </>

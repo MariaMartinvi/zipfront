@@ -52,3 +52,11 @@
 .cc-soltar b { overflow-wrap: anywhere; }
 .cc-archivo { display: inline-flex; align-items: center; margin: 8px 8px 0 0; cursor: pointer; }
 .cc-archivo input { display: none; }
+
+/* Añadir frases a mano: que se note que se ha añadido y cuáles ya están */
+.cc-resultados button { display: flex; align-items: baseline; gap: 8px; }
+.cc-resultados button b { flex: none; }
+.cc-anadir { margin-left: auto; flex: none; font-size: .8rem; font-weight: 600; color: var(--lila); }
+.cc-resultados button.cc-ya { opacity: .6; cursor: default; }
+.cc-resultados button.cc-ya .cc-anadir { color: #1a7f45; }
+.cc-ok { margin: 0 0 10px; padding: 10px 14px; border-radius: 10px; background: #e9f9ef; color: #0e4f2e !important; font-size: .9rem; }
