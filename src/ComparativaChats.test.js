@@ -1,4 +1,7 @@
 import { filasComparativa, filasIA } from './ComparativaChats';
+// Las características (Analisis_top.js) importan AuthContext, que arranca Firebase: aquí no hace falta
+jest.mock('./AuthContext', () => ({ useAuth: () => ({ user: null }) }));
+
 
 const tramos = {
   msgDiaMiembro: [1, 2, 5, 10], recordDiaMiembro: [10], racha: [7], silencio: [7], respuestaMin: [5],
@@ -70,4 +73,28 @@ test('0 palabrotas: punto al inicio de la barra y frase de los más finos', () =
   const t = totales(20, { palabrotas100: [8, 12] });
   const fila = filasComparativa({ v: 1, numeros: { palabrotas100: 0 }, genero: {} }, t).numeros[0];
   expect(fila).toMatchObject({ pct: 0, frase: 'Ni una palabrota: estáis en el 40 % de chats más finos' });
+});
+
+test('con la web en otro idioma manda la ficha (para las estadísticas por país) pero no enseña la sección', async () => {
+  const { default: ComparativaChats } = await import('./ComparativaChats');
+  const React = await import('react');
+  const { createRoot } = await import('react-dom/client');
+  const { act } = await import('react-dom/test-utils');
+  const lineas = [];
+  for (let d = 1; d <= 20; d++) {
+    lineas.push(`[${d}/3/25, 10:00:00] Marcos: shall we grab a beer tonight?`);
+    lineas.push(`[${d}/3/25, 10:05:00] Lucía García: yes please ❤️`);
+    lineas.push(`[${d}/3/25, 23:30:00] Lucía García: home now`);
+  }
+  window.localStorage.clear();
+  const llamadas = [];
+  global.fetch = jest.fn((url, opts = {}) => { llamadas.push([url, opts]); return Promise.resolve({ ok: true, json: () => Promise.resolve({}) }); });
+  const div = document.createElement('div');
+  await act(async () => { createRoot(div).render(React.createElement(ComparativaChats, { chatData: lineas.join('\n'), aiResponse: null, idioma: 'en' })); });
+  const envio = llamadas.find(([, o]) => o.method === 'POST');
+  expect(envio[0]).toMatch(/\/api\/comparativa$/);
+  const ficha = JSON.parse(envio[1].body);
+  expect(ficha.contadores.menciones_vicios).toBe(20);                  // «beer» cuenta: listas en inglés
+  expect(llamadas.filter(([, o]) => o.method !== 'POST')).toHaveLength(0); // no pide los totales
+  expect(div.innerHTML).toBe('');                                       // y no enseña nada
 });

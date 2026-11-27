@@ -27,7 +27,7 @@ const PrivacyPolicy = () => {
             title: "Para el análisis estadístico de tus chats:",
             items: [
               "Tus chats no salen de tu dispositivo(ordenador o teléfono).",
-              "Para la comparativa «Tu chat frente al resto», tu dispositivo envía una ficha con números del chat (por ejemplo, mensajes al día o palabrotas cada 100 mensajes) y si quien más escribe, más ríe, etc. es un chico o una chica, deducido del nombre en tu dispositivo. La ficha no lleva nombres, mensajes ni ningún dato que te identifique a ti o a tu chat: nuestro servidor solo suma 1 a unos contadores generales y la descarta."
+              "Para la comparativa «Tu chat frente al resto», tu dispositivo envía una ficha con números del chat (por ejemplo, mensajes al día o palabrotas cada 100 mensajes, también sumados por chicos y por chicas) y si quien más escribe, más ríe, etc. —o quien gana cada característica (Vampiro, Amoroso…)— es un chico o una chica, deducido del nombre en tu dispositivo. Si has pedido el análisis con IA, también envía los temas, la dinámica, los rasgos y la nota que la IA ha elegido de unas listas cerradas. Con todo ello va el país, deducido de la zona horaria de tu dispositivo, para hacer estadísticas por países. La ficha no lleva nombres, mensajes ni ningún dato que te identifique a ti o a tu chat: nuestro servidor solo suma esos números a unos contadores generales y la descarta."
             ]
           },
           psych: {

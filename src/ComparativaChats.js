@@ -4,7 +4,8 @@
 // La parte de IA sale de la línea COMPARATIVA_DATA del análisis IA: solo la ve quien lo tiene (ha pagado), desde 10 chats.
 import React, { useEffect, useMemo, useState } from 'react';
 import { parseChat } from './libro/parser';
-import { fichaAnonima, fichaIA, enviarFicha, percentil } from './utils/comparativa';
+import { fichaAnonima, fichaIA, fichaCaracteristicas, enviarFicha, percentil } from './utils/comparativa';
+import { perfilesDelChat } from './Analisis_top';
 import { duracion } from './AnalisisExtra';
 import './AnalisisExtra.css';
 import './ComparativaChats.css';
@@ -107,10 +108,17 @@ export function filasIA(ficha, ia) {
   return filas;
 }
 
-export default function ComparativaChats({ chatData, aiResponse }) {
+// idioma: el de la web. Los datos se mandan en todos los idiomas (estadísticas por país);
+// la sección solo se enseña en castellano porque sus textos están en castellano.
+export default function ComparativaChats({ chatData, aiResponse, idioma = 'es' }) {
+  const mostrar = idioma === 'es';
   const ficha = useMemo(() => {
-    try { return fichaAnonima(parseChat(typeof chatData === 'string' ? chatData : '')); } catch (e) { return null; }
-  }, [chatData]);
+    try {
+      const f = fichaAnonima(parseChat(typeof chatData === 'string' ? chatData : ''));
+      const c = f && fichaCaracteristicas(perfilesDelChat(chatData, idioma)); // las mismas características que ve el usuario
+      return c ? { ...f, ...c } : f;
+    } catch (e) { return null; }
+  }, [chatData, idioma]);
   const fichaIa = useMemo(() => fichaIA(aiResponse), [aiResponse]);
   const [totales, setTotales] = useState(null);
 
@@ -120,17 +128,18 @@ export default function ComparativaChats({ chatData, aiResponse }) {
     (async () => {
       await enviarFicha(ficha, chatData, { apiUrl: API_URL });
       await enviarFicha(fichaIa, chatData, { apiUrl: API_URL, ia: true });
+      if (!mostrar) return;
       try {
         const r = await fetch(`${API_URL}/api/comparativa`);
         if (r.ok && vivo) setTotales(await r.json());
       } catch (e) { /* sin servidor no hay comparativa: la sección no se enseña */ }
     })();
     return () => { vivo = false; };
-  }, [ficha, fichaIa, chatData]);
+  }, [ficha, fichaIa, chatData, mostrar]);
 
   const { numeros, genero } = filasComparativa(ficha, totales);
   const ia = filasIA(fichaIa, totales && totales.ia);
-  if (!numeros.length && !genero.length && !ia.length) return null;
+  if (!mostrar || (!numeros.length && !genero.length && !ia.length)) return null;
 
   return (
     <div className="ax cmp">

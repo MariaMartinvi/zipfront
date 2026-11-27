@@ -2362,9 +2362,10 @@ const tryDeleteFiles = async (operationId) => {
                   </div>
                 )}
 
-                {/* Tu chat frente al resto: al final de todo (Maria, 23-11-2026). De momento solo en castellano */}
-                {operationId && user && chatData && (i18n.language || 'es').startsWith('es') && (
-                  <div data-ri="comparativa"><Suspense fallback={null}><ComparativaChats chatData={chatData} aiResponse={chatGptResponse} /></Suspense></div>
+                {/* Tu chat frente al resto: al final de todo (Maria, 23-11-2026). Manda los datos en todos los idiomas
+                    (estadísticas por país, Maria 27-11-2026), pero la sección solo se enseña en castellano */}
+                {operationId && user && chatData && (
+                  <div data-ri="comparativa"><Suspense fallback={null}><ComparativaChats chatData={chatData} aiResponse={chatGptResponse} idioma={(i18n.language || 'es').slice(0, 2)} /></Suspense></div>
                 )}
                 
 

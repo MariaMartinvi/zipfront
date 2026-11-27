@@ -1295,6 +1295,17 @@ const analizarPerfilesCompleto = (contenido, formatoForzado = null, idiomaChat =
 };
 
 // Función para extraer mensajes de las líneas del chat
+// Las características de un chat, guardadas para el último chat: así «Tu chat frente al resto»
+// usa exactamente el mismo resultado que esta sección sin volver a calcularlo.
+// El idioma (el de la web: 'es', 'en'…) elige las listas de palabrotas, vicios y primera persona.
+let ultimoPerfiles = { chat: null, idioma: null, resultado: null };
+export const perfilesDelChat = (chatData, idioma = 'es') => {
+  if (ultimoPerfiles.chat !== chatData || ultimoPerfiles.idioma !== idioma) {
+    ultimoPerfiles = { chat: chatData, idioma, resultado: analizarPerfilesCompleto(chatData, null, idioma) };
+  }
+  return ultimoPerfiles.resultado;
+};
+
 const extraerMensajes = (lineas, formato) => {
   const mensajes = [];
   let mensajeAnterior = null;
@@ -1455,7 +1466,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
     console.log("Analizando perfiles del chat en el cliente");
     try {
       // Analizar los datos del chat utilizando nuestro analizador de cliente
-      const resultadoAnalisis = analizarPerfilesCompleto(chatData);
+      const resultadoAnalisis = perfilesDelChat(chatData, (i18n.language || 'es').slice(0, 2));
       console.log("Resultado del análisis de perfiles en cliente:", resultadoAnalisis);
       return resultadoAnalisis;
     } catch (err) {
@@ -1466,7 +1477,7 @@ const AnalisisTop = ({ operationId, chatData }) => {
         success: false 
       };
     }
-  }, [chatData, t]);
+  }, [chatData, t, i18n.language]);
   
   // Mapeo de categorías con íconos y traducciones
   const categoriaIconos = {

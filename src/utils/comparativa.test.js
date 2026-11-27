@@ -1,4 +1,8 @@
-import { fichaAnonima, tramoDe, percentil, huella, enviarFicha, fichaIA, MINIMO_MENSAJES } from './comparativa';
+import { fichaAnonima, fichaCaracteristicas, tramoDe, percentil, huella, enviarFicha, fichaIA, MINIMO_MENSAJES } from './comparativa';
+import { perfilesDelChat } from '../Analisis_top';
+// Las características (Analisis_top.js) importan AuthContext, que arranca Firebase: aquí no hace falta
+jest.mock('../AuthContext', () => ({ useAuth: () => ({ user: null }) }));
+
 
 // Mensajes con la forma de libro/parser.js
 const msg = (dia, hhmm, autor, texto = 'hola qué tal') => ({ fecha: new Date(`${dia}T${hhmm}:00`), dia, autor, tipo: 'text', texto });
@@ -51,6 +55,86 @@ test('la ficha no lleva nombres ni texto del chat', () => {
   const json = JSON.stringify(fichaAnonima(chatEjemplo()));
   ['Lucía', 'Lucia', 'García', 'Marcos', 'joder', 'cenamos', 'graciosa'].forEach((s) => expect(json).not.toContain(s));
   expect(json).toMatch(/^[{}[\]":,.0-9a-zA-Z_-]+$/); // solo claves, números y chico/chica
+});
+
+test('la ficha lleva el país y las sumas de lo que no cuentan las características', () => {
+  const f = fichaAnonima(chatEjemplo(), 'CL');
+  expect(f.pais).toBe('CL');
+  expect(f.sumas).toEqual({ mensajes: 60, personas: 2, dias: 10, diasActivos: 10, manana: 0, audios: 0, fotos: 0, stickers: 0, borrados: 0 });
+  expect(f.sumasGenero).toEqual({
+    chica: { personas: 1, mensajes: 40, manana: 0, audios: 0 },
+    chico: { personas: 1, mensajes: 20, manana: 0, audios: 0 },
+  });
+  // Nombre que no se reconoce: no suma en chico/chica (pero sí en las sumas del chat)
+  const g = fichaAnonima(chatEjemplo().map((m) => ({ ...m, autor: m.autor === 'Lucía García' ? 'Cris' : m.autor })), 'ES');
+  expect(g.sumasGenero.chica).toBeUndefined();
+  expect(g.sumas.mensajes).toBe(60);
+});
+
+test('madrugadores, audios, fotos, stickers, borrados y días con mensajes', () => {
+  const extra = [
+    { ...msg('2025-03-03', '07:15', 'Marcos'), tipo: 'audio', texto: '' },
+    { ...msg('2025-03-03', '07:20', 'Lucía García'), tipo: 'image', texto: '' },
+    { ...msg('2025-03-20', '12:00', 'Marcos'), tipo: 'sticker', texto: '' },
+    { ...msg('2025-03-20', '12:01', 'Lucía García'), tipo: 'deleted', texto: '' },
+  ];
+  const f = fichaAnonima([...chatEjemplo(), ...extra].sort((a, b) => a.fecha - b.fecha), 'ES');
+  expect(f.sumas).toMatchObject({ manana: 2, audios: 1, fotos: 1, stickers: 1, borrados: 1, diasActivos: 11, dias: 20 });
+  expect(f.sumasGenero.chico).toMatchObject({ manana: 1, audios: 1 });
+  expect(f.sumasGenero.chica).toMatchObject({ manana: 1, audios: 0 });
+});
+
+// Resultado con la forma de analizarPerfilesCompleto (Analisis_top.js)
+const persona = (extra) => ({
+  mensajes: 10, palabras_totales: 50, palabras_unicas: new Set(['a', 'b', 'c']), mensajes_noche: 2, uso_primera_persona: 1,
+  mensajes_inician_conversacion: 1, mensajes_terminan_conversacion: 0, menciones_otros: 0, emojis_utilizados: 4, emojis_amor: 1,
+  max_mensajes_seguidos: 3, mensajes_risa: 2, mensajes_agradece: 0, mensajes_disculpa: 1, mensajes_pregunta: 3,
+  menciones_vicios: 0, menciones_palabrotas: 0, horario_mensajes: [10, 12], longitud_mensajes: [20, 30], tiempo_respuesta: [1.5, 3],
+  ...extra,
+});
+const RESULTADO = {
+  success: true,
+  usuarios: {
+    'Marcos': persona({ menciones_vicios: 5, menciones_palabrotas: 1 }),
+    'Lucía García': persona({ palabras_unicas: 7, emojis_amor: 3 }),
+    'Cris': persona({}),
+  },
+  categorias: { mala_influencia: { nombre: 'Marcos' }, amoroso: { nombre: 'Lucía García' }, vampiro: { nombre: 'Cris' }, profesor: { nombre: '--' } },
+};
+
+test('características: chico/chica de quien gana y contadores de la app, sin nombres', () => {
+  const c = fichaCaracteristicas(RESULTADO);
+  expect(c.caracteristicas).toEqual({ mala_influencia: 'chico', amoroso: 'chica' }); // Cris: no sabemos; «--»: nadie
+  expect(c.contadores).toMatchObject({
+    personas: 3, mensajes: 30, menciones_vicios: 5, menciones_palabrotas: 1, emojis_amor: 5, palabras_unicas: 13,
+    suma_hora: 66, suma_longitud: 150, suma_respuesta_min: 15, respuestas: 6,
+  });
+  expect(c.contadoresGenero.chico).toMatchObject({ personas: 1, menciones_vicios: 5, emojis_amor: 1 });
+  expect(c.contadoresGenero.chica).toMatchObject({ personas: 1, emojis_amor: 3, palabras_unicas: 7 });
+  expect(JSON.stringify(c)).toMatch(/^[{}[\]":,.0-9a-zA-Z_-]+$/); // solo claves, números y chico/chica
+  expect(fichaCaracteristicas({ success: false })).toBeNull();
+  expect(fichaCaracteristicas(null)).toBeNull();
+});
+
+test('características con el cálculo real de la app (perfilesDelChat)', () => {
+  const lineas = [];
+  for (let d = 1; d <= 20; d++) {
+    lineas.push(`[${d}/3/25, 10:00:00] Marcos: vamos a por una cerveza esta noche?`);
+    lineas.push(`[${d}/3/25, 10:05:00] Lucía García: joder qué ganas ❤️`);
+    lineas.push(`[${d}/3/25, 23:30:00] Lucía García: estoy en casa ya`);
+  }
+  const resultado = perfilesDelChat(lineas.join('\n'));
+  const c = fichaCaracteristicas(resultado);
+  const u = resultado.usuarios;
+  expect(c.contadores.mensajes).toBe(u['Marcos'].mensajes + u['Lucía García'].mensajes);
+  expect(c.contadores.menciones_vicios).toBe(u['Marcos'].menciones_vicios + u['Lucía García'].menciones_vicios);
+  expect(c.contadoresGenero.chica.menciones_palabrotas).toBe(u['Lucía García'].menciones_palabrotas);
+  // Quien gana cada característica es quien la app enseña
+  Object.entries(c.caracteristicas).forEach(([k, g]) => {
+    expect(g).toBe(resultado.categorias[k].nombre === 'Marcos' ? 'chico' : 'chica');
+  });
+  expect(c.caracteristicas.vampiro).toBe('chica');
+  expect(perfilesDelChat(lineas.join('\n'))).toBe(resultado); // el mismo chat no se calcula dos veces
 });
 
 test('nombre que no se reconoce: ese chat no cuenta para las métricas de chico/chica, el resto sí', () => {
@@ -108,7 +192,7 @@ test('huella: igual para el mismo chat, distinta si cambia', () => {
 
 test('ficha de IA: solo valores de las listas, sin nada del texto', () => {
   const respuesta = '## Análisis\nEva es muy divertida.\n\nCOMPARATIVA_DATA:{"temas":["planes","Humor","boda de Eva","planes"],"momento":"celebracion","recomendacion":"inventada","rasgos":["divertido","Eva"],"nota":8,"dinamica":"complicidad"}';
-  expect(fichaIA(respuesta)).toEqual({ v: 1, temas: ['planes', 'humor'], momento: 'celebracion', rasgos: ['divertido'], nota: 8, dinamica: 'complicidad' });
+  expect(fichaIA(respuesta, 'MX')).toEqual({ v: 1, temas: ['planes', 'humor'], momento: 'celebracion', rasgos: ['divertido'], nota: 8, dinamica: 'complicidad', pais: 'MX' });
 });
 
 test('ficha de IA: sin bloque, roto o vacío → null', () => {

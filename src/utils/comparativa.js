@@ -1,8 +1,9 @@
 // «Tu chat frente al resto»: ficha anónima de un chat y comparación con los totales de todos los chats.
-// La ficha lleva solo números y «chico»/«chica»: ni nombres, ni texto, ni identificadores.
+// La ficha lleva solo números, «chico»/«chica» y el país (por la zona horaria): ni nombres, ni texto, ni identificadores.
 // El servidor la reparte en tramos, suma contadores y la descarta.
 import { equilibrio, records, diasIntensos } from './analisisExtra';
 import { generoDe } from './generoNombre';
+import { paisDelNavegador } from './pais';
 
 export const MINIMO_MENSAJES = 50;
 
@@ -25,9 +26,10 @@ const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu;
 
 /**
  * Ficha anónima de un chat ya parseado (libro/parser.js), o null si el chat es demasiado corto.
- * { v: 1, numeros: { metrica: valor }, genero: { metrica: 'chico' | 'chica' } }
+ * { v: 1, numeros: { metrica: valor }, genero: { metrica: 'chico' | 'chica' }, pais: 'ES',
+ *   sumas: { contador: n }, sumasGenero: { chico: { contador: n }, chica: {…} } }
  */
-export function fichaAnonima(mensajes) {
+export function fichaAnonima(mensajes, pais = paisDelNavegador()) {
   const ms = validos(mensajes);
   if (ms.length < MINIMO_MENSAJES) return null;
   const eq = equilibrio(ms); // personas con al menos el 1 % de los mensajes
@@ -37,14 +39,23 @@ export function fichaAnonima(mensajes) {
   const dias = Math.round((new Date(ms[ms.length - 1].dia) - new Date(ms[0].dia)) / 86400000) + 1;
   const textos = ms.filter((m) => m.tipo === 'text');
 
-  // Por persona: palabrotas, risas que provoca (otra persona se ríe justo después), cariño y madrugada
+  // Por persona: palabrotas, risas que provoca (otra persona se ríe justo después), cariño y madrugada;
+  // y para las sumas, mensajes de 6 a 9 h y audios
   const p = {};
-  const de = (a) => (p[a] || (p[a] = { palabrotas: 0, provoca: 0, carino: 0, madrugada: 0 }));
-  let palabrotas = 0, risas = 0, emojis = 0, palabras = 0, madrugada = 0;
+  const de = (a) => (p[a] || (p[a] = { palabrotas: 0, provoca: 0, carino: 0, madrugada: 0, mensajes: 0, manana: 0, audios: 0 }));
+  let palabrotas = 0, risas = 0, emojis = 0, palabras = 0, madrugada = 0, manana = 0;
+  const tipos = { audio: 0, image: 0, sticker: 0, deleted: 0 };
+  const diasActivos = new Set();
   const respuestas = [];
   ms.forEach((m, i) => {
     const x = de(m.autor);
     const t = m.texto || '';
+    x.mensajes++;
+    diasActivos.add(m.dia);
+    if (m.tipo in tipos) tipos[m.tipo]++;
+    if (m.tipo === 'audio') x.audios++;
+    const hora = m.fecha.getHours();
+    if (hora >= 6 && hora < 9) { x.manana++; manana++; } // madrugadores: de 6 a 9 de la mañana
     const nPal = palabrasDe(t).filter((w) => PALABROTAS.has(w)).length;
     x.palabrotas += nPal; palabrotas += nPal;
     if (CARINO.test(t)) x.carino++;
@@ -95,7 +106,71 @@ export function fichaAnonima(mensajes) {
   const genero = {};
   Object.entries(quien).forEach(([k, nombre]) => { const g = nombre && generoDe(nombre); if (g) genero[k] = g; });
 
-  return { v: 1, numeros, genero };
+  // Sumas brutas de lo que las características (Analisis_top.js) no cuentan: del chat entero y por chico/chica.
+  // Por chico/chica solo cuenta quien tiene al menos el 1 % de los mensajes y un nombre que se reconoce.
+  const sumas = {
+    mensajes: ms.length, personas: miembros, dias, diasActivos: diasActivos.size, manana,
+    audios: tipos.audio, fotos: tipos.image, stickers: tipos.sticker, borrados: tipos.deleted,
+  };
+  const sumasGenero = {};
+  eq.forEach(({ nombre }) => {
+    const g = generoDe(nombre);
+    if (!g) return;
+    const s = sumasGenero[g] || (sumasGenero[g] = { personas: 0, mensajes: 0, manana: 0, audios: 0 });
+    s.personas++;
+    ['mensajes', 'manana', 'audios'].forEach((k) => { s[k] += p[nombre][k]; });
+  });
+
+  return { v: 1, numeros, genero, pais, sumas, sumasGenero };
+}
+
+// Características del chat (Analisis_top.js, analizarPerfilesCompleto): exactamente el mismo cálculo que ve el usuario.
+// Las listas son las mismas que CARACTERISTICAS y CONTADORES en zipback/services/comparativa.py.
+export const CARACTERISTICAS = ['profesor', 'rollero', 'pistolero', 'vampiro', 'cafeconleche', 'dejaenvisto', 'narcicista',
+  'chismoso', 'puntofinal', 'fosforo', 'menosesmas', 'happyflower', 'amoroso', 'bombardero', 'comico', 'agradecido',
+  'disculpon', 'curioso', 'mala_influencia'];
+// Contadores por persona de analizarPerfilesCompleto, tal cual
+const CONTADORES = ['mensajes', 'palabras_totales', 'palabras_unicas', 'mensajes_noche', 'uso_primera_persona',
+  'mensajes_inician_conversacion', 'mensajes_terminan_conversacion', 'menciones_otros', 'emojis_utilizados', 'emojis_amor',
+  'max_mensajes_seguidos', 'mensajes_risa', 'mensajes_agradece', 'mensajes_disculpa', 'mensajes_pregunta',
+  'menciones_vicios', 'menciones_palabrotas'];
+// Sus listas por persona, en suma (para las medias: hora, longitud y tiempo de respuesta) y cuántas respuestas hay
+const LISTAS = { horario_mensajes: 'suma_hora', longitud_mensajes: 'suma_longitud', tiempo_respuesta: 'suma_respuesta_min' };
+
+const sumaDe = (xs) => (Array.isArray(xs) ? xs.reduce((a, b) => a + b, 0) : 0);
+function sumarPersona(s, u) {
+  s.personas++;
+  CONTADORES.forEach((k) => {
+    const v = k === 'palabras_unicas' && u[k] instanceof Set ? u[k].size : u[k];
+    s[k] += Math.round(Number(v) || 0);
+  });
+  Object.entries(LISTAS).forEach(([lista, k]) => { s[k] += Math.round(sumaDe(u[lista])); });
+  s.respuestas += Array.isArray(u.tiempo_respuesta) ? u.tiempo_respuesta.length : 0;
+}
+const vacio = () => Object.fromEntries(['personas', ...CONTADORES, ...Object.values(LISTAS), 'respuestas'].map((k) => [k, 0]));
+
+/**
+ * Parte de las características para la ficha: chico/chica de quien gana cada una y los contadores sumados
+ * (del chat entero y por chico/chica). Sin nombres. null si el análisis no ha salido.
+ */
+export function fichaCaracteristicas(resultado) {
+  if (!resultado || !resultado.success || !resultado.usuarios) return null;
+  const { usuarios, categorias = {} } = resultado;
+  const caracteristicas = {};
+  CARACTERISTICAS.forEach((k) => {
+    const nombre = categorias[k] && categorias[k].nombre;
+    const g = nombre && usuarios[nombre] ? generoDe(nombre) : null;
+    if (g) caracteristicas[k] = g;
+  });
+  const contadores = vacio();
+  const contadoresGenero = {};
+  Object.entries(usuarios).forEach(([nombre, u]) => {
+    if (!u || !u.mensajes) return;
+    sumarPersona(contadores, u);
+    const g = generoDe(nombre);
+    if (g) sumarPersona(contadoresGenero[g] || (contadoresGenero[g] = vacio()), u);
+  });
+  return { caracteristicas, contadores, contadoresGenero };
 }
 
 /** Tramo (0..n) de un valor según los cortes que manda el servidor: igual que bisect_right en Python. */
@@ -151,7 +226,7 @@ export const LISTAS_IA = {
  * Ficha de la parte de IA a partir de la línea COMPARATIVA_DATA:{...} de la respuesta del análisis.
  * Se queda solo con valores de las listas (lo demás se descarta); null si no hay nada aprovechable.
  */
-export function fichaIA(respuesta) {
+export function fichaIA(respuesta, pais = paisDelNavegador()) {
   const m = typeof respuesta === 'string' && respuesta.match(/COMPARATIVA_DATA:\s*(\{[^{}]*\})/);
   if (!m) return null;
   let d;
@@ -164,7 +239,7 @@ export function fichaIA(respuesta) {
   ['momento', 'recomendacion', 'dinamica'].forEach((k) => { if (enLista(k, d[k])) ficha[k] = norm(d[k]); });
   const nota = Number(d.nota);
   if (Number.isInteger(nota) && nota >= 1 && nota <= 10) ficha.nota = nota;
-  return Object.keys(ficha).length > 1 ? ficha : null;
+  return Object.keys(ficha).length > 1 ? { ...ficha, pais } : null; // el país, para los temas, rasgos… por país
 }
 
 /** Huella local del chat para no contarlo dos veces desde el mismo navegador. No sale del dispositivo. */

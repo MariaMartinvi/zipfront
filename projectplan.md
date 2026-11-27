@@ -1033,3 +1033,53 @@ empieza las conversaciones y cuánto tarda cada uno, y luego qué desbloquea la 
 Sin verificar en pantalla: el aviso solo sale con sesión iniciada y sin créditos. Para medir el
 efecto, comparar en Clarity `paywall_click` y `checkout_iniciado` frente a `paywall_visto`
 antes y después del 23-11-2026.
+
+## Pendiente: letra de los resultados más legible (Maria, 23-11-2026)
+
+Maria: la letra de los títulos y cifras es «demasiado estrecha y fina»; cambiar las tres cosas. **Prioridad: que se lea bien** (por encima de la estética).
+Los cambios ya están hechos en local, **sin subir** (AnalisisExtra.css, ComparativaChats.css, ResultadosTema.css, ResumenWrapped.css).
+
+- [x] Títulos y cifras: Instrument Serif → Inter en negrita (ya se carga; la landing del libro no se toca), tamaños algo menores porque Inter es más ancha
+- [x] Textos grises más oscuros (#656b73 → #4b5259)
+- [x] Textos pequeños más grandes (.82–.88rem → .95rem; 12–13px → 14px)
+- [ ] Verificar en local con capturas (ordenador y móvil): resumen, perfiles, récords, comparativa, psicológico, gráficos
+- [ ] Enseñar las capturas a Maria y subir solo con su OK
+
+## Plan: estadísticas por país para notas de prensa (Maria, 27-11-2026) — OK de Maria, hecho en local, SIN SUBIR
+
+Objetivo: titulares tipo «los chilenos son los más Mala Influencia» o «ellas son más Vampiro».
+Maria: «exactamente el mismo cálculo que las características, y comparar países». País = zona horaria del navegador (sin IP).
+
+Cada chat manda además (sin nombres; el servidor suma en `totales` y en `pais_XX`, nunca guarda la ficha):
+- **Características** (las 19 de Analisis_top.js, `analizarPerfilesCompleto`, sin tocar el cálculo):
+  chico/chica de quien gana cada una + los contadores por persona de la app, sumados (chat entero y por chico/chica).
+- **Lo que las características no miden:** madrugadores (6-9 h), constancia (días con mensajes), audios, fotos, stickers, borrados.
+- Quitadas mis versiones propias (palabrotas, vicios, cariño, risas, emojis, madrugada) para no tener dos cifras de lo mismo.
+
+- [x] Web: país por zona horaria (src/utils/pais.js) → pais.test.js
+- [x] Web: `perfilesDelChat` (Analisis_top.js) = el mismo resultado que ve el usuario, calculado una vez por chat
+- [x] Web: `fichaCaracteristicas` + sumas propias en la ficha → comparativa.test.js (incluye test con el cálculo real)
+- [x] Servidor: valida país, sumas y características (listas cerradas, enteros, topes por mensaje, chico+chica ≤ chat) → test_comparativa.py
+- [x] Servidor: scripts/estadisticas_paises.py → tablas por país/LATAM/Europa sin España/Todos ⚠️ si < 100 chats → test_estadisticas_paises.py
+- [x] Política de privacidad: país, sumas por chico/chica y ganador de cada característica
+- [x] Parte de IA por país (temas, dinámica, momento, recomendación, rasgos, nota): la ficha de IA lleva `pais`,
+      el servidor suma también en `pais_XX_ia` y la tabla saca % por país y nota media → tests
+- [x] Política de privacidad: menciona también la parte de IA (antes no salía)
+- [x] Todos los idiomas (Maria): la sección manda los datos en cualquier idioma (solo se enseña en castellano,
+      sus textos lo están); las características usan el idioma de la web para sus listas (también en la sección
+      que ve el usuario); el bloque de IA va en todos los prompts (en inglés fuera del castellano, mismos códigos)
+- [x] Tests: 224 web OK, 95 servidor OK
+- [ ] Subir (zipback primero, luego web) — con OK de Maria
+
+## Review (27-11-2026)
+- Orden de subida: **primero zipback**. Si sube antes la web, el servidor viejo rechaza las fichas nuevas y esos chats no cuentan.
+- Las fichas viejas (sin país ni características) se siguen aceptando; también las de IA sin país.
+- La parte de IA solo existe en chats con análisis IA: habrá muchos menos chats que en el resto.
+- Listas por idioma de la app: palabrotas en 8 idiomas, vicios solo es/en, primera persona es/en/fr/de/it; lo que falta cae al castellano.
+- Dentro de un chat la app premia al que tiene más en total (Amoroso, Mala Influencia…). Entre países eso no vale
+  (ganaría el país con chats más largos), así que la tabla divide los mismos contadores entre los mensajes.
+- La hora de los mensajes es la local del móvil que exporta y el país sale de la zona horaria del mismo dispositivo:
+  Vampiro/madrugadores se comparan bien. Excepción: chats entre gente de países distintos.
+- Límites a decir en las notas: género según el nombre; país según la zona horaria de quien sube el chat;
+  solo chats analizados en ChatSalsa desde el día de la subida.
+- Riesgo que queda: fichas inventadas pero coherentes (límite 20/hora por IP; topes por mensaje).
